@@ -271,25 +271,26 @@ figs["death"] = [_dd[i] for i in (2, 3, 4, 5)]          # cambaleia, ajoelha, ca
 # andar e correr: as pernas do 1º quadro de "walk" animadas por um esqueleto (pirate_leg_rig.py)
 # no ciclo dos outros heróis (a folha não tem passos: as pernas ficam paradas na mesma pose)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pirate_leg_rig import cycle as _leg_cycle
+from pirate_leg_rig import keyed_cycle_rigid as _leg_keyed, WARRIOR_WALK, WARRIOR_RUN
 _wcell = cv2.copyMakeBorder(load_strip("walk", 8, raw=True)[0], 0, 0, 60, 60, cv2.BORDER_CONSTANT, value=(0, 0, 0, 0))
-figs["walk"] = [canvas_fig(f) for f in _leg_cycle(_wcell, n=8, amp=24, knee=40, inward=0.0)[0]]
-figs["run"] = [canvas_fig(f) for f in _leg_cycle(_wcell, n=8, amp=34, knee=70, inward=0.0, lean=0.10, bob=10)[0]]
+# poses copiadas do Guerreiro quadro a quadro (6 + 6 quadros, como todos os heróis)
+figs["walk"] = [canvas_fig(f) for f in _leg_keyed(_wcell, WARRIOR_WALK)[0]]
+figs["run"] = [canvas_fig(f) for f in _leg_keyed(_wcell, WARRIOR_RUN)[0]]
 _IDLE_H = 455
 SCALE.update(idle=STAND_H / _IDLE_H, walk=STAND_H / (_IDLE_H * .63), run=STAND_H / (_IDLE_H * .63), atk=STAND_H / (_IDLE_H * .80),
              jump=STAND_H / (_IDLE_H * .63), death=STAND_H / (_IDLE_H * .62))
 ANIMS = {
     "idle":   dict(src=[("idle", i) for i in range(4)], v="row", h="torso", fps=5, loop=True),
     # andar/correr: 8 quadros do esqueleto, tronco parado no lugar ("canvas")
-    "walk":   dict(src=[("walk", i) for i in range(8)], v="row", h="canvas", fps=14, loop=True),
-    "run":    dict(src=[("run", i) for i in range(8)], v="row", h="canvas", fps=18, loop=True),
+    "walk":   dict(src=[("walk", i) for i in range(6)], v="row", h="canvas", fps=11, loop=True),   # = padrão do jogo
+    "run":    dict(src=[("run", i) for i in range(6)], v="row", h="canvas", fps=15, loop=True),    # = padrão do jogo
     "attack": dict(src=[("atk", i) for i in range(5)], v="row", h="torso", fps=13, loop=False),
     # pulo / dano: 0 agacha · 1 impulso · 2 no ar · 3 aterrissa · 4 atordoado · 5 volta
     "jump":   dict(src=[("jump", i) for i in range(6)], v="row", h="hip", fps=10, loop=False),
     "death":  dict(src=[("death", i) for i in range(4)], v="feet", h="bbox", fps=8, loop=False),
 }
 ORDER = ["idle", "walk", "run", "attack", "jump", "death"]
-RUN_FPS = 18                                             # correr: 8 quadros do esqueleto (ciclo de ~0.45 s)
+RUN_FPS = 15                                             # correr: 6 quadros a 15 fps, como os outros heróis
 RUN_LEAN, RUN_BOB = 0.12, 3                              # inclinação para frente (px por px de altura) e pulo (px)
 STRIP_DIR = os.path.join(ROOT, "assets", "sprites", "characters", "pirate")
 
@@ -616,7 +617,7 @@ layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": HD, "footY":
           "anchors": [[64 + STAND_H // 4, FOOT - STAND_H // 2]] * n, "torso": [[64, FOOT - STAND_H // 2]] * n,
           "head": [[64, top + STAND_H // 6]] * n, "map": amap}
 
-KEY = "pirate-px10"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-px11"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -625,8 +626,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,
