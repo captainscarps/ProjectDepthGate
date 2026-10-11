@@ -13,7 +13,7 @@
     512,
     128
    ],
-   "fps": 5,
+   "fps": 4,
    "loop": true,
    "source": [
     "idle#0",
@@ -23,10 +23,10 @@
    ]
   },
   "walk": {
-   "frames": 8,
+   "frames": 6,
    "file": "pirate_walk.png",
    "size": [
-    1024,
+    768,
     128
    ],
    "fps": 11,
@@ -35,9 +35,25 @@
     "walk#0",
     "walk#1",
     "walk#2",
-    "walk#3",
     "walk#4",
-    "walk#5",
+    "walk#6",
+    "walk#7"
+   ]
+  },
+  "run": {
+   "frames": 6,
+   "file": "pirate_run.png",
+   "size": [
+    768,
+    128
+   ],
+   "fps": 15,
+   "loop": true,
+   "source": [
+    "walk#0",
+    "walk#1",
+    "walk#2",
+    "walk#4",
     "walk#6",
     "walk#7"
    ]
@@ -94,7 +110,7 @@
    ]
   }
  },
- "gameSheet": "assets/pixel-art/characters/pirate-px8-body.png",
+ "gameSheet": "assets/pixel-art/characters/pirate-px9-body.png",
  "map": {
   "idle": [
    0,
@@ -103,9 +119,9 @@
    3
   ],
   "idlevar": [
-   1,
+   0,
    2,
-   1
+   0
   ],
   "walk": [
    4,
@@ -113,55 +129,51 @@
    6,
    7,
    8,
-   9,
-   10,
-   11
+   9
   ],
   "run": [
-   4,
-   5,
-   6,
-   7,
-   8,
-   9,
    10,
-   11
-  ],
-  "attackW": [
+   11,
    12,
-   13
-  ],
-  "attackH": [
+   13,
    14,
    15
   ],
+  "attackW": [
+   16,
+   17
+  ],
+  "attackH": [
+   18,
+   19
+  ],
   "attackR": [
-   16
+   20
   ],
-  "windupA": 12,
-  "windup": 13,
-  "hitA": 14,
-  "hit": 15,
-  "recovery": 16,
-  "guardStart": 17,
-  "guard": 17,
-  "dashA": 18,
-  "dash": 19,
-  "castA": 13,
-  "cast": 20,
-  "castC": 22,
-  "hurt": 21,
-  "hurtB": 23,
-  "stunA": 21,
-  "stunB": 23,
+  "windupA": 16,
+  "windup": 17,
+  "hitA": 18,
+  "hit": 19,
+  "recovery": 20,
+  "guardStart": 21,
+  "guard": 21,
+  "dashA": 22,
+  "dash": 23,
+  "castA": 17,
+  "cast": 24,
+  "castC": 26,
+  "hurt": 25,
+  "hurtB": 27,
+  "stunA": 25,
+  "stunB": 27,
   "deathSeq": [
-   23,
-   24,
-   25,
-   26
+   27,
+   28,
+   29,
+   30
   ],
-  "deathA": 23,
-  "deathB": 25,
-  "deathC": 26
+  "deathA": 27,
+  "deathB": 29,
+  "deathC": 30
  }
 }

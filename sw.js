@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.27.0-pirata-pixel";
+const CACHE = "ded-web-v4.28.0-pirata-movimento";
 
 self.addEventListener("install", () => self.skipWaiting());
 

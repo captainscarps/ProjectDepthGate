@@ -278,7 +278,8 @@ ANIMS = {
     "death":  dict(src=[("death", i) for i in range(4)], v="feet", h="bbox", fps=8, loop=False),
 }
 ORDER = ["idle", "walk", "attack", "jump", "death"]
-RUN_FPS = 17                                             # correr = os quadros de andar, mais rápidos
+RUN_FPS = 15                                             # correr: quadros de andar inclinados, mais rápidos
+RUN_LEAN, RUN_BOB = 0.12, 3                              # inclinação para frente (px por px de altura) e pulo (px)
 STRIP_DIR = os.path.join(ROOT, "assets", "sprites", "characters", "pirate")
 
 
@@ -527,6 +528,67 @@ for k in ([] if HD else strips):
     strips[k] = np.concatenate([outline(despeckle(strips[k][:, i * FW:(i + 1) * FW]))
                                 for i in range(strips[k].shape[1] // FW)], axis=1)
     write_png(os.path.join(STRIP_DIR, f"pirate_{k}.png"), strips[k])
+
+# ---------------------------------------------------------------- movimento igual ao dos outros heróis
+# Medido nas folhas dos outros: parado = um desenho só respirando (cabeça mexe 0-1 px);
+# andar = cabeça e tronco parados no lugar, só as pernas mexem; correr = corpo inclinado
+# para frente com sobe-e-desce. Os quadros gerados da arte foram redesenhados um a um
+# (a cabeça pulava 4 px no parado e balançava 10 px no andar), então aqui:
+_tiles = lambda st: [st[:, i * FW:(i + 1) * FW].copy() for i in range(st.shape[1] // FW)]
+
+
+def _upper_cx(t):
+    a = t[..., 3] > 0
+    ys, xs = np.nonzero(a)
+    top, h = ys.min(), ys.max() - ys.min()
+    sel = ys < top + h * 0.45                                   # cabeça + tronco (as pernas não contam)
+    return xs[sel].mean()
+
+
+def _shift(t, dx, dy=0):
+    out = np.zeros_like(t)
+    h, w = t.shape[:2]
+    ys0, ys1 = max(0, dy), min(h, h + dy)
+    xs0, xs1 = max(0, dx), min(w, w + dx)
+    out[ys0:ys1, xs0:xs1] = t[ys0 - dy:ys1 - dy, xs0 - dx:xs1 - dx]
+    return out
+
+
+if "run" not in strips and "jump" in strips:                     # folhas em pixel art (pirata-pixel)
+    # 1) parado: um desenho só (o 1º) com respiração de 1 px, como os outros heróis
+    strips["idle"] = np.concatenate(breathe(_tiles(strips["idle"])[0]), axis=1)
+    ANIMS["idle"]["fps"] = 4
+    # 2) andar: cabeça e tronco no mesmo lugar em todos os quadros
+    # os quadros 3 e 5 da folha seguram o sabre mais baixo (a lâmina pula no meio do passo):
+    # ficam 6 quadros, a mesma quantidade dos outros heróis
+    _w = [t for i, t in enumerate(_tiles(strips["walk"])) if i not in (3, 5)]
+    _cx = [_upper_cx(t) for t in _w]
+    _ref = float(np.median(_cx))
+    _w = [_shift(t, int(round(_ref - c))) for t, c in zip(_w, _cx)]
+    strips["walk"] = np.concatenate(_w, axis=1)
+    ANIMS["walk"]["fps"] = 11                                   # 6 quadros a 11 fps, como os outros heróis
+    ANIMS["walk"]["src"] = [x for i, x in enumerate(ANIMS["walk"]["src"]) if i not in (3, 5)]
+    # 3) correr: os quadros de andar com o corpo inclinado para frente e sobe-e-desce:
+    #    pés mais afastados = apoio (embaixo), pés juntos = passagem (em cima)
+    _spread = []
+    for t in _w:
+        ys, xs = np.nonzero(t[FOOT - 10:FOOT + 1, :, 3] > 0)
+        _spread.append(xs.max() - xs.min())
+    _sp = np.array(_spread, np.float32)
+    _bob = np.round(RUN_BOB * (1 - (_sp - _sp.min()) / max(1e-3, _sp.max() - _sp.min()))).astype(int)
+    _run = []
+    for t, b in zip(_w, _bob):
+        r = np.zeros_like(t)
+        for y in range(FH):                                     # inclinação: quanto mais alto, mais à frente
+            r[y] = _shift(t[y:y + 1], int(round(RUN_LEAN * max(0, FOOT - y))))[0]
+        _run.append(_shift(r, 0, -int(b)))
+    strips["run"] = np.concatenate(_run, axis=1)
+    ANIMS["run"] = dict(src=ANIMS["walk"]["src"], v="row", h="hip", fps=RUN_FPS, loop=True)
+    ORDER = ["idle", "walk", "run", "attack", "jump", "death"]
+    for _k in ("idle", "walk", "run"):
+        write_png(os.path.join(STRIP_DIR, f"pirate_{_k}.png"), strips[_k])
+    print("movimento: andar alinhado (tronco variava", round(max(_cx) - min(_cx), 1), "px); correr com pulo", list(_bob))
+
 n = 0
 for name in ORDER:
     start[name] = n
@@ -542,9 +604,9 @@ I = lambda name, k=0: start[name] + k
 cnt = lambda name: strips[name].shape[1] // FW
 amap = {
     "idle": [I("idle", k) for k in range(cnt("idle"))],
-    "idlevar": [I("idle", k) for k in (1, 2, 1)],
+    "idlevar": [I("idle", k) for k in (0, 2, 0)],
     "walk": [I("walk", k) for k in range(cnt("walk"))],
-    "run": [I("walk", k) for k in range(cnt("walk"))],          # mesmo ciclo, mais rápido (RUN_FPS)
+    "run": [I("run", k) for k in range(cnt("run"))] if "run" in start else [I("walk", k) for k in range(cnt("walk"))],
     # ataque: 0 postura · 1 ergue o sabre | 2 corte (rastro) · 3 continuação (rastro) | 4 postura
     "attackW": [I("attack", k) for k in (0, 1)], "attackH": [I("attack", k) for k in (2, 3)],
     "attackR": [I("attack", 4)],
@@ -570,7 +632,7 @@ layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": HD, "footY":
           "anchors": [[64 + STAND_H // 4, FOOT - STAND_H // 2]] * n, "torso": [[64, FOOT - STAND_H // 2]] * n,
           "head": [[64, top + STAND_H // 6]] * n, "map": amap}
 
-KEY = "pirate-px8"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-px9"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -579,8 +641,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,
