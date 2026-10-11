@@ -207,14 +207,15 @@ def _M(Rm, src, dst):
     return np.hstack([Rm, t[:, None]])
 
 
-def rigid_leg(cell, d, segs, th, bend, boot_tilt):
+def rigid_leg(cell, d, segs, th, bend, boot_tilt, hip_dst=None):
     hip, knee, ank = d["hip"], d["knee"], d["ank"]
-    R1 = R(th - d["base_th"]); knee2 = hip + R1 @ (knee - hip)
+    hip2 = hip if hip_dst is None else np.array(hip_dst)
+    R1 = R(th - d["base_th"]); knee2 = hip2 + R1 @ (knee - hip)
     R2 = R(th - bend - d["base_sh"]); ank2 = knee2 + R2 @ (ank - knee)
     R3 = R(boot_tilt)
     boot = _warp(segs["boot"], _M(R3, ank, ank2))
     shin = _warp(segs["shin"], _M(R2, knee, knee2))
-    thigh = _warp(segs["thigh"], _M(R1, hip, hip))
+    thigh = _warp(segs["thigh"], _M(R1, hip, hip2))
     return over(over(boot, shin), thigh)
 
 
@@ -238,5 +239,84 @@ def keyed_cycle_rigid(cell, keys):
         comp = over(comp, layers[near])
         low = int(np.nonzero(comp[..., 3] > 100)[0].max())
         comp = shift(comp, 0, info["foot"] - low - kf["air"] * leg_len)
+        frames.append(comp)
+    return frames, info
+
+
+# ---------------------------------------------------------------- cópia por posição dos pés (IK)
+# Medido pixel a pixel no Guerreiro (warrior-pack, quadros de andar 6-11 e correr 12-17):
+# posição da sola de cada pé em relação ao quadril (x: + = para frente; y: para baixo; o pé
+# em pé fica 19 px abaixo do quadril). "A" é uma perna e "B" a outra (B = A atrasada 3 quadros),
+# do mesmo jeito que no Guerreiro as duas pernas trocam de papel a cada 3 quadros.
+WARRIOR_LEG = 19.0
+HIP_CENTER = 1.0          # 0 = do quadril de cada perna, 1 = do centro do corpo
+MAX_DROP = 0.0            # o corpo não sobe nem desce além disto (no Guerreiro a cabeça mexe ~1 px)
+BASE_DROP = 0.12          # joelhos levemente dobrados o tempo todo, como o Guerreiro andando
+X_SCALE = 1.00            # passo proporcional ao do Guerreiro (perna do pirata é mais reta)
+LEG_PULL = 0.7            # aproxima os quadris (0 = pose 3/4 da arte, 1 = as duas pernas saem do mesmo ponto)
+_WALK_A = [(11, 19), (9, 19), (-2, 19), (-8, 19), (-16, 12), (-10, 10)]    # pisa na frente, apoia, vai para trás, sobe atrás, passa
+_RUN_A = [(11, 19), (-2, 19), (-9, 19), (-22, 6), (-15, 5), (6, 10)]       # pisa, apoia, empurra, estica atrás, dobra, joelho alto
+WARRIOR_WALK_IK = [dict(A=_WALK_A[i], B=_WALK_A[(i + 3) % 6], lean=4) for i in range(6)]
+WARRIOR_RUN_IK = [dict(A=_RUN_A[i], B=_RUN_A[(i + 3) % 6], lean=l) for i, l in enumerate((8, 4, 18, 8, 4, 18))]
+
+
+def _ik(l1, l2, tx, ty):
+    """quadril em (0,0); devolve (ângulo da coxa, ângulo da canela) a partir da vertical, + = para frente,
+    com o joelho dobrando para frente"""
+    d = max(1e-6, math.hypot(tx, ty))
+    d = min(d, (l1 + l2) * 0.999)
+    base = math.atan2(tx, ty)
+    cos_a = max(-1.0, min(1.0, (l1 * l1 + d * d - l2 * l2) / (2 * l1 * d)))
+    a1 = base + math.acos(cos_a)                     # coxa gira para frente: joelho à frente
+    kx, ky = l1 * math.sin(a1), l1 * math.cos(a1)
+    a2 = math.atan2(tx - kx, ty - ky)
+    return math.degrees(a1), math.degrees(a2)
+
+
+def ik_cycle(cell, keys):
+    upper, L, info = split_legs(cell)
+    h, w = upper.shape[:2]
+    near = max(L, key=lambda k: L[k]["lum"]); far = [k for k in L if k != near][0]
+    role = {"A": near, "B": far}
+    m = cell[..., 3] > 0
+    yy, xx = np.mgrid[:h, :w]
+    legs = m & (yy >= info["y0"])
+    sel = {"back": legs & (xx < info["split"]), "front": legs & (xx >= info["split"])}
+    segs = {k: _seg_layers(cell, L[k], sel[k]) for k in L}
+    hipmid = (L["front"]["hip"] + L["back"]["hip"]) / 2
+    frames = []
+    for kf in keys:
+        poses, need_drop = {}, 0.0
+        tgt = {}
+        for r in ("A", "B"):
+            d = L[role[r]]
+            l1 = float(np.linalg.norm(d["knee"] - d["hip"])); l2 = float(np.linalg.norm(d["ank"] - d["knee"]))
+            boot_h = d["foot"] - d["ank"][1]
+            leg = d["foot"] - d["hip"][1]
+            sc = leg / WARRIOR_LEG
+            fx, fy = kf[r]
+            # a posição do pé é medida do centro do corpo (como no Guerreiro), não do quadril
+            # de cada perna: na vista 3/4 os quadris do pirata ficam afastados
+            tx = fx * sc * X_SCALE - (d["hip"][0] - hipmid[0]) * (1 - LEG_PULL) * HIP_CENTER
+            ty = fy * sc - boot_h - BASE_DROP * leg          # alvo do tornozelo (quadril um pouco mais baixo)
+            planted = fy >= WARRIOR_LEG - 0.5
+            tgt[r] = (tx, ty, l1, l2, planted)
+            if planted:                                       # pé no chão longe demais: o corpo desce
+                reach = (l1 + l2) * 0.985
+                if math.hypot(tx, ty) > reach and abs(tx) < reach:
+                    need_drop = max(need_drop, ty - math.sqrt(reach * reach - tx * tx))
+        need_drop = min(need_drop, MAX_DROP * (L["front"]["foot"] - L["front"]["hip"][1]))
+        for r in ("A", "B"):
+            tx, ty, l1, l2, planted = tgt[r]
+            a1, a2 = _ik(l1, l2, tx, ty - need_drop)
+            bend = a1 - a2
+            poses[role[r]] = (a1, bend, 0.0 if planted else -0.35 * max(0.0, bend - 15))
+        up = rotate_upper(upper, kf["lean"], tuple(hipmid)) if kf["lean"] else upper
+        layers = {k: rigid_leg(cell, L[k], segs[k], poses[k][0], poses[k][1], poses[k][2],
+                               hip_dst=L[k]["hip"] + np.array([(hipmid[0] - L[k]["hip"][0]) * LEG_PULL, 0.0])) for k in L}
+        comp = over(layers[far], up)
+        comp = over(comp, layers[near])
+        low = int(np.nonzero(comp[..., 3] > 100)[0].max())
+        comp = shift(comp, 0, info["foot"] - low)
         frames.append(comp)
     return frames, info

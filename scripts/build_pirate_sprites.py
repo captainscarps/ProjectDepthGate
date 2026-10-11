@@ -271,11 +271,12 @@ figs["death"] = [_dd[i] for i in (2, 3, 4, 5)]          # cambaleia, ajoelha, ca
 # andar e correr: as pernas do 1º quadro de "walk" animadas por um esqueleto (pirate_leg_rig.py)
 # no ciclo dos outros heróis (a folha não tem passos: as pernas ficam paradas na mesma pose)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pirate_leg_rig import keyed_cycle_rigid as _leg_keyed, WARRIOR_WALK, WARRIOR_RUN
+from pirate_leg_rig import ik_cycle as _leg_ik, WARRIOR_WALK_IK, WARRIOR_RUN_IK
 _wcell = cv2.copyMakeBorder(load_strip("walk", 8, raw=True)[0], 0, 0, 60, 60, cv2.BORDER_CONSTANT, value=(0, 0, 0, 0))
-# poses copiadas do Guerreiro quadro a quadro (6 + 6 quadros, como todos os heróis)
-figs["walk"] = [canvas_fig(f) for f in _leg_keyed(_wcell, WARRIOR_WALK)[0]]
-figs["run"] = [canvas_fig(f) for f in _leg_keyed(_wcell, WARRIOR_RUN)[0]]
+# posição dos pés copiada do Guerreiro quadro a quadro (6 + 6 quadros, como todos os heróis);
+# coxa e joelho calculados para o pé cair exatamente no ponto medido (cinemática inversa)
+figs["walk"] = [canvas_fig(f) for f in _leg_ik(_wcell, WARRIOR_WALK_IK)[0]]
+figs["run"] = [canvas_fig(f) for f in _leg_ik(_wcell, WARRIOR_RUN_IK)[0]]
 _IDLE_H = 455
 SCALE.update(idle=STAND_H / _IDLE_H, walk=STAND_H / (_IDLE_H * .63), run=STAND_H / (_IDLE_H * .63), atk=STAND_H / (_IDLE_H * .80),
              jump=STAND_H / (_IDLE_H * .63), death=STAND_H / (_IDLE_H * .62))
@@ -617,7 +618,7 @@ layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": HD, "footY":
           "anchors": [[64 + STAND_H // 4, FOOT - STAND_H // 2]] * n, "torso": [[64, FOOT - STAND_H // 2]] * n,
           "head": [[64, top + STAND_H // 6]] * n, "map": amap}
 
-KEY = "pirate-px11"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-px12"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -626,8 +627,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10", "px11") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10", "px11") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,
