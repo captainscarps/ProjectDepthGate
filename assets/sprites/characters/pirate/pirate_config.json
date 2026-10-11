@@ -3,8 +3,8 @@
   128,
   128
  ],
- "scale": 0.7,
- "footY": 118,
+ "scale": 0.56,
+ "footY": 126,
  "animations": {
   "idle": {
    "frames": 12,
@@ -113,7 +113,7 @@
    ]
   }
  },
- "gameSheet": "assets/pixel-art/characters/pirate-g25a-body.png",
+ "gameSheet": "assets/pixel-art/characters/pirate-hd25-body.png",
  "map": {
   "idle": [
    0,

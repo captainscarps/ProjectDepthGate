@@ -32,10 +32,11 @@ OUT_DIRS = [os.path.join(ROOT, "assets", "pixel-art", "characters"),
 PREVIEW = sys.argv[1] if len(sys.argv) > 1 else None
 
 FW = FH = 128
-FOOT = 118            # linha dos pés no quadro (mesma dos outros heróis)
-STAND_H = 66          # altura em pé: a mesma dos outros heróis (Samurai 68, Xamã 67)
-SHARP = 0.9           # nitidez depois da redução (bordas firmes como nos outros heróis)
-GAME_SCALE = 0.7      # mesma grade de pixel dos outros heróis
+FOOT = 126            # linha dos pés no quadro: embaixo da célula, para caber o pirata em alta definição
+STAND_H = 96          # altura em pé na textura (alta definição: ~1 pixel da textura = 1 pixel da tela)
+SHARP = 0.35          # nitidez leve depois da redução
+GAME_SCALE = 0.56     # 96 px x 0.56 ≈ 54 px na tela: ~15% maior que os outros heróis (~48 px), é um berserker
+HD = True             # alta definição: cores da arte, bordas suaves, sem paleta reduzida nem contorno de pixel art
 
 # ---------------------------------------------------------------- recorte
 img = cv2.cvtColor(cv2.imread(SRC, cv2.IMREAD_UNCHANGED)[:, :, :3], cv2.COLOR_BGR2RGB).astype(np.float32)
@@ -274,6 +275,7 @@ def build_strip(name, spec):
             c = np.clip(c + (c - blur) * SHARP, 0, 1)
         m = a > 0.5
         q = (c * 255).round().astype(np.uint8)
+        qa = np.where(a > 0.12, np.clip(a * 1.15, 0, 1), 0) if HD else m.astype(np.float32)  # borda suave
         ys, xs = np.nonzero(m)
         if spec["h"] == "canvas":
             gx = round((f["x0"] - 2) * sc)                          # posição do recorte na tela comum
@@ -290,14 +292,22 @@ def build_strip(name, spec):
         else:                                                       # centro da figura (corpo deitado cabe inteiro)
             cx = (xs.min() + xs.max()) / 2
         lift = round((ground[row] - f["y1"]) * sc) if spec["v"] == "row" else 0
-        offx, offy = int(round(64 - cx)), FOOT - 1 - lift - ys.max()   # -1: o contorno fica na linha dos pés
+        offx, offy = int(round(64 - cx)), FOOT - (0 if HD else 1) - lift - ys.max()   # sem HD: o contorno fica na linha dos pés
+        ys, xs = np.nonzero(qa > 0)
+        if xs.min() + offx < 0 or xs.max() + offx >= FW:            # não cabe: desliza o quadro para dentro
+            lo_, hi_ = -xs.min(), FW - 1 - xs.max()                   # faixa de deslocamento que cabe inteiro
+            offx = int(np.clip(offx, lo_, hi_)) if lo_ <= hi_ else int(round((lo_ + hi_) / 2))
         tx, ty = xs + offx, ys + offy
         ok = (tx >= 0) & (tx < FW) & (ty >= 0) & (ty < FH)
-        if (~ok).any():
-            raise SystemExit(f"{name} quadro {k}: {int((~ok).sum())} px fora da célula")
+        if (~ok).any():                                             # só a ponta do rastro do corte pode passar
+            solid = (~ok) & (a[ys, xs] > 0.5)
+            print(f"  aviso: {name} quadro {k}: {int(solid.sum())} px fora da célula (cortados)")
+            if solid.sum() > 400:
+                raise SystemExit(f"{name} quadro {k}: {int(solid.sum())} px fora da célula")
+            ys, xs, tx, ty = ys[ok], xs[ok], tx[ok], ty[ok]
         tile = np.zeros((FH, FW, 4), np.uint8)
         tile[ty, tx, :3] = q[ys, xs]
-        tile[ty, tx, 3] = 255
+        tile[ty, tx, 3] = (qa[ys, xs] * 255).round().astype(np.uint8)
         strip[:, k * FW:(k + 1) * FW] = tile
     if spec["loop"] and spec["h"] == "torso":                      # alinhamento fino do tronco (sem tremer)
         base = _feat(strip[:, :FW].astype(np.float32))
@@ -381,6 +391,7 @@ def quantize_all(strips_):
 
 
 CONTRAST, LIFT, CHROMA = 1.3, 14.0, 1.2
+HD_CONTRAST, HD_LIFT, HD_CHROMA = 1.15, 9.0, 1.1
 _N8 = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
 
@@ -449,8 +460,20 @@ def outline(st):
 
 if os.environ.get("PIRATE_DUMP"):
     np.savez(os.environ["PIRATE_DUMP"], **strips)
-strips, _pal = quantize_all(strips)
-for k in strips:
+if HD:
+    # alta definição: cores da própria arte, só um pouco mais claras (a arte é escura e
+    # sumia no chão do mapa); sem paleta reduzida, sem limpeza de pixels, sem contorno
+    for _k, _st in strips.items():
+        _m = _st[..., 3] > 0
+        _lab = cv2.cvtColor(_st[..., :3].astype(np.float32) / 255.0, cv2.COLOR_RGB2LAB)
+        _lab[..., 0] = np.clip(50 + (_lab[..., 0] - 50) * HD_CONTRAST + HD_LIFT, 0, 100)
+        _lab[..., 1:] *= HD_CHROMA
+        _rgb = (cv2.cvtColor(_lab, cv2.COLOR_LAB2RGB) * 255).clip(0, 255).round().astype(np.uint8)
+        _st[..., :3] = np.where(_m[..., None], _rgb, 0)
+        write_png(os.path.join(STRIP_DIR, f"pirate_{_k}.png"), _st)
+else:
+    strips, _pal = quantize_all(strips)
+for k in ([] if HD else strips):
     strips[k] = np.concatenate([outline(despeckle(strips[k][:, i * FW:(i + 1) * FW]))
                                 for i in range(strips[k].shape[1] // FW)], axis=1)
     write_png(os.path.join(STRIP_DIR, f"pirate_{k}.png"), strips[k])
@@ -495,14 +518,15 @@ amap = {
 ys, xs = np.nonzero(sheet[:, :FW, 3] > 0)
 top = int(ys.min())
 fx = int(round(xs[ys < top + 22].mean()))
-P = 22                 # mesmo recorte de retrato dos outros heróis (22x22)
+P = 32 if HD else 22    # recorte do retrato (o jogo amplia para 44 px no HUD)
 portrait = [fx - P // 2 + 1, max(0, top - 1), P, P]
 
-layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": False, "footY": FOOT, "bakedWeapon": True,
+layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": HD, "footY": FOOT, "bakedWeapon": True,
           "portrait": portrait, "fps": {k: ANIMS[k]["fps"] for k in ANIMS if ANIMS[k]["fps"]} | {"idlevar": 3},
-          "anchors": [[80, 76]] * n, "torso": [[64, 80]] * n, "head": [[64, top + 12]] * n, "map": amap}
+          "anchors": [[64 + STAND_H // 4, FOOT - STAND_H // 2]] * n, "torso": [[64, FOOT - STAND_H // 2]] * n,
+          "head": [[64, top + STAND_H // 6]] * n, "map": amap}
 
-KEY = "pirate-g25a"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-hd25"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -511,8 +535,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,
