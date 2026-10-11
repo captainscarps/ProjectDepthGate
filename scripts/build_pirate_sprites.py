@@ -240,7 +240,7 @@ ORDER = ["idle", "walk", "run", "attack", "death"]
 PS_DIR = os.path.join(ROOT, "scripts", "source", "pirata-pixel")
 
 
-def load_strip(name, n):
+def load_strip(name, n, raw=False):
     """Corta a tira nas folgas entre as figuras (rastros e corpos deitados passam da divisão
     igual); figuras grudadas (o rastro do corte liga dois quadros) são separadas na coluna mais vazia."""
     a = cv2.imread(os.path.join(PS_DIR, f"pirate_{name}.png"), cv2.IMREAD_UNCHANGED)
@@ -259,6 +259,8 @@ def load_strip(name, n):
         cut = lo + int(np.argmin(cov[lo:hi]))
         groups[g:g + 1] = [[x0, cut], [cut + 1, x1]]
     bounds = [0] + [(groups[i][1] + groups[i + 1][0]) // 2 for i in range(n - 1)] + [a.shape[1]]
+    if raw:
+        return [a[:, bounds[i]:bounds[i + 1]].copy() for i in range(n)]
     return [canvas_fig(a[:, bounds[i]:bounds[i + 1]].copy()) for i in range(n)]
 
 
@@ -266,19 +268,28 @@ figs["idle"], figs["walk"], figs["atk"] = load_strip("idle", 4), load_strip("wal
 figs["jump"] = load_strip("jump_hurt", 6)
 _dd = load_strip("dead_defend", 6)
 figs["death"] = [_dd[i] for i in (2, 3, 4, 5)]          # cambaleia, ajoelha, cai, caído
+# andar e correr: as pernas do 1º quadro de "walk" animadas por um esqueleto (pirate_leg_rig.py)
+# no ciclo dos outros heróis (a folha não tem passos: as pernas ficam paradas na mesma pose)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pirate_leg_rig import cycle as _leg_cycle
+_wcell = cv2.copyMakeBorder(load_strip("walk", 8, raw=True)[0], 0, 0, 60, 60, cv2.BORDER_CONSTANT, value=(0, 0, 0, 0))
+figs["walk"] = [canvas_fig(f) for f in _leg_cycle(_wcell, n=8, amp=24, knee=40, inward=0.0)[0]]
+figs["run"] = [canvas_fig(f) for f in _leg_cycle(_wcell, n=8, amp=34, knee=70, inward=0.0, lean=0.10, bob=10)[0]]
 _IDLE_H = 455
-SCALE.update(idle=STAND_H / _IDLE_H, walk=STAND_H / (_IDLE_H * .63), atk=STAND_H / (_IDLE_H * .80),
+SCALE.update(idle=STAND_H / _IDLE_H, walk=STAND_H / (_IDLE_H * .63), run=STAND_H / (_IDLE_H * .63), atk=STAND_H / (_IDLE_H * .80),
              jump=STAND_H / (_IDLE_H * .63), death=STAND_H / (_IDLE_H * .62))
 ANIMS = {
     "idle":   dict(src=[("idle", i) for i in range(4)], v="row", h="torso", fps=5, loop=True),
-    "walk":   dict(src=[("walk", i) for i in range(8)], v="row", h="hip", fps=11, loop=True),
+    # andar/correr: 8 quadros do esqueleto, tronco parado no lugar ("canvas")
+    "walk":   dict(src=[("walk", i) for i in range(8)], v="row", h="canvas", fps=14, loop=True),
+    "run":    dict(src=[("run", i) for i in range(8)], v="row", h="canvas", fps=18, loop=True),
     "attack": dict(src=[("atk", i) for i in range(5)], v="row", h="torso", fps=13, loop=False),
     # pulo / dano: 0 agacha · 1 impulso · 2 no ar · 3 aterrissa · 4 atordoado · 5 volta
     "jump":   dict(src=[("jump", i) for i in range(6)], v="row", h="hip", fps=10, loop=False),
     "death":  dict(src=[("death", i) for i in range(4)], v="feet", h="bbox", fps=8, loop=False),
 }
-ORDER = ["idle", "walk", "attack", "jump", "death"]
-RUN_FPS = 15                                             # correr: quadros de andar inclinados, mais rápidos
+ORDER = ["idle", "walk", "run", "attack", "jump", "death"]
+RUN_FPS = 18                                             # correr: 8 quadros do esqueleto (ciclo de ~0.45 s)
 RUN_LEAN, RUN_BOB = 0.12, 3                              # inclinação para frente (px por px de altura) e pulo (px)
 STRIP_DIR = os.path.join(ROOT, "assets", "sprites", "characters", "pirate")
 
@@ -554,40 +565,13 @@ def _shift(t, dx, dy=0):
     return out
 
 
-if "run" not in strips and "jump" in strips:                     # folhas em pixel art (pirata-pixel)
+if "jump" in strips:                                             # folhas em pixel art (pirata-pixel)
     # 1) parado: um desenho só (o 1º) com respiração de 1 px, como os outros heróis
     strips["idle"] = np.concatenate(breathe(_tiles(strips["idle"])[0]), axis=1)
     ANIMS["idle"]["fps"] = 4
-    # 2) andar: cabeça e tronco no mesmo lugar em todos os quadros
-    # os quadros 3 e 5 da folha seguram o sabre mais baixo (a lâmina pula no meio do passo):
-    # ficam 6 quadros, a mesma quantidade dos outros heróis
-    _w = [t for i, t in enumerate(_tiles(strips["walk"])) if i not in (3, 5)]
-    _cx = [_upper_cx(t) for t in _w]
-    _ref = float(np.median(_cx))
-    _w = [_shift(t, int(round(_ref - c))) for t, c in zip(_w, _cx)]
-    strips["walk"] = np.concatenate(_w, axis=1)
-    ANIMS["walk"]["fps"] = 11                                   # 6 quadros a 11 fps, como os outros heróis
-    ANIMS["walk"]["src"] = [x for i, x in enumerate(ANIMS["walk"]["src"]) if i not in (3, 5)]
-    # 3) correr: os quadros de andar com o corpo inclinado para frente e sobe-e-desce:
-    #    pés mais afastados = apoio (embaixo), pés juntos = passagem (em cima)
-    _spread = []
-    for t in _w:
-        ys, xs = np.nonzero(t[FOOT - 10:FOOT + 1, :, 3] > 0)
-        _spread.append(xs.max() - xs.min())
-    _sp = np.array(_spread, np.float32)
-    _bob = np.round(RUN_BOB * (1 - (_sp - _sp.min()) / max(1e-3, _sp.max() - _sp.min()))).astype(int)
-    _run = []
-    for t, b in zip(_w, _bob):
-        r = np.zeros_like(t)
-        for y in range(FH):                                     # inclinação: quanto mais alto, mais à frente
-            r[y] = _shift(t[y:y + 1], int(round(RUN_LEAN * max(0, FOOT - y))))[0]
-        _run.append(_shift(r, 0, -int(b)))
-    strips["run"] = np.concatenate(_run, axis=1)
-    ANIMS["run"] = dict(src=ANIMS["walk"]["src"], v="row", h="hip", fps=RUN_FPS, loop=True)
-    ORDER = ["idle", "walk", "run", "attack", "jump", "death"]
-    for _k in ("idle", "walk", "run"):
+    # 2) andar e correr já vêm do esqueleto de pernas (tronco parado, passos de verdade)
+    for _k in ("idle",):
         write_png(os.path.join(STRIP_DIR, f"pirate_{_k}.png"), strips[_k])
-    print("movimento: andar alinhado (tronco variava", round(max(_cx) - min(_cx), 1), "px); correr com pulo", list(_bob))
 
 n = 0
 for name in ORDER:
@@ -606,7 +590,7 @@ amap = {
     "idle": [I("idle", k) for k in range(cnt("idle"))],
     "idlevar": [I("idle", k) for k in (0, 2, 0)],
     "walk": [I("walk", k) for k in range(cnt("walk"))],
-    "run": [I("run", k) for k in range(cnt("run"))] if "run" in start else [I("walk", k) for k in range(cnt("walk"))],
+    "run": [I("run", k) for k in range(cnt("run"))],
     # ataque: 0 postura · 1 ergue o sabre | 2 corte (rastro) · 3 continuação (rastro) | 4 postura
     "attackW": [I("attack", k) for k in (0, 1)], "attackH": [I("attack", k) for k in (2, 3)],
     "attackR": [I("attack", 4)],
@@ -632,7 +616,7 @@ layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": HD, "footY":
           "anchors": [[64 + STAND_H // 4, FOOT - STAND_H // 2]] * n, "torso": [[64, FOOT - STAND_H // 2]] * n,
           "head": [[64, top + STAND_H // 6]] * n, "map": amap}
 
-KEY = "pirate-px9"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-px10"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -641,8 +625,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,
