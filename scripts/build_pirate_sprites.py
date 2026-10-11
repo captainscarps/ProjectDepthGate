@@ -146,6 +146,13 @@ def load_separated(folder):
     out = []
     for k in range(1, 9):
         rgba = cv2.imread(os.path.join(SEP_DIR, folder, f"{folder}_{k:02d}.png"), cv2.IMREAD_UNCHANGED)
+        out.append(canvas_fig(rgba))
+    return out
+
+
+def canvas_fig(rgba):
+    """Uma tela RGBA (BGRA do OpenCV) com um quadro -> figura limpa para shrink()."""
+    if True:
         rgba = cv2.copyMakeBorder(rgba, 4, 4, 4, 4, cv2.BORDER_CONSTANT, value=(0, 0, 0, 0))
         im = cv2.cvtColor(rgba[:, :, :3], cv2.COLOR_BGR2RGB).astype(np.float32)
         # fica só o corpo e o que encosta nele: pedaços do quadro vizinho que vieram no recorte
@@ -167,14 +174,45 @@ def load_separated(folder):
         lb = np.isin(lb, keep).astype(np.int32)
 
         ys, xs = np.nonzero(lb)
-        out.append(dict(id=1, x0=int(xs.min()), x1=int(xs.max()) + 1, y0=int(ys.min()), y1=int(ys.max()) + 1,
-                        area=int(lb.sum()), src=(im, lb)))
-    return out
+        return dict(id=1, x0=int(xs.min()), x1=int(xs.max()) + 1, y0=int(ys.min()), y1=int(ys.max()) + 1,
+                    area=int(lb.sum()), src=(im, lb))
 
 
 for _n, _folder in [("idle", "parado"), ("walk", "andando"), ("run", "correndo"), ("atk", "atacando")]:
     figs[_n] = load_separated(_folder)
     SCALE[_n] = STAND_H / 372
+
+# Folhas 5x5 (scripts/source/pirata-25/<anim>.png, 25 quadros cada, fundo transparente).
+# Substituem parado, andando, correndo e atacando. Cada folha veio numa escala: medida pela
+# área do corpo e largura da cabeça, o pirata em pé no "parado" e no "atacando" mede ~151 px;
+# o "andando" está 1.46x maior e o "correndo" ~1.1x (entre a medida da área e a da cabeça).
+GRID_DIR = os.path.join(ROOT, "scripts", "source", "pirata-25")
+GRID = {
+    # parado: um ciclo de respiração de 25 quadros; um sim, um não (12) mantém o ciclo de 2 s
+    "idle": ("parado", list(range(0, 24, 2)), 1.0),
+    # andando: a folha tem 2 ciclos de passos (o quadro 12 repete o 0); um ciclo = 12 quadros
+    "walk": ("andando", list(range(12)), 1.46),
+    # correndo: a folha mistura duas corridas fora de ordem. Fica a do sabre baixo (combina com
+    # andar e parado), em ordem pelo pé no chão: apoio, desce, impulso, passagem, sobe, voo
+    "run":  ("correndo", [17, 5, 6, 7, 11, 21], 1.10),
+    # atacando: combo de giro de 2 s; para o golpe simples ficam os quadros de perfil:
+    # postura, ergue, sabre no alto, corte (com o rastro) e continuação baixa, e a volta
+    "atk":  ("atacando", [0, 3, 5, 6, 14, 17, 20, 24], 1.0),
+}
+
+
+def load_grid(name, picks):
+    sheet = cv2.imread(os.path.join(GRID_DIR, f"{name}.png"), cv2.IMREAD_UNCHANGED)
+    if sheet.ndim == 2 or sheet.shape[2] != 4:
+        from PIL import Image as _PIL
+        sheet = cv2.cvtColor(np.array(_PIL.open(os.path.join(GRID_DIR, f"{name}.png")).convert("RGBA")), cv2.COLOR_RGBA2BGRA)
+    c = sheet.shape[0] // 5
+    return [canvas_fig(sheet[(i // 5) * c:(i // 5 + 1) * c, (i % 5) * c:(i % 5 + 1) * c].copy()) for i in picks]
+
+
+for _n, (_file, _picks, _rel) in GRID.items():
+    figs[_n] = load_grid(_file, _picks)
+    SCALE[_n] = STAND_H / 151 / _rel
 
 # ---------------------------------------------------------------- animações
 # Folha v2 (scripts/source/capitao-scarpa-folha-v2.png): todas as poses de lado e o
@@ -183,12 +221,12 @@ for _n, _folder in [("idle", "parado"), ("walk", "andando"), ("run", "correndo")
 ANIMS = {
     # quadros separados: "canvas" = todos os quadros na posição em que foram desenhados na
     # tela comum (o sobe-e-desce e o avanço do golpe ficam como o artista fez)
-    "idle":   dict(src=[("idle", i) for i in range(8)], v="row", h="canvas", fps=6, loop=True),
+    "idle":   dict(src=[("idle", i) for i in range(len(figs["idle"]))], v="row", h="canvas", fps=6, loop=True),
     # andando e correndo: folha própria com as pernas alternando (8 + 8 quadros), na ordem
     # desenhada, alinhados pelo quadril e mantendo o sobe-e-desce de cada linha
-    "walk":   dict(src=[("walk", i) for i in range(8)], v="row", h="canvas", fps=11, loop=True),
-    "run":    dict(src=[("run", i) for i in range(8)], v="row", h="canvas", fps=14, loop=True),
-    "attack": dict(src=[("atk", i) for i in range(8)], v="row", h="canvas", fps=13, loop=False),
+    "walk":   dict(src=[("walk", i) for i in range(len(figs["walk"]))], v="row", h="canvas", fps=13, loop=True),
+    "run":    dict(src=[("run", i) for i in range(len(figs["run"]))], v="row", h="canvas", fps=14, loop=True),
+    "attack": dict(src=[("atk", i) for i in range(len(figs["atk"]))], v="row", h="torso", fps=13, loop=False),
     "death":  dict(src=[("death", i) for i in range(8)], v="feet", h="bbox", fps=9, loop=False),
 }
 ORDER = ["idle", "walk", "run", "attack", "death"]
@@ -342,7 +380,7 @@ def quantize_all(strips_):
     return out, pal
 
 
-CONTRAST, LIFT, CHROMA = 1.15, 0.0, 1.15
+CONTRAST, LIFT, CHROMA = 1.3, 14.0, 1.2
 _N8 = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
 
@@ -421,7 +459,12 @@ for name in ORDER:
     start[name] = n
     n += strips[name].shape[1] // FW
 
-sheet = np.concatenate([strips[k] for k in ORDER], axis=1)
+_cells = [strips[k][:, i * FW:(i + 1) * FW] for k in ORDER for i in range(strips[k].shape[1] // FW)]
+COLS = 16                                       # folha em grade (2048 px de largura): textura segura no celular
+_rows = -(-len(_cells) // COLS)
+sheet = np.zeros((_rows * FH, COLS * FW, 4), np.uint8)
+for _i, _c in enumerate(_cells):
+    sheet[(_i // COLS) * FH:(_i // COLS + 1) * FH, (_i % COLS) * FW:(_i % COLS + 1) * FW] = _c
 I = lambda name, k=0: start[name] + k
 cnt = lambda name: strips[name].shape[1] // FW
 amap = {
@@ -435,13 +478,15 @@ amap = {
     # (o 5 da folha ergue o sabre de novo para um 2º golpe; fica de fora do golpe simples)
     # quadros separados: 0 postura · 1 prepara · 2 sabre no alto · 3 desce | 4 corte (lâmina
     # inteira) | 5 continuação · 7 postura (o 6 ergue o sabre de novo: fica fora do golpe simples)
+    # folha 5x5: 0 postura · 1 ergue · 2 sabre no alto | 3 corte (rastro) · 4 continuação baixa |
+    # 5 levanta · 6 quase postura · 7 postura
     "attackW": [I("attack", k) for k in (0, 1, 2)], "attackH": [I("attack", k) for k in (3, 4)],
-    "attackR": [I("attack", k) for k in (5, 7)],
-    "windupA": I("attack", 1), "windup": I("attack", 2), "hitA": I("attack", 3), "hit": I("attack", 4), "recovery": I("attack", 5),
+    "attackR": [I("attack", k) for k in (5, 6, 7)],
+    "windupA": I("attack", 1), "windup": I("attack", 2), "hitA": I("attack", 3), "hit": I("attack", 3), "recovery": I("attack", 5),
     "guardStart": I("attack", 0), "guard": I("attack", 0),
     "hurt": I("death", 0), "hurtB": I("death", 1), "stunA": I("death", 1), "stunB": I("death", 2),
     "dashA": I("run", 0), "dash": I("run", 3),
-    "castA": I("attack", 1), "cast": I("attack", 4), "castC": I("attack", 5),
+    "castA": I("attack", 1), "cast": I("attack", 3), "castC": I("attack", 5),
     "deathSeq": [I("death", k) for k in range(cnt("death"))],
     "deathA": I("death", 0), "deathB": I("death", 3), "deathC": I("death", cnt("death") - 1),
 }
@@ -457,7 +502,7 @@ layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": False, "foot
           "portrait": portrait, "fps": {k: ANIMS[k]["fps"] for k in ANIMS if ANIMS[k]["fps"]} | {"idlevar": 3},
           "anchors": [[80, 76]] * n, "torso": [[64, 80]] * n, "head": [[64, top + 12]] * n, "map": amap}
 
-KEY = "pirate-sep2"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-g25a"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -466,8 +511,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,

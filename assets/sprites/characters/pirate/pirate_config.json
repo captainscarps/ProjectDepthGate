@@ -7,10 +7,10 @@
  "footY": 118,
  "animations": {
   "idle": {
-   "frames": 8,
+   "frames": 12,
    "file": "pirate_idle.png",
    "size": [
-    1024,
+    1536,
     128
    ],
    "fps": 6,
@@ -23,17 +23,21 @@
     "idle#4",
     "idle#5",
     "idle#6",
-    "idle#7"
+    "idle#7",
+    "idle#8",
+    "idle#9",
+    "idle#10",
+    "idle#11"
    ]
   },
   "walk": {
-   "frames": 8,
+   "frames": 12,
    "file": "pirate_walk.png",
    "size": [
-    1024,
+    1536,
     128
    ],
-   "fps": 11,
+   "fps": 13,
    "loop": true,
    "source": [
     "walk#0",
@@ -43,14 +47,18 @@
     "walk#4",
     "walk#5",
     "walk#6",
-    "walk#7"
+    "walk#7",
+    "walk#8",
+    "walk#9",
+    "walk#10",
+    "walk#11"
    ]
   },
   "run": {
-   "frames": 8,
+   "frames": 6,
    "file": "pirate_run.png",
    "size": [
-    1024,
+    768,
     128
    ],
    "fps": 14,
@@ -61,9 +69,7 @@
     "run#2",
     "run#3",
     "run#4",
-    "run#5",
-    "run#6",
-    "run#7"
+    "run#5"
    ]
   },
   "attack": {
@@ -107,7 +113,7 @@
    ]
   }
  },
- "gameSheet": "assets/pixel-art/characters/pirate-sep2-body.png",
+ "gameSheet": "assets/pixel-art/characters/pirate-g25a-body.png",
  "map": {
   "idle": [
    0,
@@ -117,7 +123,11 @@
    4,
    5,
    6,
-   7
+   7,
+   8,
+   9,
+   10,
+   11
   ],
   "idlevar": [
    3,
@@ -125,16 +135,10 @@
    3
   ],
   "walk": [
-   8,
-   9,
-   10,
-   11,
    12,
    13,
    14,
-   15
-  ],
-  "run": [
+   15,
    16,
    17,
    18,
@@ -144,47 +148,56 @@
    22,
    23
   ],
-  "attackW": [
+  "run": [
    24,
    25,
-   26
+   26,
+   27,
+   28,
+   29
+  ],
+  "attackW": [
+   30,
+   31,
+   32
   ],
   "attackH": [
-   27,
-   28
+   33,
+   34
   ],
   "attackR": [
-   29,
-   31
-  ],
-  "windupA": 25,
-  "windup": 26,
-  "hitA": 27,
-  "hit": 28,
-  "recovery": 29,
-  "guardStart": 24,
-  "guard": 24,
-  "hurt": 32,
-  "hurtB": 33,
-  "stunA": 33,
-  "stunB": 34,
-  "dashA": 16,
-  "dash": 19,
-  "castA": 25,
-  "cast": 28,
-  "castC": 29,
-  "deathSeq": [
-   32,
-   33,
-   34,
    35,
    36,
-   37,
-   38,
-   39
+   37
   ],
-  "deathA": 32,
-  "deathB": 35,
-  "deathC": 39
+  "windupA": 31,
+  "windup": 32,
+  "hitA": 33,
+  "hit": 33,
+  "recovery": 35,
+  "guardStart": 30,
+  "guard": 30,
+  "hurt": 38,
+  "hurtB": 39,
+  "stunA": 39,
+  "stunB": 40,
+  "dashA": 24,
+  "dash": 27,
+  "castA": 31,
+  "cast": 33,
+  "castC": 35,
+  "deathSeq": [
+   38,
+   39,
+   40,
+   41,
+   42,
+   43,
+   44,
+   45
+  ],
+  "deathA": 38,
+  "deathB": 41,
+  "deathC": 45
  }
 }
