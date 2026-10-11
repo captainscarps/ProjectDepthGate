@@ -34,7 +34,7 @@ PREVIEW = sys.argv[1] if len(sys.argv) > 1 else None
 FW = FH = 128
 FOOT = 118            # linha dos pés no quadro (mesma dos outros heróis)
 STAND_H = 66          # altura em pé: a mesma dos outros heróis (Samurai 68, Xamã 67)
-MS_PASSES, MS_SP, MS_SR = 2, 5, 22   # filtro que achata a textura pintada (passadas, raio, cor)
+SHARP = 0.9           # nitidez depois da redução (bordas firmes como nos outros heróis)
 GAME_SCALE = 0.7      # mesma grade de pixel dos outros heróis
 
 # ---------------------------------------------------------------- recorte
@@ -195,98 +195,19 @@ ORDER = ["idle", "walk", "run", "attack", "death"]
 STRIP_DIR = os.path.join(ROOT, "assets", "sprites", "characters", "pirate")
 
 
-# ---------------------------------------------------------------- materiais (padrão dos heróis)
-# Os outros heróis são desenhados com poucos "materiais" (pele, couro, metal, tecido...), cada
-# um com 2-4 tons de uma paleta comum a todos eles, contorno (5,4,3) e linhas internas escuras.
-# A arte enviada é pintada; reduzi-la por média vira uma mancha marrom. Então: cada pixel da
-# arte em alta resolução é classificado num material; na redução, cada pixel do jogo recebe o
-# material que cobre o bloco (detalhes pequenos — dourado, camisa, faixa, pele, linhas — têm
-# prioridade) e o tom (claro/médio/escuro) vem do brilho daquele material no bloco.
-MATS = ["line", "coat", "skin", "red", "gold", "light", "pants"]
-RAMPS = {                                   # cores tiradas das folhas dos outros heróis
-    "line":  [(24, 16, 16)],
-    "coat":  [(45, 27, 30), (79, 52, 47), (128, 82, 58)],
-    "skin":  [(145, 75, 52), (195, 115, 68), (233, 181, 163)],
-    "red":   [(97, 39, 33), (160, 36, 48), (218, 58, 56)],
-    "gold":  [(176, 91, 44), (248, 197, 58), (255, 240, 137)],
-    "light": [(135, 115, 143), (197, 199, 221), (241, 242, 255)],
-    "pants": [(20, 18, 29), (36, 34, 52), (54, 54, 80)],
-}
-# cobertura mínima no bloco para o detalhe vencer o fundo de couro
-PRIORITY = [("light", .24), ("gold", .30), ("red", .30), ("skin", .26), ("line", .52)]
-
-
-def classify(rgb):
-    hsv = cv2.cvtColor(np.clip(rgb, 0, 255).astype(np.uint8), cv2.COLOR_RGB2HSV_FULL).astype(np.float32)
-    H, S, V = hsv[..., 0] * 360 / 256, hsv[..., 1] / 255, hsv[..., 2] / 255
-    lab = np.full(rgb.shape[:2], 1, np.int32)                                   # couro: casaco, cabelo, botas
-    lab[(S < .32) & (V < .42) & (V >= .11)] = 6                                  # calça escura
-    lab[((H < 10) | (H > 335)) & (S > .6) & (V > .28)] = 3                       # faixa vermelha
-    lab[(H >= 8) & (H < 32) & (S >= .22) & (S < .72) & (V > .36)] = 2            # pele (com tatuagens)
-    lab[(H >= 26) & (H < 58) & (S > .5) & (V > .45)] = 4                         # dourado
-    lab[(S < .3) & (V > .55)] = 5                                                # camisa / lâmina
-    lab[V < .11] = 0                                                             # linhas escuras
-    return lab, V
-
-
-def _hires(f):
+def shrink(f, s):
+    """Redução fiel: média de área em alfa pré-multiplicado, com as cores da própria arte.
+    (A arte refinada já é limpa; reinterpretar por "materiais" apagava barba, tapa-olho,
+    tatuagens e camisa.)"""
     pad = 2
     x0, x1, y0, y1 = f["x0"] - pad, f["x1"] + pad, f["y0"] - pad, f["y1"] + pad
     simg, slab = f["src"]
-    m = ndi.binary_erosion(slab[y0:y1, x0:x1] == f["id"], iterations=1, border_value=0)
-    crop = cv2.medianBlur(np.clip(simg[y0:y1, x0:x1], 0, 255).astype(np.uint8), 3)
-    lab, V = classify(crop.astype(np.float32))
-    # tatuagem/manchas dentro da pele continuam pele (fecha buracos pequenos)
-    skin = ndi.binary_closing(lab == 2, iterations=2) & (lab != 5) & (lab != 4) & m
-    lab[skin & (lab != 0)] = 2
-    # brilho suavizado: tons em áreas grandes e chapadas, como nos outros heróis
-    V = cv2.GaussianBlur(V, (0, 0), 2.2)
-    return m, lab, V
-
-
-TONE_CUTS = {}
-
-
-def calibrate(fig_list):
-    """Cortes de tom por material (quantis do brilho na folha inteira): o mesmo pedaço de
-    casaco fica no mesmo tom em todos os quadros, sem piscar."""
-    vals = {i: [] for i in range(len(MATS))}
-    for f in fig_list:
-        m, lab, V = _hires(f)
-        for i in vals:
-            vals[i].append(V[m & (lab == i)])
-    for i, name in enumerate(MATS):
-        v = np.concatenate(vals[i]) if vals[i] else np.zeros(1)
-        n = len(RAMPS[name])
-        TONE_CUTS[name] = np.quantile(v, [(k + 1) / n for k in range(n - 1)]) if len(v) > 1 else np.array([])
-
-
-def shrink(f, s):
-    """Reduz por material: cobertura de cada material no bloco -> material vencedor -> tom."""
-    m, lab, V = _hires(f)
-    oh, ow = max(1, round(m.shape[0] * s)), max(1, round(m.shape[1] * s))
-    mf = m.astype(np.float32)
-    a = cv2.resize(mf, (ow, oh), interpolation=cv2.INTER_AREA)
-    cov, vmean = [], []
-    for i in range(len(MATS)):
-        oi = (mf * (lab == i)).astype(np.float32)
-        ci = cv2.resize(oi, (ow, oh), interpolation=cv2.INTER_AREA)
-        vi = cv2.resize(oi * V, (ow, oh), interpolation=cv2.INTER_AREA)
-        cov.append(ci / np.maximum(a, 1e-4))
-        vmean.append(vi / np.maximum(ci, 1e-4))
-    cov, vmean = np.stack(cov), np.stack(vmean)
-    win = cov.argmax(0)
-    for name, th in reversed(PRIORITY):                     # o primeiro da lista tem a maior prioridade
-        i = MATS.index(name)
-        win = np.where(cov[i] >= th, i, win)
-    out = np.zeros((oh, ow, 3), np.float32)
-    for i, name in enumerate(MATS):
-        sel = win == i
-        if not sel.any():
-            continue
-        tone = np.searchsorted(TONE_CUTS[name], vmean[i][sel])
-        out[sel] = np.array(RAMPS[name], np.float32)[tone] / 255.0
-    return out, a
+    m = (slab[y0:y1, x0:x1] == f["id"]).astype(np.float32)
+    rgb = np.clip(simg[y0:y1, x0:x1], 0, 255) / 255.0
+    ow, oh = max(1, round((x1 - x0) * s)), max(1, round((y1 - y0) * s))
+    a = cv2.resize(m, (ow, oh), interpolation=cv2.INTER_AREA)
+    c = cv2.resize(rgb * m[..., None], (ow, oh), interpolation=cv2.INTER_AREA) / np.maximum(a[..., None], 1e-4)
+    return np.clip(c, 0, 1), a
 
 
 def _feat(t):
@@ -310,6 +231,9 @@ def build_strip(name, spec):
     for k, ((row, _), f) in enumerate(zip(spec["src"], figs_)):
         sc = SCALE[row]
         c, a = shrink(f, sc)
+        if SHARP:                                                   # bordas firmes como nos outros heróis
+            blur = cv2.GaussianBlur(c, (0, 0), 0.8)
+            c = np.clip(c + (c - blur) * SHARP, 0, 1)
         m = a > 0.5
         q = (c * 255).round().astype(np.uint8)
         ys, xs = np.nonzero(m)
@@ -353,7 +277,6 @@ def write_png(path, arr):
     open(path, "wb").write(cv2.imencode(".png", cv2.cvtColor(arr, cv2.COLOR_RGBA2BGRA))[1].tobytes())
 
 
-calibrate([figs[r][i] for name in ORDER for r, i in ANIMS[name]["src"]])
 strips, start = {}, {}
 for name in ORDER:
     strips[name] = build_strip(name, ANIMS[name])
@@ -372,7 +295,7 @@ for name in ORDER:
 # na tela. Aqui: (1) parado vira um único desenho com respiração de 1 px (como os outros);
 # (2) paleta única de PALETTE cores para todas as animações; (3) limpeza de pixels soltos;
 # (4) borda interna escurecida (contorno sem engrossar a silhueta).
-PALETTE = 22
+PALETTE = 20
 
 
 def breathe(base):
@@ -397,7 +320,7 @@ def quantize_all(strips_):
     allpx = np.concatenate([st[st[..., 3] > 0][:, :3] for st in strips_.values()]).astype(np.float32)
     lab_px = cv2.cvtColor(allpx[None] / 255.0, cv2.COLOR_RGB2LAB)[0]
     # cores distintas pesam igual (o casaco marrom não "engole" faixa, dourado, camisa e pele)
-    bins = np.round(lab_px / np.array([4, 5, 5], np.float32)).astype(np.int32)
+    bins = np.round(lab_px / np.array([3, 4, 4], np.float32)).astype(np.int32)
     _, first, cnt = np.unique(bins, axis=0, return_index=True, return_counts=True)
     uniq = lab_px[first]
     w = np.sqrt(cnt).astype(np.float32)
@@ -405,8 +328,7 @@ def quantize_all(strips_):
     samp = np.repeat(uniq, np.maximum(1, np.round(w / w.min()).astype(int)), axis=0)
     _, _, cen = cv2.kmeans(samp.astype(np.float32), PALETTE, None, crit, 6, cv2.KMEANS_PP_CENTERS)
     lab = cen.copy()
-    lo, hi = lab[:, 0].min(), lab[:, 0].max()
-    lab[:, 0] = 10 + 80 * ((lab[:, 0] - lo) / (hi - lo)) ** L_GAMMA
+    lab[:, 0] = np.clip(50 + (lab[:, 0] - 50) * CONTRAST + LIFT, 0, 100)   # um pouco mais claro e contrastado
     lab[:, 1:] *= CHROMA
     pal = (cv2.cvtColor(lab[None].astype(np.float32), cv2.COLOR_LAB2RGB)[0] * 255).clip(0, 255).round()
     out = {}
@@ -420,7 +342,7 @@ def quantize_all(strips_):
     return out, pal
 
 
-L_GAMMA, CHROMA = 0.9, 1.35
+CONTRAST, LIFT, CHROMA = 1.15, 0.0, 1.15
 _N8 = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
 
@@ -447,7 +369,7 @@ def despeckle(st):
             c = vals[cnt.argmax()]
             rgb = np.array([(c >> 16) & 255, (c >> 8) & 255, c & 255])
             d = abs(float(rgb @ np.array([.299, .587, .114])) - lum[y, x])
-            if (same[y, x] == 0 and d < 70) or d < 28:
+            if same[y, x] == 0 and d < 40:
                 st[y, x, :3] = rgb
                 changed += 1
         if not changed:
@@ -489,7 +411,7 @@ def outline(st):
 
 if os.environ.get("PIRATE_DUMP"):
     np.savez(os.environ["PIRATE_DUMP"], **strips)
-# (paleta já vem dos materiais: sem k-means)
+strips, _pal = quantize_all(strips)
 for k in strips:
     strips[k] = np.concatenate([outline(despeckle(strips[k][:, i * FW:(i + 1) * FW]))
                                 for i in range(strips[k].shape[1] // FW)], axis=1)
@@ -535,7 +457,7 @@ layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": False, "foot
           "portrait": portrait, "fps": {k: ANIMS[k]["fps"] for k in ANIMS if ANIMS[k]["fps"]} | {"idlevar": 3},
           "anchors": [[80, 76]] * n, "torso": [[64, 80]] * n, "head": [[64, top + 12]] * n, "map": amap}
 
-KEY = "pirate-sep1"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-sep2"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -544,8 +466,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,
