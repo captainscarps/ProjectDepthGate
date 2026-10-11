@@ -1,21 +1,19 @@
 # Capitão Scarpa (classe PIRATE): sprites animados
 
-Fontes: as tiras em pixel art de `scripts/source/pirata-pixel/` (colete azul-petróleo, faixa vermelha, tatuagens e tapa-olho), todas com fundo transparente:
-- `pirate_idle.png` 4 quadros, `pirate_walk.png` 8, `pirate_attack.png` 5, `pirate_jump_hurt.png` 6 e `pirate_dead_defend.png` 6;
-- as tiras são cortadas nas folgas entre as figuras. Os dois quadros de corte que o rastro liga são separados na coluna mais vazia;
-- cada tira veio numa escala, igualada pela altura em pé e pela largura da cabeça. No idle o pirata mede cerca de 455 px; walk é 0.63×, attack cerca de 0.8×, jump_hurt 0.63× e dead_defend 0.62×.
+Fonte atual: `scripts/source/pirata-casaco/folha-6x6.jpg`, o pirata de casaco marrom. São 6 linhas: parado 6, andar 6, correr 6, ataque 6, golpe por cima 6 e investida 5.
+- O JPG veio com o xadrez de "transparência" pintado no fundo. O recorte (`folha-6x6-recortada.png`) tira o cinza do xadrez ligado à borda. Os pedacinhos de xadrez presos entre perna e casaco saem pelos dois tons exatos do xadrez, e a lâmina, que tem degradê, fica.
+- As figuras são separadas por peças conectadas, porque a lâmina de uma figura passa por cima das colunas da vizinha.
+- A escala segue a largura da cabeça: parado, andar e correr têm o mesmo tamanho (pirata em pé com cerca de 205 px), e os dois ataques foram desenhados cerca de 13% menores, o que é compensado.
+- A morte continua com os quadros da folha v3, que é o mesmo pirata de casaco.
 
 Animações no jogo:
-- **parado:** um desenho só (o 1º quadro) com respiração de 1 px, 4 quadros a 4 fps, igual aos outros heróis. Os 4 quadros da folha foram redesenhados um a um e a cabeça pulava 4 px;
-- **andar e correr:** as tiras não têm passos de verdade. Nos 8 quadros de walk as pernas ficam na mesma pose, e não veio corrida. Os outros heróis têm o passo desenhado quadro a quadro (o jogo não anima nada por código ao andar), então o passo do Guerreiro foi copiado quadro a quadro:
-  - a posição da sola de cada pé em relação ao quadril foi medida pixel a pixel nos 6 quadros de andar e nos 6 de correr do Guerreiro (`WARRIOR_WALK_IK` e `WARRIOR_RUN_IK` em `scripts/pirate_leg_rig.py`). As duas pernas trocam de papel a cada 3 quadros, como nele;
-  - os pés do pirata são colocados nesses pontos, na escala da perna dele. Coxa e joelho são calculados por cinemática inversa (joelho dobra para frente), e as pernas são cortadas em coxa, canela e bota, peças rígidas sobrepostas nas juntas, em alta resolução antes de reduzir;
-  - como o Guerreiro, ele anda com os joelhos levemente dobrados (a cabeça fica na mesma altura) e com as pernas saindo quase do mesmo ponto do quadril (`LEG_PULL`), para as duas passadas terem o mesmo tamanho;
-  - andar: 6 quadros a 11 fps. Correr: 6 quadros a 15 fps, com o tronco inclinando 4° a 18° como no Guerreiro. São os números padrão do jogo.
-- **ataque:** postura e ergue o sabre (preparação), corte e continuação com rastro (golpe), postura (volta);
-- **Fúria Pirata:** agacha, impulso, no ar e aterrissa com a âncora (tira jump_hurt 0 a 3);
-- **dano e atordoado:** jump_hurt 4;
-- **morte:** dead_defend 2 a 5 (cambaleia, ajoelha, cai, caído), 8 fps, fica no último. Os quadros de defesa com escudo não são usados.
+- **parado:** 6 quadros a 5 fps;
+- **andar:** 6 quadros a 11 fps e **correr:** 6 quadros a 15 fps, os mesmos números do Guerreiro. Agora os passos vêm desenhados na própria folha, com as pernas alternando, e não do esqueleto;
+- **ataque:** postura e sabre erguido à frente (preparação), corte para baixo (golpe), sabre subindo e postura (volta);
+- **Fúria Pirata:** usa a linha do golpe por cima. Sabre atrás (guarda), duas mãos no alto (impulso e no ar) e o golpe embaixo quando a âncora bate;
+- **dano, atordoado e morte:** folha v3 (8 quadros de morte, 9 fps, fica no último).
+
+O pirata de colete azul (`scripts/source/pirata-pixel/` com o esqueleto de pernas em `scripts/pirate_leg_rig.py`) continua no script. Para voltar a ele, use `CASACO = False`.
 
 Os GIFs não foram usados, porque têm a marca d'água sobre o personagem. A folha do jogo fica em grade de 16 colunas (2048×384), uma textura segura no celular.
 
@@ -43,7 +41,7 @@ O `pirate_config.json` traz os mesmos dados em formato de máquina: quadros, fps
 
 O jogo não cria um sistema novo de animação. Ele usa o mesmo formato "pack" dos outros heróis:
 
-- `scripts/build_pirate_sprites.py` gera as tiras acima e as junta na folha que o jogo carrega, `assets/pixel-art/characters/pirate-px12-body.png` (40 células) com `pirate-px12.json`. No JSON ficam o mapa de estados e as velocidades (`fps`).
+- `scripts/build_pirate_sprites.py` gera as tiras acima e as junta na folha que o jogo carrega, `assets/pixel-art/characters/pirate-cs1-body.png` (40 células) com `pirate-cs1.json`. No JSON ficam o mapa de estados e as velocidades (`fps`).
 - **Parado, andando e correndo** viram animações em loop (`mk4b-pirate-idle`, `-walk`, `-run`). Para ele correr, o direcional precisa estar inclinado acima de 62%, a mesma regra do jogo para todos os heróis. No teclado ele sempre corre.
 - **Ataque:** a imagem acompanha as fases da arma, e o dano sai no fim da preparação, no tempo do jogo:
   - preparação (320 ms): quadros 0 (postura), 1 (ergue) e 2 (sabre no alto);
@@ -59,8 +57,8 @@ O jogo não cria um sistema novo de animação. Ele usa o mesmo formato "pack" d
 
 1. Edite a folha de origem, ou troque a origem na tabela `ANIMS` do script.
 2. Rode `python scripts/build_pirate_sprites.py`.
-3. Se mudar a folha do jogo, troque o nome (`KEY` no script e o `"px12"` no `scripts/patch_pirate_class.py`). Sem isso, o cache offline do navegador continua mostrando a versão antiga.
+3. Se mudar a folha do jogo, troque o nome (`KEY` no script e o `"cs1"` no `scripts/patch_pirate_class.py`). Sem isso, o cache offline do navegador continua mostrando a versão antiga.
 
 ## Andando e correndo
 
-Andar usa os quadros 4 a 9 da folha do jogo a 11 fps, e correr usa os quadros 10 a 15 a 15 fps. São os mesmos números dos outros heróis. Para ajustar uma pose, mude as tabelas `WARRIOR_WALK_IK` e `WARRIOR_RUN_IK` em `scripts/pirate_leg_rig.py` e rode `python scripts/build_pirate_sprites.py`.
+Andar usa os quadros 6 a 11 da folha do jogo, e correr usa os quadros 12 a 17, desenhados na folha do casaco.

@@ -129,6 +129,7 @@ _v3 = segment_dark_sheet(V3_SRC, erase=[(10, 48, 0, 160), (218, 256, 0, 160), (4
                                         (616, 656, 0, 160), (806, 846, 0, 160)])
 for _n, _a, _b in [("idle", 0, 215), ("walk", 215, 420), ("run", 420, 612), ("death", 612, 805), ("atk", 805, 1024)]:
     figs[_n] = sorted([f for f in _v3 if _a <= (f["y0"] + f["y1"]) / 2 < _b], key=lambda f: f["x0"])
+V3_DEATH = list(figs["death"])          # morte do pirata de casaco (usada pela folha 6x6 do casaco)
 
 # a folha v2 desenha todas as linhas na mesma escala: uma escala só para todas as animações
 # (o personagem em pé mede ~177 px na folha → STAND_H no jogo)
@@ -291,6 +292,95 @@ ANIMS = {
     "death":  dict(src=[("death", i) for i in range(4)], v="feet", h="bbox", fps=8, loop=False),
 }
 ORDER = ["idle", "walk", "run", "attack", "jump", "death"]
+
+# ---------------------------------------------------------------- pirata de casaco (folha 6x6) — a atual
+# scripts/source/pirata-casaco/folha-6x6.jpg: JPG com o xadrez de "transparência" pintado; o
+# recorte (folha-6x6-recortada.png) tira só o cinza do xadrez ligado à borda e preserva a lâmina.
+# Linhas: parado 6, andar 6, correr 6 (passos de verdade), ataque 6, golpe por cima 6, investida 5.
+# Escala pela largura da cabeça: parado/andar/correr iguais (pirata em pé ~205 px); os dois
+# ataques foram desenhados ~13% menores.
+CASACO = True
+if CASACO:
+    _cs = cv2.imread(os.path.join(ROOT, "scripts", "source", "pirata-casaco", "folha-6x6-recortada.png"), cv2.IMREAD_UNCHANGED)
+    _bands = {"idle": (0, 261), "walk": (261, 496), "run": (496, 701), "atk": (701, 910), "slam": (910, 1176)}
+    # pedaços do xadrez presos dentro do desenho (entre perna e casaco): cinza neutro com os
+    # dois tons exatos do xadrez; a lâmina tem degradê e fica
+    _rgb = _cs[..., :3].astype(np.float32); _g = _rgb.mean(2); _sat = _rgb.max(2) - _rgb.min(2)
+    _neu = (_cs[..., 3] > 0) & (_sat < 14) & (_g > 138) & (_g < 222)
+    _lb, _nl = ndi.label(_neu)
+    for _i, _sl in enumerate(ndi.find_objects(_lb)):
+        _sel = _lb[_sl] == _i + 1
+        _v = _g[_sl][_sel]
+        _chk = ((np.abs(_v - 205) < 9) | (np.abs(_v - 153) < 9)).mean()
+        if _sel.sum() >= 6 and _chk > 0.8:
+            _cs[_sl][..., 3][_sel] = 0
+
+    def _cut_band(band, n):
+        cov = (band[:, :, 3] > 128).sum(0)
+        xs = np.nonzero(cov > 1)[0]
+        groups, g0, p0 = [], xs[0], xs[0]
+        for x in xs[1:]:
+            if x - p0 > 3:
+                groups.append([g0, p0]); g0 = x
+            p0 = x
+        groups.append([g0, p0])
+        groups = [g for g in groups if g[1] - g[0] > 25]          # descarta lascas soltas
+        while len(groups) < n:                                     # figuras grudadas (lâmina encostando)
+            gi = max(range(len(groups)), key=lambda i: groups[i][1] - groups[i][0])
+            x0, x1 = groups[gi]
+            lo, hi = x0 + int((x1 - x0) * .3), x0 + int((x1 - x0) * .7)
+            cut = lo + int(np.argmin(cov[lo:hi]))
+            groups[gi:gi + 1] = [[x0, cut], [cut + 1, x1]]
+        while len(groups) > n:                                     # junta lasca à vizinha mais próxima
+            gi = min(range(len(groups) - 1), key=lambda i: groups[i + 1][0] - groups[i][1])
+            groups[gi:gi + 2] = [[groups[gi][0], groups[gi + 1][1]]]
+        bounds = [0] + [(groups[i][1] + groups[i + 1][0]) // 2 for i in range(n - 1)] + [band.shape[1]]
+        return [band[:, bounds[i]:bounds[i + 1]].copy() for i in range(n)]
+
+    def _cut_band_cc(band, n):
+        """separa as figuras por peças conectadas (a lâmina de uma figura pode passar por cima
+        das colunas da vizinha); pedacinhos soltos vão para a figura mais próxima"""
+        solid = band[:, :, 3] > 128
+        lb, nl = ndi.label(solid)
+        sizes = ndi.sum(np.ones_like(lb), lb, range(1, nl + 1))
+        big = list(np.argsort(sizes)[::-1][:n] + 1)
+        boxes = {i: ndi.find_objects((lb == i).astype(int))[0] for i in big}
+        big.sort(key=lambda i: (boxes[i][1].start + boxes[i][1].stop) / 2)
+        owner = {i: i for i in big}
+        for j in range(1, nl + 1):
+            if j in owner or sizes[j - 1] < 20:
+                continue
+            sl = ndi.find_objects((lb == j).astype(int))[0]
+            cy, cx = (sl[0].start + sl[0].stop) / 2, (sl[1].start + sl[1].stop) / 2
+            dist = lambda i: np.hypot(max(boxes[i][1].start - cx, 0, cx - boxes[i][1].stop),
+                                      max(boxes[i][0].start - cy, 0, cy - boxes[i][0].stop))
+            bi = min(big, key=dist)
+            if dist(bi) < 14:
+                owner[j] = bi
+        out = []
+        for i in big:
+            keep = np.isin(lb, [j for j, o in owner.items() if o == i])
+            keep = ndi.binary_dilation(keep, iterations=1) & (band[:, :, 3] > 0)   # inclui a borda suave
+            c = band.copy(); c[~keep] = 0
+            out.append(c)
+        return out
+
+    for _n, (_y0, _y1) in _bands.items():
+        figs[_n] = [canvas_fig(c) for c in _cut_band_cc(_cs[_y0:_y1], 6)]
+    figs["death"] = V3_DEATH
+    _H = 205
+    SCALE.update(idle=STAND_H / _H, walk=STAND_H / _H, run=STAND_H / _H,
+                 atk=STAND_H / (_H * .87), slam=STAND_H / (_H * .87), death=STAND_H / 189)
+    ANIMS = {
+        "idle":   dict(src=[("idle", i) for i in range(6)], v="row", h="torso", fps=5, loop=True),
+        "walk":   dict(src=[("walk", i) for i in range(6)], v="row", h="torso", fps=11, loop=True),   # = padrão do jogo
+        "run":    dict(src=[("run", i) for i in range(6)], v="row", h="torso", fps=15, loop=True),    # = padrão do jogo
+        # ataque: 0 postura · 1 sabre erguido à frente | 2 corte para baixo | 3 sabre subindo · 0
+        "attack": dict(src=[("atk", i) for i in range(6)], v="row", h="torso", fps=13, loop=False),
+        # Fúria Pirata: 0 postura · 1 sabre atrás · 2 duas mãos no alto · 3 balanço · 4 golpe embaixo · 5 volta
+        "jump":   dict(src=[("slam", i) for i in range(6)], v="row", h="torso", fps=10, loop=False),
+        "death":  dict(src=[("death", i) for i in range(8)], v="feet", h="bbox", fps=9, loop=False),
+    }
 RUN_FPS = 15                                             # correr: 6 quadros a 15 fps, como os outros heróis
 RUN_LEAN, RUN_BOB = 0.12, 3                              # inclinação para frente (px por px de altura) e pulo (px)
 STRIP_DIR = os.path.join(ROOT, "assets", "sprites", "characters", "pirate")
@@ -453,7 +543,7 @@ def quantize_all(strips_):
 
 
 CONTRAST, LIFT, CHROMA = 1.3, 14.0, 1.2
-HD_CONTRAST, HD_LIFT, HD_CHROMA = 1.0, 0.0, 1.0   # a arte em pixel art já vem bem iluminada
+HD_CONTRAST, HD_LIFT, HD_CHROMA = 1.1, 6.0, 1.05   # casaco escuro: um pouco mais claro para não sumir no chão
 _N8 = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
 
@@ -567,7 +657,7 @@ def _shift(t, dx, dy=0):
     return out
 
 
-if "jump" in strips:                                             # folhas em pixel art (pirata-pixel)
+if "jump" in strips and not CASACO:                              # folhas em pixel art (pirata-pixel)
     # 1) parado: um desenho só (o 1º) com respiração de 1 px, como os outros heróis
     strips["idle"] = np.concatenate(breathe(_tiles(strips["idle"])[0]), axis=1)
     ANIMS["idle"]["fps"] = 4
@@ -588,23 +678,42 @@ for _i, _c in enumerate(_cells):
     sheet[(_i // COLS) * FH:(_i // COLS + 1) * FH, (_i % COLS) * FW:(_i % COLS + 1) * FW] = _c
 I = lambda name, k=0: start[name] + k
 cnt = lambda name: strips[name].shape[1] // FW
-amap = {
-    "idle": [I("idle", k) for k in range(cnt("idle"))],
-    "idlevar": [I("idle", k) for k in (0, 2, 0)],
-    "walk": [I("walk", k) for k in range(cnt("walk"))],
-    "run": [I("run", k) for k in range(cnt("run"))],
-    # ataque: 0 postura · 1 ergue o sabre | 2 corte (rastro) · 3 continuação (rastro) | 4 postura
-    "attackW": [I("attack", k) for k in (0, 1)], "attackH": [I("attack", k) for k in (2, 3)],
-    "attackR": [I("attack", 4)],
-    "windupA": I("attack", 0), "windup": I("attack", 1), "hitA": I("attack", 2), "hit": I("attack", 3), "recovery": I("attack", 4),
-    # Fúria Pirata: agacha (guard) -> impulso (dashA) -> no ar (dash) -> aterrissa com a âncora (cast)
-    "guardStart": I("jump", 0), "guard": I("jump", 0),
-    "dashA": I("jump", 1), "dash": I("jump", 2),
-    "castA": I("attack", 1), "cast": I("jump", 3), "castC": I("jump", 5),
-    "hurt": I("jump", 4), "hurtB": I("death", 0), "stunA": I("jump", 4), "stunB": I("death", 0),
-    "deathSeq": [I("death", k) for k in range(cnt("death"))],
-    "deathA": I("death", 0), "deathB": I("death", 2), "deathC": I("death", cnt("death") - 1),
-}
+if CASACO:
+    amap = {
+        "idle": [I("idle", k) for k in range(cnt("idle"))],
+        "idlevar": [I("idle", k) for k in (2, 3, 2)],
+        "walk": [I("walk", k) for k in range(cnt("walk"))],
+        "run": [I("run", k) for k in range(cnt("run"))],
+        # ataque: 0 postura · 1 sabre erguido | 2 corte para baixo | 3 sabre subindo · 0 postura
+        "attackW": [I("attack", k) for k in (0, 1)], "attackH": [I("attack", 2)],
+        "attackR": [I("attack", k) for k in (3, 0)],
+        "windupA": I("attack", 0), "windup": I("attack", 1), "hitA": I("attack", 2), "hit": I("attack", 2), "recovery": I("attack", 3),
+        # Fúria Pirata (golpe por cima, linha 5): sabre atrás -> duas mãos no alto -> balanço -> golpe embaixo
+        "guardStart": I("jump", 1), "guard": I("jump", 1),
+        "dashA": I("jump", 2), "dash": I("jump", 3),
+        "castA": I("jump", 1), "cast": I("jump", 4), "castC": I("jump", 5),
+        "hurt": I("death", 0), "hurtB": I("death", 1), "stunA": I("death", 1), "stunB": I("death", 2),
+        "deathSeq": [I("death", k) for k in range(cnt("death"))],
+        "deathA": I("death", 0), "deathB": I("death", 3), "deathC": I("death", cnt("death") - 1),
+    }
+else:
+    amap = {
+        "idle": [I("idle", k) for k in range(cnt("idle"))],
+        "idlevar": [I("idle", k) for k in (0, 2, 0)],
+        "walk": [I("walk", k) for k in range(cnt("walk"))],
+        "run": [I("run", k) for k in range(cnt("run"))],
+        # ataque: 0 postura · 1 ergue o sabre | 2 corte (rastro) · 3 continuação (rastro) | 4 postura
+        "attackW": [I("attack", k) for k in (0, 1)], "attackH": [I("attack", k) for k in (2, 3)],
+        "attackR": [I("attack", 4)],
+        "windupA": I("attack", 0), "windup": I("attack", 1), "hitA": I("attack", 2), "hit": I("attack", 3), "recovery": I("attack", 4),
+        # Fúria Pirata: agacha (guard) -> impulso (dashA) -> no ar (dash) -> aterrissa com a âncora (cast)
+        "guardStart": I("jump", 0), "guard": I("jump", 0),
+        "dashA": I("jump", 1), "dash": I("jump", 2),
+        "castA": I("attack", 1), "cast": I("jump", 3), "castC": I("jump", 5),
+        "hurt": I("jump", 4), "hurtB": I("death", 0), "stunA": I("jump", 4), "stunB": I("death", 0),
+        "deathSeq": [I("death", k) for k in range(cnt("death"))],
+        "deathA": I("death", 0), "deathB": I("death", 2), "deathC": I("death", cnt("death") - 1),
+    }
 
 # retrato do HUD: quadrado centrado no rosto do primeiro quadro parado
 ys, xs = np.nonzero(sheet[:, :FW, 3] > 0)
@@ -618,7 +727,7 @@ layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": HD, "footY":
           "anchors": [[64 + STAND_H // 4, FOOT - STAND_H // 2]] * n, "torso": [[64, FOOT - STAND_H // 2]] * n,
           "head": [[64, top + STAND_H // 6]] * n, "map": amap}
 
-KEY = "pirate-px12"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-cs1"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -627,8 +736,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10", "px11") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10", "px11") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10", "px11", "px12") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b", "sep1", "sep2", "g25a", "hd25", "px8", "px9", "px10", "px11", "px12") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,
