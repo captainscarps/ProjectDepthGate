@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.39.0-gelo-orc-draco";
+const CACHE = "ded-web-v4.40.0-bestiario-proporcional";
 
 self.addEventListener("install", () => self.skipWaiting());
 

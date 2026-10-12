@@ -310,6 +310,11 @@ class __BookScene extends j.Scene {
       return c[tex] = x1 < 0 ? { x: 0, y: 0, w: f.cutWidth, h: f.cutHeight } : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
     } catch (e) { return c[tex] = null }
   }
+  gameScale(e) {
+    const d = e.d;
+    if (e.boss) return d.scale || 1;
+    return (Si[d.texture] ?? 1) * (ui[d.sizeClass]?.scale ?? 1);
+  }
   pageEntryL(e, X, PW) {
     const L = this.L, d = e.d, idx = e.boss ? this.E.indexOf(e) - this.nC + 1 : this.E.indexOf(e) + 1;
     this.T(L, X + 2, 40, `${e.boss ? __L3("CHEFE", "BOSS", "JEFE") : __L3("CRIATURA", "CREATURE", "CRIATURA")}  ·  Nº ${String(idx).padStart(2, "0")}`, 7.5, __BK_RED, { st: "bold" });
@@ -327,7 +332,20 @@ class __BookScene extends j.Scene {
     const tex = d.texture;
     if (tex && this.textures.exists(tex)) {
       const bb = this.bbox(tex) || { x: 0, y: 0, w: 64, h: 64 };
-      let sc = Math.min((bw - 30) / bb.w, (bh - 26) / bb.h); sc = sc > 1 ? Math.floor(sc * 2) / 2 : sc;
+      // escala proporcional ao tamanho real no jogo: o maior do grupo preenche a moldura
+      const fit = (q, gs) => Math.min((bw - 30) / (q.w * gs), (bh - 26) / (q.h * gs));
+      if (!this.__pk) {
+        this.__pk = {};
+        for (const grp of [!1, !0]) {
+          let k = 1e9;
+          for (const o of this.E) if (!!o.boss === grp && o.d.texture && this.textures.exists(o.d.texture)) {
+            const q = this.bbox(o.d.texture); q && (k = Math.min(k, fit(q, this.gameScale(o))));
+          }
+          this.__pk[grp ? "b" : "c"] = k < 1e9 ? k : 1;
+        }
+      }
+      let sc = (e.boss ? this.__pk.b : this.__pk.c) * this.gameScale(e);
+      sc = Math.min(sc, fit(bb, 1));
       const sp = this.add.sprite(0, 0, tex, 0).setOrigin(0, 0).setScale(sc);
       sp.setPosition(Math.round(bx + bw / 2 - (bb.x + bb.w / 2) * sc), Math.round(by + bh - 14 - (bb.y + bb.h) * sc));
       const an = `${tex}-idle`; this.anims.exists(an) && sp.play(an);
