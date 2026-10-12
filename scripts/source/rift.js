@@ -173,71 +173,88 @@ function __offerRiftPrompt(S) {
   }).setOrigin(0.5, 0.5);
 
   const z1 = ui.add.zone(b1X, btnY, btnW, btnH).setInteractive({ useHandCursor: !0 });
-  z1.on("pointerover", () => {
+  let selectedIdx = 0; // 0 = Entrar, 1 = Agora Não
+
+  const updateVisualButtons = () => {
+    const isB1Sel = selectedIdx === 0;
     b1G.clear();
-    b1G.fillStyle(0x5b1a75, 1);
+    b1G.fillStyle(isB1Sel ? 0x5b1a75 : 0x3b124a, 0.95);
     b1G.fillRoundedRect(b1X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-    b1G.lineStyle(2, 0xffffff, 1);
+    b1G.lineStyle(isB1Sel ? 2 : 1.5, isB1Sel ? 0xffffff : 0xc084fc, 0.95);
     b1G.strokeRoundedRect(b1X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  });
-  z1.on("pointerout", () => {
-    b1G.clear();
-    b1G.fillStyle(0x3b124a, 0.95);
-    b1G.fillRoundedRect(b1X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-    b1G.lineStyle(1.5, 0xc084fc, 0.95);
-    b1G.strokeRoundedRect(b1X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  });
+    tB1.setColor(isB1Sel ? "#ffffff" : "#e9d5ff");
+
+    const isB2Sel = selectedIdx === 1;
+    b2G.clear();
+    b2G.fillStyle(isB2Sel ? 0x3a2c1d : 0x241a10, 0.95);
+    b2G.fillRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
+    b2G.lineStyle(isB2Sel ? 2 : 1.5, isB2Sel ? 0xffffff : 0x8a7f66, 0.9);
+    b2G.strokeRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
+    tB2.setColor(isB2Sel ? "#ffffff" : "#d1c7b7");
+  };
+
+  z1.on("pointerover", () => { selectedIdx = 0; updateVisualButtons(); });
   z1.on("pointerdown", () => confirmEnter());
   R.add([b1G, tB1, z1]);
 
-  // Botão 2: AGORA NÃO
-  const b2X = cx + 82;
-  const b2G = ui.add.graphics();
-  b2G.fillStyle(0x241a10, 0.95);
-  b2G.fillRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  b2G.lineStyle(1.5, 0x8a7f66, 0.9);
-  b2G.strokeRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-
-  const tB2 = ui.add.text(b2X, btnY, "AGORA NÃO", {
-    fontFamily: F_SERIF,
-    fontStyle: "bold",
-    fontSize: "9.5px",
-    color: "#d1c7b7",
-    stroke: "#0a0604",
-    strokeThickness: 2.5
-  }).setOrigin(0.5, 0.5);
-
-  const z2 = ui.add.zone(b2X, btnY, btnW, btnH).setInteractive({ useHandCursor: !0 });
-  z2.on("pointerover", () => {
-    b2G.clear();
-    b2G.fillStyle(0x3a2c1d, 1);
-    b2G.fillRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-    b2G.lineStyle(2, 0xffffff, 1);
-    b2G.strokeRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  });
-  z2.on("pointerout", () => {
-    b2G.clear();
-    b2G.fillStyle(0x241a10, 0.95);
-    b2G.fillRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-    b2G.lineStyle(1.5, 0x8a7f66, 0.9);
-    b2G.strokeRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  });
+  z2.on("pointerover", () => { selectedIdx = 1; updateVisualButtons(); });
   z2.on("pointerdown", () => close());
   R.add([b2G, tB2, z2]);
 
+  updateVisualButtons();
   dim.on("pointerdown", () => close());
 
   const keyHandler = ev => {
     if (closed) return;
-    if (ev.key === "Enter" || ev.key === " " || ev.key === "e" || ev.key === "E") {
+    if (ev.key === "ArrowLeft" || ev.key === "a" || ev.key === "A") {
       ev.stopImmediatePropagation?.();
-      confirmEnter();
+      selectedIdx = 0;
+      updateVisualButtons();
+    } else if (ev.key === "ArrowRight" || ev.key === "d" || ev.key === "D") {
+      ev.stopImmediatePropagation?.();
+      selectedIdx = 1;
+      updateVisualButtons();
+    } else if (ev.key === "Enter" || ev.key === " " || ev.key === "e" || ev.key === "E") {
+      ev.stopImmediatePropagation?.();
+      if (selectedIdx === 0) confirmEnter(); else close();
     } else if (ev.key === "Escape" || ev.key === "Backspace" || ev.key === "q" || ev.key === "Q") {
       ev.stopImmediatePropagation?.();
       close();
     }
   };
   ui.input.keyboard?.on("keydown", keyHandler);
+
+  // Suporte Gamepad contínuo
+  let prevPad = {};
+  const padPoll = () => {
+    if (closed) return;
+    try {
+      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+      const pad = Array.from(pads).find(p => p && p.connected);
+      if (pad) {
+        const btn = (i) => !!pad.buttons[i]?.pressed || (pad.buttons[i]?.value || 0) > 0.5;
+        const left = btn(14) || (pad.axes[0] || 0) < -0.5;
+        const right = btn(15) || (pad.axes[0] || 0) > 0.5;
+        const confirm = btn(0);
+        const cancel = btn(1) || btn(9);
+
+        if (left && !prevPad.left) {
+          selectedIdx = 0;
+          updateVisualButtons();
+        } else if (right && !prevPad.right) {
+          selectedIdx = 1;
+          updateVisualButtons();
+        } else if (confirm && !prevPad.confirm) {
+          if (selectedIdx === 0) confirmEnter(); else close();
+        } else if (cancel && !prevPad.cancel) {
+          close();
+        }
+        prevPad = { left, right, confirm, cancel };
+      }
+    } catch(e) {}
+    if (!closed) requestAnimationFrame(padPoll);
+  };
+  requestAnimationFrame(padPoll);
 }
 
 function __startRiftRun(S) {

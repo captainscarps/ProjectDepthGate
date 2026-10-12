@@ -80,8 +80,11 @@ function __openForge(invUi) {
   }).setOrigin(0.5, 0);
   R.add([tTitle, tSub]);
 
+  let closed = false;
   // Função interna para fechar o modal
   const closeForge = () => {
+    if (closed) return;
+    closed = true;
     if (invUi.__forgeModal) {
       ui.input.keyboard?.off("keydown", keyHandler);
       invUi.__forgeModal.destroy();
@@ -90,13 +93,58 @@ function __openForge(invUi) {
   };
 
   const keyHandler = ev => {
-    if (ev.key === "Escape" || ev.key === "Backspace") {
+    if (closed) return;
+    if (ev.key === "Escape" || ev.key === "Backspace" || ev.key === "q" || ev.key === "Q") {
       ev.stopImmediatePropagation?.();
       closeForge();
+    } else if (ev.key === "ArrowUp" || ev.key === "w" || ev.key === "W") {
+      ev.stopImmediatePropagation?.();
+      selectedRow = (selectedRow - 1 + __FORGE_RARITIES.length) % __FORGE_RARITIES.length;
+      drawRows();
+    } else if (ev.key === "ArrowDown" || ev.key === "s" || ev.key === "S") {
+      ev.stopImmediatePropagation?.();
+      selectedRow = (selectedRow + 1) % __FORGE_RARITIES.length;
+      drawRows();
+    } else if (ev.key === "Enter" || ev.key === " " || ev.key === "e" || ev.key === "E") {
+      ev.stopImmediatePropagation?.();
+      executeForge(__FORGE_RARITIES[selectedRow].key);
     }
   };
   ui.input.keyboard?.on("keydown", keyHandler);
   dim.on("pointerdown", () => closeForge());
+
+  // Navegação direta com GAMEPAD (D-pad Up/Down, Analógico, A = Forjar, B/Start = Fechar)
+  let prevPad = {};
+  const padPoll = () => {
+    if (closed || !invUi.__forgeModal) return;
+    try {
+      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+      const pad = Array.from(pads).find(p => p && p.connected);
+      if (pad) {
+        const btn = (i) => !!pad.buttons[i]?.pressed || (pad.buttons[i]?.value || 0) > 0.5;
+        const up = btn(12) || (pad.axes[1] || 0) < -0.5;
+        const down = btn(13) || (pad.axes[1] || 0) > 0.5;
+        const confirm = btn(0) || btn(2); // A ou X
+        const cancel = btn(1) || btn(9) || btn(8); // B ou Start ou Select
+
+        if (up && !prevPad.up) {
+          selectedRow = (selectedRow - 1 + __FORGE_RARITIES.length) % __FORGE_RARITIES.length;
+          drawRows();
+        } else if (down && !prevPad.down) {
+          selectedRow = (selectedRow + 1) % __FORGE_RARITIES.length;
+          drawRows();
+        } else if (confirm && !prevPad.confirm) {
+          executeForge(__FORGE_RARITIES[selectedRow].key);
+        } else if (cancel && !prevPad.cancel) {
+          closeForge();
+        }
+
+        prevPad = { up, down, confirm, cancel };
+      }
+    } catch(e) {}
+    if (!closed && invUi.__forgeModal) requestAnimationFrame(padPoll);
+  };
+  requestAnimationFrame(padPoll);
 
   // Botão fechar (X)
   const closeBtn = ui.add.text(x0 + W - 20, y0 + 10, "✕", {
@@ -113,6 +161,8 @@ function __openForge(invUi) {
   // Container dinâmico das linhas de raridade
   const rowsContainer = ui.add.container(0, 0);
   R.add(rowsContainer);
+
+  let selectedRow = 0; // 0..5 (COMMON..RELIC)
 
   const drawRows = () => {
     rowsContainer.removeAll(!0);
@@ -131,21 +181,22 @@ function __openForge(invUi) {
       const ry = rowStartY + idx * rowH;
       const count = byRarity[rar.key].length;
       const canForge = count >= 3;
+      const isSelected = selectedRow === idx;
 
       // Fundo da linha
       const rbg = ui.add.graphics();
-      rbg.fillStyle(canForge ? 0x18120c : 0x100b08, 0.9);
+      rbg.fillStyle(isSelected ? 0x221a12 : (canForge ? 0x18120c : 0x100b08), 0.95);
       rbg.fillRoundedRect(x0 + 14, ry, W - 28, rowH - 4, 4);
-      rbg.lineStyle(1, canForge ? rar.border : 0x2e2318, canForge ? 0.8 : 0.4);
+      rbg.lineStyle(isSelected ? 2 : 1, isSelected ? 0xffd24a : (canForge ? rar.border : 0x2e2318), isSelected ? 1 : (canForge ? 0.8 : 0.4));
       rbg.strokeRoundedRect(x0 + 14, ry, W - 28, rowH - 4, 4);
       rowsContainer.add(rbg);
 
       // Nome da Raridade
-      const tRar = ui.add.text(x0 + 24, ry + (rowH - 4) / 2, rar.name.toUpperCase(), {
+      const tRar = ui.add.text(x0 + 24, ry + (rowH - 4) / 2, (isSelected ? "▶ " : "") + rar.name.toUpperCase(), {
         fontFamily: F_SERIF,
         fontStyle: "bold",
         fontSize: "9px",
-        color: rar.color,
+        color: isSelected ? "#ffffff" : rar.color,
         stroke: "#0a0604",
         strokeThickness: 2
       }).setOrigin(0, 0.5);
@@ -170,9 +221,10 @@ function __openForge(invUi) {
       const btnY = ry + (rowH - 4) / 2;
 
       const btnG = ui.add.graphics();
-      btnG.fillStyle(canForge ? (rar.key === "RELIC" ? 0x4a1814 : 0x1c3a24) : 0x181410, 0.95);
+      const fillC = canForge ? (rar.key === "RELIC" ? (isSelected ? 0x6e201a : 0x4a1814) : (isSelected ? 0x2b5837 : 0x1c3a24)) : (isSelected ? 0x2a221a : 0x181410);
+      btnG.fillStyle(fillC, 0.95);
       btnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-      btnG.lineStyle(1, canForge ? (rar.key === "RELIC" ? 0xef4444 : 0x4ade80) : 0x3d3024, 0.9);
+      btnG.lineStyle(isSelected ? 2 : 1, isSelected ? 0xffffff : (canForge ? (rar.key === "RELIC" ? 0xef4444 : 0x4ade80) : 0x3d3024), 0.95);
       btnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
       rowsContainer.add(btnG);
 
@@ -184,34 +236,26 @@ function __openForge(invUi) {
         fontFamily: F_SERIF,
         fontStyle: "bold",
         fontSize: "8px",
-        color: canForge ? "#ffffff" : "#6a6054",
+        color: canForge ? (isSelected ? "#ffffff" : "#e0eedd") : "#6a6054",
         stroke: "#0a0604",
         strokeThickness: 2
       }).setOrigin(0.5, 0.5);
       rowsContainer.add(tBtn);
 
-      if (canForge) {
-        const zone = ui.add.zone(btnX, btnY, btnW, btnH).setInteractive({ useHandCursor: !0 });
-        zone.on("pointerover", () => {
-          btnG.clear();
-          btnG.fillStyle(rar.key === "RELIC" ? 0x68201a : 0x275533, 1);
-          btnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-          btnG.lineStyle(1.5, 0xffffff, 1);
-          btnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-        });
-        zone.on("pointerout", () => {
-          btnG.clear();
-          btnG.fillStyle(rar.key === "RELIC" ? 0x4a1814 : 0x1c3a24, 0.95);
-          btnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-          btnG.lineStyle(1, rar.key === "RELIC" ? 0xef4444 : 0x4ade80, 0.9);
-          btnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-        });
-        zone.on("pointerdown", () => {
-          // Executa a forja
+      const rowZone = ui.add.zone(x0 + W / 2, ry + (rowH - 4) / 2, W - 28, rowH - 4).setInteractive({ useHandCursor: !0 });
+      rowZone.on("pointerover", () => {
+        if (selectedRow !== idx) {
+          selectedRow = idx;
+          drawRows();
+        }
+      });
+      rowZone.on("pointerdown", () => {
+        selectedRow = idx;
+        if (canForge) {
           executeForge(rar.key);
-        });
-        rowsContainer.add(zone);
-      }
+        }
+      });
+      rowsContainer.add(rowZone);
     });
 
     // Saldo atual de Cristais do Refúgio do Herói

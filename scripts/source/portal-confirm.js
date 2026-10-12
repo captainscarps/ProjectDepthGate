@@ -1,13 +1,11 @@
 /* =====================================================================
    CONFIRMAÇÃO E CÁLCULO DE DIFICULDADE DE PORTAL (CAMPANHA)
    - Exibido APENAS na Campanha ao interagir com portais.
-   - O jogo não pode ficar fácil: serve também para balancear a percepção
-     e garantir desafio minimamente moderado em todas as masmorras.
-   - Classificações: MODERADO (mínimo de desafio), DESAFIADOR, DIFÍCIL, PERIGO MORTAL.
+   - Navegável 100% com GAMEPAD (D-pad/Stick e botões A/B) e TECLADO/MOUSE.
+   - Design direto, gótico e no padrão das telas do jogo.
    ===================================================================== */
 
 function __calcPortalDifficulty(S, targetLevelId, extra = {}) {
-  // 1. DADOS DO HERÓI ATUAL E SEUS EQUIPAMENTOS
   const heroLvl = Math.max(1, S.stats?.level ?? 1);
   const heroTot = S.stats?.total ?? {};
   const heroDmg = Math.max(heroTot.damage ?? 0, heroTot.magicDamage ?? 0, 1);
@@ -33,7 +31,6 @@ function __calcPortalDifficulty(S, targetLevelId, extra = {}) {
   const heroOffense = heroDmg * 16 + (heroTot.critChance ? heroTot.critChance * 1.5 : 0);
   const heroCombatScore = (heroEHP * 2.8) + heroOffense + (heroPwr * 0.5);
 
-  // 2. DADOS E INIMIGOS DO LOCAL DE DESTINO
   let destName = "";
   let recLvl = 1;
   let avgEnemyHp = 8;
@@ -63,7 +60,6 @@ function __calcPortalDifficulty(S, targetLevelId, extra = {}) {
   };
   recLvl = dungeonProgression[targetLevelId] || lv?.depth || 1;
 
-  // Usa a mesma escala de combate dinâmico de __dgScale para estimar o perigo real dos monstros
   const t = Math.max(0, Math.max(heroLvl, recLvl) - 1);
   const scHp = Math.min(8, (1 + t * 0.17) * 1.15);
   const scDmg = Math.min(4.5, (1 + t * 0.11) * 1.12);
@@ -116,17 +112,14 @@ function __calcPortalDifficulty(S, targetLevelId, extra = {}) {
     bossDmg = Math.round(fb.bDmg * scDmg * 1.15);
   }
 
-  // Ameaça real calculada de modo que o jogo nunca seja trivial ("fácil")
   threat = (avgEnemyHp * 4.2) + (avgEnemyDmg * 22) + (bossHp ? bossHp * 0.45 : 0) + (bossDmg ? bossDmg * 9 : 0);
 
-  // 3. RELAÇÃO DE FORÇA E RESISTÊNCIA
   const lvlDiff = heroLvl - recLvl;
   const lvlMod = Math.max(0.4, 1.0 + (lvlDiff * 0.08));
   const ratio = (heroCombatScore * lvlMod) / Math.max(1, threat);
 
-  // 4. CLASSIFICAÇÃO: O jogo NUNCA fica "fácil", mínimo MODERADO
   let diffLabel = "MODERADO";
-  let diffColor = "#38bdf8"; // Azul celeste moderado
+  let diffColor = "#38bdf8";
   let diffBorder = 0x38bdf8;
   let diffDesc = "";
 
@@ -200,7 +193,6 @@ function __calcPortalDifficulty(S, targetLevelId, extra = {}) {
 function __portalPrompt(S, opts = {}) {
   if (!S || S.transitioning || S.__portalModalOpen) return;
   
-  // NUNCA abrir no Modo Infinito (conforme solicitação)
   if (S.level?.endless || S.game?.registry?.get("mode") === "endless" || opts.levelId === "endless") {
     try { opts.onConfirm?.(); } catch(e) {}
     return;
@@ -229,11 +221,9 @@ function __portalPrompt(S, opts = {}) {
 
   const R = ui.add.container(0, 0).setDepth(9950);
 
-  // Fundo escuro com bloqueio
   const dim = ui.add.rectangle(cx, cy, _ * 1.5, st * 1.5, 0x050403, 0.78).setInteractive();
   R.add(dim);
 
-  // Moldura gótica
   const bg = ui.add.graphics();
   bg.fillStyle(0x0e0906, 0.98);
   bg.fillRoundedRect(x0, y0, W, H, 8);
@@ -243,7 +233,6 @@ function __portalPrompt(S, opts = {}) {
   bg.strokeRoundedRect(x0 + 3, y0 + 3, W - 6, H - 6, 6);
   R.add(bg);
 
-  // Título e Destino
   const titleTxt = typeof __L3 === "function" ? __L3("ATRAVESSAR PORTAL?", "ENTER PORTAL?", "¿CRUZAR PORTAL?") : "ATRAVESSAR PORTAL?";
   const t1 = ui.add.text(cx, y0 + 12, titleTxt, {
     fontFamily: F_SERIF,
@@ -264,7 +253,6 @@ function __portalPrompt(S, opts = {}) {
   }).setOrigin(0.5, 0);
   R.add([t1, tSub]);
 
-  // Faixa de Dificuldade
   const badgeY = y0 + 44;
   const badgeW = 240;
   const badgeH = 20;
@@ -288,12 +276,10 @@ function __portalPrompt(S, opts = {}) {
   }).setOrigin(0.5, 0.5);
   R.add(tBadge);
 
-  // Resumo Comparativo Direto
   const boxY = y0 + 70;
   const boxW = 168;
   const boxH = 46;
 
-  // Caixa 1: Herói
   const leftX = cx - Math.round(W / 2) + 14;
   const leftBg = ui.add.graphics();
   leftBg.fillStyle(0x140e0a, 0.9);
@@ -320,7 +306,6 @@ function __portalPrompt(S, opts = {}) {
   });
   R.add([tHeroHdr, tHeroL1, tHeroL2]);
 
-  // Caixa 2: Destino
   const rightX = cx + Math.round(W / 2) - boxW - 14;
   const rightBg = ui.add.graphics();
   rightBg.fillStyle(0x140e0a, 0.9);
@@ -348,7 +333,6 @@ function __portalPrompt(S, opts = {}) {
   });
   R.add([tEnemyHdr, tEnemyL1, tEnemyL2]);
 
-  // Explicação direta e objetiva
   const tDesc = ui.add.text(cx, y0 + 124, d.diffDesc, {
     fontFamily: F_SERIF,
     fontSize: "8px",
@@ -360,29 +344,20 @@ function __portalPrompt(S, opts = {}) {
   }).setOrigin(0.5, 0);
   R.add(tDesc);
 
-  // Pergunta direta
-  const tAsk = ui.add.text(cx, y0 + 144, typeof __L3 === "function" ? __L3("Deseja entrar no portal?", "Do you want to enter?", "¿Deseas entrar al portal?") : "Deseja entrar no portal?", {
-    fontFamily: F_MONO,
-    fontStyle: "bold",
-    fontSize: "8.5px",
-    color: "#d1c7b7",
-    stroke: "#0a0604",
-    strokeThickness: 2
-  }).setOrigin(0.5, 0);
-  R.add(tAsk);
-
-  // Botões
   const btnY = y0 + H - 24;
   const btnW = 138;
   const btnH = 22;
 
+  let selectedIdx = 0; // 0 = Entrar, 1 = Recuar
   let closed = !1;
+
   const close = () => {
     if (closed) return;
     closed = !0;
     S.__portalModalOpen = !1;
     S.uiOpen = !1;
     ui.input.keyboard?.off("keydown", keyHandler);
+    window.removeEventListener("gamepadconnected", refreshPad);
     R.destroy();
     S.physics?.resume?.();
   };
@@ -392,19 +367,14 @@ function __portalPrompt(S, opts = {}) {
     closed = !0;
     S.__portalModalOpen = !1;
     ui.input.keyboard?.off("keydown", keyHandler);
+    window.removeEventListener("gamepadconnected", refreshPad);
     R.destroy();
     try { opts.onConfirm?.() } catch(e) { S.physics?.resume?.(); S.uiOpen = !1; }
   };
 
-  // Botão 1: ENTRAR
-  const enterBtnX = cx - 76;
   const bEnterBg = ui.add.graphics();
-  bEnterBg.fillStyle(0x163820, 0.95);
-  bEnterBg.fillRoundedRect(enterBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  bEnterBg.lineStyle(1.5, 0x4ade80, 0.95);
-  bEnterBg.strokeRoundedRect(enterBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-
-  const tEnter = ui.add.text(enterBtnX, btnY, "✔ ENTRAR [ENTER]", {
+  const enterBtnX = cx - 76;
+  const tEnter = ui.add.text(enterBtnX, btnY, "✔ ENTRAR", {
     fontFamily: F_SERIF,
     fontStyle: "bold",
     fontSize: "9px",
@@ -412,34 +382,11 @@ function __portalPrompt(S, opts = {}) {
     stroke: "#0a0604",
     strokeThickness: 2
   }).setOrigin(0.5, 0.5);
-
   const enterZone = ui.add.zone(enterBtnX, btnY, btnW, btnH).setInteractive({ useHandCursor: !0 });
-  enterZone.on("pointerover", () => {
-    bEnterBg.clear();
-    bEnterBg.fillStyle(0x235230, 1);
-    bEnterBg.fillRoundedRect(enterBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-    bEnterBg.lineStyle(1.5, 0xffffff, 1);
-    bEnterBg.strokeRoundedRect(enterBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  });
-  enterZone.on("pointerout", () => {
-    bEnterBg.clear();
-    bEnterBg.fillStyle(0x163820, 0.95);
-    bEnterBg.fillRoundedRect(enterBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-    bEnterBg.lineStyle(1.5, 0x4ade80, 0.95);
-    bEnterBg.strokeRoundedRect(enterBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  });
-  enterZone.on("pointerdown", () => confirmAction());
-  R.add([bEnterBg, tEnter, enterZone]);
 
-  // Botão 2: RECUAR
-  const cancelBtnX = cx + 76;
   const bCancelBg = ui.add.graphics();
-  bCancelBg.fillStyle(0x241a10, 0.95);
-  bCancelBg.fillRoundedRect(cancelBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  bCancelBg.lineStyle(1.5, 0x8a7f66, 0.9);
-  bCancelBg.strokeRoundedRect(cancelBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-
-  const tCancel = ui.add.text(cancelBtnX, btnY, "✕ RECUAR [ESC]", {
+  const cancelBtnX = cx + 76;
+  const tCancel = ui.add.text(cancelBtnX, btnY, "✕ RECUAR", {
     fontFamily: F_SERIF,
     fontStyle: "bold",
     fontSize: "9px",
@@ -447,35 +394,90 @@ function __portalPrompt(S, opts = {}) {
     stroke: "#0a0604",
     strokeThickness: 2
   }).setOrigin(0.5, 0.5);
-
   const cancelZone = ui.add.zone(cancelBtnX, btnY, btnW, btnH).setInteractive({ useHandCursor: !0 });
-  cancelZone.on("pointerover", () => {
+
+  const updateVisualButtons = () => {
+    bEnterBg.clear();
     bCancelBg.clear();
-    bCancelBg.fillStyle(0x3a2c1d, 1);
+
+    const isEnterSel = selectedIdx === 0;
+    bEnterBg.fillStyle(isEnterSel ? 0x245832 : 0x163820, 0.95);
+    bEnterBg.fillRoundedRect(enterBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
+    bEnterBg.lineStyle(isEnterSel ? 2 : 1.5, isEnterSel ? 0xffffff : 0x4ade80, 0.95);
+    bEnterBg.strokeRoundedRect(enterBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
+    tEnter.setColor(isEnterSel ? "#ffffff" : "#86efac");
+
+    const isCancelSel = selectedIdx === 1;
+    bCancelBg.fillStyle(isCancelSel ? 0x3d2c18 : 0x241a10, 0.95);
     bCancelBg.fillRoundedRect(cancelBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-    bCancelBg.lineStyle(1.5, 0xffffff, 1);
+    bCancelBg.lineStyle(isCancelSel ? 2 : 1.5, isCancelSel ? 0xffffff : 0x8a7f66, 0.9);
     bCancelBg.strokeRoundedRect(cancelBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  });
-  cancelZone.on("pointerout", () => {
-    bCancelBg.clear();
-    bCancelBg.fillStyle(0x241a10, 0.95);
-    bCancelBg.fillRoundedRect(cancelBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-    bCancelBg.lineStyle(1.5, 0x8a7f66, 0.9);
-    bCancelBg.strokeRoundedRect(cancelBtnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-  });
+    tCancel.setColor(isCancelSel ? "#ffffff" : "#d1c7b7");
+  };
+
+  enterZone.on("pointerover", () => { selectedIdx = 0; updateVisualButtons(); });
+  enterZone.on("pointerdown", () => confirmAction());
+
+  cancelZone.on("pointerover", () => { selectedIdx = 1; updateVisualButtons(); });
   cancelZone.on("pointerdown", () => close());
   dim.on("pointerdown", () => close());
-  R.add([bCancelBg, tCancel, cancelZone]);
+
+  updateVisualButtons();
+  R.add([bEnterBg, tEnter, enterZone, bCancelBg, tCancel, cancelZone]);
 
   const keyHandler = ev => {
     if (closed) return;
-    if (ev.key === "Enter" || ev.key === " " || ev.key === "e" || ev.key === "E") {
+    if (ev.key === "ArrowLeft" || ev.key === "a" || ev.key === "A") {
       ev.stopImmediatePropagation?.();
-      confirmAction();
+      selectedIdx = 0;
+      updateVisualButtons();
+    } else if (ev.key === "ArrowRight" || ev.key === "d" || ev.key === "D") {
+      ev.stopImmediatePropagation?.();
+      selectedIdx = 1;
+      updateVisualButtons();
+    } else if (ev.key === "Enter" || ev.key === " " || ev.key === "e" || ev.key === "E") {
+      ev.stopImmediatePropagation?.();
+      if (selectedIdx === 0) confirmAction(); else close();
     } else if (ev.key === "Escape" || ev.key === "Backspace" || ev.key === "q" || ev.key === "Q") {
       ev.stopImmediatePropagation?.();
       close();
     }
   };
   ui.input.keyboard?.on("keydown", keyHandler);
+
+  // Navegação direta com GAMEPAD (D-pad, Analógico, Botões A e B)
+  let prevPadBtn = {};
+  const padPoll = () => {
+    if (closed) return;
+    try {
+      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+      const pad = Array.from(pads).find(p => p && p.connected);
+      if (pad) {
+        const btn = (i) => !!pad.buttons[i]?.pressed || (pad.buttons[i]?.value || 0) > 0.5;
+        const left = btn(14) || (pad.axes[0] || 0) < -0.5;
+        const right = btn(15) || (pad.axes[0] || 0) > 0.5;
+        const confirm = btn(0); // Botão A / Cruz
+        const cancel = btn(1) || btn(9); // Botão B / Círculo ou Start
+
+        if (left && !prevPadBtn.left) {
+          selectedIdx = 0;
+          updateVisualButtons();
+        } else if (right && !prevPadBtn.right) {
+          selectedIdx = 1;
+          updateVisualButtons();
+        } else if (confirm && !prevPadBtn.confirm) {
+          if (selectedIdx === 0) confirmAction(); else close();
+        } else if (cancel && !prevPadBtn.cancel) {
+          close();
+        }
+
+        prevPadBtn = { left, right, confirm, cancel };
+      }
+    } catch(e) {}
+    if (!closed) requestAnimationFrame(padPoll);
+  };
+  requestAnimationFrame(padPoll);
+
+  const refreshPad = () => {};
+  window.addEventListener("gamepadconnected", refreshPad);
 }

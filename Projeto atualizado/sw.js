@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.55.0-balance-moderate";
+const CACHE = "ded-web-v4.56.0-gamepad-attack-fix";
 
 self.addEventListener("install", () => self.skipWaiting());
 
