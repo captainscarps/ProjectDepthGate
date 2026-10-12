@@ -110,7 +110,7 @@ for k in ORDER:
 top = min(f.getbbox()[1] for f in af[:4])
 h = FOOT - top
 n = len(af)
-save("archer", af, {"scale": round(.69 * 68 / h, 3), "footY": FOOT - 1,
+if os.environ.get("BUILD_OLD_ARCHER"): save("archer", af, {"scale": round(.69 * 68 / h, 3), "footY": FOOT - 1,
                     "anchors": [[CX + 22, top + int(h * .42)]] * n, "torso": [[CX, top + int(h * .55)]] * n,
                     "head": [[CX, top + int(h * .18)]] * n})
 print("arqueiro: altura", h)
