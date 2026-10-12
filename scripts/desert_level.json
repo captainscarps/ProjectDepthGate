@@ -1,0 +1,603 @@
+{
+ "world": {
+  "cols": 64,
+  "rows": 48
+ },
+ "rooms": [
+  {
+   "id": "deserto-portao",
+   "name": "Portão das Areias",
+   "rect": {
+    "x": 27,
+    "y": 37,
+    "w": 12,
+    "h": 8
+   },
+   "ambient": 0.16,
+   "walls": [],
+   "enemies": [],
+   "decor": [
+    {
+     "type": "sprite",
+     "tex": "ds-cactus",
+     "col": 28,
+     "row": 38,
+     "solid": true,
+     "bw": 14,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-deadtree",
+     "col": 37,
+     "row": 38,
+     "solid": true,
+     "bw": 14,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-campfire",
+     "col": 35,
+     "row": 42,
+     "solid": true,
+     "bw": 22,
+     "bh": 12,
+     "light": "TORCH"
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-log",
+     "col": 35,
+     "row": 44,
+     "solid": true,
+     "bw": 40,
+     "bh": 8
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-boulder3",
+     "col": 28,
+     "row": 44,
+     "solid": true,
+     "bw": 26,
+     "bh": 12
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-skull",
+     "col": 30,
+     "row": 40,
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "deserto-oasis",
+   "name": "Oásis Esquecido",
+   "rect": {
+    "x": 23,
+    "y": 21,
+    "w": 20,
+    "h": 12
+   },
+   "ambient": 0.2,
+   "walls": [
+    {
+     "x": 25,
+     "y": 23,
+     "w": 6,
+     "h": 3
+    }
+   ],
+   "enemies": [
+    {
+     "type": "DEMON_CASTER",
+     "col": 36,
+     "row": 25,
+     "elite": true,
+     "affixes": [
+      "VAMPIRIC"
+     ]
+    },
+    {
+     "type": "NECRO_SHADE",
+     "col": 27,
+     "row": 29
+    },
+    {
+     "type": "NECRO_SHADE",
+     "col": 40,
+     "row": 29
+    },
+    {
+     "type": "GHOST",
+     "col": 33,
+     "row": 30
+    }
+   ],
+   "decor": [
+    {
+     "type": "sprite",
+     "tex": "ds-boat",
+     "col": 28,
+     "row": 27,
+     "solid": true,
+     "bw": 60,
+     "bh": 12
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-cactus",
+     "col": 24,
+     "row": 22,
+     "solid": true,
+     "bw": 14,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-cactus2",
+     "col": 32,
+     "row": 23,
+     "solid": true,
+     "bw": 12,
+     "bh": 8
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-cactus3",
+     "col": 41,
+     "row": 22,
+     "solid": true,
+     "bw": 12,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-deadtree2",
+     "col": 41,
+     "row": 31,
+     "solid": true,
+     "bw": 14,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-boulder",
+     "col": 24,
+     "row": 31,
+     "solid": true,
+     "bw": 30,
+     "bh": 14
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-rockpile",
+     "col": 37,
+     "row": 22,
+     "solid": true,
+     "bw": 40,
+     "bh": 14
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-skull",
+     "col": 38,
+     "row": 28,
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "deserto-vila",
+   "name": "Vila Soterrada",
+   "rect": {
+    "x": 3,
+    "y": 19,
+    "w": 14,
+    "h": 14
+   },
+   "ambient": 0.22,
+   "walls": [],
+   "enemies": [
+    {
+     "type": "GHOST",
+     "col": 6,
+     "row": 29
+    },
+    {
+     "type": "DEMON",
+     "col": 13,
+     "row": 27
+    },
+    {
+     "type": "SKELETON_MAGE",
+     "col": 9,
+     "row": 31
+    }
+   ],
+   "decor": [
+    {
+     "type": "sprite",
+     "tex": "ds-house",
+     "col": 7,
+     "row": 23,
+     "solid": true,
+     "bw": 130,
+     "bh": 30,
+     "baseUp": 6
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-tower",
+     "col": 14,
+     "row": 23,
+     "solid": true,
+     "bw": 52,
+     "bh": 24,
+     "baseUp": 6
+    },
+    {
+     "type": "chest",
+     "col": 15,
+     "row": 31,
+     "solid": true
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-cactus2",
+     "col": 4,
+     "row": 25,
+     "solid": true,
+     "bw": 12,
+     "bh": 8
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-boulder4",
+     "col": 4,
+     "row": 31,
+     "solid": true,
+     "bw": 28,
+     "bh": 12
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-deadtree",
+     "col": 11,
+     "row": 27,
+     "solid": true,
+     "bw": 14,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-skull",
+     "col": 8,
+     "row": 28,
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "deserto-canion",
+   "name": "Cânion dos Ossos",
+   "rect": {
+    "x": 48,
+    "y": 19,
+    "w": 13,
+    "h": 14
+   },
+   "ambient": 0.24,
+   "walls": [],
+   "enemies": [
+    {
+     "type": "GHOST",
+     "col": 51,
+     "row": 26
+    },
+    {
+     "type": "SKELETON_WARRIOR",
+     "col": 57,
+     "row": 30
+    },
+    {
+     "type": "DEMON_CASTER",
+     "col": 54,
+     "row": 23
+    }
+   ],
+   "decor": [
+    {
+     "type": "sprite",
+     "tex": "ds-boulder2",
+     "col": 51,
+     "row": 22,
+     "solid": true,
+     "bw": 34,
+     "bh": 16
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-boulder",
+     "col": 58,
+     "row": 22,
+     "solid": true,
+     "bw": 30,
+     "bh": 14
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-rockpile",
+     "col": 54,
+     "row": 28,
+     "solid": true,
+     "bw": 40,
+     "bh": 14
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-deadtree2",
+     "col": 49,
+     "row": 31,
+     "solid": true,
+     "bw": 14,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-cactus",
+     "col": 59,
+     "row": 31,
+     "solid": true,
+     "bw": 14,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-skull",
+     "col": 56,
+     "row": 25,
+     "flat": true
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-skull",
+     "col": 50,
+     "row": 28,
+     "flat": true
+    },
+    {
+     "type": "trap-spikes",
+     "col": 52,
+     "row": 30
+    },
+    {
+     "type": "trap-spikes",
+     "col": 57,
+     "row": 26
+    }
+   ]
+  },
+  {
+   "id": "deserto-piramide",
+   "name": "Pirâmide Esquecida",
+   "rect": {
+    "x": 19,
+    "y": 2,
+    "w": 26,
+    "h": 14
+   },
+   "ambient": 0.3,
+   "final": true,
+   "boss": "ABYSS_GUARDIAN",
+   "banner": "PIRÂMIDE ESQUECIDA",
+   "zoom": 0.88,
+   "walls": [],
+   "enemies": [
+    {
+     "type": "GHOST",
+     "col": 25,
+     "row": 10
+    },
+    {
+     "type": "GHOST",
+     "col": 39,
+     "row": 10
+    },
+    {
+     "type": "DEMON",
+     "col": 32,
+     "row": 12
+    }
+   ],
+   "decor": [
+    {
+     "type": "sprite",
+     "tex": "ds-pyramid",
+     "col": 32,
+     "row": 5,
+     "solid": true,
+     "bw": 150,
+     "bh": 44,
+     "baseUp": 4
+    },
+    {
+     "type": "statue-fire",
+     "col": 26,
+     "row": 6
+    },
+    {
+     "type": "statue-fire",
+     "col": 38,
+     "row": 6
+    },
+    {
+     "type": "brazier",
+     "col": 23,
+     "row": 13,
+     "solid": true
+    },
+    {
+     "type": "brazier",
+     "col": 41,
+     "row": 13,
+     "solid": true
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-cactus2",
+     "col": 20,
+     "row": 3,
+     "solid": true,
+     "bw": 12,
+     "bh": 8
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-cactus3",
+     "col": 44,
+     "row": 3,
+     "solid": true,
+     "bw": 12,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "ds-skull",
+     "col": 29,
+     "row": 13,
+     "flat": true
+    }
+   ]
+  }
+ ],
+ "corridors": [
+  {
+   "x": 32,
+   "y": 33,
+   "w": 2,
+   "h": 4
+  },
+  {
+   "x": 17,
+   "y": 26,
+   "w": 6,
+   "h": 2
+  },
+  {
+   "x": 43,
+   "y": 26,
+   "w": 5,
+   "h": 2
+  },
+  {
+   "x": 8,
+   "y": 9,
+   "w": 2,
+   "h": 10
+  },
+  {
+   "x": 10,
+   "y": 9,
+   "w": 9,
+   "h": 2
+  },
+  {
+   "x": 54,
+   "y": 9,
+   "w": 2,
+   "h": 10
+  },
+  {
+   "x": 45,
+   "y": 9,
+   "w": 9,
+   "h": 2
+  }
+ ],
+ "doors": [
+  {
+   "id": "porta-deserto-oasis",
+   "orientation": "h",
+   "col": 32,
+   "row": 34,
+   "rooms": [
+    "deserto-portao",
+    "deserto-oasis"
+   ],
+   "model": "gate"
+  },
+  {
+   "id": "porta-deserto-vila",
+   "orientation": "v",
+   "col": 19,
+   "row": 26,
+   "rooms": [
+    "deserto-oasis",
+    "deserto-vila"
+   ],
+   "model": "gate"
+  },
+  {
+   "id": "porta-deserto-canion",
+   "orientation": "v",
+   "col": 45,
+   "row": 26,
+   "rooms": [
+    "deserto-oasis",
+    "deserto-canion"
+   ],
+   "model": "gate"
+  },
+  {
+   "id": "porta-deserto-piramide-w",
+   "orientation": "h",
+   "col": 8,
+   "row": 17,
+   "rooms": [
+    "deserto-vila",
+    "deserto-piramide"
+   ],
+   "model": "gate"
+  },
+  {
+   "id": "porta-deserto-piramide-e",
+   "orientation": "h",
+   "col": 54,
+   "row": 17,
+   "rooms": [
+    "deserto-canion",
+    "deserto-piramide"
+   ],
+   "model": "gate"
+  }
+ ],
+ "spawn": {
+  "col": 32,
+  "row": 42
+ },
+ "props": [
+  "ds-boat",
+  "ds-boulder",
+  "ds-boulder2",
+  "ds-boulder3",
+  "ds-boulder4",
+  "ds-cactus",
+  "ds-cactus2",
+  "ds-cactus3",
+  "ds-campfire",
+  "ds-deadtree",
+  "ds-deadtree2",
+  "ds-house",
+  "ds-house2",
+  "ds-log",
+  "ds-mesa",
+  "ds-mesa2",
+  "ds-pyramid",
+  "ds-rockpile",
+  "ds-skull",
+  "ds-tower"
+ ]
+}
