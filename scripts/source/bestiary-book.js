@@ -9,6 +9,8 @@ const __BK_BOSSES = ["LAVA_GOLEM", "ABYSS_GUARDIAN", "ANCIENT_COLOSSUS", "FROST_
   "FOX_WITCH", "CASTLE_LORD", "RIVER_TENGU", "GUARDIAN_FALLEN"];
 const __BK_ENDLESS_BOSS = new Set(["ABYSS_GUARDIAN", "ANCIENT_COLOSSUS", "FROST_WARDEN", "DRAGON_ANCIENT", "ANHANGA",
   "WILD_ENT", "FOX_WITCH", "CASTLE_LORD", "RIVER_TENGU"]);
+const __BK_SPOILER = new Set(["GUARDIAN_FALLEN"]);
+const __BK_PORTRAIT_BOOST = { GUARDIAN_FALLEN: 1.9 };   // ilustração maior no livro
 const __BK_EXTRA_WHERE = {
   NECRO_SHADE: "Invocada pela Rainha Necromante",
   GHOST: "Invocado pelo Anhangá",
@@ -58,7 +60,7 @@ const __BK_LORE = {
   FOX_WITCH: "Senhora da Floresta Morta. Ergue sombras dos mortos para lutar por ela e nunca combate sozinha.",
   CASTLE_LORD: "A presença que tomou o corpo do Rei e o trono de Valdrak. Tudo vê, e usa os próprios salões do castelo contra quem entra.",
   RIVER_TENGU: "Espírito-corvo que domina os ventos entre as ilhas. Aparece para quem desce fundo demais nas Profundezas.",
-  GUARDIAN_FALLEN: "A própria Guardiã, consumida pelos selos que jurou proteger. Séculos de espera viraram fome.",
+  GUARDIAN_FALLEN: "A própria Guardiã, consumida pelos selos que jurou proteger. Séculos de espera viraram fome. Derrotada, voltou à forma humana e implorou pela vida.",
 };
 const __BK_ATK = {
   MELEE_SLASH: "Golpe cortante", PROJECTILE: "Disparo à distância", AREA_BLAST: "Explosão em área",
@@ -96,6 +98,13 @@ function __bkEntries() {
     out.push({ k, boss: !0, d: Yt[k], where: [...(reg[k] || [])], deep: __BK_ENDLESS_BOSS.has(k) ? 1 : null });
   }
   for (const e of out) __BK_EXTRA_WHERE[e.k] && e.where.push(__BK_EXTRA_WHERE[e.k]);
+  // sem spoiler: a Guardiã transformada só aparece depois de zerar a campanha
+  let done = !1;
+  try { done = !!localStorage.getItem("depthgate:campaignDone") } catch (e) { }
+  for (const e of out) if (__BK_SPOILER.has(e.k) && !done) {
+    e.locked = !0; e.real = e.d;
+    e.d = { name: "???", subtitle: __L3("Registro selado", "Sealed entry", "Registro sellado"), maxHp: e.d.maxHp, scale: e.d.scale };
+  }
   return out;
 }
 function __bestiaryOpen(from) {
@@ -345,7 +354,7 @@ class __BookScene extends j.Scene {
           this.__pk[grp ? "b" : "c"] = k < 1e9 ? k : 1;
         }
       }
-      let sc = (e.boss ? this.__pk.b : this.__pk.c) * this.gameScale(e);
+      let sc = (e.boss ? this.__pk.b : this.__pk.c) * this.gameScale(e) * (__BK_PORTRAIT_BOOST[e.k] ?? 1);
       sc = Math.min(sc, fit(bb, 1));
       const sp = this.add.sprite(0, 0, tex, 0).setOrigin(0, 0).setScale(sc);
       sp.setPosition(Math.round(bx + bw / 2 - (bb.x + bb.w / 2) * sc), Math.round(by + bh - 14 - (bb.y + bb.h) * sc));
@@ -353,13 +362,18 @@ class __BookScene extends j.Scene {
       L.add(sp);
     } else this.T(L, bx + bw / 2, by + bh / 2 - 12, "?", 26, __BK_FAINT, { ox: .5, st: "bold" });
     // descrição
-    const lore = __BK_LORE[e.k] || "";
+    const lore = e.locked ? __L3("Uma página arrancada… Só quem chegar ao fim da jornada saberá o que estava escrito aqui.", "A torn-out page… Only those who reach the end of the journey will know what was written here.", "Una página arrancada… Solo quien llegue al final del viaje sabrá lo que estaba escrito aquí.") : (__BK_LORE[e.k] || "");
     this.T(L, X + 2, by + bh + 10, lore, 9.5, __BK_INK, { st: "italic", ww: PW - 4, ls: 3 });
     const k = this.K[e.k] || 0;
     this.T(L, X + PW / 2, 300, k ? `${__L3("Derrotados por você", "Defeated by you", "Derrotados por ti")}: ${k}` : __L3("Ainda não derrotado", "Not yet defeated", "Aún no derrotado"), 8, k ? __BK_INK : __BK_FAINT, { ox: .5, st: "italic" });
   }
   pageEntryR(e, X, PW) {
     const R = this.R, d = e.d; let y = 40;
+    if (e.locked) {
+      this.T(R, X + PW / 2, 120, "?", 46, __BK_FAINT, { ox: .5, st: "bold" });
+      this.T(R, X + PW / 2, 190, __L3("Conclua a campanha para revelar este registro.", "Finish the campaign to reveal this entry.", "Completa la campaña para revelar este registro."), 9.5, __BK_INK, { ox: .5, st: "italic", ww: PW - 30, al: "center" });
+      return;
+    }
     const head = s => { this.T(R, X + 2, y, s, 9.5, __BK_RED, { st: "bold" }); this.rule(R, X + 2, X + PW - 2, y + 13, 9070138, .6); y += 17 };
     const bar = (lab, val, ratio, txt) => {
       this.T(R, X + 4, y, lab, 8.5, __BK_INK, { st: "bold" });

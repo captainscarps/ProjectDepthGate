@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.42.0-deserto-organico-golem";
+const CACHE = "ded-web-v4.43.0-arqueiro-ladina-guardia";
 
 self.addEventListener("install", () => self.skipWaiting());
 
