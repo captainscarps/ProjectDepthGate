@@ -117,11 +117,18 @@ def stylize(f):
     q.putalpha(v.getchannel("A"))
     arr = np.asarray(q).copy()
     al = arr[..., 3] > 0
-    pad = np.pad(al, 1)
-    ring = ndimage.binary_dilation(pad) & ~pad
+    # contorno mais fino e suave: a arte já traz contorno próprio (grosso, quase preto);
+    # a borda externa escura vira a cor do vizinho de dentro, só escurecida ("sel-out")
+    edge = al & ~ndimage.binary_erosion(al)
+    lum = arr[..., :3].astype(int).sum(-1)
+    inner = al & ~edge
+    idx = ndimage.distance_transform_edt(~inner, return_distances=False, return_indices=True)
+    for y, x in zip(*np.nonzero(edge & (lum < 150))):
+        iy, ix = idx[0][y, x], idx[1][y, x]
+        c = arr[iy, ix, :3].astype(float)
+        arr[y, x, :3] = np.clip(c * .5 + np.array([10, 6, 4]), 0, 255).astype(np.uint8)
     out = np.zeros((arr.shape[0] + 2, arr.shape[1] + 2, 4), np.uint8)
     out[1:-1, 1:-1] = arr
-    out[ring] = OUTLINE
     return Image.fromarray(out)
 
 
