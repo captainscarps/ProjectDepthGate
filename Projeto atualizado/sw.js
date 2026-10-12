@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.53.0-extra-bosses";
+const CACHE = "ded-web-v4.54.0-mimic-bestiary-portal";
 
 self.addEventListener("install", () => self.skipWaiting());
 
