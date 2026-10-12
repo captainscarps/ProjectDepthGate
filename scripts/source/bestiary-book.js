@@ -23,11 +23,11 @@ const __BK_LORE = {
   GHOST: "Eco de alguém que morreu sem terminar o que começou. Atravessa paredes e se aproxima sem fazer barulho.",
   DEMON: "Criatura do Abismo que escapou pelas frestas dos selos. Resistente, bate com força e não recua diante de feridas.",
   DEMON_CASTER: "Demônio que aprendeu a moldar o fogo do Abismo. Alterna explosões no chão com projéteis — fique sempre em movimento.",
-  GOBLIN: "Pequeno, ganancioso e muito rápido. Sozinho é inofensivo; em bando, cerca o viajante distraído.",
-  GOBLIN_ARCHER: "Caçador covarde que atira escondido atrás dos companheiros. Tem pouca vida: derrube-o primeiro.",
-  GOBLIN_ASSASSIN: "A elite dos goblins: lâminas curtas, passos rápidos e cortes certeiros. Ataca de surpresa e recua.",
+  GOBLIN: "Pequeno, ganancioso e muito rápido. Anda agachado com sua picareta enferrujada; sozinho é inofensivo, em bando cerca o viajante distraído.",
+  GOBLIN_ARCHER: "Caçador covarde que gira a funda e atira pedras escondido atrás dos companheiros. Tem pouca vida: derrube-o primeiro.",
+  GOBLIN_ASSASSIN: "A elite dos goblins: lanceiro de pele escura, passos rápidos e estocadas certeiras. Avança de surpresa e recua.",
   ORC: "Guerreiro bruto das terras altas. Difícil de empurrar e paciente na perseguição.",
-  ORC_WARRIOR: "Orc veterano, de armadura e machado. Prepara golpes amplos que cortam tudo à sua frente.",
+  ORC_WARRIOR: "Orc veterano, alto e marcado por cicatrizes, que luta com um chicote de corrente. Prepara golpes amplos que cortam tudo à sua frente.",
   ORC_BRUTE: "Rocha animada pelas runas das ruínas. Lento, mas cada pancada esmaga quem estiver por perto.",
   TROLL: "Gigante de pele grossa que vive nas matas fundas. Aguenta muito castigo e não se deixa empurrar.",
   CYCLOPS: "Colosso de um olho só que guarda as ilhas. Bate no chão com força suficiente para abrir uma onda de choque.",
@@ -35,12 +35,14 @@ const __BK_LORE = {
   DRAGON_DRAKE: "Draco adulto e colérico. Combina garras e mordidas com um sopro de fogo devastador.",
   HARPY: "Mulher-pássaro das alturas. Voa rápido, ataca de longe e mergulha quando o alvo se distrai.",
   FIRE_ELEMENTAL: "Corpo de pedra derretida que mantém acesa a forja da Fortaleza. Arremessa magma e faz o chão explodir ao seu redor.",
-  DRAGON_PRIEST: "Sacerdote a serviço do Dragão Ancião. Fortalece os aliados próximos — elimine-o antes da tropa.",
-  DRAGON_KNIGHT: "Cavaleiro jurado aos dragões, em armadura de escamas. Alterna cortes rápidos com golpes esmagadores.",
+  DRAGON_PRIEST: "Sacerdote mascarado com o crânio de um dragão, a serviço do Dragão Ancião. Fortalece os aliados próximos — elimine-o antes da tropa.",
+  DRAGON_KNIGHT: "Brutamontes rubro jurado aos dragões, com um crânio por elmo e uma clava de tronco no ombro. Alterna golpes rápidos com pancadas esmagadoras.",
   ICE_SKELETON: "Esqueleto conservado no gelo eterno da Cidadela. Mais duro e mais forte que os das catacumbas.",
   FROST_GOBLIN: "Goblin das montanhas geladas, mais forte e mais teimoso que os da floresta.",
-  FROST_GOBLIN_ARCHER: "Atira flechas de gelo do alto dos penhascos. Mantém distância e se esconde na nevasca.",
-  FROST_WOLF: "Lobo de pelagem branca que caça em matilha. Veloz e de mordida firme.",
+  FROST_GOBLIN_ARCHER: "Atira pedras de gelo com a funda do alto dos penhascos. Mantém distância, se esconde na nevasca e seus disparos deixam o alvo lento.",
+  FROST_WOLF: "Urso enorme de pelagem branca marcada por runas de gelo. Lento até perceber a presa — então investe de uma vez e golpeia com patadas pesadas.",
+  DRAGON_WYRMLING_FROST: "Filhote nascido entre as geleiras. Em vez de fogo, cospe um sopro gélido que congela os passos de quem é atingido.",
+  DRAGON_WYRMLING_SHADOW: "Filhote corrompido pelas trevas dos santuários profanados. Seu sopro sombrio é mágico e atravessa armaduras.",
   YETI: "Fera colossal das nevascas. Seu golpe pesado derruba até os guerreiros mais firmes.",
   ICE_ELEMENTAL: "Cristal vivo que guarda os salões congelados. Dispara estilhaços e faz o gelo explodir ao seu redor.",
   FROST_DEMON: "Demônio que se alimentou do frio da Cidadela. Corta, dispara e explode em gelo — um dos inimigos mais perigosos do norte.",
@@ -362,7 +364,12 @@ class __BookScene extends j.Scene {
     y += 4; head(__L3("ATAQUES", "ATTACKS", "ATAQUES"));
     const atk = [];
     if (e.boss) { for (const [k, a] of Object.entries(d.attacks || {})) atk.push([__BK_ATK[k] ?? k, a?.damage]) }
-    else { for (const a of d.ai?.attacks || []) atk.push([a.type === "PROJECTILE" && a.texture === "proj-arrow" ? __L3("Flechas", "Arrows", "Flechas") : (__BK_ATK[a.type] ?? a.type), a.damage]) }
+    else { for (const a of d.ai?.attacks || []) atk.push([
+      a.type === "PROJECTILE" && a.texture === "proj-arrow" ? __L3("Flechas", "Arrows", "Flechas")
+      : a.type === "PROJECTILE" && /GOBLIN_ARCHER/.test(e.k) ? __L3("Pedras de funda", "Sling stones", "Piedras de honda")
+      : a.type === "FIRE_BREATH" && a.status?.key === "SLOW" ? __L3("Sopro gélido (deixa lento)", "Frost breath (slows)", "Aliento gélido (ralentiza)")
+      : a.type === "FIRE_BREATH" && a.damageType === "magical" ? __L3("Sopro sombrio (mágico)", "Shadow breath (magic)", "Aliento sombrío (mágico)")
+      : (__BK_ATK[a.type] ?? a.type), a.damage]) }
     if (!atk.length) atk.push([__L3("Ataque corpo a corpo", "Melee strike", "Ataque cuerpo a cuerpo"), dmg]);
     const dl = __L3("de dano", "damage", "de daño");
     if (atk.length > 3) {                                   // muitos ataques (chefes): duas colunas

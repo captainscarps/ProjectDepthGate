@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.36.0-santuario-fix";
+const CACHE = "ded-web-v4.37.0-novos-inimigos";
 
 self.addEventListener("install", () => self.skipWaiting());
 
