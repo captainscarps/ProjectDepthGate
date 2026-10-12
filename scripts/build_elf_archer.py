@@ -175,6 +175,35 @@ for k in ORDER:
     else:
         frames.append(place(f))
 
+# ── andar e correr: os 8 quadros completos, alinhados pelo tronco (sem "tremer") ──
+def cycle(src):
+    sts = [stylize(f) for f in src]
+    W = 200
+    def canvas(st, dx):
+        c = np.zeros((128, W), bool)
+        al = np.asarray(st)[..., 3] > 0
+        y0 = FOOT - st.height + 1
+        c[y0:y0 + st.height, dx:dx + st.width] = al
+        return c
+    base_dx = round(W / 2 - body_x(sts[0]))
+    ref = canvas(sts[0], base_dx)[:int(FOOT - sts[0].height * .55)]     # tronco/cabeça do 1º quadro
+    out = []
+    for st in sts:
+        guess = round(W / 2 - body_x(st))
+        best = max(range(guess - 10, guess + 11),
+                   key=lambda dx: (canvas(st, dx)[:ref.shape[0]] & ref).sum())
+        img = Image.new("RGBA", (128, 128))
+        img.alpha_composite(st, (round(CX + best - W / 2), FOOT - st.height + 1))
+        out.append(img)
+    return out
+
+
+walk8, run8 = cycle(walk), cycle(run)
+for i, c in enumerate([0, 1, 3, 4, 5, 7]):
+    frames[ORDER.index(f"walk{i}")] = walk8[c]
+    frames[ORDER.index(f"run{i}")] = run8[c]
+EXTRA = len(frames)
+frames += walk8 + run8
 top = min(fr.getbbox()[1] for fr in frames[:4])
 h = FOOT - top
 n = len(frames)
@@ -182,6 +211,7 @@ n = len(frames)
 hb = round(22 / HIRES)
 hx = CX - hb // 2 + 4
 upd = {"scale": round(.69 * 68 / h, 3), "footY": FOOT, "hires": round(HIRES, 3),
+       "walkFull": list(range(EXTRA, EXTRA + 8)), "runFull": list(range(EXTRA + 8, EXTRA + 16)),
        "pcrop": [hx, top - 1, hb, hb],
        "anchors": [[CX + 24, top + int(h * .42)]] * n, "torso": [[CX, top + int(h * .5)]] * n,
        "head": [[CX + 3, top + int(h * .12)]] * n}
@@ -198,6 +228,8 @@ for o in OUTS:
     if os.path.exists(jp):
         lay = json.load(open(jp))
         lay.update(upd)
+        lay["map"]["walk"] = upd["walkFull"]
+        lay["map"]["run"] = upd["runFull"]
         json.dump(lay, open(jp, "w"), separators=(",", ":"))
 # projétil: flecha verde do pacote (mesma escala)
 _bb = arrow.getbbox(); arrow = arrow.crop(_bb); _k = 18 / arrow.width

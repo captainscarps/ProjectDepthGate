@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.46.1-arqueiro-contorno";
+const CACHE = "ded-web-v4.46.2-arqueiro-andar";
 
 self.addEventListener("install", () => self.skipWaiting());
 
