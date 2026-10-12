@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.50.0-skins-conjuntos";
+const CACHE = "ded-web-v4.52.0-rift-portals-forge";
 
 self.addEventListener("install", () => self.skipWaiting());
 
