@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.48.0-hayato";
+const CACHE = "ded-web-v4.48.1-logo";
 
 self.addEventListener("install", () => self.skipWaiting());
 
