@@ -5,6 +5,7 @@ Novos visuais de inimigos (aplicar depois de patch_fixes.py):
   • Dragão Jovem → Mini Dragão (+ variantes do Gelo e Sombria, novas)
   • Sacerdote / Cavaleiro Dracônico → pacote Dracônicos
   • Lobo Glacial → Urso Glacial
+  • Troll e Yeti → pacote "Troll e Yete" (verde-musgo / branco-gelo)
 Folhas geradas por scripts/build_enemy_sheets.py.
 """
 import json
@@ -48,11 +49,16 @@ import re
 old = re.search(r'\["mk3e-frost-goblin-archer","frost-goblin-archer-mk3\.png",\d+,\d+\]', s).group(0)
 rep(old, f'["mk3e-frost-goblin-archer",{ld("frost-goblin-archer-v4")}]')
 
+rep('["mk3e-troll","troll-mk3.png",52,62]', f'["mk3e-troll",{ld("troll-v4")}]')
+rep('["mk3e-yeti","yeti-mk3.png",56,66]', f'["mk3e-yeti",{ld("yeti-v4")}]')
+
 # ── escalas (altura na tela ≈ visível × Si × escala da classe) ──────────
 GOB = 0.57  # mesma escala p/ todo o pacote de goblins → proporções coerentes
 rep('"mk3e-goblin":.68,"mk3e-goblin-archer":.68,"mk3e-goblin-assassin":0.404,',
     f'"mk3e-goblin":{GOB},"mk3e-goblin-archer":{GOB},"mk3e-goblin-assassin":0.62,')
 rep('"mk3e-orc-warrior":.71,', '"mk3e-orc-warrior":0.425,')
+rep('"mk3e-troll":.68,', '"mk3e-troll":0.85,')
+rep('"mk3e-yeti":.64,', '"mk3e-yeti":0.94,')
 rep('"mk3e-wyrmling":.76,', '"mk3e-wyrmling":0.39,"mk3e-wyrmling-frost":0.39,"mk3e-wyrmling-shadow":0.39,')
 rep('"mk3e-dragon-priest":.67,"mk3e-dragon-knight":.68,', '"mk3e-dragon-priest":0.515,"mk3e-dragon-knight":0.64,')
 rep('"mk3e-frost-goblin":.68,"mk3e-frost-goblin-archer":.68,"mk3e-frost-wolf":.68,',

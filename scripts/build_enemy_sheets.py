@@ -148,6 +148,31 @@ def elite_skin(h, s, v):
     return h, s, v
 
 
+def yeti_fur(h, s, v):
+    # laranja/vermelho → pelagem branca com sombras azul-gelo (cores do Yeti)
+    if s > 0.35 and in_range(h, 330, 45):
+        return 205, min(0.55, 0.06 + (1 - v) * 1.6), min(1, 0.72 + 0.28 * v)
+    return h, s, v
+
+
+def troll_skin(h, s, v):
+    # laranja/vermelho → verde-musgo (cores do Troll)
+    if s > 0.35 and in_range(h, 330, 45):
+        return 88 + (h if h < 180 else h - 360) * 0.4, s * 0.62, v * 0.62
+    return h, s, v
+
+
+def husky():
+    d = os.path.dirname(find("Troll e Yete", "Husky.png"))
+    S = lambda nm: strip(os.path.join(d, nm + ".png"), 42)
+    idle, walk, a, hurt, dead = S("Husky_idle"), S("Husky_walk"), S("Husky_attack"), no_flash(S("Husky_hurt")), S("Husky_death")
+    return build({
+        "idle": pick(idle, 4), "walk": pick(walk, 6), "run": pick(walk, 6),
+        "alert": [idle[0]], "windup": [a[0], a[1]], "strike": [a[2], a[2]],
+        "recover": [a[3]], "hurt": pick(hurt, 2, 0.3, 1), "death": pick(dead, 4),
+    })
+
+
 # ── fontes ──────────────────────────────────────────────────────────────
 def goblin(n, atk, run="Run"):
     d = os.path.dirname(find(f"Goblin_{n}", "Idle.png"))
@@ -203,6 +228,9 @@ def main():
     jobs += [("dragon-knight-v4", boss_pack("Cavaleiro*", "Demon_Boss", 96, False), True, None),
              ("dragon-priest-v4", boss_pack("Sacerdote*", "Mage_boss", 64, False), True, None),
              ("frost-bear-v4", boss_pack("Urso Glacial", "Magic_bear", 72, True), True, None)]
+    hk = husky()
+    jobs += [("troll-v4", hk, True, troll_skin),
+             ("yeti-v4", hk, True, yeti_fur)]
     meta = {}
     for name, seq, flip, rc in jobs:
         seq = [f.copy() for f in seq]
