@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.48.1-logo";
+const CACHE = "ded-web-v4.49.0-movimento";
 
 self.addEventListener("install", () => self.skipWaiting());
 

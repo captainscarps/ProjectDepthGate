@@ -60,12 +60,20 @@ def build(src):
     """src: dict anim->list of frames (already chosen)."""
     order = ["idle", "walk", "run", "alert", "windup", "strike", "recover", "hurt", "death"]
     counts = [4, 6, 6, 1, 2, 2, 1, 2, 4]
-    seq = []
+    seq = Seq()
     for k, c in zip(order, counts):
         fr = src[k]
         assert len(fr) == c, (k, len(fr))
         seq += fr
+    # ciclos completos de andar/correr (sem pular quadros) depois dos 28 padrões
+    wf, rf = src.get("walkfull") or [], src.get("runfull") or []
+    seq += wf + rf
+    seq.extra = (len(wf), len(rf))
     return seq
+
+
+class Seq(list):
+    extra = (0, 0)
 
 
 def sheet(seq, flip=False, pad=1):
@@ -192,7 +200,7 @@ def husky():
     S = lambda nm: strip(os.path.join(d, nm + ".png"), 42)
     idle, walk, a, hurt, dead = S("Husky_idle"), S("Husky_walk"), S("Husky_attack"), no_flash(S("Husky_hurt")), S("Husky_death")
     return build({
-        "idle": pick(idle, 4), "walk": pick(walk, 6), "run": pick(walk, 6),
+        "idle": pick(idle, 4), "walk": pick(walk, 6), "run": pick(walk, 6), "walkfull": walk,
         "alert": [idle[0]], "windup": [a[0], a[1]], "strike": [a[2], a[2]],
         "recover": [a[3]], "hurt": pick(hurt, 2, 0.3, 1), "death": pick(dead, 4),
     })
@@ -204,7 +212,7 @@ def goblin(n, atk, run="Run"):
     S = lambda nm: strip(os.path.join(d, nm + ".png"))
     idle, walk, runf, a, hurt, dead = S("Idle"), S("Walk"), S(run), S(atk), S("Hurt"), S("Dead")
     return build({
-        "idle": pick(idle, 4), "walk": pick(walk, 6), "run": pick(runf, 6),
+        "idle": pick(idle, 4), "walk": pick(walk, 6), "run": pick(runf, 6), "walkfull": walk, "runfull": runf,
         "alert": [a[0]], "windup": pick(a, 2, 0.15, 0.4), "strike": pick(a, 2, 0.55, 0.8),
         "recover": [a[-1]], "hurt": pick(hurt, 2, 0.3, 1), "death": pick(dead, 4),
     })
@@ -215,7 +223,7 @@ def minidragon():
     S = lambda nm: strip(os.path.join(d, nm + ".png"))
     idle, walk, a, hurt, dead = S("Idle"), S("Walk"), S("Attack_1"), S("Hurt"), S("Dead")
     return build({
-        "idle": pick(idle, 4), "walk": pick(walk, 6), "run": pick(walk, 6, 0.0, 1.0),
+        "idle": pick(idle, 4), "walk": pick(walk, 6), "run": pick(walk, 6, 0.0, 1.0), "walkfull": walk,
         "alert": [a[0]], "windup": pick(a, 2, 0.1, 0.35), "strike": pick(a, 2, 0.55, 0.8),
         "recover": [a[-1]], "hurt": pick(hurt, 2, 0.3, 1), "death": pick(dead, 4),
     })
@@ -230,7 +238,8 @@ def boss_pack(folder_glob, base, fw, has_idle, hurt_idx=None):
     hurt = no_flash(hurt)
     hurt_fr = pick(hurt, 2, 0.3, 1) if len(hurt) > 1 else hurt * 2
     return build({
-        "idle": pick(idle, 4), "walk": pick(walk, 6), "run": pick(run, 6),
+        "idle": pick(idle, 4), "walk": pick(walk, 6), "run": pick(run, 6), "walkfull": walk,
+        "runfull": run if run is not walk else [],
         "alert": [sneer[len(sneer) // 2]], "windup": pick(a, 2, 0.1, 0.4), "strike": pick(a, 2, 0.55, 0.85),
         "recover": [a[-1]], "hurt": hurt_fr, "death": pick(dead, 4),
     })
@@ -262,6 +271,7 @@ def main():
     jobs += [("ice-skeleton-v4", [sk.crop((i * 80, 0, i * 80 + 80, 80)) for i in range(28)], False, ice_armor)]
     meta = {}
     for name, seq, flip, rc in jobs:
+        ex = getattr(seq, "extra", (0, 0))
         seq = [f.copy() for f in seq]
         if rc:
             seq = [recolor(f, rc) for f in seq]
@@ -270,6 +280,10 @@ def main():
             if os.path.isdir(o):
                 out.save(os.path.join(o, name + ".png"))
         meta[name] = {"w": w, "h": h, "vis": vis}
+        if ex[0]:
+            meta[name]["walk"] = list(range(28, 28 + ex[0]))
+        if ex[1]:
+            meta[name]["run"] = list(range(28 + ex[0], 28 + ex[0] + ex[1]))
         print(f"{name:24s} quadro {w}x{h}  altura visível {vis}")
     json.dump(meta, open(os.path.join(ROOT, "scripts", "enemy_sheets_v4.json"), "w"), indent=1)
 

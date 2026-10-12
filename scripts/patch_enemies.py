@@ -121,6 +121,31 @@ rep('ruins:["GOBLIN","ORC","GOBLIN_ARCHER"]', 'ruins:["GOBLIN","ORC_WARRIOR","GO
 left = [m.start() for m in re.finditer(r'"ORC"', s)]
 print("referências restantes a \"ORC\":", [s[i-40:i+20] for i in left])
 
+# ── ciclos completos de andar/correr (movimento mais fluido) ───────────
+TEX = {"mk3e-goblin": "goblin-v4", "mk3e-goblin-archer": "goblin-archer-v4", "mk3e-goblin-assassin": "goblin-elite-v4",
+       "mk3e-frost-goblin": "frost-goblin-v4", "mk3e-frost-goblin-archer": "frost-goblin-archer-v4",
+       "mk3e-wyrmling": "wyrmling-v4", "mk3e-wyrmling-frost": "wyrmling-frost-v4", "mk3e-wyrmling-shadow": "wyrmling-shadow-v4",
+       "mk3e-dragon-priest": "dragon-priest-v4", "mk3e-dragon-knight": "dragon-knight-v4", "mk3e-frost-wolf": "frost-bear-v4",
+       "mk3e-troll": "troll-v4", "mk3e-yeti": "yeti-v4", "mk3e-drake": "drake-v4", "mk3e-frost-demon": "frost-brute-v4"}
+for key, sh in TEX.items():
+    m = META.get(sh, {})
+    if not m.get("walk"):
+        continue
+    w = m["walk"]
+    r = m.get("run") or w
+    anim = ('anims:{...At,walk:{frames:%s,frameRate:%d,repeat:-1},run:{frames:%s,frameRate:%d,repeat:-1}}'
+            % (json.dumps(w), max(10, round(len(w) / .62)), json.dumps(r), max(13, round(len(r) / .5))))
+    n = 0
+    for mm in list(re.finditer(r'texture:"%s",' % re.escape(key), s)):
+        i = mm.end()
+        j = s.find("anims:At}", i)
+        nxt = s.find("texture:\"mk3e-", i)
+        if j < 0 or (0 <= nxt < j):
+            continue
+        s = s[:j] + anim + "}" + s[j + len("anims:At}"):]
+        n += 1
+    assert n >= 1, key
+
 open(BUNDLE, "w", encoding="utf-8").write(s)
 if os.path.isdir(os.path.dirname(MIRROR)):
     shutil.copyfile(BUNDLE, MIRROR)
