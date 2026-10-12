@@ -99,7 +99,14 @@ pick = {
     "deathA": A["death"][(1, 6)], "deathB": A["death"][(1, 7)], "deathC": A["death"][(2, 1)],
     "upA": idle_a[(0, 0)], "upB": idle_a[(0, 1)],
 }
-af = [frame(pick[k], BCX, BB, K) for k in ORDER]
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from enhance_pixel_sprite import enhance  # noqa: E402
+_cache = {}
+af = []
+for k in ORDER:
+    key = id(pick[k])
+    _cache.setdefault(key, enhance(pick[k]))
+    af.append(frame(_cache[key], BCX * K, BB * K, 1))
 top = min(f.getbbox()[1] for f in af[:4])
 h = FOOT - top
 n = len(af)

@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.44.0-necromante";
+const CACHE = "ded-web-v4.45.0-arqueiro-sombreado";
 
 self.addEventListener("install", () => self.skipWaiting());
 
