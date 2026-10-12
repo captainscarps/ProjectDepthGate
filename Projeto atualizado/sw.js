@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.41.0-deserto-esquecido";
+const CACHE = "ded-web-v4.42.0-deserto-organico-golem";
 
 self.addEventListener("install", () => self.skipWaiting());
 

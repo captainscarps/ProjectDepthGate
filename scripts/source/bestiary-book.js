@@ -5,7 +5,7 @@
    Os números vêm das próprias tabelas do jogo: mudou o jogo, o livro acompanha. */
 const __BK_INK = "#3b2614", __BK_RED = "#7a1f14", __BK_FAINT = "#7d6648", __BK_SERIF = "Georgia, 'Times New Roman', serif";
 const __BK_HIDE = new Set(["SHAMAN_WOLF", "ORC"]);                       // só existe como companheiro do Xamã
-const __BK_BOSSES = ["ABYSS_GUARDIAN", "ANCIENT_COLOSSUS", "FROST_WARDEN", "DRAGON_ANCIENT", "ANHANGA", "WILD_ENT",
+const __BK_BOSSES = ["LAVA_GOLEM", "ABYSS_GUARDIAN", "ANCIENT_COLOSSUS", "FROST_WARDEN", "DRAGON_ANCIENT", "ANHANGA", "WILD_ENT",
   "FOX_WITCH", "CASTLE_LORD", "RIVER_TENGU", "GUARDIAN_FALLEN"];
 const __BK_ENDLESS_BOSS = new Set(["ABYSS_GUARDIAN", "ANCIENT_COLOSSUS", "FROST_WARDEN", "DRAGON_ANCIENT", "ANHANGA",
   "WILD_ENT", "FOX_WITCH", "CASTLE_LORD", "RIVER_TENGU"]);
@@ -49,6 +49,7 @@ const __BK_LORE = {
   NECRO_SERVANT: "Cadáver erguido pelos necromantes da Floresta Morta. Rápido e sem vontade própria.",
   HUNTER_HOUND: "Cão de caça que perdeu o dono para as Profundezas. Corre mais que qualquer viajante.",
   ABYSS_GUARDIAN: "Guardião do selo das Catacumbas, acorrentado ali desde a queda do Rei. Investe de cabeça baixa e faz o chão tremer com cada pancada.",
+  LAVA_GOLEM: "Coração de magma que dormia sob a Pirâmide Esquecida. Desperta quando alguém pisa no deserto: avança em chamas, golpeia com punhos ardentes e explode em ondas de fogo.",
   ANCIENT_COLOSSUS: "Senhora das Ruínas Antigas. Seu olhar petrifica os curiosos, e os destroços que ela arranca do templo caem como chuva.",
   FROST_WARDEN: "Sentinela de gelo que vigia a Cidadela Glacial há séculos. Lança estilhaços e avança como uma avalanche.",
   DRAGON_ANCIENT: "O último dos grandes dragões, adormecido sob a Fortaleza. Domina o céu e o fogo; quando enfurecido, faz chover meteoros.",

@@ -51,13 +51,32 @@ rep('for(const P of["bqb","rib","mtb"])this.load.json(P+"-meta",`assets/pixel-ar
     'for(const P of["bqb","rib","mtb","dsb"])this.load.json(P+"-meta",`assets/pixel-art/newmaps/${P}-meta.json`);'
     f'for(const f of{J(LV["props"])})this.load.image(f,`assets/pixel-art/newmaps/${{f}}.png`);')
 
+# 3b) chefe da área: Golem de Lava (pacote do deserto)
+GOLEM = ('Yt.LAVA_GOLEM||(Yt.LAVA_GOLEM={...Yt.ABYSS_GUARDIAN,name:"Golem de Lava",subtitle:"O Coração Ardente da Pirâmide",'
+         'texture:"boss-lava-golem",scale:2.0,bodySize:30,maxHp:64,speed:62,phase2:{...Yt.ABYSS_GUARDIAN.phase2,tint:16747056},'
+         f'anims:{J(LV["boss_anims"])}}});')
+rep('for(const t of Object.values(Yt))if(t.implemented!==!1)for(const[e,d]of Object.entries(t.anims))i(t.texture,e,d);',
+    GOLEM + 'for(const t of Object.values(Yt))if(t.implemented!==!1)for(const[e,d]of Object.entries(t.anims))i(t.texture,e,d);')
+rep('this.load.spritesheet("boss-minotaur","assets/pixel-art/bosses/boss-minotaur.png",{frameWidth:128,frameHeight:128});',
+    'this.load.spritesheet("boss-minotaur","assets/pixel-art/bosses/boss-minotaur.png",{frameWidth:128,frameHeight:128});'
+    'this.load.spritesheet("boss-lava-golem","assets/pixel-art/bosses/boss-lava-golem.png",{frameWidth:128,frameHeight:128});')
+rep('"boss.ABYSS_GUARDIAN":"Minotaur of the Abyss",', '"boss.ABYSS_GUARDIAN":"Minotaur of the Abyss","boss.LAVA_GOLEM":"Lava Golem",')
+rep('"boss.ABYSS_GUARDIAN":"Minotauro del Abismo",', '"boss.ABYSS_GUARDIAN":"Minotauro del Abismo","boss.LAVA_GOLEM":"Gólem de Lava",')
+rep('ABYSS_GUARDIAN:["Nenhum vivo passa por este labirinto.","Os túmulos… vazios… eles nos deixaram aqui…"]',
+    'ABYSS_GUARDIAN:["Nenhum vivo passa por este labirinto.","Os túmulos… vazios… eles nos deixaram aqui…"],'
+    'LAVA_GOLEM:["A areia guarda o que é meu. Volte ao pó.","O fogo… volta… para a terra…"]')
+# passagens do deserto: barreira de pedras que surge ao trancar (mesmo comportamento dos espinhos da floresta)
+rep('==="forest"&&i.textures.exists("fr-thorn-h")&&(this.modelKey=null,this.__thorn=!0,this.setTexture(e?"fr-thorn-h":"fr-thorn-v"),this.setAlpha(0))',
+    '==="forest"&&i.textures.exists("fr-thorn-h")&&(this.modelKey=null,this.__thorn=!0,this.setTexture(e?"fr-thorn-h":"fr-thorn-v"),this.setAlpha(0)),'
+    '!a&&(i.level?.theme?.id??i.dungeon?.level?.theme?.id??i.levelId)==="temple"&&i.textures.exists("ds-thorn-h")&&(this.modelKey=null,this.__thorn=!0,this.setTexture(e?"ds-thorn-h":"ds-thorn-v"),this.setAlpha(0))')
+
 # 4) textos de abertura / encerramento
 rep('temple:{title:"SANTUÁRIO ESQUECIDO",intro:["As colunas de mármore branco ainda resistem ao tempo.","Antes da corrupção, Lorde Valdrak orava neste templo sagrado da luz.","Mas o sangue de seus sacerdotes manchou os altares, aprisionando almas cultistas nas ruínas."],postBoss:["O Guardião Espectral foi libertado de sua penitência eterna.","O Cristal Sagrado do Santuário brilha em suas mãos, enfraquecendo os selos do Castelo de Valdrak."]}',
-    'temple:{title:"DESERTO ESQUECIDO",intro:["A areia engoliu o antigo santuário da luz — só a pirâmide ainda aponta para o céu.","Antes da corrupção, Lorde Valdrak orava ali, no coração do deserto.","Hoje, almas de cultistas vagam entre o oásis seco e a vila soterrada."],postBoss:["O Guardião Espectral foi libertado de sua penitência eterna.","O Cristal Sagrado do Deserto brilha em suas mãos, enfraquecendo os selos do Castelo de Valdrak."]}')
+    'temple:{title:"DESERTO ESQUECIDO",intro:["A areia engoliu o antigo santuário da luz — só a pirâmide ainda aponta para o céu.","Antes da corrupção, Lorde Valdrak orava ali, no coração do deserto.","Hoje, um golem de lava desperta sob a pirâmide, e almas de cultistas vagam pelas dunas."],postBoss:["O Golem de Lava se desfaz em areia vitrificada.","O Cristal Sagrado do Deserto brilha em suas mãos, enfraquecendo os selos do Castelo de Valdrak."]}')
 rep('temple:{title:"FORGOTTEN SANCTUARY",intro:["The white marble columns still resist the passage of time.","Before his corruption, Lord Valdrak prayed at this sacred temple of light.","Yet the blood of his own priests stained the altars, binding cultist spirits to the ruins."],postBoss:["The Spectral Guardian has been freed from eternal penance.","The Sacred Sanctuary Crystal glows in your grasp, shattering the dark wards of Valdrak Castle."]}',
-    'temple:{title:"FORGOTTEN DESERT",intro:["The sand swallowed the old sanctuary of light — only the pyramid still points to the sky.","Before his corruption, Lord Valdrak prayed there, in the heart of the desert.","Now cultist souls wander between the dry oasis and the buried village."],postBoss:["The Spectral Guardian has been freed from eternal penance.","The Sacred Desert Crystal glows in your grasp, shattering the dark wards of Valdrak Castle."]}')
+    'temple:{title:"FORGOTTEN DESERT",intro:["The sand swallowed the old sanctuary of light — only the pyramid still points to the sky.","Before his corruption, Lord Valdrak prayed there, in the heart of the desert.","Now a lava golem stirs beneath the pyramid, and cultist souls roam the dunes."],postBoss:["The Lava Golem crumbles into glassy sand.","The Sacred Desert Crystal glows in your grasp, shattering the dark wards of Valdrak Castle."]}')
 rep('temple:{title:"SANTUARIO OLVIDADO",intro:["Las columnas de mármol blanco aún resisten el paso del tiempo.","Antes de su corrupción, Lord Valdrak rezaba en este templo sagrado de la luz.","Mas la sangre de sus sacerdotes manchó los altares, atrapando almas de cultistas en las ruínas."],postBoss:["El Guardián Espectral ha sido liberado de su penitencia eterna.","El Cristal Sagrado del Santuario brilla en tus manos, debilitando los sellos del Castillo de Valdrak."]}',
-    'temple:{title:"DESIERTO OLVIDADO",intro:["La arena se tragó el antiguo santuario de la luz — solo la pirámide aún apunta al cielo.","Antes de su corrupción, Lord Valdrak rezaba allí, en el corazón del desierto.","Hoy, almas de cultistas vagan entre el oasis seco y la aldea sepultada."],postBoss:["El Guardián Espectral ha sido liberado de su penitencia eterna.","El Cristal Sagrado del Desierto brilla en tus manos, debilitando los sellos del Castillo de Valdrak."]}')
+    'temple:{title:"DESIERTO OLVIDADO",intro:["La arena se tragó el antiguo santuario de la luz — solo la pirámide aún apunta al cielo.","Antes de su corrupción, Lord Valdrak rezaba allí, en el corazón del desierto.","Hoy, un gólem de lava despierta bajo la pirámide, y almas de cultistas vagan por las dunas."],postBoss:["El Gólem de Lava se deshace en arena vitrificada.","El Cristal Sagrado del Desierto brilla en tus manos, debilitando los sellos del Castillo de Valdrak."]}')
 
 open(BUNDLE, "w", encoding="utf-8").write(s)
 if os.path.isdir(os.path.dirname(MIRROR)):
