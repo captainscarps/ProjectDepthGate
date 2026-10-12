@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.49.0-movimento";
+const CACHE = "ded-web-v4.50.0-skins-conjuntos";
 
 self.addEventListener("install", () => self.skipWaiting());
 
