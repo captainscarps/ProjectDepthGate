@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.56.0-gamepad-attack-fix";
+const CACHE = "ded-web-v4.57.0-hub-endless-diff-shadows";
 
 self.addEventListener("install", () => self.skipWaiting());
 

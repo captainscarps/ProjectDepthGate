@@ -259,6 +259,7 @@ function __offerRiftPrompt(S) {
 
 function __startRiftRun(S) {
   if (!S || S.transitioning) return;
+  try { __stFlag(S, "forest_done", !0); } catch(e) {}
   S.game.events.emit("ui:banner", "✦ ADENTRANDO A FENDA DESAFIO ✦", "#c084fc");
   try { S.audioRef?.play("sfx-boss-intro") } catch(e) {}
   __goLevel(S, "rift", { isRift: true });
