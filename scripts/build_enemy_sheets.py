@@ -162,6 +162,31 @@ def troll_skin(h, s, v):
     return h, s, v
 
 
+def ice_armor(h, s, v):
+    # armadura escura → aço gelado; tabardo vermelho → azul profundo; crânio → branco-azulado
+    if s < 0.18:
+        return 206, s + 0.22, min(1, v * 1.3 + 0.12)
+    return 218, min(1, s * 0.85), min(1, v * 1.05 + 0.06)
+
+
+def brute_ice(h, s, v):
+    # pele vermelha → azul-gelo; clava → madeira congelada; crânio continua claro
+    if s < 0.12:
+        return 205, s + 0.06, v
+    if in_range(h, 330, 20):
+        return 200, s * 0.55, min(1, v * 0.95 + 0.12)
+    return 210, s * 0.35, min(1, v * 1.1 + 0.15)
+
+
+def ember(h, s, v):
+    # Draco Colérico: vermelho → carmesim escuro, asas/barriga amarelas → laranja-brasa
+    if s < 0.12:
+        return h, s, v * 0.8
+    if in_range(h, 20, 70):
+        return 18 + (h - 20) * 0.2, min(1, s * 1.1), v * 0.95
+    return 350, min(1, s * 1.05), v * 0.62
+
+
 def husky():
     d = os.path.dirname(find("Troll e Yete", "Husky.png"))
     S = lambda nm: strip(os.path.join(d, nm + ".png"), 42)
@@ -231,6 +256,10 @@ def main():
     hk = husky()
     jobs += [("troll-v4", hk, True, troll_skin),
              ("yeti-v4", hk, True, yeti_fur)]
+    jobs += [("drake-v4", md, False, ember),
+             ("frost-brute-v4", boss_pack("Cavaleiro*", "Demon_Boss", 96, False), True, brute_ice)]
+    sk = Image.open(os.path.join(OUTS[0], "skeleton-warrior-ai.png")).convert("RGBA")
+    jobs += [("ice-skeleton-v4", [sk.crop((i * 80, 0, i * 80 + 80, 80)) for i in range(28)], False, ice_armor)]
     meta = {}
     for name, seq, flip, rc in jobs:
         seq = [f.copy() for f in seq]

@@ -52,11 +52,19 @@ rep(old, f'["mk3e-frost-goblin-archer",{ld("frost-goblin-archer-v4")}]')
 rep('["mk3e-troll","troll-mk3.png",52,62]', f'["mk3e-troll",{ld("troll-v4")}]')
 rep('["mk3e-yeti","yeti-mk3.png",56,66]', f'["mk3e-yeti",{ld("yeti-v4")}]')
 
+rep('["mk3e-drake","drake-mk3.png",58,52]', f'["mk3e-drake",{ld("drake-v4")}]')
+rep('["mk3e-ice-skeleton","ice-skeleton-mk3.png",44,52]', f'["mk3e-ice-skeleton",{ld("ice-skeleton-v4")}]')
+rep('["mk3e-frost-demon","frost-demon-mk3.png",48,58]', f'["mk3e-frost-demon",{ld("frost-brute-v4")}]')
+
 # ── escalas (altura na tela ≈ visível × Si × escala da classe) ──────────
 GOB = 0.57  # mesma escala p/ todo o pacote de goblins → proporções coerentes
 rep('"mk3e-goblin":.68,"mk3e-goblin-archer":.68,"mk3e-goblin-assassin":0.404,',
     f'"mk3e-goblin":{GOB},"mk3e-goblin-archer":{GOB},"mk3e-goblin-assassin":0.62,')
-rep('"mk3e-orc-warrior":.71,', '"mk3e-orc-warrior":0.425,')
+rep('"mk3e-orc-warrior":.71,', '"mk3e-orc-warrior":0.5,')
+rep('"mk3e-drake":.69,', '"mk3e-drake":0.38,')
+rep('"mk3e-ice-skeleton":.7,', '"mk3e-ice-skeleton":0.6,')
+rep('"mk3e-frost-demon":.66', '"mk3e-frost-demon":0.64')
+rep('FROST_DEMON:{name:"Demônio do Gelo",', 'FROST_DEMON:{name:"Bruto de Gelo",')
 rep('"mk3e-troll":.68,', '"mk3e-troll":0.85,')
 rep('"mk3e-yeti":.64,', '"mk3e-yeti":0.94,')
 rep('"mk3e-wyrmling":.76,', '"mk3e-wyrmling":0.39,"mk3e-wyrmling-frost":0.39,"mk3e-wyrmling-shadow":0.39,')
@@ -104,6 +112,14 @@ rep('members:[{type:"DEMON",cost:4,minDepth:3},{type:"DEMON_CASTER",cost:5,minDe
 rep('frozen:["ICE_SKELETON","FROST_WOLF","FROST_GOBLIN"]', 'frozen:["ICE_SKELETON","FROST_WOLF","FROST_GOBLIN","DRAGON_WYRMLING_FROST"]')
 rep('{type:"FROST_WOLF",col:48,row:34}', '{type:"FROST_WOLF",col:48,row:34},{type:"DRAGON_WYRMLING_FROST",col:52,row:34}')
 rep('{type:"DEMON",col:31,row:20}', '{type:"DEMON",col:31,row:20},{type:"DRAGON_WYRMLING_SHADOW",col:30,row:22}')
+
+# ── Orc comum sai: o Orc Guerreiro aparece no lugar dele ────────────
+rep('members:[{type:"ORC",cost:4,minDepth:4},{type:"ORC_WARRIOR",cost:5,minDepth:6},',
+    'members:[{type:"ORC_WARRIOR",cost:5,minDepth:4},')
+s = re.sub(r'(type"?:)"ORC"(?=[,}])', r'\1"ORC_WARRIOR"', s)
+rep('ruins:["GOBLIN","ORC","GOBLIN_ARCHER"]', 'ruins:["GOBLIN","ORC_WARRIOR","GOBLIN_ARCHER"]')
+left = [m.start() for m in re.finditer(r'"ORC"', s)]
+print("referências restantes a \"ORC\":", [s[i-40:i+20] for i in left])
 
 open(BUNDLE, "w", encoding="utf-8").write(s)
 if os.path.isdir(os.path.dirname(MIRROR)):

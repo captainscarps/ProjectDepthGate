@@ -4,7 +4,7 @@
    Modo Infinito), St (tradução de nomes), __L3 (texto por idioma), le (câmera padrão), _ / st (tela).
    Os números vêm das próprias tabelas do jogo: mudou o jogo, o livro acompanha. */
 const __BK_INK = "#3b2614", __BK_RED = "#7a1f14", __BK_FAINT = "#7d6648", __BK_SERIF = "Georgia, 'Times New Roman', serif";
-const __BK_HIDE = new Set(["SHAMAN_WOLF"]);                       // só existe como companheiro do Xamã
+const __BK_HIDE = new Set(["SHAMAN_WOLF", "ORC"]);                       // só existe como companheiro do Xamã
 const __BK_BOSSES = ["ABYSS_GUARDIAN", "ANCIENT_COLOSSUS", "FROST_WARDEN", "DRAGON_ANCIENT", "ANHANGA", "WILD_ENT",
   "FOX_WITCH", "CASTLE_LORD", "RIVER_TENGU", "GUARDIAN_FALLEN"];
 const __BK_ENDLESS_BOSS = new Set(["ABYSS_GUARDIAN", "ANCIENT_COLOSSUS", "FROST_WARDEN", "DRAGON_ANCIENT", "ANHANGA",
@@ -32,12 +32,12 @@ const __BK_LORE = {
   TROLL: "Gigante de um olho só e pele grossa que vive nas matas fundas. Esmaga com os punhos. Aguenta muito castigo e não se deixa empurrar.",
   CYCLOPS: "Colosso de um olho só que guarda as ilhas. Bate no chão com força suficiente para abrir uma onda de choque.",
   DRAGON_WYRMLING: "Filhote de dragão, ainda pequeno mas já perigoso. Morde de perto e cospe fogo em linha reta.",
-  DRAGON_DRAKE: "Draco adulto e colérico. Combina garras e mordidas com um sopro de fogo devastador.",
+  DRAGON_DRAKE: "Dragão de escamas carmesim e asas cor de brasa, maior e mais furioso que os filhotes. Combina garras e mordidas com um sopro de fogo devastador.",
   HARPY: "Mulher-pássaro das alturas. Voa rápido, ataca de longe e mergulha quando o alvo se distrai.",
   FIRE_ELEMENTAL: "Corpo de pedra derretida que mantém acesa a forja da Fortaleza. Arremessa magma e faz o chão explodir ao seu redor.",
   DRAGON_PRIEST: "Sacerdote mascarado com o crânio de um dragão, a serviço do Dragão Ancião. Fortalece os aliados próximos — elimine-o antes da tropa.",
   DRAGON_KNIGHT: "Brutamontes rubro jurado aos dragões, com um crânio por elmo e uma clava de tronco no ombro. Alterna golpes rápidos com pancadas esmagadoras.",
-  ICE_SKELETON: "Esqueleto conservado no gelo eterno da Cidadela. Mais duro e mais forte que os das catacumbas.",
+  ICE_SKELETON: "Guerreiro esquelético de armadura coberta de geada, conservado no gelo eterno da Cidadela. Mais duro e mais forte que os das catacumbas.",
   FROST_GOBLIN: "Goblin das montanhas geladas, mais forte e mais teimoso que os da floresta.",
   FROST_GOBLIN_ARCHER: "Atira pedras de gelo com a funda do alto dos penhascos. Mantém distância, se esconde na nevasca e seus disparos deixam o alvo lento.",
   FROST_WOLF: "Urso enorme de pelagem branca marcada por runas de gelo. Lento até perceber a presa — então investe de uma vez e golpeia com patadas pesadas.",
@@ -45,7 +45,7 @@ const __BK_LORE = {
   DRAGON_WYRMLING_SHADOW: "Filhote corrompido pelas trevas dos santuários profanados. Seu sopro sombrio é mágico e atravessa armaduras.",
   YETI: "Fera colossal das nevascas, de um olho só e pelagem branca como a neve. Seu golpe pesado derruba até os guerreiros mais firmes.",
   ICE_ELEMENTAL: "Cristal vivo que guarda os salões congelados. Dispara estilhaços e faz o gelo explodir ao seu redor.",
-  FROST_DEMON: "Demônio que se alimentou do frio da Cidadela. Corta, dispara e explode em gelo — um dos inimigos mais perigosos do norte.",
+  FROST_DEMON: "Brutamontes de pele congelada, com um crânio por elmo e uma clava coberta de gelo. Corta, dispara e explode em gelo — um dos inimigos mais perigosos do norte.",
   NECRO_SERVANT: "Cadáver erguido pelos necromantes da Floresta Morta. Rápido e sem vontade própria.",
   HUNTER_HOUND: "Cão de caça que perdeu o dono para as Profundezas. Corre mais que qualquer viajante.",
   ABYSS_GUARDIAN: "Guardião do selo das Catacumbas, acorrentado ali desde a queda do Rei. Investe de cabeça baixa e faz o chão tremer com cada pancada.",
