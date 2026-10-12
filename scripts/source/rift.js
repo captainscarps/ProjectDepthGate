@@ -269,8 +269,9 @@ function __buildRiftLevel(scene) {
   lvl.name = "Fenda Desafio";
   lvl.isRift = !0;
 
-  // 3 Chefes Aleatórios em salas diferentes
+  // 3 Chefes Aleatórios em salas diferentes (incluindo novos chefes: Beholder, Dragão Pálido e Cérbero)
   const pool = [
+    "BEHOLDER", "PALE_DRAGON", "CERBERUS",
     "LAVA_GOLEM", "ABYSS_GUARDIAN", "ANCIENT_COLOSSUS", "FROST_WARDEN",
     "DRAGON_ANCIENT", "ANHANGA", "WILD_ENT", "FOX_WITCH", "RIVER_TENGU"
   ];

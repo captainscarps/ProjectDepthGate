@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.52.0-rift-portals-forge";
+const CACHE = "ded-web-v4.53.0-extra-bosses";
 
 self.addEventListener("install", () => self.skipWaiting());
 
