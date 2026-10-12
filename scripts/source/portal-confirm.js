@@ -1,9 +1,9 @@
 /* =====================================================================
    CONFIRMAÇÃO E CÁLCULO DE DIFICULDADE DE PORTAL (CAMPANHA)
    - Exibido APENAS na Campanha ao interagir com portais.
-   - Design direto, limpo e gótico no padrão das telas do jogo.
-   - Explica diretamente o porquê da dificuldade (status/nível vs inimigos).
-   - Classificações: NORMAL, DESAFIADOR, DIFÍCIL, PERIGOSO / MORTAL.
+   - O jogo não pode ficar fácil: serve também para balancear a percepção
+     e garantir desafio minimamente moderado em todas as masmorras.
+   - Classificações: MODERADO (mínimo de desafio), DESAFIADOR, DIFÍCIL, PERIGO MORTAL.
    ===================================================================== */
 
 function __calcPortalDifficulty(S, targetLevelId, extra = {}) {
@@ -36,8 +36,8 @@ function __calcPortalDifficulty(S, targetLevelId, extra = {}) {
   // 2. DADOS E INIMIGOS DO LOCAL DE DESTINO
   let destName = "";
   let recLvl = 1;
-  let avgEnemyHp = 6;
-  let avgEnemyDmg = 2;
+  let avgEnemyHp = 8;
+  let avgEnemyDmg = 2.5;
   let bossName = null;
   let bossHp = 0;
   let bossDmg = 0;
@@ -63,10 +63,10 @@ function __calcPortalDifficulty(S, targetLevelId, extra = {}) {
   };
   recLvl = dungeonProgression[targetLevelId] || lv?.depth || 1;
 
-  let sc = { hpMultiplier: 1, damageMultiplier: 1 };
-  if (typeof Lh === "function") {
-    try { sc = Lh(recLvl, 0); } catch(e) {}
-  }
+  // Usa a mesma escala de combate dinâmico de __dgScale para estimar o perigo real dos monstros
+  const t = Math.max(0, Math.max(heroLvl, recLvl) - 1);
+  const scHp = Math.min(8, (1 + t * 0.17) * 1.15);
+  const scDmg = Math.min(4.5, (1 + t * 0.11) * 1.12);
 
   const enemyList = [];
   let bKey = null;
@@ -87,92 +87,93 @@ function __calcPortalDifficulty(S, targetLevelId, extra = {}) {
   if (targetLevelId === "castle") bKey = "CASTLE_LORD";
 
   const fallbackStats = {
-    catacombs: { hp: 4, dmg: 1.2, bHp: 50, bDmg: 2.5, bNm: "Guardião do Abismo" },
-    bosque:    { hp: 7, dmg: 2.0, bHp: 65, bDmg: 3.0, bNm: "Anhangá" },
-    temple:    { hp: 11, dmg: 2.2, bHp: 75, bDmg: 3.2, bNm: "Golem de Lava" },
-    ruins:     { hp: 15, dmg: 2.4, bHp: 115, bDmg: 3.5, bNm: "Górgona das Ruínas" },
-    rio:       { hp: 19, dmg: 3.0, bHp: 110, bDmg: 4.0, bNm: "Tengu do Rio" },
-    glacial:   { hp: 23, dmg: 3.2, bHp: 145, bDmg: 4.2, bNm: "Guardião Glacial" },
-    morta:     { hp: 26, dmg: 3.4, bHp: 135, bDmg: 4.2, bNm: "Bruxa da Raposa" },
-    fortress:  { hp: 31, dmg: 4.0, bHp: 220, bDmg: 5.5, bNm: "Dragão Ancião" },
-    castle:    { hp: 36, dmg: 4.4, bHp: 320, bDmg: 6.5, bNm: "Rei Valdrak" }
+    catacombs: { hp: 5, dmg: 1.5, bHp: 65, bDmg: 3.0, bNm: "Guardião do Abismo" },
+    bosque:    { hp: 8, dmg: 2.2, bHp: 80, bDmg: 3.5, bNm: "Anhangá" },
+    temple:    { hp: 12, dmg: 2.6, bHp: 95, bDmg: 3.8, bNm: "Golem de Lava" },
+    ruins:     { hp: 16, dmg: 3.0, bHp: 130, bDmg: 4.2, bNm: "Górgona das Ruínas" },
+    rio:       { hp: 20, dmg: 3.4, bHp: 135, bDmg: 4.6, bNm: "Tengu do Rio" },
+    glacial:   { hp: 24, dmg: 3.8, bHp: 165, bDmg: 5.0, bNm: "Guardião Glacial" },
+    morta:     { hp: 28, dmg: 4.2, bHp: 155, bDmg: 5.2, bNm: "Bruxa da Raposa" },
+    fortress:  { hp: 34, dmg: 4.8, bHp: 240, bDmg: 6.2, bNm: "Dragão Ancião" },
+    castle:    { hp: 40, dmg: 5.4, bHp: 350, bDmg: 7.5, bNm: "Rei Valdrak" }
   };
-  const fb = fallbackStats[targetLevelId] || { hp: 8, dmg: 2, bHp: 80, bDmg: 3, bNm: "Chefe do Local" };
+  const fb = fallbackStats[targetLevelId] || { hp: 9, dmg: 2.5, bHp: 90, bDmg: 3.8, bNm: "Chefe do Local" };
 
   let baseHp = enemyList.length ? (enemyList.reduce((acc, e) => acc + (e.maxHp || 2), 0) / enemyList.length) : fb.hp;
   let baseDmg = enemyList.length ? (enemyList.reduce((acc, e) => acc + (e.damage || e.contactDamage || 1), 0) / enemyList.length) : fb.dmg;
 
-  avgEnemyHp = Math.max(1, Math.round(baseHp * (sc.hpMultiplier || 1)));
-  avgEnemyDmg = Math.max(1, +(baseDmg * (sc.damageMultiplier || 1)).toFixed(1));
+  avgEnemyHp = Math.max(2, Math.round(baseHp * scHp));
+  avgEnemyDmg = Math.max(1.5, +(baseDmg * scDmg).toFixed(1));
 
   const bDef = bKey && typeof Yt !== "undefined" ? Yt[bKey] : null;
   if (bDef) {
     bossName = bDef.name || fb.bNm;
-    bossHp = Math.round((bDef.maxHp || fb.bHp) * (sc.hpMultiplier || 1) * 1.35);
-    bossDmg = Math.round(((bDef.damage || bDef.contactDamage || fb.bDmg) * (sc.damageMultiplier || 1) * 1.12));
+    bossHp = Math.round((bDef.maxHp || fb.bHp) * scHp * 1.35);
+    bossDmg = Math.round(((bDef.damage || bDef.contactDamage || fb.bDmg) * scDmg * 1.15));
   } else if (fb.bHp) {
     bossName = fb.bNm;
-    bossHp = Math.round(fb.bHp * (sc.hpMultiplier || 1) * 1.35);
-    bossDmg = Math.round(fb.bDmg * (sc.damageMultiplier || 1) * 1.12);
+    bossHp = Math.round(fb.bHp * scHp * 1.35);
+    bossDmg = Math.round(fb.bDmg * scDmg * 1.15);
   }
 
-  threat = (avgEnemyHp * 3.5) + (avgEnemyDmg * 15) + (bossHp ? bossHp * 0.35 : 0) + (bossDmg ? bossDmg * 7 : 0);
+  // Ameaça real calculada de modo que o jogo nunca seja trivial ("fácil")
+  threat = (avgEnemyHp * 4.2) + (avgEnemyDmg * 22) + (bossHp ? bossHp * 0.45 : 0) + (bossDmg ? bossDmg * 9 : 0);
 
   // 3. RELAÇÃO DE FORÇA E RESISTÊNCIA
   const lvlDiff = heroLvl - recLvl;
-  const lvlMod = Math.max(0.35, 1.0 + (lvlDiff * 0.12));
+  const lvlMod = Math.max(0.4, 1.0 + (lvlDiff * 0.08));
   const ratio = (heroCombatScore * lvlMod) / Math.max(1, threat);
 
-  // 4. CLASSIFICAÇÃO (Muito Fácil passa a ser NORMAL / MODERADO)
-  let diffLabel = "NORMAL";
-  let diffColor = "#4ade80";
-  let diffBorder = 0x4ade80;
+  // 4. CLASSIFICAÇÃO: O jogo NUNCA fica "fácil", mínimo MODERADO
+  let diffLabel = "MODERADO";
+  let diffColor = "#38bdf8"; // Azul celeste moderado
+  let diffBorder = 0x38bdf8;
   let diffDesc = "";
 
-  if (ratio >= 1.05) {
-    diffLabel = typeof __L3 === "function" ? __L3("NORMAL", "NORMAL", "NORMAL") : "NORMAL";
-    diffColor = "#4ade80";
-    diffBorder = 0x4ade80;
+  if (ratio >= 0.95) {
+    diffLabel = typeof __L3 === "function" ? __L3("MODERADO", "MODERATE", "MODERADO") : "MODERADO";
+    diffColor = "#38bdf8";
+    diffBorder = 0x38bdf8;
     diffDesc = typeof __L3 === "function"
       ? __L3(
-          `Nível ${heroLvl} e equipamentos suficientes. A força dos monstros (~${avgEnemyDmg} dano) está sob controle.`,
-          `Level ${heroLvl} and sufficient gear. Monster strength (~${avgEnemyDmg} dmg) is well within control.`,
-          `Nivel ${heroLvl} y equipo suficiente. La fuerza de los monstruos (~${avgEnemyDmg} daño) está bajo control.`
+          `Desafio balanceado. Monstros causam dano considerável (~${avgEnemyDmg} dano). Requer atenção contínua e foco.`,
+          `Balanced challenge. Monsters inflict solid damage (~${avgEnemyDmg} dmg). Demands active focus and care.`,
+          `Desafío balanceado. Los monstruos infligen daño considerable (~${avgEnemyDmg} daño). Requiere atención continua.`
         )
-      : `Nível ${heroLvl} e equipamentos suficientes. A força dos monstros (~${avgEnemyDmg} dano) está sob controle.`;
-  } else if (ratio >= 0.85) {
+      : `Desafio balanceado. Monstros causam dano considerável (~${avgEnemyDmg} dano). Requer atenção contínua e foco.`;
+  } else if (ratio >= 0.75) {
     diffLabel = typeof __L3 === "function" ? __L3("DESAFIADOR", "CHALLENGING", "DESAFIANTE") : "DESAFIADOR";
     diffColor = "#fbbf24";
     diffBorder = 0xfbbf24;
     diffDesc = typeof __L3 === "function"
       ? __L3(
-          `Monstros de força equivalente (~${avgEnemyDmg} dano, ~${avgEnemyHp} HP). Requer atenção e boas esquivas.`,
-          `Enemies of equal power (~${avgEnemyDmg} dmg, ~${avgEnemyHp} HP). Requires attention and good dodges.`,
-          `Monstruos de poder similar (~${avgEnemyDmg} daño, ~${avgEnemyHp} HP). Requiere atención y esquivas.`
+          `Inimigos de alta resistência (~${avgEnemyHp} HP). Ataques combinados podem esgotar sua vida rapidamente!`,
+          `Tough enemies (~${avgEnemyHp} HP). Grouped strikes can deplete your health quickly!`,
+          `Enemigos resistentes (~${avgEnemyHp} HP). ¡Ataques combinados pueden vaciar tu salud con rapidez!`
         )
-      : `Monstros de força equivalente (~${avgEnemyDmg} dano, ~${avgEnemyHp} HP). Requer atenção e boas esquivas.`;
-  } else if (ratio >= 0.65) {
+      : `Inimigos de alta resistência (~${avgEnemyHp} HP). Ataques combinados podem esgotar sua vida rapidamente!`;
+  } else if (ratio >= 0.55) {
     diffLabel = typeof __L3 === "function" ? __L3("DIFÍCIL", "HARD", "DIFÍCIL") : "DIFÍCIL";
     diffColor = "#fb923c";
     diffBorder = 0xfb923c;
     diffDesc = typeof __L3 === "function"
       ? __L3(
-          `Destino acima do seu preparo atual. Inimigos resistentes e chefe perigoso (${bossHp ? bossHp + ' HP' : 'alto dano'}).`,
-          `Zone above your current build. Tough enemies and dangerous boss (${bossHp ? bossHp + ' HP' : 'high dmg'}).`,
-          `Zona por encima de tu preparación. Enemigos duros y jefe peligroso (${bossHp ? bossHp + ' HP' : 'alto daño'}).`
+          `Destino com perigo elevado. Chefe com alto impacto (${bossHp ? bossHp + ' HP' : 'letal'}) e monstros agressivos.`,
+          `High-threat destination. Boss packs heavy blows (${bossHp ? bossHp + ' HP' : 'lethal'}) and aggressive mobs.`,
+          `Destino de alto peligro. Jefe de gran impacto (${bossHp ? bossHp + ' HP' : 'letal'}) y monstruos agresivos.`
         )
-      : `Destino acima do seu preparo atual. Inimigos resistentes e chefe perigoso (${bossHp ? bossHp + ' HP' : 'alto dano'}).`;
+      : `Destino com perigo elevado. Chefe com alto impacto (${bossHp ? bossHp + ' HP' : 'letal'}) e monstros agressivos.`;
   } else {
     diffLabel = typeof __L3 === "function" ? __L3("PERIGO MORTAL", "DEADLY HAZARD", "PELIGRO MORTAL") : "PERIGO MORTAL";
     diffColor = "#ef4444";
     diffBorder = 0xef4444;
     diffDesc = typeof __L3 === "function"
       ? __L3(
-          `Nível recomendado Lvl ${recLvl}+. Seu herói corre alto risco de derrota com itens e defesa atuais!`,
-          `Recommended level Lvl ${recLvl}+. Your hero risks quick defeat with current defense and gear!`,
-          `Nivel recomendado Lvl ${recLvl}+. ¡Tu héroe corre gran riesgo de derrota con equipo actual!`
+          `Nível Lvl ${recLvl}+ recomendado. Monstros brutais capazes de derrotar o herói em poucos golpes!`,
+          `Recommended Lvl ${recLvl}+. Brutal monsters capable of taking the hero down in just a few hits!`,
+          `Nivel Lvl ${recLvl}+ recomendado. ¡Monstruos letales capaces de abatir al héroe en pocos golpes!`
         )
-      : `Nível recomendado Lvl ${recLvl}+. Seu herói corre alto risco de derrota com itens e defesa atuais!`;
+      : `Nível Lvl ${recLvl}+ recomendado. Monstros brutais capazes de derrotar o herói em poucos golpes!`;
   }
 
   return {
@@ -219,7 +220,6 @@ function __portalPrompt(S, opts = {}) {
   const F_SERIF = "Georgia, 'Times New Roman', serif";
   const F_MONO = "'Courier New', monospace";
 
-  // Modal mais direto, compacto e elegante
   const W = 380;
   const H = 210;
   const cx = Math.round(_ / 2);

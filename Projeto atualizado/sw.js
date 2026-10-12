@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.54.0-mimic-bestiary-portal";
+const CACHE = "ded-web-v4.55.0-balance-moderate";
 
 self.addEventListener("install", () => self.skipWaiting());
 
