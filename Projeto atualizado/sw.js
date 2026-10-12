@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.57.0-hub-endless-diff-shadows";
+const CACHE = "ded-web-v4.58.0-auto-attack-fix";
 
 self.addEventListener("install", () => self.skipWaiting());
 
