@@ -51,6 +51,10 @@ rep('basicProjectile:{texture:"proj-arrow",speed:440,maxDist:280,damageType:"phy
 rep('this.load.spritesheet("boss-minotaur",',
     'this.load.image("proj-elf-arrow","assets/pixel-art/characters/proj-elf-arrow.png");this.load.spritesheet("boss-minotaur",')
 
+# Arqueiro: Hayato, irmão do samurai Akihiro
+rep('ARCHER:"Vaelen",', 'ARCHER:"Hayato",')
+rep('ARCHER:"Vaelen: “', 'ARCHER:"Hayato: “')
+
 open(BUNDLE, "w", encoding="utf-8").write(s)
 if os.path.isdir(os.path.dirname(MIRROR)):
     shutil.copyfile(BUNDLE, MIRROR)

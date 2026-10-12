@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.47.0-cacadora";
+const CACHE = "ded-web-v4.48.0-hayato";
 
 self.addEventListener("install", () => self.skipWaiting());
 
