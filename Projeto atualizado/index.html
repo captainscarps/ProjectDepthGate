@@ -72,53 +72,13 @@
       0%, 45% { transform: rotate(0deg); }
       70%, 100% { transform: rotate(90deg); }
     }
-    /* Botao flutuante de tela cheia nativa (dispensa F11) */
-    #fs-btn {
-      position: fixed;
-      top: 14px;
-      right: 14px;
-      z-index: 999;
-      background: rgba(18, 12, 6, 0.85);
-      color: #c9a24a;
-      border: 1px solid rgba(201, 162, 74, 0.6);
-      border-radius: 8px;
-      width: 42px;
-      height: 42px;
-      padding: 0;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(6px);
-      transition: background 0.2s, transform 0.15s, border-color 0.2s, box-shadow 0.2s;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-    }
-    #fs-btn svg {
-      pointer-events: none;
-    }
-    #fs-btn:hover {
-      background: rgba(45, 30, 15, 0.98);
-      border-color: #ffd24a;
-      transform: scale(1.08);
-      box-shadow: 0 0 16px rgba(201, 162, 74, 0.6);
-    }
-    #fs-btn:active {
-      transform: scale(0.92);
-    }
   </style>
-  <script src="./assets/user-auth.js?v=4.33"></script>
-  <script src="./assets/network-coop.js?v=4.33"></script>
-  <script type="module" crossorigin src="./assets/index-D6qIWtA7-p209.js?v=4.33"></script>
+  <script src="./assets/user-auth.js?v=4.34"></script>
+  <script src="./assets/network-coop.js?v=4.34"></script>
+  <script type="module" crossorigin src="./assets/index-D6qIWtA7-p209.js?v=4.34"></script>
 </head>
 <body>
   <div id="game"></div>
-  <button id="fs-btn" type="button" title="Tela Cheia (Clique para Tela Cheia sem F11)" aria-label="Tela Cheia">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-    </svg>
-  </button>
   <div id="rotate-overlay">
     <div class="phone"><div class="screen"></div></div>
     <div class="title">DEPTHGATE</div>

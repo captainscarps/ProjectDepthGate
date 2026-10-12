@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.33.0-sem-pirata";
+const CACHE = "ded-web-v4.34.0-habilidades-inventario";
 
 self.addEventListener("install", () => self.skipWaiting());
 
