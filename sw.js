@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.35.0-bestiario";
+const CACHE = "ded-web-v4.36.0-santuario-fix";
 
 self.addEventListener("install", () => self.skipWaiting());
 
