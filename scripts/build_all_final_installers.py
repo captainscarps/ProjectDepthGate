@@ -45,13 +45,15 @@ with open(index_html_path, 'w', encoding='utf-8') as f:
     f.write(html)
 
 # Criar game.zip para embutir no executável Windows
-game_zip_path = os.path.join(ROOT, 'game.zip')
+game_zip_path = os.path.join(temp_game_dir, 'game_payload.zip')
 if os.path.exists(game_zip_path):
-    os.remove(game_zip_path)
+    try: os.remove(game_zip_path)
+    except: pass
 
 with zipfile.ZipFile(game_zip_path, 'w', zipfile.ZIP_DEFLATED) as z:
     for root, dirs, files in os.walk(temp_game_dir):
         for file in files:
+            if file == 'game_payload.zip': continue
             full = os.path.join(root, file)
             rel = os.path.relpath(full, temp_game_dir).replace('\\', '/')
             z.write(full, rel)
@@ -224,7 +226,7 @@ try: os.remove(unsigned_apk)
 except: pass
 
 # Limpar qualquer arquivo/pasta espúria em DEST_DIR para deixar APENAS os 3 executáveis
-allowed_files = {'DEPTHGATE.exe', 'DEPTHGATE-Mac.zip', 'DEPTHGATE.apk'}
+allowed_files = {'DEPTHGATE.exe', 'DEPTHGATE-Mac.zip', 'DEPTHGATE.apk', 'DEPTHGATE - Windows.zip', 'DEPTHGATE - Android.zip'}
 for item in os.listdir(DEST_DIR):
     item_path = os.path.join(DEST_DIR, item)
     if item not in allowed_files:

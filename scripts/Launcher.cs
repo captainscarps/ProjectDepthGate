@@ -73,7 +73,7 @@ namespace DepthgateLauncher
                 
                 // Compare size or check existence
                 string verFile = Path.Combine(destDir, ".version");
-                string currentVer = "v1.5.0";
+                string currentVer = "v1.5.2";
                 
                 if (Directory.Exists(destDir) && File.Exists(verFile))
                 {
@@ -121,19 +121,27 @@ namespace DepthgateLauncher
             try
             {
                 string rawUrl = ctx.Request.Url.AbsolutePath;
-                if (string.IsNullOrEmpty(rawUrl) || rawUrl == "/") rawUrl = "/index.html";
-
                 string relPath = rawUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
                 string filePath = Path.Combine(rootDir, relPath);
+                string ext = Path.GetExtension(filePath).ToLowerInvariant();
 
                 if (!File.Exists(filePath))
                 {
-                    filePath = Path.Combine(rootDir, "index.html");
+                    if (string.IsNullOrEmpty(ext) || ext == ".html")
+                    {
+                        filePath = Path.Combine(rootDir, "index.html");
+                        ext = ".html";
+                    }
+                    else
+                    {
+                        ctx.Response.StatusCode = 404;
+                        ctx.Response.Close();
+                        return;
+                    }
                 }
 
                 if (File.Exists(filePath))
                 {
-                    string ext = Path.GetExtension(filePath).ToLowerInvariant();
                     string mime = "application/octet-stream";
                     switch (ext)
                     {
