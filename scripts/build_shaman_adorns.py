@@ -24,10 +24,15 @@ red = (a[..., 3] > .5) & (s > .55) & (v > .4) & (r > g * 1.8) & (r > b * 1.8)
 head, neck = [], []
 last = None
 for i in range(n):
-    m = red[:, i * 128:(i + 1) * 128]
-    ys, xs = np.nonzero(m)
     al = a[:, i * 128:(i + 1) * 128, 3] > .5
-    if len(xs) >= 3 and ys.mean() < 100:
+    yy0, _ = np.nonzero(al)
+    top0 = yy0.min() if len(yy0) else 50
+    # só a pintura do ROSTO: a faixa logo abaixo do topo da silhueta (o corpo também tem urucum)
+    m = red[:, i * 128:(i + 1) * 128].copy()
+    m[:top0] = False
+    m[top0 + 22:] = False
+    ys, xs = np.nonzero(m)
+    if len(xs) >= 3:
         cx, cy = float(np.median(xs)), float(np.median(ys))
     else:
         yy, xx = np.nonzero(al)
@@ -38,7 +43,7 @@ for i in range(n):
             sel = yy < top + 8
             cx, cy = float(np.median(xx[sel])), float(top + 6)
     last = (cx, cy)
-    head.append([round(cx - 2, 1), round(cy - 5, 1)])
+    head.append([round(cx - 2, 1), round(cy - 3, 1)])
     neck.append([round(cx - 3, 1), round(cy + 8, 1)])
 for o in CH:
     jp = os.path.join(o, "shaman-pack.json")
