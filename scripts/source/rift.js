@@ -10,12 +10,6 @@ function __offerRiftPrompt(S) {
   if (!S || S.transitioning || S.__riftModalOpen) return;
   const __prog = typeof __hubProg === "function" ? __hubProg(S) : { n: 0 };
   if ((__prog?.n ?? 0) < 1) return;
-  const __prog = typeof __hubProg === "function" ? __hubProg(S) : { n: 0 };
-  if ((__prog?.n ?? 0) < 1) return;
-  const __prog = typeof __hubProg === "function" ? __hubProg(S) : { n: 0 };
-  if ((__prog?.n ?? 0) < 1) return;
-  const __prog = typeof __hubProg === "function" ? __hubProg(S) : { n: 0 };
-  if ((__prog?.n ?? 0) < 1) return;
   const ui = S.scene.get("UI") || S;
   if (!ui) return;
 
@@ -181,6 +175,25 @@ function __offerRiftPrompt(S) {
   }).setOrigin(0.5, 0.5);
 
   const z1 = ui.add.zone(b1X, btnY, btnW, btnH).setInteractive({ useHandCursor: !0 });
+
+  // Botão 2: RECUSAR
+  const b2X = cx + 82;
+  const b2G = ui.add.graphics();
+  b2G.fillStyle(0x241a10, 0.95);
+  b2G.fillRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
+  b2G.lineStyle(1.5, 0x8a7f66, 0.9);
+  b2G.strokeRoundedRect(b2X - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
+
+  const tB2 = ui.add.text(b2X, btnY, typeof __L3 === "function" ? __L3("RECUSAR", "DECLINE", "RECHAZAR") : "RECUSAR", {
+    fontFamily: F_SERIF,
+    fontStyle: "bold",
+    fontSize: "9.5px",
+    color: "#d1c7b7",
+    stroke: "#0a0604",
+    strokeThickness: 2.5
+  }).setOrigin(0.5, 0.5);
+
+  const z2 = ui.add.zone(b2X, btnY, btnW, btnH).setInteractive({ useHandCursor: !0 });
   let selectedIdx = 0; // 0 = Entrar, 1 = Agora Não
 
   const updateVisualButtons = () => {
