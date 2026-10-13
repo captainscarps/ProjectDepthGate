@@ -8,6 +8,14 @@
 
 function __offerRiftPrompt(S) {
   if (!S || S.transitioning || S.__riftModalOpen) return;
+  const __prog = typeof __hubProg === "function" ? __hubProg(S) : { n: 0 };
+  if ((__prog?.n ?? 0) < 1) return;
+  const __prog = typeof __hubProg === "function" ? __hubProg(S) : { n: 0 };
+  if ((__prog?.n ?? 0) < 1) return;
+  const __prog = typeof __hubProg === "function" ? __hubProg(S) : { n: 0 };
+  if ((__prog?.n ?? 0) < 1) return;
+  const __prog = typeof __hubProg === "function" ? __hubProg(S) : { n: 0 };
+  if ((__prog?.n ?? 0) < 1) return;
   const ui = S.scene.get("UI") || S;
   if (!ui) return;
 

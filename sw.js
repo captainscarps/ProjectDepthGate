@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.58.0-auto-attack-fix";
+const CACHE = "ded-web-v4.59.0-fixes-and-packaging";
 
 self.addEventListener("install", () => self.skipWaiting());
 
