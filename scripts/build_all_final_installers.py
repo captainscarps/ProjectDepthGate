@@ -5,7 +5,7 @@ import zipfile
 import subprocess
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEST_DIR = r'C:\Users\rafaelscarpille\OneDrive - CNT - SEST SENAT - ITL\Área de Trabalho\DEPTHGATE-Instaladores'
+DEST_DIR = r'C:\Users\rafaelscarpille\DEPTHGATE-Instaladores'
 os.makedirs(DEST_DIR, exist_ok=True)
 
 PROJ_DIR = os.path.join(ROOT, 'Projeto atualizado')
