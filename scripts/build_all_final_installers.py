@@ -69,10 +69,12 @@ if os.path.exists(out_win_exe):
     try: os.remove(out_win_exe)
     except: pass
 
+ico_path = os.path.join(ROOT, 'app_icon.ico')
 csc_cmd = [
     CSC_EXE,
     '/target:winexe',
     '/optimize+',
+    f'/win32icon:{ico_path}',
     f'/resource:{game_zip_path},game.zip',
     '/reference:System.IO.Compression.dll',
     '/reference:System.IO.Compression.FileSystem.dll',
@@ -179,6 +181,8 @@ with zipfile.ZipFile(BASE_APK, 'r') as z_in, zipfile.ZipFile(unsigned_apk, 'w', 
             continue
         if item.filename.startswith('assets/public/'):
             continue
+        if 'ic_launcher' in item.filename:
+            continue
         
         data = z_in.read(item.filename)
         if item.filename == 'assets/capacitor.config.json':
@@ -188,6 +192,15 @@ with zipfile.ZipFile(BASE_APK, 'r') as z_in, zipfile.ZipFile(unsigned_apk, 'w', 
             data = text.encode('utf-8')
         z_out.writestr(item, data)
     
+    # Adicionar novos ícones do portal em res/
+    apk_icons_dir = os.path.join(ROOT, 'scripts', 'apk_icons')
+    if os.path.exists(apk_icons_dir):
+        for root, dirs, files in os.walk(apk_icons_dir):
+            for file in files:
+                full = os.path.join(root, file)
+                rel = os.path.relpath(full, apk_icons_dir).replace('\\', '/')
+                z_out.write(full, 'res/' + rel)
+
     # Adicionar todos os assets atualizados para assets/public/
     for root, dirs, files in os.walk(temp_game_dir):
         for file in files:
