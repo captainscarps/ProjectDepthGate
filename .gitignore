@@ -1,2 +1,5 @@
 scratch/
 __pycache__/
+scripts/jre8/
+scripts/uber-apk-signer.jar
+temp_unsigned_depthgate.apk
