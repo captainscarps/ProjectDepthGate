@@ -93,7 +93,13 @@ print(f'[OK] DEPTHGATE.exe gerado com sucesso ({os.path.getsize(out_win_exe)} by
 print('\n[3/4] Empacotando versão macOS (DEPTHGATE-Mac.zip)...')
 mac_zip_path = os.path.join(DEST_DIR, 'DEPTHGATE-Mac.zip')
 if os.path.exists(mac_zip_path):
-    os.remove(mac_zip_path)
+    try:
+        os.remove(mac_zip_path)
+    except Exception:
+        import time
+        time.sleep(1)
+        try: os.remove(mac_zip_path)
+        except Exception: pass
 
 info_plist = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
