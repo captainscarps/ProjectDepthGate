@@ -199,7 +199,180 @@ def barrier(horizontal):
     return im
 
 
+IRON = [(12, 12, 16), (24, 24, 30), (40, 40, 48), (60, 60, 70), (86, 86, 96), (120, 120, 130), (170, 170, 178)]
+WOOD = [(28, 16, 10), (46, 28, 16), (66, 42, 24), (88, 58, 34), (112, 76, 44)]
+CLOTH = [(40, 10, 12), (70, 16, 18), (104, 26, 24), (140, 40, 30)]
+BONE = [(70, 60, 50), (120, 104, 86), (170, 152, 124), (212, 198, 168), (238, 230, 210)]
+
+
+def poly_shade(size, polys, cols, rim=.2, seed=0):
+    """polígonos → máscara sombreada com volume"""
+    m = Image.new("L", size, 0)
+    d = ImageDraw.Draw(m)
+    for p in polys:
+        d.polygon(p, fill=255)
+    return shade_mask(np.asarray(m) > 0, cols, rim=rim, seed=seed)
+
+
+def anvil():
+    w, h = 34, 24
+    im = Image.new("RGBA", (w, h))
+    stump = poly_shade((w, h), [[(9, 14), (25, 14), (26, 23), (8, 23)]], WOOD, seed=1)
+    im.alpha_composite(stump)
+    body = poly_shade((w, h), [[(1, 5), (6, 3), (28, 3), (32, 6), (26, 9), (22, 9), (21, 13), (24, 15), (10, 15), (13, 13), (12, 9), (6, 9)]], IRON, seed=2)
+    im.alpha_composite(body)
+    d = ImageDraw.Draw(im)
+    d.line([(6, 3), (28, 3)], fill=IRON[6])
+    d.line([(2, 5), (6, 4)], fill=IRON[5])
+    d.point([(14, 2), (20, 2)], fill=(255, 170, 70))          # faíscas
+    d.line([(26, 20), (31, 16)], fill=WOOD[3], width=2)        # cabo do martelo
+    d.rectangle((29, 13, 33, 16), fill=IRON[3])
+    return im
+
+
+def forge():
+    w, h = 50, 46
+    im = Image.new("RGBA", (w, h))
+    chim = poly_shade((w, h), [[(30, 0), (40, 0), (41, 18), (29, 18)]], ROCK, rim=.3, seed=3)
+    im.alpha_composite(chim)
+    body = poly_shade((w, h), [[(3, 44), (5, 22), (12, 13), (25, 10), (38, 13), (45, 22), (47, 44)]], ROCK, rim=.5, seed=4)
+    im.alpha_composite(body)
+    d = ImageDraw.Draw(im)
+    for y in range(18, 44, 7):                                   # fiadas de pedra
+        d.line([(6, y), (44, y)], fill=ROCK[1])
+        for x in range(8 + (y // 7 % 2) * 5, 44, 10):
+            d.line([(x, y), (x, y + 6)], fill=ROCK[1])
+    d.ellipse((13, 24, 37, 44), fill=(20, 10, 8))                # boca
+    d.ellipse((16, 30, 34, 44), fill=(170, 52, 14))
+    d.ellipse((19, 34, 31, 44), fill=(250, 140, 34))
+    d.ellipse((22, 37, 28, 43), fill=(255, 230, 150))
+    d.rectangle((13, 42, 37, 45), fill=ROCK[2])
+    d.line([(30, 0), (40, 0)], fill=ROCK[7])
+    return im
+
+
+def minecart():
+    w, h = 38, 28
+    im = Image.new("RGBA", (w, h))
+    ore = Image.new("RGBA", (w, h))
+    od = ImageDraw.Draw(ore)
+    r = np.random.RandomState(5)
+    for _ in range(9):
+        x, y, s = r.randint(7, 30), r.randint(2, 8), r.randint(3, 5)
+        od.ellipse((x - s, y - s + 2, x + s, y + s), fill=ROCK[r.randint(3, 6)])
+        od.point([(x, y)], fill=(255, 150, 40))
+    im.alpha_composite(ore)
+    box = poly_shade((w, h), [[(3, 8), (35, 8), (31, 22), (7, 22)]], WOOD, seed=6)
+    im.alpha_composite(box)
+    d = ImageDraw.Draw(im)
+    for x in (4, 34):
+        d.line([(x, 8), (x + (3 if x < 10 else -3), 22)], fill=IRON[4], width=2)
+    d.line([(3, 8), (35, 8)], fill=IRON[5])
+    d.line([(6, 15), (32, 15)], fill=IRON[3])
+    for cx in (11, 27):
+        d.ellipse((cx - 4, 19, cx + 4, 27), fill=IRON[1], outline=IRON[4])
+        d.point([(cx, 23)], fill=IRON[5])
+    return im
+
+
+def weapon_rack():
+    w, h = 34, 36
+    im = Image.new("RGBA", (w, h))
+    d = ImageDraw.Draw(im)
+    d.rectangle((2, 10, 4, 35), fill=WOOD[2])
+    d.rectangle((29, 10, 31, 35), fill=WOOD[1])
+    d.rectangle((1, 9, 32, 12), fill=WOOD[3])
+    d.line([(1, 9), (32, 9)], fill=WOOD[4])
+    d.rectangle((1, 27, 32, 29), fill=WOOD[2])
+    d.line([(9, 2), (9, 34)], fill=IRON[5], width=2)              # espada
+    d.line([(6, 8), (12, 8)], fill=IRON[3], width=2)
+    d.point([(9, 1)], fill=IRON[6])
+    d.line([(17, 4), (17, 34)], fill=WOOD[3], width=2)            # machado
+    d.polygon([(18, 4), (24, 2), (24, 11), (18, 9)], fill=IRON[4])
+    d.line([(24, 2), (24, 11)], fill=IRON[6])
+    d.line([(25, 0), (25, 34)], fill=WOOD[3])                     # lança
+    d.polygon([(23, 3), (25, -1), (27, 3), (25, 6)], fill=IRON[5])
+    return im
+
+
+def banner():
+    w, h = 18, 50
+    im = Image.new("RGBA", (w, h))
+    cloth = poly_shade((w, h), [[(3, 6), (15, 6), (15, 34), (13, 31), (11, 36), (9, 31), (7, 37), (5, 32), (3, 35)]], CLOTH, seed=7)
+    d = ImageDraw.Draw(im)
+    d.line([(9, 1), (9, 49)], fill=WOOD[1], width=2)
+    d.line([(2, 5), (16, 5)], fill=WOOD[3], width=2)
+    d.point([(9, 0)], fill=IRON[6])
+    im.alpha_composite(cloth)
+    d = ImageDraw.Draw(im)
+    d.polygon([(9, 12), (12, 18), (9, 25), (6, 18)], fill=(230, 120, 30))   # brasão: chama
+    d.polygon([(9, 15), (10.5, 18), (9, 22), (7.5, 18)], fill=(255, 220, 120))
+    return im
+
+
+def remains():
+    w, h = 36, 16
+    im = Image.new("RGBA", (w, h))
+    d = ImageDraw.Draw(im)
+    d.ellipse((24, 4, 33, 12), fill=IRON[3])                      # elmo enferrujado
+    d.arc((24, 4, 33, 12), 200, 340, fill=IRON[5])
+    d.line([(26, 9), (31, 9)], fill=IRON[0])
+    for k in range(4):                                             # costelas
+        d.arc((10 + k * 3, 4, 16 + k * 3, 12), 180, 360, fill=BONE[3])
+    d.line([(8, 9), (22, 9)], fill=BONE[2])
+    d.line([(2, 11), (9, 9)], fill=BONE[3], width=2)
+    d.line([(3, 14), (10, 11)], fill=BONE[2], width=2)
+    d.ellipse((17, 10, 25, 15), fill=WOOD[2], outline=IRON[3])    # escudo
+    d.point([(21, 12)], fill=IRON[5])
+    return im
+
+
+def sword_rock():
+    w, h = 26, 34
+    im = Image.new("RGBA", (w, h))
+    rock = boulder(77, 26, 16)
+    d = ImageDraw.Draw(im)
+    d.line([(13, 2), (13, 22)], fill=IRON[5], width=2)
+    d.line([(14, 4), (14, 22)], fill=IRON[3])
+    d.line([(9, 6), (17, 6)], fill=(170, 130, 50), width=2)
+    d.rectangle((12, 0, 14, 5), fill=WOOD[2])
+    d.point([(13, 0)], fill=(220, 180, 70))
+    im.alpha_composite(rock, (0, h - 16))
+    return im
+
+
+def fx_streak(col, w=34, h=5):
+    a = np.zeros((h, w, 4), np.float32)
+    yy2, xx2 = np.mgrid[0:h, 0:w]
+    t = np.clip(1 - np.abs(xx2 - w / 2) / (w / 2), 0, 1) ** 1.3 * np.clip(1 - np.abs(yy2 - h / 2 + .5) / (h / 2), 0, 1) ** 1.5
+    a[..., :3] = col
+    a[..., 3] = t * 255
+    return Image.fromarray(a.astype(np.uint8))
+
+
+def fx_bubble():
+    sh = Image.new("RGBA", (12 * 6, 12))
+    for f, r in enumerate([1.5, 2.5, 3.5, 4.2, 0, -1]):
+        d = ImageDraw.Draw(sh)
+        cx = f * 12 + 6
+        if r > 0:
+            d.ellipse((cx - r, 6 - r, cx + r, 6 + r), fill=(120, 30, 10, 255), outline=(255, 200, 90, 255))
+            d.point([(cx - 1, 5)], fill=(255, 245, 210, 255))
+        elif r == 0:
+            for dx, dy in [(-4, -2), (4, -2), (-3, 2), (3, 3), (0, -4)]:
+                d.point([(cx + dx, 6 + dy)], fill=(255, 190, 80, 255))
+            d.ellipse((cx - 2, 4, cx + 2, 8), outline=(200, 70, 20, 200))
+    return sh
+
+
 PROPS = {}
+PROPS["vc-anvil"] = anvil()
+PROPS["vc-forge"] = forge()
+PROPS["vc-minecart"] = minecart()
+PROPS["vc-rack"] = weapon_rack()
+PROPS["vc-banner"] = banner()
+PROPS["vc-remains"] = remains()
+PROPS["vc-swordrock"] = sword_rock()
 for k in range(5):
     PROPS[f"vc-boulder{k + 1}"] = boulder(k, [26, 22, 34, 18, 30][k], [18, 15, 22, 12, 20][k])
 for k in range(3):
@@ -217,6 +390,21 @@ for k, im in PROPS.items():
     im.save(os.path.join(OUT, k + ".png"))
 barrier(True).save(os.path.join(OUT, "vc-thorn-h.png"))
 barrier(False).save(os.path.join(OUT, "vc-thorn-v.png"))
+fx_streak((255, 226, 150), 48, 6).save(os.path.join(OUT, "vc-fx-streak.png"))
+fx_streak((255, 130, 40), 26, 3).save(os.path.join(OUT, "vc-fx-streak2.png"))
+fx_bubble().save(os.path.join(OUT, "vc-fx-bubble.png"))
+for k in range(3):                      # placas de crosta que derivam com a correnteza
+    w0, h0 = [9, 7, 12][k], [5, 4, 6][k]
+    yy0, xx0 = np.mgrid[0:h0, 0:w0]
+    rr0 = 1 + (vnoise(h0, w0, 2, 500 + k) - .5) * .6
+    m0 = ((xx0 - w0 / 2 + .5) / (w0 / 2)) ** 2 + ((yy0 - h0 / 2 + .5) / (h0 / 2)) ** 2 < rr0
+    a0 = np.zeros((h0, w0, 4), np.uint8)
+    a0[..., :3] = FACE[1]
+    a0[m0 & (yy0 < h0 / 2), :3] = FACE[3]
+    a0[..., 3] = m0 * 255
+    e0 = m0 & ~ndimage.binary_erosion(m0)
+    a0[e0, :3] = (200, 70, 18)
+    Image.fromarray(a0).save(os.path.join(OUT, f"vc-fx-crust{k + 1}.png"))
 
 # ═════════════════════════════ layout ═════════════════════════════
 R = lambda x, y, w, h: {"x": x, "y": y, "w": w, "h": h}
@@ -254,50 +442,85 @@ DOORS = [
 SPAWN = {"col": 40, "row": 58}
 # rios de lava (polilinhas em tiles, meia-largura em tiles) — onde não há chão, viram fendas
 RIVERS = [
-    ([(0, 34.5), (10, 35.5), (20, 34), (30, 35), (40, 34.2), (50, 35.2), (60, 34), (70, 35.5), (80, 34.5)], 2.4),
-    ([(55, 0), (56, 8), (55.5, 16), (56.5, 26), (55.5, 34)], 2.2),
-    ([(0, 12), (6, 13), (12, 12.5), (20, 14), (23, 15)], 1.8),
-    ([(80, 50), (74, 49), (66, 50.5), (58, 49), (52, 50)], 2.0),
+    ([(0, 33.5), (5, 36), (10, 36.5), (15, 34), (20, 33), (25, 35.5), (30, 36), (35, 34), (40, 33.6), (45, 35.8), (50, 36),
+      (55, 33.6), (60, 33), (65, 35.6), (70, 36.4), (75, 34), (80, 33.5)], 2.3),
+    ([(55, 0), (57, 5), (56.5, 10), (54.5, 15), (55, 20), (57, 24), (56.5, 29), (55, 33)], 2.1),
+    ([(0, 11), (4, 13.5), (8, 13.8), (12, 11.8), (16, 12.5), (20, 14.5), (23, 15)], 1.7),
+    ([(80, 51), (76, 48.5), (71, 48.8), (66, 51), (61, 50.6), (56, 48.6), (52, 50)], 1.9),
 ]
 LAKES = [R(31, 2, 18, 3), R(7, 44, 5, 3), R(66, 22, 4, 3), R(64, 47, 6, 3)]
+# correntes rasas de magma no chão (dá pra pisar, mas queima) — polilinha em tiles, meia-largura em px
+STREAMS = [
+    ([(44, 36.6), (45.2, 39), (43.6, 41.4), (46, 43.8), (48.4, 46.2)], 7),
+    ([(12, 21.4), (11, 24), (13, 26.6), (12, 29.4)], 6),
+    ([(8.5, 47.2), (12, 49.2), (15.6, 50.4), (19, 52)], 6),
+    ([(34, 31), (32.8, 28.4), (35, 25.8), (33.4, 22.6)], 6),
+    ([(72.4, 19.6), (71, 23.4), (73.6, 27), (72, 31)], 6),
+    ([(30.5, 5.6), (29.6, 8.4), (31.4, 11.6)], 5),
+    ([(50.5, 5.6), (51.4, 8.4), (49.6, 11.6)], 5),
+]
 
+def smooth(pl, k=8):
+    """Catmull-Rom: polilinha → curva suave"""
+    P = [pl[0]] + list(pl) + [pl[-1]]
+    out = []
+    for i in range(1, len(P) - 2):
+        p0, p1, p2, p3 = P[i - 1], P[i], P[i + 1], P[i + 2]
+        for j in range(k):
+            t = j / k
+            t2, t3 = t * t, t * t * t
+            out.append(tuple(.5 * ((2 * p1[a]) + (-p0[a] + p2[a]) * t + (2 * p0[a] - 5 * p1[a] + 4 * p2[a] - p3[a]) * t2
+                                   + (-p0[a] + 3 * p1[a] - 3 * p2[a] + p3[a]) * t3) for a in (0, 1)))
+    out.append(pl[-1])
+    return out
+
+
+RIVERS = [(smooth(pl), hw) for pl, hw in RIVERS]
+STREAMS = [(smooth(pl), hw) for pl, hw in STREAMS]
 E = lambda t, c, r, **k: dict(type=t, col=c, row=r, **k)
 S = lambda tex, c, r, bw=14, bh=10, **k: dict(type="sprite", tex=tex, col=c, row=r, solid=True, bw=bw, bh=bh, **k)
 FLAT = lambda tex, c, r, **k: dict(type="sprite", tex=tex, col=c, row=r, flat=True, **k)
 CONTENT = {
     "vulcao-encosta": dict(enemies=[], decor=[
         S("vc-boulder3", 35, 53, 30, 12), S("vc-columns1", 46, 52, 26, 10), S("vc-stump", 36, 59), FLAT("vc-sulfur", 44, 57),
-        S("vc-vent", 45, 59, 18, 8, light="TORCH"), S("vc-obsidian1", 34, 57, 14, 8)]),
+        S("vc-vent", 45, 59, 18, 8, light="TORCH"), S("vc-obsidian1", 34, 57, 14, 8), FLAT("vc-remains", 38, 54),
+        S("vc-swordrock", 43, 53, 16, 8), S("vc-banner", 37, 51, 8, 6), dict(type="barrel", col=46, row=56, solid=True)]),
     "vulcao-campo": dict(enemies=[E("FIRE_ELEMENTAL", 33, 40), E("DEMON", 46, 41), E("DRAGON_WYRMLING", 49, 39), E("DEMON", 36, 44)], decor=[
         S("vc-columns2", 30, 39, 30, 10), S("vc-boulder1", 50, 44, 22, 10), S("vc-obsidian2", 44, 38, 16, 8),
-        S("vc-boulder5", 31, 45, 26, 10), FLAT("vc-lavapool2", 42, 43), S("vc-stump", 38, 38)]),
+        S("vc-boulder5", 31, 45, 26, 10), S("vc-stump", 38, 38), S("vc-minecart", 34, 42, 30, 10), FLAT("vc-remains", 50, 41),
+        dict(type="crate", col=32, row=43, solid=True)]),
     "vulcao-fumarolas": dict(lake=LAKES[1], enemies=[
         E("FIRE_ELEMENTAL", 15, 43, elite=True, affixes=["TOUGH"]), E("DEMON_CASTER", 8, 50), E("DRAGON_WYRMLING", 17, 50)],
         decor=[S("vc-vent", 6, 42, 18, 8, light="TORCH"), S("vc-vent", 14, 48, 18, 8, light="TORCH"), S("vc-vent", 18, 44, 18, 8),
                FLAT("vc-sulfur", 7, 49), FLAT("vc-sulfur", 15, 47), FLAT("vc-sulfur", 19, 45), S("vc-boulder2", 5, 51, 20, 10),
-               dict(type="chest", col=12, row=51, solid=True)]),
+               dict(type="chest", col=12, row=51, solid=True), FLAT("vc-remains", 16, 44), dict(type="barrel", col=20, row=50, solid=True)]),
     "vulcao-ponte": dict(enemies=[E("DRAGON_DRAKE", 45, 23, elite=True, affixes=["VAMPIRIC"]), E("FIRE_ELEMENTAL", 32, 28),
                                   E("DEMON_CASTER", 49, 29), E("DRAGON_WYRMLING_SHADOW", 41, 29)],
                          decor=[S("vc-columns3", 30, 21, 32, 10), S("vc-obsidian3", 50, 21, 18, 8), S("vc-boulder3", 29, 30, 30, 12),
-                                FLAT("vc-lavapool", 46, 26), S("vc-stump", 52, 30)]),
+                                S("vc-stump", 52, 30), S("vc-banner", 30, 25, 8, 6), S("vc-banner", 51, 25, 8, 6), dict(type="fire-crystal", col=47, row=22),
+                                dict(type="fire-crystal", col=31, row=29)]),
     "vulcao-forja": dict(enemies=[E("ORC_WARRIOR", 12, 24, elite=True, affixes=["TOUGH"]), E("DEMON", 7, 29), E("FIRE_ELEMENTAL", 17, 29),
                                   E("DEMON_CASTER", 6, 21)],
                          decor=[dict(type="brazier", col=8, row=21, solid=True), dict(type="brazier", col=16, row=21, solid=True),
-                                S("vc-columns2", 5, 26, 30, 10), S("vc-boulder4", 18, 24, 16, 8), FLAT("vc-lavapool2", 12, 28),
-                                dict(type="chest", col=12, row=20, solid=True), S("vc-obsidian1", 19, 31, 14, 8)]),
+                                S("vc-forge", 12, 19, 40, 14, light="TORCH"), S("vc-anvil", 15, 23, 26, 10), S("vc-rack", 7, 23, 28, 10), S("vc-minecart", 18, 28, 30, 10),
+                                dict(type="barrel", col=5, row=27, solid=True), dict(type="barrel", col=6, row=28, solid=True), dict(type="crate", col=19, row=21, solid=True),
+                                dict(type="chest", col=4, row=21, solid=True), S("vc-obsidian1", 19, 31, 14, 8)]),
     "vulcao-colunas": dict(lake=LAKES[2], enemies=[E("DRAGON_WYRMLING", 63, 26), E("DRAGON_DRAKE", 72, 30), E("DEMON", 68, 21),
                                                     E("FIRE_ELEMENTAL", 73, 22)],
                            decor=[S("vc-bigcolumns", 63, 21, 60, 14), S("vc-columns1", 74, 26, 26, 10), S("vc-columns3", 67, 30, 32, 10),
                                   S("vc-obsidian2", 62, 32, 16, 8), FLAT("vc-sulfur", 70, 33), dict(type="trap-spikes", col=65, row=31),
+                                  dict(type="fire-crystal", col=64, row=24), dict(type="fire-crystal", col=75, row=31), FLAT("vc-remains", 69, 27),
                                   dict(type="trap-spikes", col=71, row=25)]),
     "vulcao-fenda": dict(lake=LAKES[3], enemies=[E("ORC_WARRIOR", 68, 45, elite=True, affixes=["TOUGH"]), E("DEMON_CASTER", 62, 51),
                                                   E("FIRE_ELEMENTAL", 73, 52)],
                          decor=[dict(type="chest", col=73, row=45, solid=True), S("vc-boulder5", 62, 45, 26, 10), S("vc-obsidian3", 74, 50, 18, 8),
-                                S("vc-vent", 66, 52, 18, 8, light="TORCH"), FLAT("vc-sulfur", 69, 53)]),
+                                S("vc-vent", 66, 52, 18, 8, light="TORCH"), FLAT("vc-sulfur", 69, 53), dict(type="fire-crystal", col=61, row=46),
+                                dict(type="crate", col=74, row=47, solid=True), S("vc-swordrock", 63, 52, 16, 8)]),
     "vulcao-caldeira": dict(lake=LAKES[0], enemies=[E("FIRE_ELEMENTAL", 30, 10), E("FIRE_ELEMENTAL", 50, 10), E("DEMON", 41, 12)],
                             decor=[dict(type="statue-fire", col=33, row=7), dict(type="statue-fire", col=47, row=7),
                                    dict(type="brazier", col=30, row=12, solid=True), dict(type="brazier", col=52, row=12, solid=True),
-                                   S("vc-columns2", 26, 5, 30, 10), S("vc-columns3", 53, 5, 32, 10), S("vc-obsidian3", 37, 12, 18, 8)]),
+                                   S("vc-columns2", 26, 5, 30, 10), S("vc-columns3", 53, 5, 32, 10), S("vc-obsidian3", 37, 12, 18, 8),
+                                   S("vc-banner", 36, 6, 8, 6), S("vc-banner", 44, 6, 8, 6), FLAT("vc-remains", 40, 13)]),
 }
 
 
@@ -366,6 +589,17 @@ for (c, r) in lake_tiles:
     lavaT[r, c] = True
 bridgeT = lavaT & walk          # chão que cruza um rio = ponte
 lavaT &= ~walk
+streamT = np.zeros((ROWS, COLS), bool)
+for pl, hw in STREAMS:
+    for (x0, y0), (x1, y1) in zip(pl, pl[1:]):
+        n = int(max(abs(x1 - x0), abs(y1 - y0)) * 4) + 1
+        for i in range(n + 1):
+            x, y = x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n
+            rr = (hw + 12) / T
+            for r in range(int(y - rr - 1), int(y + rr + 2)):
+                for c in range(int(x - rr - 1), int(x + rr + 2)):
+                    if 0 <= r < ROWS and 0 <= c < COLS and (c - x) ** 2 + (r - y) ** 2 <= rr * rr:
+                        streamT[r, c] = True
 
 used = set()
 
@@ -374,7 +608,7 @@ def snap(o, room_rect, clearance):
     best = None
     for r in range(room_rect["y"], room_rect["y"] + room_rect["h"]):
         for c in range(room_rect["x"], room_rect["x"] + room_rect["w"]):
-            ok = all(0 <= c + dx < COLS and 0 <= r + dy < ROWS and walk[r + dy, c + dx] and not bridgeT[r + dy, c + dx]
+            ok = all(0 <= c + dx < COLS and 0 <= r + dy < ROWS and walk[r + dy, c + dx] and not bridgeT[r + dy, c + dx] and not streamT[r + dy, c + dx]
                      for dy in range(-clearance, clearance + 1) for dx in range(-clearance, clearance + 1))
             if ok and (c, r) not in used:
                 d = (c - o["col"]) ** 2 + (r - o["row"]) ** 2
@@ -583,11 +817,11 @@ lp = nrs.rand(9000, 2) * [W * .45 + 40, H * 1.4 + 20]
 d2, _ = cKDTree(lp).query(np.stack([wx[lsel], wy[lsel]], 1), k=2)
 e2 = np.full((H, W), 99., np.float32)
 e2[lsel] = d2[:, 1] - d2[:, 0]
-heat = np.clip(1 - e2 / 8, 0, 1) * .75 + fbm(H, W, 23, ((14, .6), (5, .4))) * .5
+heat = np.clip(1 - e2 / 7, 0, 1) * .62 + fbm(H, W, 23, ((14, .6), (5, .4))) * .36
 inner = ndimage.distance_transform_edt(LV)
 heat = heat * np.clip(inner / 7, .45, 1)
 lav = ramp(LAVA, np.clip(heat, 0, 1), yy, xx)
-crust = (e2 > 3.4) & (fbm(H, W, 25, ((12, .7), (4, .3))) < .47) & (inner > 3) & LV
+crust = (e2 > 3.0) & (fbm(H, W, 25, ((12, .7), (4, .3))) < .53) & (inner > 3) & LV
 cr = ramp(FACE, np.clip(.15 + tex * .4, 0, 1), yy, xx)
 lav[crust] = cr[crust]
 ce = crust & ~ndimage.binary_erosion(crust)
@@ -621,7 +855,31 @@ if BRp.any():
         s2[k:] = BRp[:-k]
         bf |= s2 & LV
     img[bf] = img[bf] * .2 + np.array(FACE[2]) * .8
-emis = LV | hotc
+# — correntes rasas de magma no chão (caminháveis, queimam)
+sm = Image.new("L", (W, H), 0)
+sd = ImageDraw.Draw(sm)
+STREAM_PX = []
+for pl, hw in STREAMS:
+    pts = [(x * T + 16, y * T + 16) for x, y in pl]
+    STREAM_PX.append(pts)
+    for qi, q in enumerate(pts):
+        rr = hw * (.75 + .45 * (math.sin(qi * .9 + q[0] * .01) * .5 + .5))
+        sd.ellipse((q[0] - rr, q[1] - rr, q[0] + rr, q[1] + rr), fill=255)
+    for (a0, b0), (a1, b1) in zip(pts, pts[1:]):
+        sd.line([(a0, b0), (a1, b1)], fill=255, width=int(hw * 1.5))
+STR = (ndimage.gaussian_filter(np.asarray(sm, np.float32) / 255, 3) + (fbm(H, W, 95, ((10, .6), (4, .4))) - .5) * .45) > .5
+STR &= FLOOR & ~BR
+sin_ = ndimage.distance_transform_edt(STR)
+heat2 = np.clip(.3 + sin_ / 6 * .55 + (fbm(H, W, 96, ((8, .6), (3, .4))) - .5) * .5, 0, 1)
+sl = ramp(LAVA, heat2, yy, xx)
+spk = STR & (fbm(H, W, 97, ((5, .6), (2, .4))) < .33) & (sin_ > 1.5)
+sl[spk] = np.array(FACE[2])
+img[STR] = sl[STR]
+rimS = ndimage.binary_dilation(STR, iterations=3) & FLOOR & ~STR
+img[rimS] = img[rimS] * .45 + np.array(FACE[0]) * .55
+rimS1 = ndimage.binary_dilation(STR, iterations=1) & FLOOR & ~STR
+img[rimS1] = (140, 40, 14)
+emis = LV | hotc | STR
 canvas = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGB").convert("RGBA")
 
 # ═════════════════════════════ adereços sobre o mapa ═════════════════════════════
@@ -696,10 +954,12 @@ for k in range(10):
     sa[..., 3] = np.maximum(sa[..., 3], np.clip(1 - ((sx - cx2) ** 2 + (sy - cy2) ** 2) / (rad * rad), 0, 1) * (150 - k * 12))
 sa[..., :3] = (210, 206, 202)
 steam = Image.fromarray(sa.astype(np.uint8)).filter(ImageFilter.GaussianBlur(.8))
+VENTS = []
 for _ in range(60):
     x, y = rnd.randrange(40, W - 40), rnd.randrange(60, H - 20)
-    if FLOOR[y, x] and walk[y // T, x // T] and distLV[y, x] > 40 and free((x - 11, y - 6, x + 11, y + 6), 2):
+    if not STR[y, x] and FLOOR[y, x] and walk[y // T, x // T] and distLV[y, x] > 40 and free((x - 11, y - 6, x + 11, y + 6), 2):
         occ.append((x - 11, y - 6, x + 11, y + 6))
+        VENTS.append([int(x), int(y)])
         canvas.alpha_composite(PROPS["vc-vent"], (x - 11, y - 6))
         canvas.alpha_composite(steam, (x - 17, y - 52))
         sp = PROPS["vc-sulfur"]
@@ -723,7 +983,64 @@ for cy in range(math.ceil(H / CH)):
     for cx in range(math.ceil(W / CH)):
         canvas.crop((cx * CH, cy * CH, cx * CH + CH, cy * CH + CH)).save(os.path.join(OUT, f"vcb-{cx}-{cy}.png"), optimize=True)
 front.sort(key=lambda f: f[1])
-json.dump({"chunk": CH, "cols": math.ceil(W / CH), "rows": math.ceil(H / CH), "front": front},
+# ── dados para a animação da lava e o dano ──
+def seg_dir(px, py, lines):
+    best = (1e18, 1., 0.)
+    for pts in lines:
+        for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+            vx, vy = x1 - x0, y1 - y0
+            L2 = vx * vx + vy * vy or 1
+            t = max(0, min(1, ((px - x0) * vx + (py - y0) * vy) / L2))
+            d = (px - x0 - vx * t) ** 2 + (py - y0 - vy * t) ** 2
+            if d < best[0]:
+                ln = math.sqrt(L2)
+                best = (d, vx / ln, vy / ln)
+    return best
+RIV_PX = [[(x * T + 16, y * T + 16) for x, y in pl] for pl, _ in RIVERS]
+innerLV = ndimage.distance_transform_edt(LV)
+flow, bub = [], []
+c1 = np.argwhere(LV & (innerLV >= 6))
+nrs.shuffle(c1)
+for y, x in c1[:560]:
+    d, dx, dy = seg_dir(x, y, RIV_PX)
+    if d > 90 ** 2:
+        a = nrs.rand() * 6.28
+        dx, dy = math.cos(a) * .35, math.sin(a) * .2
+    flow.append([int(x), int(y), round(dx, 2), round(dy, 2)])
+c2 = np.argwhere(STR & (sin_ >= 3))
+nrs.shuffle(c2)
+for y, x in c2[:180]:
+    d, dx, dy = seg_dir(x, y, STREAM_PX)
+    flow.append([int(x), int(y), round(dx, 2), round(dy, 2)])
+for y, x in list(c1[560:720]) + list(c2[180:230]):
+    bub.append([int(x), int(y)])
+glow = []
+G = 128
+em2 = LV | STR
+for gy0 in range(0, H, G):
+    for gx0 in range(0, W, G):
+        blk = em2[gy0:gy0 + G, gx0:gx0 + G]
+        fr = blk.mean()
+        if fr > .12:
+            ys, xs = np.nonzero(blk)
+            glow.append([int(gx0 + xs.mean()), int(gy0 + ys.mean()), round(.5 + fr * 1.3, 2)])
+cs = 8
+gh, gw = H // cs, W // cs
+cell = STR[:gh * cs, :gw * cs].reshape(gh, cs, gw, cs).mean((1, 3)) > .45
+hz = []
+for r in range(gh):
+    c = 0
+    while c < gw:
+        if cell[r, c]:
+            c0 = c
+            while c < gw and cell[r, c]:
+                c += 1
+            hz.append([c0 * cs, r * cs, (c - c0) * cs, cs])
+        else:
+            c += 1
+print("fluxo", len(flow), "bolhas", len(bub), "brilho", len(glow), "zonas de dano", len(hz), "fumarolas", len(VENTS))
+json.dump({"chunk": CH, "cols": math.ceil(W / CH), "rows": math.ceil(H / CH), "front": front, "flow": flow, "bub": bub,
+           "glow": glow, "hz": hz, "vents": VENTS},
           open(os.path.join(OUT, "vcb-meta.json"), "w"))
 prev = canvas.convert("RGBA")
 for x, y, k in front:
@@ -732,6 +1049,6 @@ for x, y, k in front:
 prev.resize((W // 2, H // 2), Image.LANCZOS).convert("RGB").save(os.path.join(ROOT, "scripts", "volcano_preview.png"))
 prev.convert("RGB").save(os.path.join(ROOT, "scripts", "volcano_full.png"))
 json.dump({"world": {"cols": COLS, "rows": ROWS}, "rooms": rooms_out, "corridors": corridors, "doors": doors, "spawn": SPAWN,
-           "props": sorted(PROPS) + ["vc-thorn-h", "vc-thorn-v"]},
+           "props": sorted(PROPS) + ["vc-thorn-h", "vc-thorn-v", "vc-fx-streak", "vc-fx-streak2", "vc-fx-crust1", "vc-fx-crust2", "vc-fx-crust3"]},
           open(os.path.join(ROOT, "scripts", "volcano_level.json"), "w"), ensure_ascii=False, indent=1)
 print("ok", len(front), "props na borda", len(corridors), "corredores")

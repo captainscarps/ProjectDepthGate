@@ -190,6 +190,37 @@
      "solid": true,
      "bw": 14,
      "bh": 8
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-remains",
+     "col": 38,
+     "row": 54,
+     "flat": true
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-swordrock",
+     "col": 43,
+     "row": 53,
+     "solid": true,
+     "bw": 16,
+     "bh": 8
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-banner",
+     "col": 37,
+     "row": 52,
+     "solid": true,
+     "bw": 8,
+     "bh": 6
+    },
+    {
+     "type": "barrel",
+     "col": 45,
+     "row": 56,
+     "solid": true
     }
    ]
   },
@@ -333,7 +364,7 @@
     },
     {
      "type": "DEMON",
-     "col": 46,
+     "col": 47,
      "row": 41
     },
     {
@@ -369,7 +400,7 @@
     {
      "type": "sprite",
      "tex": "vc-obsidian2",
-     "col": 44,
+     "col": 42,
      "row": 39,
      "solid": true,
      "bw": 16,
@@ -386,19 +417,34 @@
     },
     {
      "type": "sprite",
-     "tex": "vc-lavapool2",
-     "col": 42,
-     "row": 43,
-     "flat": true
-    },
-    {
-     "type": "sprite",
      "tex": "vc-stump",
      "col": 39,
      "row": 38,
      "solid": true,
      "bw": 14,
      "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-minecart",
+     "col": 34,
+     "row": 42,
+     "solid": true,
+     "bw": 30,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-remains",
+     "col": 49,
+     "row": 41,
+     "flat": true
+    },
+    {
+     "type": "crate",
+     "col": 32,
+     "row": 42,
+     "solid": true
     }
    ]
   },
@@ -611,8 +657,8 @@
     },
     {
      "type": "DRAGON_WYRMLING",
-     "col": 17,
-     "row": 50
+     "col": 18,
+     "row": 49
     }
    ],
    "decor": [
@@ -630,7 +676,7 @@
      "type": "sprite",
      "tex": "vc-vent",
      "col": 14,
-     "row": 48,
+     "row": 47,
      "solid": true,
      "bw": 18,
      "bh": 8,
@@ -677,8 +723,21 @@
     },
     {
      "type": "chest",
-     "col": 12,
+     "col": 11,
      "row": 51,
+     "solid": true
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-remains",
+     "col": 16,
+     "row": 44,
+     "flat": true
+    },
+    {
+     "type": "barrel",
+     "col": 19,
+     "row": 49,
      "solid": true
     }
    ]
@@ -815,8 +874,8 @@
     },
     {
      "type": "FIRE_ELEMENTAL",
-     "col": 32,
-     "row": 28
+     "col": 31,
+     "row": 27
     },
     {
      "type": "DEMON_CASTER",
@@ -851,18 +910,11 @@
     {
      "type": "sprite",
      "tex": "vc-boulder3",
-     "col": 31,
-     "row": 27,
+     "col": 29,
+     "row": 26,
      "solid": true,
      "bw": 30,
      "bh": 12
-    },
-    {
-     "type": "sprite",
-     "tex": "vc-lavapool",
-     "col": 46,
-     "row": 26,
-     "flat": true
     },
     {
      "type": "sprite",
@@ -872,6 +924,34 @@
      "solid": true,
      "bw": 14,
      "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-banner",
+     "col": 30,
+     "row": 25,
+     "solid": true,
+     "bw": 8,
+     "bh": 6
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-banner",
+     "col": 50,
+     "row": 25,
+     "solid": true,
+     "bw": 8,
+     "bh": 6
+    },
+    {
+     "type": "fire-crystal",
+     "col": 47,
+     "row": 22
+    },
+    {
+     "type": "fire-crystal",
+     "col": 31,
+     "row": 26
     }
    ]
   },
@@ -1052,7 +1132,7 @@
    "enemies": [
     {
      "type": "ORC_WARRIOR",
-     "col": 12,
+     "col": 14,
      "row": 24,
      "elite": true,
      "affixes": [
@@ -1090,33 +1170,63 @@
     },
     {
      "type": "sprite",
-     "tex": "vc-columns2",
-     "col": 6,
-     "row": 26,
+     "tex": "vc-forge",
+     "col": 12,
+     "row": 19,
+     "solid": true,
+     "bw": 40,
+     "bh": 14,
+     "light": "TORCH"
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-anvil",
+     "col": 15,
+     "row": 23,
+     "solid": true,
+     "bw": 26,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-rack",
+     "col": 7,
+     "row": 23,
+     "solid": true,
+     "bw": 28,
+     "bh": 10
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-minecart",
+     "col": 18,
+     "row": 28,
      "solid": true,
      "bw": 30,
      "bh": 10
     },
     {
-     "type": "sprite",
-     "tex": "vc-boulder4",
-     "col": 18,
-     "row": 24,
-     "solid": true,
-     "bw": 16,
-     "bh": 8
+     "type": "barrel",
+     "col": 6,
+     "row": 27,
+     "solid": true
     },
     {
-     "type": "sprite",
-     "tex": "vc-lavapool2",
-     "col": 12,
+     "type": "barrel",
+     "col": 6,
      "row": 28,
-     "flat": true
+     "solid": true
+    },
+    {
+     "type": "crate",
+     "col": 17,
+     "row": 23,
+     "solid": true
     },
     {
      "type": "chest",
-     "col": 12,
-     "row": 20,
+     "col": 6,
+     "row": 22,
      "solid": true
     },
     {
@@ -1330,7 +1440,7 @@
     },
     {
      "type": "DRAGON_DRAKE",
-     "col": 72,
+     "col": 70,
      "row": 30
     },
     {
@@ -1340,7 +1450,7 @@
     },
     {
      "type": "FIRE_ELEMENTAL",
-     "col": 73,
+     "col": 74,
      "row": 22
     }
    ],
@@ -1357,8 +1467,8 @@
     {
      "type": "sprite",
      "tex": "vc-columns1",
-     "col": 74,
-     "row": 26,
+     "col": 75,
+     "row": 25,
      "solid": true,
      "bw": 26,
      "bh": 10
@@ -1375,7 +1485,7 @@
     {
      "type": "sprite",
      "tex": "vc-obsidian2",
-     "col": 62,
+     "col": 63,
      "row": 30,
      "solid": true,
      "bw": 16,
@@ -1394,9 +1504,26 @@
      "row": 31
     },
     {
-     "type": "trap-spikes",
+     "type": "fire-crystal",
+     "col": 64,
+     "row": 24
+    },
+    {
+     "type": "fire-crystal",
      "col": 71,
-     "row": 25
+     "row": 28
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-remains",
+     "col": 69,
+     "row": 27,
+     "flat": true
+    },
+    {
+     "type": "trap-spikes",
+     "col": 70,
+     "row": 26
     }
    ]
   },
@@ -1545,26 +1672,26 @@
     {
      "type": "DEMON_CASTER",
      "col": 62,
-     "row": 46
+     "row": 47
     },
     {
      "type": "FIRE_ELEMENTAL",
-     "col": 72,
-     "row": 46
+     "col": 67,
+     "row": 45
     }
    ],
    "decor": [
     {
      "type": "chest",
-     "col": 71,
-     "row": 46,
+     "col": 67,
+     "row": 44,
      "solid": true
     },
     {
      "type": "sprite",
      "tex": "vc-boulder5",
-     "col": 64,
-     "row": 45,
+     "col": 62,
+     "row": 46,
      "solid": true,
      "bw": 26,
      "bh": 10
@@ -1572,7 +1699,7 @@
     {
      "type": "sprite",
      "tex": "vc-obsidian3",
-     "col": 67,
+     "col": 66,
      "row": 45,
      "solid": true,
      "bw": 18,
@@ -1581,7 +1708,7 @@
     {
      "type": "sprite",
      "tex": "vc-vent",
-     "col": 66,
+     "col": 65,
      "row": 45,
      "solid": true,
      "bw": 18,
@@ -1594,6 +1721,26 @@
      "col": 69,
      "row": 53,
      "flat": true
+    },
+    {
+     "type": "fire-crystal",
+     "col": 61,
+     "row": 47
+    },
+    {
+     "type": "crate",
+     "col": 67,
+     "row": 43,
+     "solid": true
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-swordrock",
+     "col": 64,
+     "row": 45,
+     "solid": true,
+     "bw": 16,
+     "bh": 8
     }
    ]
   },
@@ -1742,13 +1889,13 @@
    "enemies": [
     {
      "type": "FIRE_ELEMENTAL",
-     "col": 30,
+     "col": 32,
      "row": 9
     },
     {
      "type": "FIRE_ELEMENTAL",
-     "col": 50,
-     "row": 10
+     "col": 49,
+     "row": 9
     },
     {
      "type": "DEMON",
@@ -1769,14 +1916,14 @@
     },
     {
      "type": "brazier",
-     "col": 31,
-     "row": 10,
+     "col": 33,
+     "row": 11,
      "solid": true
     },
     {
      "type": "brazier",
-     "col": 51,
-     "row": 10,
+     "col": 53,
+     "row": 8,
      "solid": true
     },
     {
@@ -1791,7 +1938,7 @@
     {
      "type": "sprite",
      "tex": "vc-columns3",
-     "col": 52,
+     "col": 53,
      "row": 6,
      "solid": true,
      "bw": 32,
@@ -1805,6 +1952,31 @@
      "solid": true,
      "bw": 18,
      "bh": 8
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-banner",
+     "col": 36,
+     "row": 6,
+     "solid": true,
+     "bw": 8,
+     "bh": 6
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-banner",
+     "col": 44,
+     "row": 6,
+     "solid": true,
+     "bw": 8,
+     "bh": 6
+    },
+    {
+     "type": "sprite",
+     "tex": "vc-remains",
+     "col": 40,
+     "row": 13,
+     "flat": true
     }
    ]
   }
@@ -2252,6 +2424,8 @@
   "row": 58
  },
  "props": [
+  "vc-anvil",
+  "vc-banner",
   "vc-bigcolumns",
   "vc-boulder1",
   "vc-boulder2",
@@ -2261,15 +2435,25 @@
   "vc-columns1",
   "vc-columns2",
   "vc-columns3",
+  "vc-forge",
   "vc-lavapool",
   "vc-lavapool2",
+  "vc-minecart",
   "vc-obsidian1",
   "vc-obsidian2",
   "vc-obsidian3",
+  "vc-rack",
+  "vc-remains",
   "vc-stump",
   "vc-sulfur",
+  "vc-swordrock",
   "vc-vent",
   "vc-thorn-h",
-  "vc-thorn-v"
+  "vc-thorn-v",
+  "vc-fx-streak",
+  "vc-fx-streak2",
+  "vc-fx-crust1",
+  "vc-fx-crust2",
+  "vc-fx-crust3"
  ]
 }

@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.60.0-vulcao";
+const CACHE = "ded-web-v4.61.0-vulcao-vivo";
 
 self.addEventListener("install", () => self.skipWaiting());
 
