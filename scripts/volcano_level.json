@@ -1946,15 +1946,6 @@
     },
     {
      "type": "sprite",
-     "tex": "vc-obsidian3",
-     "col": 37,
-     "row": 12,
-     "solid": true,
-     "bw": 18,
-     "bh": 8
-    },
-    {
-     "type": "sprite",
      "tex": "vc-banner",
      "col": 36,
      "row": 6,

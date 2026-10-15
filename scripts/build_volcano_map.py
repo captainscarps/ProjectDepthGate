@@ -531,7 +531,7 @@ CONTENT = {
     "vulcao-caldeira": dict(lake=LAKES[0], enemies=[E("FIRE_ELEMENTAL", 30, 10), E("FIRE_ELEMENTAL", 50, 10), E("DEMON", 41, 12)],
                             decor=[dict(type="statue-fire", col=33, row=7), dict(type="statue-fire", col=47, row=7),
                                    dict(type="brazier", col=30, row=12, solid=True), dict(type="brazier", col=52, row=12, solid=True),
-                                   S("vc-columns2", 26, 5, 30, 10), S("vc-columns3", 53, 5, 32, 10), S("vc-obsidian3", 37, 12, 18, 8),
+                                   S("vc-columns2", 26, 5, 30, 10), S("vc-columns3", 53, 5, 32, 10),
                                    S("vc-banner", 36, 6, 8, 6), S("vc-banner", 44, 6, 8, 6), FLAT("vc-remains", 40, 13)]),
 }
 
@@ -995,7 +995,7 @@ nrs.shuffle(cand)
 for y, x in cand[:9000]:
     k = rnd.choices(ek, ew)[0]
     if base_ok(x, y, PROPS[k], 8):
-        place(k, x, y, True)
+        place(k, x, y, False)
 for _ in range(7000):
     k = rnd.choices(ek, ew)[0]
     x, y = rnd.randrange(W), rnd.randrange(H)
