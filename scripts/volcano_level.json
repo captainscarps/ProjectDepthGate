@@ -13,7 +13,7 @@
     "w": 17,
     "h": 12
    },
-   "ambient": 0.2,
+   "ambient": 0.1,
    "walls": [
     {
      "x": 32,
@@ -233,7 +233,7 @@
     "w": 25,
     "h": 10
    },
-   "ambient": 0.22,
+   "ambient": 0.1,
    "walls": [
     {
      "x": 28,
@@ -457,7 +457,7 @@
     "w": 18,
     "h": 14
    },
-   "ambient": 0.22,
+   "ambient": 0.1,
    "walls": [
     {
      "x": 4,
@@ -751,7 +751,7 @@
     "w": 27,
     "h": 13
    },
-   "ambient": 0.24,
+   "ambient": 0.12,
    "walls": [
     {
      "x": 27,
@@ -964,7 +964,7 @@
     "w": 19,
     "h": 15
    },
-   "ambient": 0.24,
+   "ambient": 0.12,
    "walls": [
     {
      "x": 3,
@@ -1249,7 +1249,7 @@
     "w": 17,
     "h": 17
    },
-   "ambient": 0.26,
+   "ambient": 0.12,
    "walls": [
     {
      "x": 60,
@@ -1536,7 +1536,7 @@
     "w": 16,
     "h": 12
    },
-   "ambient": 0.26,
+   "ambient": 0.12,
    "walls": [
     {
      "x": 60,
@@ -1753,7 +1753,7 @@
     "w": 32,
     "h": 14
    },
-   "ambient": 0.3,
+   "ambient": 0.14,
    "final": true,
    "boss": "PALE_DRAGON",
    "banner": "CALDEIRA DO VULCÃO",

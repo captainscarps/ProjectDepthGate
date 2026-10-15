@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.61.3-vulcao-camadas";
+const CACHE = "ded-web-v4.61.4-vulcao-portas";
 
 self.addEventListener("install", () => self.skipWaiting());
 

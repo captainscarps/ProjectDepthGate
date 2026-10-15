@@ -197,18 +197,58 @@ def lava_pool(seed, w=46, h=24):
 
 
 def barrier(horizontal):
-    """muro de blocos de basalto que sobe do chão quando a passagem se tranca"""
-    w, h = (68, 44) if horizontal else (38, 78)
-    im = Image.new("RGBA", (w, h))
-    spots = [(0, 16, 26, 26), (20, 10, 28, 32), (42, 16, 26, 26)] if horizontal else [(2, 0, 34, 26), (0, 22, 38, 30), (2, 48, 34, 28)]
-    for k, (x, y, bw, bh) in enumerate(spots):
-        im.alpha_composite(boulder(600 + k, bw, bh), (x, y))
-    d = ImageDraw.Draw(im)
-    for k, (x, y, bw, bh) in enumerate(spots):
-        cx, cy = x + bw // 2, y + bh // 2
-        d.line([(cx - 4, cy - 2), (cx, cy + 1), (cx + 3, cy - 1), (cx + 5, cy + 3)], fill=(240, 110, 30))
-        d.point([(cx, cy + 1)], fill=(255, 220, 120))
-    return im
+    """muro maciço de basalto que fecha a passagem (mesmo estilo das paredes dos platôs)"""
+    w, h = (88, 56) if horizontal else (48, 96)
+    topH = 18 if horizontal else h - 30
+    yy0, xx0 = np.mgrid[0:h, 0:w]
+    n0 = vnoise(h, w, 3, 77)
+    a0 = np.zeros((h, w, 4), np.float32)
+    # contorno levemente irregular
+    edge_n = vnoise(1, w if horizontal else h, 4, 78)[0]
+    if horizontal:
+        m = (yy0 >= 2 + (edge_n[None, :] * 3).astype(int)) & (xx0 >= 1) & (xx0 < w - 1)
+    else:
+        m = (xx0 >= 2 + (edge_n[:, None] * 3).astype(int)) & (xx0 < w - 2) & (yy0 >= 1)
+    # topo (laje de pedra vista de cima)
+    top = (yy0 < topH)
+    vt = np.clip(.5 + (n0 - .5) * .5, 0, 1)
+    a0[..., :3] = ramp(ROCK, vt, yy0, xx0)
+    # rachaduras/juntas no topo
+    jt = top & (((xx0 + (yy0 // 9) * 7) % 16 == 0) | (yy0 % 9 == 0))
+    a0[jt, :3] = np.array(ROCK[1])
+    # face: colunas de basalto
+    face = ~top
+    cw = 8
+    cid = xx0 // cw
+    fx = (xx0 % cw) / (cw - 1)
+    t = np.clip((yy0 - topH) / max(1, h - topH), 0, 1)
+    vf = .55 - t * .3 + (.5 - fx) * .35 + (n0 - .5) * .25 + ((cid * 37) % 7 - 3) * .025
+    ring = ((yy0 - topH) + cid * 5) % 11
+    vf = vf - (ring == 0) * .25 + (ring == 1) * .08 - (xx0 % cw == 0) * .3
+    fc = ramp(FACE, np.clip(vf, 0, 1), yy0, xx0)
+    a0[face, :3] = fc[face]
+    # lábio claro entre topo e face
+    lip = (yy0 >= topH - 2) & (yy0 < topH)
+    a0[lip, :3] = np.minimum(255, a0[lip, :3] * 1.5 + 14)
+    a0[(yy0 == topH), :3] = np.array(FACE[0])
+    # fissuras incandescentes na face
+    rr = np.random.RandomState(79)
+    img0 = Image.fromarray(np.clip(a0, 0, 255).astype(np.uint8))
+    d = ImageDraw.Draw(img0)
+    for k in range(3 if horizontal else 2):
+        x = rr.randint(6, w - 6)
+        y = rr.randint(topH + 4, h - 8)
+        pts = [(x, y)]
+        for _ in range(3):
+            x += rr.randint(-4, 5); y += rr.randint(2, 6)
+            pts.append((min(w - 3, max(2, x)), min(h - 3, y)))
+        d.line(pts, fill=(226, 96, 26))
+        d.point([pts[1]], fill=(255, 210, 110))
+    a0 = np.asarray(img0).astype(np.float32)
+    a0[..., 3] = m * 255
+    ol = m & ~ndimage.binary_erosion(m)
+    a0[ol, :3] = a0[ol, :3] * .4
+    return Image.fromarray(np.clip(a0, 0, 255).astype(np.uint8))
 
 
 IRON = [(12, 12, 16), (24, 24, 30), (40, 40, 48), (60, 60, 70), (86, 86, 96), (120, 120, 130), (170, 170, 178)]
@@ -421,14 +461,14 @@ for k in range(3):                      # placas de crosta que derivam com a cor
 # ═════════════════════════════ layout ═════════════════════════════
 R = lambda x, y, w, h: {"x": x, "y": y, "w": w, "h": h}
 ROOMS = [
-    dict(id="vulcao-encosta", name="Encosta de Cinzas", rect=R(32, 50, 17, 12), ambient=.2),
-    dict(id="vulcao-campo", name="Campo de Basalto", rect=R(28, 37, 25, 10), ambient=.22),
-    dict(id="vulcao-fumarolas", name="Fumarolas", rect=R(4, 40, 18, 14), ambient=.22),
-    dict(id="vulcao-ponte", name="Ponte de Obsidiana", rect=R(27, 19, 27, 13), ambient=.24),
-    dict(id="vulcao-forja", name="Forja Soterrada", rect=R(3, 18, 19, 15), ambient=.24),
-    dict(id="vulcao-colunas", name="Colunas Negras", rect=R(60, 18, 17, 17), ambient=.26),
-    dict(id="vulcao-fenda", name="Fenda Ardente", rect=R(60, 43, 16, 12), ambient=.26),
-    dict(id="vulcao-caldeira", name="Caldeira", rect=R(24, 1, 32, 14), ambient=.3, final=True,
+    dict(id="vulcao-encosta", name="Encosta de Cinzas", rect=R(32, 50, 17, 12), ambient=.1),
+    dict(id="vulcao-campo", name="Campo de Basalto", rect=R(28, 37, 25, 10), ambient=.1),
+    dict(id="vulcao-fumarolas", name="Fumarolas", rect=R(4, 40, 18, 14), ambient=.1),
+    dict(id="vulcao-ponte", name="Ponte de Obsidiana", rect=R(27, 19, 27, 13), ambient=.12),
+    dict(id="vulcao-forja", name="Forja Soterrada", rect=R(3, 18, 19, 15), ambient=.12),
+    dict(id="vulcao-colunas", name="Colunas Negras", rect=R(60, 18, 17, 17), ambient=.12),
+    dict(id="vulcao-fenda", name="Fenda Ardente", rect=R(60, 43, 16, 12), ambient=.12),
+    dict(id="vulcao-caldeira", name="Caldeira", rect=R(24, 1, 32, 14), ambient=.14, final=True,
          boss="PALE_DRAGON", banner="CALDEIRA DO VULCÃO", zoom=.85),
 ]
 CORR = [
@@ -773,6 +813,10 @@ lipT = TOP & ndimage.binary_dilation(FM, iterations=2)
 img[lipT] = np.minimum(255, img[lipT] * 1.45 + 10)
 edgeT = TOP & ~ndimage.binary_erosion(TOP, iterations=1)
 img[edgeT] = img[edgeT] * .4
+rimT = TOP & ~ndimage.binary_erosion(TOP, iterations=3) & ~edgeT
+img[rimT] = np.minimum(255, img[rimT] * 1.35 + 8)
+flE = FLOOR & ndimage.binary_dilation(PM, iterations=2)
+img[flE] = img[flE] * .6
 
 # — faces (colunas de basalto)
 colx = np.zeros(W, int)
@@ -1038,7 +1082,7 @@ g_big = ndimage.gaussian_filter(small_em, 7)
 g_big = np.asarray(Image.fromarray(np.clip(g_big * 255, 0, 255).astype(np.uint8)).resize((W, H), Image.BILINEAR), np.float32) / 255
 g_small = ndimage.gaussian_filter(em, 4)
 glow = g_big * 2.4 + g_small * .8
-light = np.clip(.66 + glow[..., None] * np.array([1.25, .62, .32]), 0, 1.9)
+light = np.clip(.86 + glow[..., None] * np.array([1.25, .62, .32]), 0, 1.9)
 out = arr * light
 out[emis] = arr[emis]
 canvas = Image.fromarray(np.clip(out, 0, 255).astype(np.uint8), "RGB")
@@ -1116,3 +1160,18 @@ json.dump({"world": {"cols": COLS, "rows": ROWS}, "rooms": rooms_out, "corridors
            "props": sorted(PROPS) + ["vc-thorn-h", "vc-thorn-v", "vc-fx-streak", "vc-fx-streak2", "vc-fx-crust1", "vc-fx-crust2", "vc-fx-crust3"]},
           open(os.path.join(ROOT, "scripts", "volcano_level.json"), "w"), ensure_ascii=False, indent=1)
 print("ok", len(front), "props na borda", len(corridors), "corredores")
+# ── medição dos vãos das passagens (debug) ──
+if os.environ.get("VC_GAPS"):
+    for d in doors:
+        cx, cy = d["col"] * T + (T if d["orientation"] == "h" else T // 2), d["row"] * T + (T // 2 if d["orientation"] == "h" else T)
+        blocked = WM | LV | FC
+        if d["orientation"] == "h":
+            l = r = cx
+            while l > 0 and not blocked[cy, l]: l -= 1
+            while r < W - 1 and not blocked[cy, r]: r += 1
+            print(d["id"], "h vão", r - l, "px", l - cx, r - cx)
+        else:
+            u = b = cy
+            while u > 0 and not blocked[u, cx]: u -= 1
+            while b < H - 1 and not blocked[b, cx]: b += 1
+            print(d["id"], "v vão", b - u, "px", u - cy, b - cy)
