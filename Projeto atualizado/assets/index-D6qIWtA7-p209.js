@@ -4046,8 +4046,7 @@ ${t.toUpperCase()}`:i.toUpperCase(),"#c9a0ff")}onBossHp(i,t,e){this.bossBar.setH
   "assets/video/campanha_1",
   "assets/video/campanha_2",
   "assets/video/campanha_3",
-  "assets/video/campanha_4",
-  "assets/video/intro_herois/" + (this.classId || "WARRIOR")
+  "assets/video/campanha_4"
 ], {
   muted: !0,
   music: "assets/audio/cinematic_intro.mp3",
@@ -4057,8 +4056,7 @@ ${t.toUpperCase()}`:i.toUpperCase(),"#c9a0ff")}onBossHp(i,t,e){this.bossBar.setH
     [0.6, 9.2, W("intro.l1") + " " + W("intro.l2")],
     [10.4, 19.2, W("intro.l3") + " " + W("intro.l4")],
     [20.4, 29.2, W("intro.l5") + " " + W("intro.l6")],
-    [30.4, 39.2, W("intro.l7")],
-    [40.4, 49.5, ((W("class." + (this.classId || "WARRIOR"))?.toUpperCase()) || (this.classId || "WARRIOR")) + " — " + __L3("Adentrando a Floresta de Eldervale rumo a Depthgate...", "Entering Eldervale Forest toward Depthgate...", "Entrando al Bosque de Eldervale hacia Depthgate...")]
+    [30.4, 39.2, W("intro.l7")]
   ],
   endCard: [W("intro.chapter"), W("intro.chapterSub"), 3200],
   onDone: () => {

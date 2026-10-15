@@ -73,7 +73,7 @@ namespace DepthgateLauncher
                 
                 // Compare size or check existence
                 string verFile = Path.Combine(destDir, ".version");
-                string currentVer = "v1.5.7";
+                string currentVer = "v1.5.8";
                 
                 if (Directory.Exists(destDir) && File.Exists(verFile))
                 {
