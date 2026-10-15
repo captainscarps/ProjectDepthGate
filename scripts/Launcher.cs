@@ -23,7 +23,7 @@ namespace DepthgateLauncher
                 ExtractGameFiles(gameWww);
 
                 // Start local server
-                int port = GetRandomPort();
+                int port = GetGamePort();
                 HttpListener listener = new HttpListener();
                 listener.Prefixes.Add("http://127.0.0.1:" + port + "/");
                 listener.Start();
@@ -55,13 +55,26 @@ namespace DepthgateLauncher
             }
         }
 
-        static int GetRandomPort()
+        static int GetGamePort()
         {
-            var l = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
-            l.Start();
-            int p = ((IPEndPoint)l.LocalEndpoint).Port;
-            l.Stop();
-            return p;
+            // Use fixed port 24816 so browser localStorage origin (http://127.0.0.1:24816) is 100% persistent across launches
+            int basePort = 24816;
+            for (int p = basePort; p < basePort + 20; p++)
+            {
+                try
+                {
+                    var l = new System.Net.Sockets.TcpListener(IPAddress.Loopback, p);
+                    l.Start();
+                    l.Stop();
+                    return p;
+                }
+                catch { }
+            }
+            var fallback = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
+            fallback.Start();
+            int fp = ((IPEndPoint)fallback.LocalEndpoint).Port;
+            fallback.Stop();
+            return fp;
         }
 
         static void ExtractGameFiles(string destDir)
@@ -73,7 +86,7 @@ namespace DepthgateLauncher
                 
                 // Compare size or check existence
                 string verFile = Path.Combine(destDir, ".version");
-                string currentVer = "v1.5.9";
+                string currentVer = "v1.6.0";
                 
                 if (Directory.Exists(destDir) && File.Exists(verFile))
                 {
@@ -184,6 +197,10 @@ namespace DepthgateLauncher
 
         static Process LaunchAppMode(string url)
         {
+            string localApp = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string userDataDir = Path.Combine(localApp, @"DEPTHGATE\UserData");
+            try { Directory.CreateDirectory(userDataDir); } catch { }
+
             string edge = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft\Edge\Application\msedge.exe");
             if (!File.Exists(edge))
             {
@@ -196,7 +213,7 @@ namespace DepthgateLauncher
                 chrome = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Google\Chrome\Application\chrome.exe");
             }
 
-            string args = string.Format("--app=\"{0}\" --window-size=1280,720 --start-maximized", url);
+            string args = string.Format("--app=\"{0}\" --window-size=1280,720 --start-maximized --user-data-dir=\"{1}\"", url, userDataDir);
 
             if (File.Exists(edge))
             {
