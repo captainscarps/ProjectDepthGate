@@ -429,7 +429,7 @@ ROOMS = [
     dict(id="vulcao-colunas", name="Colunas Negras", rect=R(60, 18, 17, 17), ambient=.26),
     dict(id="vulcao-fenda", name="Fenda Ardente", rect=R(60, 43, 16, 12), ambient=.26),
     dict(id="vulcao-caldeira", name="Caldeira", rect=R(24, 1, 32, 14), ambient=.3, final=True,
-         boss="MAGMA_TITAN", banner="CALDEIRA DO VULCÃO", zoom=.85),
+         boss="PALE_DRAGON", banner="CALDEIRA DO VULCÃO", zoom=.85),
 ]
 CORR = [
     [(40, 55), (40, 52), (41, 49), (40, 45)],

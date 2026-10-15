@@ -63,12 +63,13 @@ rep('crystal_fortress:{name:"Cristal Dracônico",type:"quest",icon:"icon-crys-fo
 rep('fortress:4,bosque:1,rio:2,morta:3}', 'fortress:4,bosque:1,rio:2,morta:3,vulcao:3.5}')
 rep('fortress: 8,', 'fortress: 8,\n    vulcao: 8,')
 rep('fortress:  { hp: 34, dmg: 4.8, bHp: 240, bDmg: 6.2, bNm: "Dragão Ancião" },',
-    'fortress:  { hp: 34, dmg: 4.8, bHp: 240, bDmg: 6.2, bNm: "Dragão Ancião" },\n    vulcao:    { hp: 32, dmg: 4.6, bHp: 220, bDmg: 6.0, bNm: "Titã de Magma" },')
+    'fortress:  { hp: 34, dmg: 4.8, bHp: 240, bDmg: 6.2, bNm: "Dragão Ancião" },\n    vulcao:    { hp: 32, dmg: 4.6, bHp: 220, bDmg: 6.0, bNm: "Dragão Pálido" },')
 
 # 5) chefe: Titã de Magma (variante de obsidiana do Golem de Lava)
 rep('for(const t of Object.values(Yt))if(t.implemented!==!1)for(const[e,d]of Object.entries(t.anims))i(t.texture,e,d);',
     'Yt.MAGMA_TITAN||(Yt.MAGMA_TITAN={...Yt.LAVA_GOLEM,name:"Titã de Magma",subtitle:"O Coração do Vulcão",texture:"boss-magma-titan",'
     'scale:2.35,bodySize:34,maxHp:78,speed:58,phase2:{...Yt.LAVA_GOLEM.phase2,tint:16746570}});'
+    'Yt.PALE_DRAGON&&(Yt.PALE_DRAGON.intro={...(Yt.PALE_DRAGON.intro||{}),awaken:"ASAS DE CINZA COBREM A CALDEIRA...",objective:"DERROTE O DRAGÃO PÁLIDO"});'
     'for(const t of Object.values(Yt))if(t.implemented!==!1)for(const[e,d]of Object.entries(t.anims))i(t.texture,e,d);')
 rep('this.load.spritesheet("boss-lava-golem","assets/pixel-art/bosses/boss-lava-golem.png",{frameWidth:128,frameHeight:128});',
     'this.load.spritesheet("boss-lava-golem","assets/pixel-art/bosses/boss-lava-golem.png",{frameWidth:128,frameHeight:128});'
@@ -77,21 +78,21 @@ rep('"boss.LAVA_GOLEM":"Lava Golem"', '"boss.LAVA_GOLEM":"Lava Golem","boss.MAGM
 rep('"boss.LAVA_GOLEM":"Gólem de Lava"', '"boss.LAVA_GOLEM":"Gólem de Lava","boss.MAGMA_TITAN":"Titán de Magma"')
 rep('LAVA_GOLEM:["A areia guarda o que é meu. Volte ao pó.","O fogo… volta… para a terra…"]',
     'LAVA_GOLEM:["A areia guarda o que é meu. Volte ao pó.","O fogo… volta… para a terra…"],'
-    'MAGMA_TITAN:["A montanha respira através de mim. Ajoelhe-se ou derreta.","A chama… adormece… mas não morre…"]')
+    'MAGMA_TITAN:["A montanha respira através de mim. Ajoelhe-se ou derreta.","A chama… adormece… mas não morre…"],PALE_DRAGON:["Esta montanha é o meu ninho. Suas cinzas serão o meu leito.","As cinzas… voltam… ao fogo…"]')
 
 # 6) textos de abertura / encerramento
 PT = ('vulcao:{title:"VULCÃO DE CINZAS",intro:["O portal se abriu no flanco de um vulcão que nunca dormiu de verdade.",'
       '"A cinza cai como neve escura, e rios de lava cortam a rocha em fendas sem fundo.",'
-      '"Lá no alto, na caldeira, algo grande se move junto com o magma."],'
-      'postBoss:["O Titã de Magma se parte em obsidiana fria.","O Cristal de Magma pulsa em suas mãos, enfraquecendo os selos do Castelo de Valdrak."]},')
+      '"Lá no alto, na caldeira, asas cor de cinza cobrem o brilho da lava."],'
+      'postBoss:["O Dragão Pálido tomba sobre a própria cinza.","O Cristal de Magma pulsa em suas mãos, enfraquecendo os selos do Castelo de Valdrak."]},')
 EN = ('vulcao:{title:"ASHEN VOLCANO",intro:["The portal opened on the flank of a volcano that never truly slept.",'
       '"Ash falls like dark snow, and rivers of lava carve the rock into bottomless rifts.",'
-      '"High above, in the caldera, something huge moves with the magma."],'
-      'postBoss:["The Magma Titan shatters into cold obsidian.","The Magma Crystal throbs in your hands, weakening the seals of Valdrak Castle."]},')
+      '"High above, in the caldera, ash-pale wings blot out the glow of the lava."],'
+      'postBoss:["The Pale Dragon falls upon its own ashes.","The Magma Crystal throbs in your hands, weakening the seals of Valdrak Castle."]},')
 ES = ('vulcao:{title:"VOLCÁN DE CENIZA",intro:["El portal se abrió en la ladera de un volcán que nunca durmió del todo.",'
       '"La ceniza cae como nieve oscura, y ríos de lava cortan la roca en grietas sin fondo.",'
-      '"Allá arriba, en la caldera, algo enorme se mueve con el magma."],'
-      'postBoss:["El Titán de Magma se rompe en obsidiana fría.","El Cristal de Magma late en tus manos, debilitando los sellos del Castillo de Valdrak."]},')
+      '"Allá arriba, en la caldera, alas color ceniza cubren el brillo de la lava."],'
+      'postBoss:["El Dragón Pálido cae sobre sus propias cenizas.","El Cristal de Magma late en tus manos, debilitando los sellos del Castillo de Valdrak."]},')
 rep('fortress:{title:"FORTALEZA DOS DRAGÕES"', PT + 'fortress:{title:"FORTALEZA DOS DRAGÕES"')
 rep('fortress:{title:"DRAGON FORTRESS"', EN + 'fortress:{title:"DRAGON FORTRESS"')
 rep('fortress:{title:"FORTALEZA DE LOS DRAGONES"', ES + 'fortress:{title:"FORTALEZA DE LOS DRAGONES"')

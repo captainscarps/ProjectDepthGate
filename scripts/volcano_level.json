@@ -1755,7 +1755,7 @@
    },
    "ambient": 0.3,
    "final": true,
-   "boss": "MAGMA_TITAN",
+   "boss": "PALE_DRAGON",
    "banner": "CALDEIRA DO VULCÃO",
    "zoom": 0.85,
    "walls": [
