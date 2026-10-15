@@ -89,18 +89,25 @@ def boulder(seed, w, h):
 
 
 def obsidian(seed, w=22, h=26):
+    """bloco de obsidiana: vidro preto lascado, facetas largas, reflexo discreto"""
     r = np.random.RandomState(seed)
     im = Image.new("RGBA", (w, h))
     d = ImageDraw.Draw(im)
-    for _ in range(r.randint(2, 4)):
-        cx, ch, cw, ln = r.randint(min(6, w // 2 - 1), max(7, w - 6)), r.randint(h // 2, h - 2), r.randint(6, 10), r.uniform(-.25, .25)
+    n = r.randint(2, 4)
+    for i in range(n):
+        cw = r.randint(max(7, w // 3), max(8, w // 2 + 2))
+        cx = int(w * (i + .5) / n + r.randint(-2, 3))
+        ch = r.randint(h // 2, h - 1)
         base = h - 1
-        tip = (cx + ln * ch, base - ch)
-        d.polygon([(cx - cw / 2, base), (cx, base - 2), tip], fill=OBS[3])
-        d.polygon([(cx, base - 2), (cx + cw / 2, base), tip], fill=OBS[1])
-        d.line([(cx, base - 2), tip], fill=OBS[5])
-        d.point([(tip[0], tip[1] + 2)], fill=OBS[6])
-        d.line([(cx - cw / 2, base), (cx + cw / 2, base)], fill=(150, 60, 24))
+        tip = (cx + r.randint(-3, 4), base - ch)
+        L, Rr = (cx - cw / 2, base), (cx + cw / 2, base)
+        mid = (cx + r.randint(-1, 2), base - ch * .45)
+        d.polygon([L, mid, tip], fill=OBS[3])
+        d.polygon([L, mid, (cx, base)], fill=OBS[2])
+        d.polygon([mid, Rr, tip], fill=OBS[1])
+        d.polygon([(cx, base), Rr, mid], fill=OBS[0])
+        d.line([mid, tip], fill=OBS[4])
+        d.line([L, (cx, base), Rr], fill=(120, 44, 18))
     return im
 
 
@@ -149,14 +156,15 @@ def vent(seed):
 
 
 def sulfur(seed):
-    r = np.random.RandomState(seed)
-    im = Image.new("RGBA", (18, 12))
-    d = ImageDraw.Draw(im)
-    for _ in range(6):
-        x, y, s = r.randint(2, 15), r.randint(5, 10), r.randint(2, 4)
-        d.polygon([(x - s, y + 1), (x, y - s - 1), (x + s, y + 1)], fill=SULF[r.randint(1, 3)])
-        d.point([(x, y - s)], fill=SULF[3])
-    return im
+    w, h = 20, 12
+    yy0, xx0 = np.mgrid[0:h, 0:w]
+    n0 = vnoise(h, w, 3, seed)
+    m = (((xx0 - w / 2) / (w / 2)) ** 2 + ((yy0 - h / 2) / (h / 2)) ** 2 < .9 + (n0 - .5) * .6)
+    v = np.clip(.25 + n0 * .8 - ((xx0 - w / 2) ** 2 + (yy0 - h / 2) ** 2) / (w * w / 4) * .4, 0, 1)
+    a0 = np.zeros((h, w, 4), np.uint8)
+    a0[..., :3] = ramp(SULF, v, yy0, xx0)
+    a0[..., 3] = (m * np.clip(.35 + v, 0, 1) * 255).astype(np.uint8)
+    return Image.fromarray(a0)
 
 
 def stump(seed):
@@ -189,13 +197,17 @@ def lava_pool(seed, w=46, h=24):
 
 
 def barrier(horizontal):
-    """obsidiana que brota do chão quando a passagem se tranca"""
-    w, h = (64, 46) if horizontal else (36, 76)
+    """muro de blocos de basalto que sobe do chão quando a passagem se tranca"""
+    w, h = (68, 44) if horizontal else (38, 78)
     im = Image.new("RGBA", (w, h))
-    spots = [(2, 18), (18, 12), (32, 20), (44, 14)] if horizontal else [(2, 2), (6, 22), (0, 42), (8, 52)]
-    for k, (x, y) in enumerate(spots):
-        o = obsidian(100 + k, 22, 30)
-        im.alpha_composite(o, (min(x, w - o.width), min(y, h - o.height)))
+    spots = [(0, 16, 26, 26), (20, 10, 28, 32), (42, 16, 26, 26)] if horizontal else [(2, 0, 34, 26), (0, 22, 38, 30), (2, 48, 34, 28)]
+    for k, (x, y, bw, bh) in enumerate(spots):
+        im.alpha_composite(boulder(600 + k, bw, bh), (x, y))
+    d = ImageDraw.Draw(im)
+    for k, (x, y, bw, bh) in enumerate(spots):
+        cx, cy = x + bw // 2, y + bh // 2
+        d.line([(cx - 4, cy - 2), (cx, cy + 1), (cx + 3, cy - 1), (cx + 5, cy + 3)], fill=(240, 110, 30))
+        d.point([(cx, cy + 1)], fill=(255, 220, 120))
     return im
 
 
@@ -714,14 +726,14 @@ img = np.zeros((H, W, 3), np.float32)
 # — chão: basalto, cinzas, cascalho, rachaduras secas
 rope = np.sin((yy * .9 + np.sin(xx / 9. + n1 * 6) * 5 + n2 * 20) * 1.1)
 flowz = fbm(H, W, 77, ((60, 1.),)) > .6
-bump = ndimage.gaussian_filter(tex, 1) + rope * .02 * flowz
+bump = ndimage.gaussian_filter(tex, 1)
 gy, gx = np.gradient(bump)
 lit = np.clip(.5 - (gx * -.6 + gy * -.8) * 9, 0, 1)
 v = np.clip(.2 + lit * .45 + tex * .35, 0, 1)
 ground = ramp(ROCK, v, yy, xx)
 ashn = fbm(H, W, 11, ((30, .5), (9, .3), (3, .2)))
-ash = (ashn > .6) & (nrs.rand(H, W) < np.clip((ashn - .6) * 6, 0, .85))
-ground[ash] = ground[ash] * .55 + ramp(ASH, np.clip(v[ash] * .8, 0, 1), yy[ash], xx[ash]) * .45
+aw = np.clip((ashn - .58) * 3.2, 0, .42)[..., None]
+ground = ground * (1 - aw) + ramp(ASH, np.clip(v * .8, 0, 1), yy, xx) * aw
 # rachaduras (voronoi deformado), algumas incandescentes perto da lava
 pts = nrs.rand(2600, 2) * [W, H]
 sel = FLOOR | TOP
@@ -738,7 +750,7 @@ ground[peb] = np.array(ROCK[7])
 peb2 = (np.roll(peb, 1, 0) | np.roll(peb, 1, 1)) & ~peb
 ground[peb2] *= .6
 distLV = ndimage.distance_transform_edt(~LV)
-hotc = crk & (distLV < 70) & (fbm(H, W, 18, ((20, 1.),)) > .48) & FLOOR
+hotc = (ee < .45) & crk & (distLV < 56) & (fbm(H, W, 18, ((20, 1.),)) > .55) & FLOOR
 img[:] = ground
 
 # — platô: um pouco mais claro e frio + lábio
@@ -836,25 +848,77 @@ rimA = ndimage.binary_dilation(LV, iterations=4) & FLOOR
 rimB = ndimage.binary_dilation(LV, iterations=1) & FLOOR
 img[rimA] = img[rimA] * .4 + np.array(FACE[0]) * .6
 img[rimB] = (110, 30, 12)
-img[hotc] = (236, 110, 30)
+img[hotc] = (214, 92, 26)
 
 # — pontes de basalto sobre a lava (chão caminhável dentro de um rio)
-BRp = BR & FLOOR
-if BRp.any():
-    bc = ramp(FACE, np.clip(.45 + (tex - .5) * .4, 0, 1), yy, xx)
-    img[BRp] = bc[BRp]
-    for y in range(0, H, 9):
-        row = BRp[y]
-        img[y, row] = np.array(FACE[1])
-    be = BRp & ~ndimage.binary_erosion(BRp, iterations=2)
-    img[be] = np.array(FACE[6])
-    # abaixo da ponte (visto de frente): a borda sul da ponte
-    bf = np.zeros_like(BRp)
-    for k in range(1, 7):
-        s2 = np.zeros_like(BRp)
-        s2[k:] = BRp[:-k]
-        bf |= s2 & LV
-    img[bf] = img[bf] * .2 + np.array(FACE[2]) * .8
+BRp = np.zeros((H, W), bool)
+STONE = [(30, 26, 26), (44, 38, 36), (60, 52, 48), (78, 68, 60), (98, 86, 74), (120, 106, 90)]
+labB, nB = ndimage.label(bridgeT)
+for k in range(1, nB + 1):
+    rr_, cc_ = np.nonzero(labB == k)
+    c0, c1, r0, r1 = cc_.min(), cc_.max(), rr_.min(), rr_.max()
+    vertical = (r1 - r0) >= (c1 - c0)
+    if vertical:
+        x0, x1 = c0 * T + 2, (c1 + 1) * T - 2
+        band = LZ[:, x0:x1].any(1)
+        ys = np.nonzero(band[r0 * T - 3 * T:(r1 + 1) * T + 3 * T])[0] + r0 * T - 3 * T
+        if not len(ys):
+            continue
+        y0, y1 = ys.min() - 8, ys.max() + 10
+    else:
+        y0, y1 = r0 * T + 4, (r1 + 1) * T - 2
+        band = LZ[y0:y1, :].any(0)
+        xs = np.nonzero(band[c0 * T - 3 * T:(c1 + 1) * T + 3 * T])[0] + c0 * T - 3 * T
+        if not len(xs):
+            continue
+        x0, x1 = xs.min() - 8, xs.max() + 8
+    sub_y, sub_x = np.mgrid[y0:y1, x0:x1]
+    # tabuleiro: lajes de pedra desencontradas
+    v = .45 + (tex[y0:y1, x0:x1] - .5) * .35
+    deck = ramp(STONE, np.clip(v, 0, 1), sub_y, sub_x)
+    if vertical:
+        joint_r = ((sub_y - y0) % 12 == 0)
+        joint_c = (((sub_x - x0) + ((sub_y - y0) // 12) * 9) % 18 == 0)
+    else:
+        joint_c = ((sub_x - x0) % 12 == 0)
+        joint_r = (((sub_y - y0) + ((sub_x - x0) // 12) * 7) % 14 == 0)
+    deck[joint_r | joint_c] = np.array(STONE[0])
+    hl = np.roll(joint_r | joint_c, 1, 0) & ~(joint_r | joint_c)
+    deck[hl] = np.minimum(255, deck[hl] * 1.25)
+    img[y0:y1, x0:x1] = deck
+    BRp[y0:y1, x0:x1] = True
+    # parapeitos laterais
+    if vertical:
+        for xa, xb, lit in ((x0, x0 + 5, True), (x1 - 5, x1, False)):
+            img[y0:y1, xa:xb] = np.array(STONE[4 if lit else 1])
+            img[y0:y1, xa] = np.array(STONE[0])
+            img[y0:y1, xb - 1] = np.array(STONE[0])
+            for yb in range(y0, y1, 10):
+                img[yb, xa:xb] = np.array(STONE[0])
+        # face frontal com arco sobre a lava
+        fy0, fy1 = y1, min(H, y1 + 14)
+        fx = np.arange(x0, x1)
+        img[fy0:fy1, x0:x1] = np.array(STONE[1])
+        cx_, rw = (x0 + x1) / 2, (x1 - x0) / 2 - 7
+        for yy2 in range(fy0, fy1):
+            t = (yy2 - fy0) / 14
+            inside = np.abs(fx - cx_) < rw * np.sqrt(max(0, t * 1.4 - .1))
+            img[yy2, x0:x1][inside] = img[yy2, x0:x1][inside] * .3 + np.array([230, 90, 24]) * .7 * t
+        img[fy0, x0:x1] = np.array(STONE[5])
+        BRp[fy0:fy1, x0:x1] = True
+    else:
+        img[y0:y0 + 5, x0:x1] = np.array(STONE[4])
+        img[y0, x0:x1] = np.array(STONE[0])
+        img[y1 - 5:y1, x0:x1] = np.array(STONE[1])
+        img[y1 - 1, x0:x1] = np.array(STONE[0])
+        for xb in range(x0, x1, 10):
+            img[y0:y0 + 5, xb] = np.array(STONE[0])
+        fy0, fy1 = y1, min(H, y1 + 10)
+        img[fy0:fy1, x0:x1] = np.array(STONE[1])
+        img[fy0, x0:x1] = np.array(STONE[5])
+        BRp[fy0:fy1, x0:x1] = True
+LV &= ~BRp
+FC &= ~BRp
 # — correntes rasas de magma no chão (caminháveis, queimam)
 sm = Image.new("L", (W, H), 0)
 sd = ImageDraw.Draw(sm)
@@ -868,7 +932,7 @@ for pl, hw in STREAMS:
     for (a0, b0), (a1, b1) in zip(pts, pts[1:]):
         sd.line([(a0, b0), (a1, b1)], fill=255, width=int(hw * 1.5))
 STR = (ndimage.gaussian_filter(np.asarray(sm, np.float32) / 255, 3) + (fbm(H, W, 95, ((10, .6), (4, .4))) - .5) * .45) > .5
-STR &= FLOOR & ~BR
+STR &= FLOOR & ~BR & ~BRp
 sin_ = ndimage.distance_transform_edt(STR)
 heat2 = np.clip(.3 + sin_ / 6 * .55 + (fbm(H, W, 96, ((8, .6), (3, .4))) - .5) * .5, 0, 1)
 sl = ramp(LAVA, heat2, yy, xx)
@@ -924,7 +988,7 @@ for k, n in (("vc-bigcolumns", 10), ("vc-columns3", 16), ("vc-columns2", 16)):
             if place(k, x, y, False):
                 n -= 1
 EDGE = [("vc-boulder1", 5), ("vc-boulder2", 5), ("vc-boulder3", 4), ("vc-boulder4", 5), ("vc-boulder5", 4),
-        ("vc-obsidian1", 3), ("vc-obsidian2", 3), ("vc-obsidian3", 2), ("vc-columns1", 4), ("vc-columns2", 3), ("vc-stump", 2)]
+        ("vc-obsidian1", 1), ("vc-obsidian2", 1), ("vc-obsidian3", 1), ("vc-columns1", 4), ("vc-columns2", 3), ("vc-stump", 2)]
 ek, ew = zip(*EDGE)
 cand = np.argwhere(TOP & (distP > 10) & (distP < 30))
 nrs.shuffle(cand)
@@ -938,12 +1002,12 @@ for _ in range(7000):
     if base_ok(x, y, PROPS[k], 50):
         place(k, x, y, False)
 # miudezas no chão
-small = [boulder(200 + i, 8 + i % 3 * 2, 6 + i % 2 * 2) for i in range(6)] + [sulfur(300), obsidian(301, 16, 14)]
-for _ in range(520):
+small = [boulder(200 + i, 8 + i % 3 * 2, 6 + i % 2 * 2) for i in range(6)]
+for _ in range(170):
     im = rnd.choice(small)
     x, y = rnd.randrange(W - 40), rnd.randrange(H - 40)
     if walk[y // T, x // T] and walk[(y + im.height) // T, (x + im.width) // T] and FLOOR[y, x] and FLOOR[y + im.height, x + im.width] \
-            and not BR[y, x] and distLV[y, x] > 12:
+            and not BRp[y, x] and distLV[y, x] > 12:
         canvas.alpha_composite(im, (x, y))
 # fumarolas com vapor nos platôs e pocinhas de enxofre
 steam = Image.new("RGBA", (34, 56))
