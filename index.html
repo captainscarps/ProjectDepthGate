@@ -1,6 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <script>
+    /* Bloqueio preventivo de divisão de tela (Edge Split Screen / atalhos indesejados de browser) */
+    (function() {
+      window.addEventListener("keydown", function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+          if (e.code === "Digit2" || e.key === "2" || e.keyCode === 50 ||
+              e.code === "Digit1" || e.code === "Digit3" || e.code === "Digit4" ||
+              e.code === "KeyS" || e.code === "KeyD" || e.code === "KeyA" || e.code === "KeyW" ||
+              e.code === "KeyE" || e.code === "KeyQ" || e.code === "Space") {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return false;
+          }
+        }
+        if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.code && e.code.startsWith("Digit")) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.code === "ArrowLeft" || e.code === "ArrowRight")) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if (e.key === "Tab" && (!document.activeElement || (document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA"))) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if (e.key === "F1" || e.key === "F3" || e.key === "F7") {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { capture: true, passive: false });
+
+      window.addEventListener("pointerdown", function() {
+        const c = document.querySelector("#game canvas");
+        if (c && document.activeElement !== c) {
+          try { c.focus(); } catch(err) {}
+        }
+      }, { passive: true });
+    })();
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
   <title>DEPTHGATE</title>
