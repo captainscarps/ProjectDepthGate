@@ -1,8 +1,11 @@
 """
-Vulcão: lava animada, correntes rasas que queimam, itens de cenário.
-Atualiza (de forma re-executável) a fase "vulcao" já aplicada por patch_volcano.py:
-  - troca a definição da fase e a lista de imagens pelos dados novos do build_volcano_map.py
-  - injeta scripts/source/volcano-fx.js e chama __vcFx ao montar o mapa assado
+Vulcão: lava viva otimizada + ajuste de dificuldade balanceado.
+Aplica em assets/ e Projeto atualizado/assets/:
+  - Substitui __vcFx pelo código ultra otimizado de scripts/source/volcano-fx.js
+  - Atualiza volcano_level.json (minions da caldeira removidos, afixos de elite suavizados)
+  - Reduz HP e dano dos monstros de fogo (Golem de Magma, Draco Colérico)
+  - Balanceia o Dragão Pálido (HP de 130 para 95, dano de mordida/garra/mergulho ajustado)
+  - Aumenta o tempo de intervalo de dano de lava de 0.75s para 1.1s
 """
 import json
 import os
@@ -17,39 +20,57 @@ s = open(BUNDLE, encoding="utf-8").read()
 J = lambda o: json.dumps(o, ensure_ascii=False, separators=(",", ":"))
 NAME = "Vulcão de Cinzas"
 
-# 1) definição da fase (substitui a antiga inteira)
+# 1) Definição da fase (rooms com minions da caldeira limpos e afixos suavizados)
 a = s.index('vulcao:{id:"vulcao",')
 b = s.index("next:null}", a) + len("next:null}")
 s = s[:a] + (f'vulcao:{{id:"vulcao",name:"{NAME}",theme:{{...$n,id:"vulcao",name:"{NAME}"}},world:{J(LV["world"])},'
              f'rooms:{J(LV["rooms"])},corridors:{J(LV["corridors"])},doors:{J(LV["doors"])},playerSpawn:{J(LV["spawn"])},next:null}}') + s[b:]
 
-# 2) lista de imagens da fase
-m = re.search(r'for\(const f of\[("vc-[^\]]*)\]\)this\.load\.image\(f,`assets/pixel-art/newmaps/\$\{f\}\.png`\);', s)
-assert m, "lista de props do vulcão não encontrada"
-s = s[:m.start()] + f'for(const f of{J(LV["props"])})this.load.image(f,`assets/pixel-art/newmaps/${{f}}.png`);' + s[m.end():]
-
-# 3) folha das bolhas
-if 'load.spritesheet("vc-fx-bubble"' not in s:
-    old = 'this.load.spritesheet("boss-magma-titan","assets/pixel-art/bosses/boss-magma-titan.png",{frameWidth:128,frameHeight:128});'
-    assert s.count(old) == 1
-    s = s.replace(old, old + 'this.load.spritesheet("vc-fx-bubble","assets/pixel-art/newmaps/vc-fx-bubble.png",{frameWidth:12,frameHeight:12});')
-
-# 4) código dos efeitos (substitui se já existir)
+# 2) Código dos efeitos otimizados (substitui __vcFx)
 if "function __vcFx(" in s:
-    a = s.index("/* ── Vulcão de Cinzas: lava viva")
-    b = s.index("function __frBaked(B){")
-    s = s[:a] + s[b:]
-old = "function __frBaked(B){"
-assert s.count(old) == 1
-s = s.replace(old, FX + old)
+    start_fx = s.index("/* ── Vulcão de Cinzas:")
+    end_fx = s.index("function __frBaked(B){")
+    s = s[:start_fx] + s[end_fx:]
 
-# 5) chamada ao montar o mapa
-if 'if(P==="vcb")__vcFx(d,B,M);' not in s:
-    old = '.setOrigin(0).setDepth(-2);if(P==="bqb"||P==="mtb"){'
-    assert s.count(old) == 1, s.count(old)
-    s = s.replace(old, '.setOrigin(0).setDepth(-2);if(P==="vcb")__vcFx(d,B,M);if(P==="bqb"||P==="mtb"){')
+old_baked = "function __frBaked(B){"
+assert s.count(old_baked) == 1
+s = s.replace(old_baked, FX + "\n" + old_baked)
 
+# 3) Balanceamento de monstros do Vulcão
+# Golem de Magma: HP 16->11, Dano 3->2, Velocidade 70->60
+s = re.sub(
+    r'FIRE_ELEMENTAL:\{name:"Golem de Magma",texture:"mk3e-fire-elemental",sizeClass:"large",bodySize:20,speed:\d+,maxHp:\d+,damage:\d+',
+    'FIRE_ELEMENTAL:{name:"Golem de Magma",texture:"mk3e-fire-elemental",sizeClass:"large",bodySize:20,speed:60,maxHp:11,damage:2',
+    s
+)
+
+# Draco Colérico: HP 34->22, Dano 4->3, Velocidade 60->55
+s = re.sub(
+    r'DRAGON_DRAKE:\{name:"Draco Col[^"]+",texture:"mk3e-drake",sizeClass:"huge",bodySize:22,speed:\d+,maxHp:\d+,damage:\d+',
+    'DRAGON_DRAKE:{name:"Draco Colérico",texture:"mk3e-drake",sizeClass:"huge",bodySize:22,speed:55,maxHp:22,damage:3',
+    s
+)
+
+# Dragão Pálido: HP 130->95, contactDamage 4->2.5, speed 70->65, cooldown 1400->1600
+s = re.sub(
+    r'maxHp:\s*130,\s*contactDamage:\s*4,\s*speed:\s*70,\s*xp:\s*1800,\s*gold:\s*\{[^}]+\},\s*attackCooldownMs:\s*1400,',
+    'maxHp: 95,\n  contactDamage: 2.5,\n  speed: 65,\n  xp: 1800,\n  gold: { min: 280, max: 450 },\n  attackCooldownMs: 1600,',
+    s
+)
+
+# Dano dos ataques do dragão
+s = s.replace('BITE: { damage: 4, range: 74', 'BITE: { damage: 3, range: 74')
+s = s.replace('CLAW: { damage: 3, range: 66', 'CLAW: { damage: 2, range: 66')
+s = s.replace('DIVE: { damage: 4, speed: 420', 'DIVE: { damage: 3, speed: 390')
+
+# 4) Intervalo do dano de lava mais justo (0.75s -> 1.1s)
+s = s.replace('this.tickTimer=.75,t.invuln=0', 'this.tickTimer=1.1,t.invuln=0')
+
+# Salva nos dois bundles com garantia de paridade
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):
-        open(p, "w", encoding="utf-8").write(s)
-print("efeitos do vulcão aplicados")
+        with open(p, "w", encoding="utf-8") as f:
+            f.write(s)
+        print(f"[OK] Atualizado {p}")
+
+print("[SUCCESS] Otimizações de performance e balanceamento de dificuldade do Vulcão aplicados com sucesso!")

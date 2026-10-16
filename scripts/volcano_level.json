@@ -645,10 +645,7 @@
      "type": "FIRE_ELEMENTAL",
      "col": 15,
      "row": 43,
-     "elite": true,
-     "affixes": [
-      "TOUGH"
-     ]
+     "elite": false
     },
     {
      "type": "DEMON_CASTER",
@@ -867,10 +864,7 @@
      "type": "DRAGON_DRAKE",
      "col": 45,
      "row": 23,
-     "elite": true,
-     "affixes": [
-      "VAMPIRIC"
-     ]
+     "elite": false
     },
     {
      "type": "FIRE_ELEMENTAL",
@@ -1134,10 +1128,7 @@
      "type": "ORC_WARRIOR",
      "col": 14,
      "row": 24,
-     "elite": true,
-     "affixes": [
-      "TOUGH"
-     ]
+     "elite": false
     },
     {
      "type": "DEMON",
@@ -1664,10 +1655,7 @@
      "type": "ORC_WARRIOR",
      "col": 68,
      "row": 45,
-     "elite": true,
-     "affixes": [
-      "TOUGH"
-     ]
+     "elite": false
     },
     {
      "type": "DEMON_CASTER",
@@ -1886,23 +1874,7 @@
      "h": 1
     }
    ],
-   "enemies": [
-    {
-     "type": "FIRE_ELEMENTAL",
-     "col": 32,
-     "row": 9
-    },
-    {
-     "type": "FIRE_ELEMENTAL",
-     "col": 49,
-     "row": 9
-    },
-    {
-     "type": "DEMON",
-     "col": 41,
-     "row": 12
-    }
-   ],
+   "enemies": [],
    "decor": [
     {
      "type": "statue-fire",
