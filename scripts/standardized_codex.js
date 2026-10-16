@@ -370,67 +370,68 @@ class __CodexScene extends j.Scene {
     this.indexG = this.add.graphics();
     L.add(this.indexG);
 
-    // Coluna Esquerda: Biomas
+    // Coluna Esquerda: Biomas (com espacamento perfeito e linhas-guia)
     L.add(this.add.text(LX + PW / 2, 36, "❖ SEÇÃO I: BIOMAS & MAPAS ❖", {
       fontFamily: "Georgia, serif", fontSize: "11px", fontStyle: "bold", color: "#2b190c"
     }).setOrigin(0.5));
 
     __CODEX_BIOMES.forEach((b, i) => {
-      const y = 54 + i * 21;
-      const t = this.add.text(LX + 12, y, `${i < 9 ? "0" + (i + 1) : (i + 1)}. ${b.name}`, {
+      const y = 54 + i * 22;
+      const numStr = (i < 9 ? "0" + (i + 1) : (i + 1));
+      const t = this.add.text(LX + 12, y, `${numStr}. ${b.name}`, {
         fontFamily: "Georgia, serif", fontSize: "9.5px", fontStyle: "bold", color: "#3a2614"
       }).setInteractive({ useHandCursor: true });
       
       const pg = this.add.text(LX + PW - 12, y, `Pág ${this.BIOMES_START + i}`, {
-        fontFamily: "'Courier New', monospace", fontSize: "8.5px", color: "#8a7550"
+        fontFamily: "'Courier New', monospace", fontSize: "8.5px", color: "#7a6540"
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
       const act = () => this.go(this.BIOMES_START + i);
-      this.indexEntries.push({ x: LX + 10, y: y, w: PW - 20, h: 18, spread: this.BIOMES_START + i });
+      this.indexEntries.push({ x: LX + 10, y: y, w: PW - 20, h: 20, spread: this.BIOMES_START + i });
       t.on("pointerdown", act); pg.on("pointerdown", act);
       t.on("pointerover", () => t.setColor("#a03520")); t.on("pointerout", () => t.setColor("#3a2614"));
       L.add([t, pg]);
     });
 
-    // Coluna Direita: Herois e Lendas
+    // Coluna Direita: Herois Convocados
     R.add(this.add.text(RX + PW / 2, 36, "❖ SEÇÃO II: HERÓIS CONVOCADOS ❖", {
       fontFamily: "Georgia, serif", fontSize: "11px", fontStyle: "bold", color: "#2b190c"
     }).setOrigin(0.5));
 
     __CODEX_HEROES.forEach((h, i) => {
-      const y = 52 + i * 19;
+      const y = 54 + i * 19;
       const t = this.add.text(RX + 12, y, `• ${h.name} (${h.subtitle.split('&')[0].trim()})`, {
         fontFamily: "Georgia, serif", fontSize: "9px", fontStyle: "bold", color: "#243a50"
       }).setInteractive({ useHandCursor: true });
       
       const pg = this.add.text(RX + PW - 12, y, `Pág ${this.HEROES_START + i}`, {
-        fontFamily: "'Courier New', monospace", fontSize: "8px", color: "#8a7550"
+        fontFamily: "'Courier New', monospace", fontSize: "8.5px", color: "#6a7580"
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
       const act = () => this.go(this.HEROES_START + i);
-      this.indexEntries.push({ x: RX + 10, y: y, w: PW - 20, h: 16, spread: this.HEROES_START + i });
+      this.indexEntries.push({ x: RX + 10, y: y, w: PW - 20, h: 18, spread: this.HEROES_START + i });
       t.on("pointerdown", act); pg.on("pointerdown", act);
       t.on("pointerover", () => t.setColor("#a03520")); t.on("pointerout", () => t.setColor("#243a50"));
       R.add([t, pg]);
     });
 
     // Divisor para Lendas
-    R.add(this.add.text(RX + PW / 2, 226, "❖ SEÇÃO III: LENDAS DO ABISMO ❖", {
+    R.add(this.add.text(RX + PW / 2, 230, "❖ SEÇÃO III: LENDAS DO ABISMO ❖", {
       fontFamily: "Georgia, serif", fontSize: "10.5px", fontStyle: "bold", color: "#6a2030"
     }).setOrigin(0.5));
 
     __CODEX_LEGENDS.forEach((leg, i) => {
-      const y = 244 + i * 20;
+      const y = 248 + i * 22;
       const t = this.add.text(RX + 12, y, `• ${leg.name} • ${leg.role}`, {
         fontFamily: "Georgia, serif", fontSize: "9px", fontStyle: "bold", color: "#501824"
       }).setInteractive({ useHandCursor: true });
 
       const pg = this.add.text(RX + PW - 12, y, `Pág ${this.LEGENDS_START + i}`, {
-        fontFamily: "'Courier New', monospace", fontSize: "8px", color: "#8a7550"
+        fontFamily: "'Courier New', monospace", fontSize: "8.5px", color: "#8a5060"
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
       const act = () => this.go(this.LEGENDS_START + i);
-      this.indexEntries.push({ x: RX + 10, y: y, w: PW - 20, h: 16, spread: this.LEGENDS_START + i });
+      this.indexEntries.push({ x: RX + 10, y: y, w: PW - 20, h: 18, spread: this.LEGENDS_START + i });
       t.on("pointerdown", act); pg.on("pointerdown", act);
       t.on("pointerover", () => t.setColor("#a03520")); t.on("pointerout", () => t.setColor("#501824"));
       R.add([t, pg]);
@@ -443,11 +444,11 @@ class __CodexScene extends j.Scene {
     const L = this.L, R = this.R;
 
     // === PÁGINA ESQUERDA: MAPA DO NÍVEL & TOPOGRAFIA OFICIAL ===
-    L.add(this.add.text(LX + 10, 32, b.name.toUpperCase(), {
-      fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#2b190c"
+    L.add(this.add.text(LX + 10, 30, b.name.toUpperCase(), {
+      fontFamily: "Georgia, serif", fontSize: "13.5px", fontStyle: "bold", color: "#2b190c"
     }));
 
-    L.add(this.add.text(LX + 10, 48, `Topografia • ${b.title}`, {
+    L.add(this.add.text(LX + 10, 47, `Topografia • ${b.title}`, {
       fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", color: "#7a5c36"
     }));
 
@@ -455,19 +456,17 @@ class __CodexScene extends j.Scene {
     const mapG = this.add.graphics();
     const mapX = LX + 8, mapY = 60, mapW = PW - 16, mapH = 138;
 
-    // Moldura base de pergaminho escuro
     mapG.fillStyle(0x130e09, 0.95).fillRoundedRect(mapX, mapY, mapW, mapH, 6);
     mapG.lineStyle(1.5, 0x8a6230, 0.85).strokeRoundedRect(mapX, mapY, mapW, mapH, 6);
     L.add(mapG);
 
-    // IMAGEM REAL DO MAPA DO NÍVEL (SOMENTE PARTE GRÁFICA, PURA E NÍTIDA)
+    // IMAGEM DO MAPA
     const mapKey = `codex-map-${b.id}`;
     if (this.textures.exists(mapKey)) {
       const mapImg = this.add.image(mapX + mapW / 2, mapY + mapH / 2, mapKey);
       mapImg.setDisplaySize(mapW - 6, mapH - 6);
       L.add(mapImg);
 
-      // Vinheta sutil de borda para perfeita integração à página
       const vig = this.add.graphics();
       vig.lineStyle(3, 0x160f0a, 0.65).strokeRoundedRect(mapX + 2, mapY + 2, mapW - 4, mapH - 4, 5);
       vig.lineStyle(1, 0xc9a24a, 0.75).strokeRoundedRect(mapX + 1, mapY + 1, mapW - 2, mapH - 2, 6);
@@ -487,7 +486,7 @@ class __CodexScene extends j.Scene {
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + mapW - 3, mapY + mapH - 3, mapX + mapW - 3 - cSize, mapY + mapH - 3));
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + mapW - 3, mapY + mapH - 3, mapX + mapW - 3, mapY + mapH - 3 - cSize));
 
-    // Rosa dos Ventos (canto superior direito)
+    // Rosa dos Ventos
     const roseX = mapX + mapW - 14, roseY = mapY + 14;
     fg.fillStyle(0x0a0705, 0.8).fillCircle(roseX, roseY, 10);
     fg.lineStyle(1, 0xc9a24a, 0.85).strokeCircle(roseX, roseY, 10);
@@ -498,7 +497,7 @@ class __CodexScene extends j.Scene {
     fg.fillStyle(0xecd79b, 0.8).fillTriangle(roseX, roseY + 9, roseX - 2, roseY + 1, roseX + 2, roseY + 1);
     L.add(this.add.text(roseX, roseY - 10, "N", { fontFamily: "'Courier New', monospace", fontSize: "7px", fontStyle: "bold", color: "#ecd79b" }).setOrigin(0.5, 1));
 
-    // Barra de escala cartográfica (canto inferior esquerdo)
+    // Barra de escala cartográfica
     fg.lineStyle(1, 0xc9a24a, 0.8);
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + 8, mapY + mapH - 7, mapX + 42, mapY + mapH - 7));
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + 8, mapY + mapH - 9, mapX + 8, mapY + mapH - 5));
@@ -506,21 +505,21 @@ class __CodexScene extends j.Scene {
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + 42, mapY + mapH - 9, mapX + 42, mapY + mapH - 5));
     L.add(this.add.text(mapX + 25, mapY + mapH - 11, "50 braças", { fontFamily: "'Courier New', monospace", fontSize: "6.5px", color: "#b89e6e" }).setOrigin(0.5, 1));
 
-    // Fita cartouche
+    // Cartouche do mapa
     L.add(this.add.text(mapX + 10, mapY + 5, "VISTA TOPOGRÁFICA DO REINO", {
       fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold", color: "#ecd79b"
     }));
     L.add(fg);
 
-    // Painel de Parâmetros Geográficos & Ameaças
+    // Painel de Parametros Geograficos com espacamento respirado
     const legY = 204;
     const hudBox = this.add.graphics();
-    hudBox.fillStyle(0x130e09, 0.08).fillRoundedRect(LX + 8, legY, PW - 16, 88, 4);
-    hudBox.lineStyle(1, 0x8a6230, 0.45).strokeRoundedRect(LX + 8, legY, PW - 16, 88, 4);
+    hudBox.fillStyle(0x130e09, 0.08).fillRoundedRect(LX + 8, legY, PW - 16, 92, 4);
+    hudBox.lineStyle(1, 0x8a6230, 0.45).strokeRoundedRect(LX + 8, legY, PW - 16, 92, 4);
     L.add(hudBox);
 
-    L.add(this.add.text(LX + 12, legY + 5, "DADOS CARTOGRÁFICOS & AMEAÇAS", {
-      fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#8a5822"
+    L.add(this.add.text(LX + 14, legY + 6, "DADOS CARTOGRÁFICOS & AMEAÇAS", {
+      fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#8a5822"
     }));
 
     const rows = [
@@ -531,48 +530,55 @@ class __CodexScene extends j.Scene {
     ];
 
     rows.forEach(([k, v, c], i) => {
-      const yy = legY + 16 + i * 16;
-      L.add(this.add.text(LX + 12, yy, k, {
-        fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold", color: "#7a6244"
+      const yy = legY + 18 + i * 17.5;
+      L.add(this.add.text(LX + 14, yy, k, {
+        fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#7a6244"
       }));
-      L.add(this.add.text(LX + 82, yy, v, {
-        fontFamily: "Georgia, serif", fontSize: "8px", color: c, wordWrap: { width: PW - 94 }
+      L.add(this.add.text(LX + 88, yy, v, {
+        fontFamily: "Georgia, serif", fontSize: "8.5px", color: c, wordWrap: { width: PW - 100 }
       }));
     });
 
-    // === PÁGINA DIREITA: CRÔNICA, SEGREDOS E DICAS (FONTE AMPLIADA) ===
-    R.add(this.add.text(RX + 10, 32, "CRÔNICA DA REGIÃO", {
+    // === PÁGINA DIREITA: CRÔNICA, SEGREDOS E DICAS (COM ESPAÇAMENTO RESPIRADO E ALTA LEGIBILIDADE) ===
+    let curY = 30;
+    R.add(this.add.text(RX + 10, curY, "CRÔNICA DA REGIÃO", {
       fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#2b190c"
     }));
 
-    R.add(this.add.text(RX + 10, 48, b.chronicle, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 2, color: "#3a2818", wordWrap: { width: PW - 20 }
-    }));
+    curY += 18;
+    const tChron = this.add.text(RX + 10, curY, b.chronicle, {
+      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#3a2818", wordWrap: { width: PW - 20 }
+    });
+    R.add(tChron);
 
-    // Segredos Arcanos
-    const secY = 126;
-    R.add(this.add.text(RX + 10, secY, "✦ ARQUITETURA & SEGREDOS OCULTOS", {
-      fontFamily: "'Courier New', monospace", fontSize: "9.5px", fontStyle: "bold", color: "#8a5822"
-    }));
-
-    R.add(this.add.text(RX + 10, secY + 14, b.secrets, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 2, color: "#4a3520", wordWrap: { width: PW - 20 }
-    }));
-
-    // Caixa de Dica de Sobrevivência
-    const tipBox = this.add.graphics();
-    const tbX = RX + 8, tbY = 208, tbW = PW - 16, tbH = 84;
-    tipBox.fillStyle(0x130e09, 0.08).fillRoundedRect(tbX, tbY, tbW, tbH, 4);
-    tipBox.lineStyle(1, 0x8a6230, 0.5).strokeRoundedRect(tbX, tbY, tbW, tbH, 4);
-    R.add(tipBox);
-
-    R.add(this.add.text(tbX + 8, tbY + 6, "CONSELHO DO EXPLORADOR:", {
+    curY += tChron.height + 12;
+    const tSecH = this.add.text(RX + 10, curY, "❖ ARQUITETURA & SEGREDOS OCULTOS", {
       fontFamily: "'Courier New', monospace", fontSize: "9px", fontStyle: "bold", color: "#8a5822"
-    }));
+    });
+    R.add(tSecH);
 
-    R.add(this.add.text(tbX + 8, tbY + 20, b.tip, {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", lineSpacing: 2, color: "#3a2818", wordWrap: { width: tbW - 16 }
-    }));
+    curY += tSecH.height + 4;
+    const tSec = this.add.text(RX + 10, curY, b.secrets, {
+      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#4a3520", wordWrap: { width: PW - 20 }
+    });
+    R.add(tSec);
+
+    curY += tSec.height + 10;
+    const tbBoxH = Math.min(312 - curY, 80);
+    if (tbBoxH > 35) {
+      const tipBox = this.add.graphics();
+      tipBox.fillStyle(0x130e09, 0.08).fillRoundedRect(RX + 8, curY, PW - 16, tbBoxH, 4);
+      tipBox.lineStyle(1, 0x8a6230, 0.5).strokeRoundedRect(RX + 8, curY, PW - 16, tbBoxH, 4);
+      R.add(tipBox);
+
+      R.add(this.add.text(RX + 14, curY + 6, "CONSELHO DO EXPLORADOR:", {
+        fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#8a5822"
+      }));
+
+      R.add(this.add.text(RX + 14, curY + 20, b.tip, {
+        fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", lineSpacing: 4.5, color: "#3a2818", wordWrap: { width: PW - 28 }
+      }));
+    }
   }
 
   // --- Seção II: Páginas de Heróis (Fonte Ampliada) ---
@@ -582,22 +588,22 @@ class __CodexScene extends j.Scene {
     const L = this.L, R = this.R;
 
     // === PÁGINA ESQUERDA: ILUSTRAÇÃO DO HERÓI & DADOS ===
-    L.add(this.add.text(LX + 10, 32, h.name.toUpperCase(), {
+    L.add(this.add.text(LX + 10, 30, h.name.toUpperCase(), {
       fontFamily: "Georgia, serif", fontSize: "15px", fontStyle: "bold", color: "#1c2e42"
     }));
 
-    L.add(this.add.text(LX + 10, 49, h.subtitle, {
+    L.add(this.add.text(LX + 10, 47, h.subtitle, {
       fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9.5px", color: "#6a523a"
     }));
 
     // Moldura do Retrato / Sprite
     const fBox = this.add.graphics();
-    const fx = LX + 10, fy = 66, fw = PW - 20, fh = 108;
+    const fx = LX + 10, fy = 64, fw = PW - 20, fh = 108;
     fBox.fillStyle(0x0e141c, 0.95).fillRoundedRect(fx, fy, fw, fh, 6);
     fBox.lineStyle(1.5, 0x4a78a0, 0.75).strokeRoundedRect(fx, fy, fw, fh, 6);
     L.add(fBox);
 
-    // Sprite do Campeão animado oficial (mesmo do ClassSelect)
+    // Sprite do Campeao animado oficial
     const sKey = h.spriteKey;
     if (this.textures.exists(sKey)) {
       const layout = this.cache?.json?.get?.(`${sKey}-layout`);
@@ -613,8 +619,8 @@ class __CodexScene extends j.Scene {
       }).setOrigin(0.5));
     }
 
-    // Informações da Origem Cósmica com texto ampliado
-    const infoY = 180;
+    // Informacoes da Origem Cosmica com espacamento limpo
+    const infoY = 178;
     const items = [
       ["Era de Origem:", h.era],
       ["Plano / Dimensão:", h.dimension],
@@ -623,48 +629,60 @@ class __CodexScene extends j.Scene {
     ];
 
     items.forEach(([lbl, val], i) => {
-      const yy = infoY + i * 26;
+      const yy = infoY + i * 27;
       L.add(this.add.text(LX + 10, yy, lbl, {
-        fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#5a7288"
+        fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#5a7288"
       }));
-      L.add(this.add.text(LX + 10, yy + 10, val, {
-        fontFamily: "Georgia, serif", fontSize: "8.5px", color: "#243648", wordWrap: { width: PW - 20 }
+      L.add(this.add.text(LX + 10, yy + 11, val, {
+        fontFamily: "Georgia, serif", fontSize: "9px", color: "#243648", wordWrap: { width: PW - 20 }
       }));
     });
 
-    // === PÁGINA DIREITA: BIOGRAFIA & HABILIDADES (FONTE AMPLIADA) ===
-    R.add(this.add.text(RX + 10, 32, "BIOGRAFIA & CONVOCAÇÃO", {
+    // === PÁGINA DIREITA: BIOGRAFIA & HABILIDADES (FLUXO DINÂMICO E ALTA LEGIBILIDADE) ===
+    let curY = 30;
+    R.add(this.add.text(RX + 10, curY, "BIOGRAFIA & CONVOCAÇÃO", {
       fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#1c2e42"
     }));
 
-    R.add(this.add.text(RX + 10, 48, h.lore, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 2, color: "#243648", wordWrap: { width: PW - 20 }
-    }));
-
-    R.add(this.add.text(RX + 10, 114, "MOTIVAÇÃO NA CAMPANHA:", {
-      fontFamily: "'Courier New', monospace", fontSize: "9px", fontStyle: "bold", color: "#6a4a20"
-    }));
-
-    R.add(this.add.text(RX + 10, 127, h.motivation, {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", lineSpacing: 2, color: "#3a2818", wordWrap: { width: PW - 20 }
-    }));
-
-    // Caixa de Habilidades Distintivas
-    const skBox = this.add.graphics();
-    const skX = RX + 8, skY = 174, skW = PW - 16, skH = 118;
-    skBox.fillStyle(0x0e141c, 0.08).fillRoundedRect(skX, skY, skW, skH, 4);
-    skBox.lineStyle(1, 0x4a78a0, 0.5).strokeRoundedRect(skX, skY, skW, skH, 4);
-    R.add(skBox);
-
-    R.add(this.add.text(skX + 8, skY + 6, "ARSENAL & HABILIDADES:", {
-      fontFamily: "'Courier New', monospace", fontSize: "9px", fontStyle: "bold", color: "#204a70"
-    }));
-
-    h.abilities.forEach((ab, i) => {
-      R.add(this.add.text(skX + 8, skY + 20 + i * 31, `• ${ab}`, {
-        fontFamily: "Georgia, serif", fontSize: "8.5px", lineSpacing: 1.5, color: "#203040", wordWrap: { width: skW - 16 }
-      }));
+    curY += 18;
+    const tLore = this.add.text(RX + 10, curY, h.lore, {
+      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#243648", wordWrap: { width: PW - 20 }
     });
+    R.add(tLore);
+
+    curY += tLore.height + 10;
+    const tMotH = this.add.text(RX + 10, curY, "MOTIVAÇÃO NA CAMPANHA:", {
+      fontFamily: "'Courier New', monospace", fontSize: "9px", fontStyle: "bold", color: "#6a4a20"
+    });
+    R.add(tMotH);
+
+    curY += tMotH.height + 4;
+    const tMot = this.add.text(RX + 10, curY, h.motivation, {
+      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", lineSpacing: 4.5, color: "#3a2818", wordWrap: { width: PW - 20 }
+    });
+    R.add(tMot);
+
+    curY += tMot.height + 10;
+    const skBoxH = Math.min(312 - curY, 114);
+    if (skBoxH > 40) {
+      const skBox = this.add.graphics();
+      skBox.fillStyle(0x0e141c, 0.08).fillRoundedRect(RX + 8, curY, PW - 16, skBoxH, 4);
+      skBox.lineStyle(1, 0x4a78a0, 0.5).strokeRoundedRect(RX + 8, curY, PW - 16, skBoxH, 4);
+      R.add(skBox);
+
+      R.add(this.add.text(RX + 14, curY + 6, "ARSENAL & HABILIDADES:", {
+        fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#204a70"
+      }));
+
+      h.abilities.forEach((ab, i) => {
+        const abY = curY + 20 + i * 29;
+        if (abY + 20 <= curY + skBoxH) {
+          R.add(this.add.text(RX + 14, abY, `• ${ab}`, {
+            fontFamily: "Georgia, serif", fontSize: "9px", lineSpacing: 3.5, color: "#203040", wordWrap: { width: PW - 28 }
+          }));
+        }
+      });
+    }
   }
 
   // --- Seção III: Lendas das Profundezas (Rei e Guardiã - Fonte Ampliada) ---
@@ -674,17 +692,17 @@ class __CodexScene extends j.Scene {
     const L = this.L, R = this.R;
 
     // === PÁGINA ESQUERDA: RETRATO DA LENDA ===
-    L.add(this.add.text(LX + 10, 32, leg.name.toUpperCase(), {
+    L.add(this.add.text(LX + 10, 30, leg.name.toUpperCase(), {
       fontFamily: "Georgia, serif", fontSize: "15px", fontStyle: "bold", color: "#4a1220"
     }));
 
-    L.add(this.add.text(LX + 10, 49, leg.title, {
+    L.add(this.add.text(LX + 10, 47, leg.title, {
       fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9.5px", color: "#7a4820"
     }));
 
-    // Retrato da Imagem de Cinemática
+    // Retrato da Imagem de Cinematica
     const pBox = this.add.graphics();
-    const px = LX + 10, py = 66, pw = PW - 20, ph = 135;
+    const px = LX + 10, py = 64, pw = PW - 20, ph = 135;
     pBox.fillStyle(0x130a0e, 0.95).fillRoundedRect(px, py, pw, ph, 6);
     pBox.lineStyle(1.5, 0xa04058, 0.8).strokeRoundedRect(px, py, pw, ph, 6);
     L.add(pBox);
@@ -696,48 +714,56 @@ class __CodexScene extends j.Scene {
       im.setScale(sc);
       L.add(im);
     } else {
-      L.add(this.add.text(px + pw / 2, py + ph / 2, `✦ ${leg.name} ✦`, {
+      L.add(this.add.text(px + pw / 2, py + ph / 2, `❖ ${leg.name} ❖`, {
         fontFamily: "Georgia, serif", fontSize: "14px", fontStyle: "bold", color: "#d8a8b8"
       }).setOrigin(0.5));
     }
 
-    // Citação Solene
+    // Citacao Solene
     L.add(this.add.text(LX + 10, 212, leg.quote, {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", lineSpacing: 2, color: "#6a2034", wordWrap: { width: PW - 20 }
+      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9.5px", lineSpacing: 4.5, color: "#6a2034", wordWrap: { width: PW - 20 }
     }));
 
-    // === PÁGINA DIREITA: CRÔNICA HISTÓRICA & MISTÉRIO (FONTE AMPLIADA) ===
-    R.add(this.add.text(RX + 10, 32, "A HISTÓRIA ANCESTRAL", {
+    // === PÁGINA DIREITA: CRÔNICA HISTÓRICA & MISTÉRIO (COM ESPAÇAMENTO RESPIRADO) ===
+    let curY = 30;
+    R.add(this.add.text(RX + 10, curY, "A HISTÓRIA ANCESTRAL", {
       fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#4a1220"
     }));
 
-    R.add(this.add.text(RX + 10, 48, leg.chronicle, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 2, color: "#3a1820", wordWrap: { width: PW - 20 }
-    }));
+    curY += 18;
+    const tChron = this.add.text(RX + 10, curY, leg.chronicle, {
+      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#3a1820", wordWrap: { width: PW - 20 }
+    });
+    R.add(tChron);
 
-    // O Encontro / Segredo
-    R.add(this.add.text(RX + 10, 126, "O ENIGMA DOS PORTAIS", {
-      fontFamily: "'Courier New', monospace", fontSize: "9.5px", fontStyle: "bold", color: "#8a2840"
-    }));
+    curY += tChron.height + 12;
+    const tEnigH = this.add.text(RX + 10, curY, "❖ O ENIGMA DOS PORTAIS", {
+      fontFamily: "'Courier New', monospace", fontSize: "9px", fontStyle: "bold", color: "#8a2840"
+    });
+    R.add(tEnigH);
 
-    R.add(this.add.text(RX + 10, 140, leg.mystery, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 2, color: "#3a1820", wordWrap: { width: PW - 20 }
-    }));
+    curY += tEnigH.height + 4;
+    const tEnig = this.add.text(RX + 10, curY, leg.mystery, {
+      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#3a1820", wordWrap: { width: PW - 20 }
+    });
+    R.add(tEnig);
 
-    // Selo de Registro Oficial
-    const sG = this.add.graphics();
-    const sgX = RX + 10, sgY = 228, sgW = PW - 20, sgH = 64;
-    sG.fillStyle(0x280e14, 0.08).fillRoundedRect(sgX, sgY, sgW, sgH, 4);
-    sG.lineStyle(1, 0x8a2840, 0.45).strokeRoundedRect(sgX, sgY, sgW, sgH, 4);
-    R.add(sG);
+    curY += tEnig.height + 10;
+    const sgBoxH = Math.min(312 - curY, 66);
+    if (sgBoxH > 35) {
+      const sG = this.add.graphics();
+      sG.fillStyle(0x280e14, 0.08).fillRoundedRect(RX + 8, curY, PW - 16, sgBoxH, 4);
+      sG.lineStyle(1, 0x8a2840, 0.45).strokeRoundedRect(RX + 8, curY, PW - 16, sgBoxH, 4);
+      R.add(sG);
 
-    R.add(this.add.text(sgX + 8, sgY + 6, "REGISTRO SELADO PELAS SENTINELAS", {
-      fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#8a2840"
-    }));
+      R.add(this.add.text(RX + 14, curY + 6, "REGISTRO SELADO PELAS SENTINELAS", {
+        fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#8a2840"
+      }));
 
-    R.add(this.add.text(sgX + 8, sgY + 20, "As revelações finais acerca da natureza do Abismo aguardam aqueles que alcançarem a Câmara do Trono e desvendarem os últimos selos.", {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", lineSpacing: 1.5, color: "#501824", wordWrap: { width: sgW - 16 }
-    }));
+      R.add(this.add.text(RX + 14, curY + 20, "As revelações finais acerca da natureza do Abismo aguardam aqueles que alcançarem a Câmara do Trono e desvendarem os últimos selos.", {
+        fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", lineSpacing: 4, color: "#501824", wordWrap: { width: PW - 28 }
+      }));
+    }
   }
 
   padState() {
