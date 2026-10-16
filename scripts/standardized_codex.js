@@ -18,8 +18,8 @@ class __CodexScene extends j.Scene {
     this.LEGENDS_START = this.HEROES_START + this.totalHeroes;
     this.nSpreads = this.LEGENDS_START + this.totalLegends;
 
-    // Fundo escurecido total com protecao widescreen (sem vazamento do menu principal)
-    this.add.rectangle(this.cx, st / 2, Math.max(_, 2600), st * 2, 0x050403, 0.94).setInteractive();
+    // Fundo escurecido total solido com protecao widescreen (sem vazamento do menu principal)
+    this.add.rectangle(this.cx, st / 2, Math.max(_, 2600), st * 2, 0x000000, 1.0).setInteractive();
 
     // Livro (capa, paginas, fitas) padronizado exatamente igual ao Bestiario
     this.bookG = this.add.graphics();
@@ -272,8 +272,8 @@ class __CodexScene extends j.Scene {
     pn(this.L, LX, 2 * s + 1);
     pn(this.R, RX, 2 * s + 2);
 
-    // Cabecalho superior decorativo
-    const run = (c, x, str) => this.T(c, x + PW / 2, 26, str.toUpperCase(), 7, __BK_FAINT, { ox: .5, st: "bold" });
+    // Cabecalho superior decorativo (posicionado em y=23 com folga para o titulo em y=38)
+    const run = (c, x, str) => this.T(c, x + PW / 2, 23, str.toUpperCase(), 7, __BK_FAINT, { ox: .5, st: "bold" });
 
     if (s === 0) {
       this.renderCover(LX, RX, PW);
@@ -283,12 +283,15 @@ class __CodexScene extends j.Scene {
       this.renderIndex(LX, RX, PW);
     } else if (s >= this.BIOMES_START && s < this.HEROES_START) {
       run(this.L, LX, "BIOMAS & MAPAS");
+      run(this.R, RX, "CRÔNICAS & SEGREDOS");
       this.renderBiomePage(s - this.BIOMES_START, LX, RX, PW);
     } else if (s >= this.HEROES_START && s < this.LEGENDS_START) {
-      run(this.L, LX, "HERÓIS CONVOCADOS");
+      run(this.L, LX, "HERÓIS DE OUTRAS ERAS");
+      run(this.R, RX, "BIOGRAFIA & HABILIDADES");
       this.renderHeroPage(s - this.HEROES_START, LX, RX, PW);
     } else {
       run(this.L, LX, "LENDAS DO ABISMO");
+      run(this.R, RX, "REGISTROS ANCESTRAIS");
       this.renderLegendPage(s - this.LEGENDS_START, LX, RX, PW);
     }
 
@@ -371,12 +374,12 @@ class __CodexScene extends j.Scene {
     L.add(this.indexG);
 
     // Coluna Esquerda: Biomas (com espacamento perfeito e linhas-guia)
-    L.add(this.add.text(LX + PW / 2, 36, "❖ SEÇÃO I: BIOMAS & MAPAS ❖", {
-      fontFamily: "Georgia, serif", fontSize: "11px", fontStyle: "bold", color: "#2b190c"
+    L.add(this.add.text(LX + PW / 2, 38, "❖ SEÇÃO I: BIOMAS & MAPAS ❖", {
+      fontFamily: "Georgia, serif", fontSize: "10.5px", fontStyle: "bold", color: "#2b190c"
     }).setOrigin(0.5));
 
     __CODEX_BIOMES.forEach((b, i) => {
-      const y = 54 + i * 22;
+      const y = 56 + i * 22;
       const numStr = (i < 9 ? "0" + (i + 1) : (i + 1));
       const t = this.add.text(LX + 12, y, `${numStr}. ${b.name}`, {
         fontFamily: "Georgia, serif", fontSize: "9.5px", fontStyle: "bold", color: "#3a2614"
@@ -394,12 +397,12 @@ class __CodexScene extends j.Scene {
     });
 
     // Coluna Direita: Herois Convocados
-    R.add(this.add.text(RX + PW / 2, 36, "❖ SEÇÃO II: HERÓIS CONVOCADOS ❖", {
-      fontFamily: "Georgia, serif", fontSize: "11px", fontStyle: "bold", color: "#2b190c"
+    R.add(this.add.text(RX + PW / 2, 38, "❖ SEÇÃO II: HERÓIS CONVOCADOS ❖", {
+      fontFamily: "Georgia, serif", fontSize: "10.5px", fontStyle: "bold", color: "#2b190c"
     }).setOrigin(0.5));
 
     __CODEX_HEROES.forEach((h, i) => {
-      const y = 54 + i * 19;
+      const y = 56 + i * 19;
       const t = this.add.text(RX + 12, y, `• ${h.name} (${h.subtitle.split('&')[0].trim()})`, {
         fontFamily: "Georgia, serif", fontSize: "9px", fontStyle: "bold", color: "#243a50"
       }).setInteractive({ useHandCursor: true });
@@ -416,12 +419,12 @@ class __CodexScene extends j.Scene {
     });
 
     // Divisor para Lendas
-    R.add(this.add.text(RX + PW / 2, 230, "❖ SEÇÃO III: LENDAS DO ABISMO ❖", {
+    R.add(this.add.text(RX + PW / 2, 216, "❖ SEÇÃO III: LENDAS DO ABISMO ❖", {
       fontFamily: "Georgia, serif", fontSize: "10.5px", fontStyle: "bold", color: "#6a2030"
     }).setOrigin(0.5));
 
     __CODEX_LEGENDS.forEach((leg, i) => {
-      const y = 248 + i * 22;
+      const y = 236 + i * 22;
       const t = this.add.text(RX + 12, y, `• ${leg.name} • ${leg.role}`, {
         fontFamily: "Georgia, serif", fontSize: "9px", fontStyle: "bold", color: "#501824"
       }).setInteractive({ useHandCursor: true });
@@ -444,20 +447,19 @@ class __CodexScene extends j.Scene {
     const L = this.L, R = this.R;
 
     // === PÁGINA ESQUERDA: MAPA DO NÍVEL & TOPOGRAFIA OFICIAL ===
-    L.add(this.add.text(LX + 10, 30, b.name.toUpperCase(), {
-      fontFamily: "Georgia, serif", fontSize: "13.5px", fontStyle: "bold", color: "#2b190c"
+    L.add(this.add.text(LX + 10, 38, b.name.toUpperCase(), {
+      fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#2b190c"
     }));
 
-    L.add(this.add.text(LX + 10, 47, `Topografia • ${b.title}`, {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", color: "#7a5c36"
+    L.add(this.add.text(LX + 10, 53, `Topografia • ${b.title}`, {
+      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", color: "#7a5c36"
     }));
 
     // Canvas do Mapa Topográfico
+    const mapX = LX + 8, mapY = 66, mapW = PW - 16, mapH = 118;
     const mapG = this.add.graphics();
-    const mapX = LX + 8, mapY = 60, mapW = PW - 16, mapH = 138;
-
-    mapG.fillStyle(0x130e09, 0.95).fillRoundedRect(mapX, mapY, mapW, mapH, 6);
-    mapG.lineStyle(1.5, 0x8a6230, 0.85).strokeRoundedRect(mapX, mapY, mapW, mapH, 6);
+    mapG.fillStyle(0x130e09, 0.95).fillRoundedRect(mapX, mapY, mapW, mapH, 5);
+    mapG.lineStyle(1.5, 0x8a6230, 0.85).strokeRoundedRect(mapX, mapY, mapW, mapH, 5);
     L.add(mapG);
 
     // IMAGEM DO MAPA
@@ -468,8 +470,8 @@ class __CodexScene extends j.Scene {
       L.add(mapImg);
 
       const vig = this.add.graphics();
-      vig.lineStyle(3, 0x160f0a, 0.65).strokeRoundedRect(mapX + 2, mapY + 2, mapW - 4, mapH - 4, 5);
-      vig.lineStyle(1, 0xc9a24a, 0.75).strokeRoundedRect(mapX + 1, mapY + 1, mapW - 2, mapH - 2, 6);
+      vig.lineStyle(2, 0x160f0a, 0.65).strokeRoundedRect(mapX + 2, mapY + 2, mapW - 4, mapH - 4, 4);
+      vig.lineStyle(1, 0xc9a24a, 0.75).strokeRoundedRect(mapX + 1, mapY + 1, mapW - 2, mapH - 2, 5);
       L.add(vig);
     }
 
@@ -506,20 +508,20 @@ class __CodexScene extends j.Scene {
     L.add(this.add.text(mapX + 25, mapY + mapH - 11, "50 braças", { fontFamily: "'Courier New', monospace", fontSize: "6.5px", color: "#b89e6e" }).setOrigin(0.5, 1));
 
     // Cartouche do mapa
-    L.add(this.add.text(mapX + 10, mapY + 5, "VISTA TOPOGRÁFICA DO REINO", {
-      fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold", color: "#ecd79b"
+    L.add(this.add.text(mapX + 8, mapY + 5, "VISTA TOPOGRÁFICA DO REINO", {
+      fontFamily: "'Courier New', monospace", fontSize: "7px", fontStyle: "bold", color: "#ecd79b"
     }));
     L.add(fg);
 
-    // Painel de Parametros Geograficos com espacamento respirado
-    const legY = 204;
+    // Painel de Parâmetros Geográficos com layout vertical dinâmico (sem sobreposição)
+    const legY = 190;
     const hudBox = this.add.graphics();
-    hudBox.fillStyle(0x130e09, 0.08).fillRoundedRect(LX + 8, legY, PW - 16, 92, 4);
-    hudBox.lineStyle(1, 0x8a6230, 0.45).strokeRoundedRect(LX + 8, legY, PW - 16, 92, 4);
+    hudBox.fillStyle(0x130e09, 0.08).fillRoundedRect(LX + 8, legY, PW - 16, 110, 4);
+    hudBox.lineStyle(1, 0x8a6230, 0.45).strokeRoundedRect(LX + 8, legY, PW - 16, 110, 4);
     L.add(hudBox);
 
-    L.add(this.add.text(LX + 14, legY + 6, "DADOS CARTOGRÁFICOS & AMEAÇAS", {
-      fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#8a5822"
+    L.add(this.add.text(LX + 14, legY + 5, "DADOS CARTOGRÁFICOS & AMEAÇAS", {
+      fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#8a5822"
     }));
 
     const rows = [
@@ -529,78 +531,84 @@ class __CodexScene extends j.Scene {
       ["Ameaça Suprema:", b.boss, "#8a2418"]
     ];
 
-    rows.forEach(([k, v, c], i) => {
-      const yy = legY + 18 + i * 17.5;
-      L.add(this.add.text(LX + 14, yy, k, {
-        fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#7a6244"
-      }));
-      L.add(this.add.text(LX + 88, yy, v, {
-        fontFamily: "Georgia, serif", fontSize: "8.5px", color: c, wordWrap: { width: PW - 100 }
-      }));
+    let rowY = legY + 18;
+    rows.forEach(([k, v, c]) => {
+      const lbl = this.add.text(LX + 14, rowY, k, {
+        fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold", color: "#7a6244"
+      });
+      const val = this.add.text(LX + 92, rowY, v, {
+        fontFamily: "Georgia, serif", fontSize: "8px", color: c, wordWrap: { width: PW - 106 }, lineSpacing: 2
+      });
+      L.add([lbl, val]);
+      const rh = Math.max(lbl.height, val.height);
+      rowY += Math.max(16, rh + 4);
     });
 
-    // === PÁGINA DIREITA: CRÔNICA, SEGREDOS E DICAS (COM ESPAÇAMENTO RESPIRADO E ALTA LEGIBILIDADE) ===
-    let curY = 30;
+    // === PÁGINA DIREITA: CRÔNICA, SEGREDOS E DICAS (COM ESPAÇAMENTO RESPIRADO E ZERO SOBREPOSIÇÃO) ===
+    let curY = 38;
     R.add(this.add.text(RX + 10, curY, "CRÔNICA DA REGIÃO", {
-      fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#2b190c"
+      fontFamily: "Georgia, serif", fontSize: "12px", fontStyle: "bold", color: "#2b190c"
     }));
 
-    curY += 18;
+    curY += 16;
     const tChron = this.add.text(RX + 10, curY, b.chronicle, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#3a2818", wordWrap: { width: PW - 20 }
+      fontFamily: "Georgia, serif", fontSize: "8.5px", lineSpacing: 3.5, color: "#3a2818", wordWrap: { width: PW - 20 }
     });
     R.add(tChron);
 
-    curY += tChron.height + 12;
+    curY += tChron.height + 8;
     const tSecH = this.add.text(RX + 10, curY, "❖ ARQUITETURA & SEGREDOS OCULTOS", {
-      fontFamily: "'Courier New', monospace", fontSize: "9px", fontStyle: "bold", color: "#8a5822"
+      fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#8a5822"
     });
     R.add(tSecH);
 
-    curY += tSecH.height + 4;
+    curY += tSecH.height + 3;
     const tSec = this.add.text(RX + 10, curY, b.secrets, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#4a3520", wordWrap: { width: PW - 20 }
+      fontFamily: "Georgia, serif", fontSize: "8.5px", lineSpacing: 3.5, color: "#4a3520", wordWrap: { width: PW - 20 }
     });
     R.add(tSec);
 
-    curY += tSec.height + 10;
-    const tbBoxH = Math.min(312 - curY, 80);
+    curY += tSec.height + 8;
+    // O box de Conselho do Explorador respeita o limite inferior estrito de y = 302
+    // para nunca encostar no número da página em y = 319
+    const maxBoxBottom = 302;
+    const tbBoxH = Math.min(maxBoxBottom - curY, 92);
     if (tbBoxH > 35) {
       const tipBox = this.add.graphics();
       tipBox.fillStyle(0x130e09, 0.08).fillRoundedRect(RX + 8, curY, PW - 16, tbBoxH, 4);
       tipBox.lineStyle(1, 0x8a6230, 0.5).strokeRoundedRect(RX + 8, curY, PW - 16, tbBoxH, 4);
       R.add(tipBox);
 
-      R.add(this.add.text(RX + 14, curY + 6, "CONSELHO DO EXPLORADOR:", {
-        fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#8a5822"
+      R.add(this.add.text(RX + 14, curY + 5, "CONSELHO DO EXPLORADOR:", {
+        fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#8a5822"
       }));
 
-      R.add(this.add.text(RX + 14, curY + 20, b.tip, {
-        fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", lineSpacing: 4.5, color: "#3a2818", wordWrap: { width: PW - 28 }
+      R.add(this.add.text(RX + 14, curY + 18, b.tip, {
+        fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8px", lineSpacing: 3, color: "#3a2818", wordWrap: { width: PW - 28 }
       }));
     }
   }
 
-  // --- Seção II: Páginas de Heróis (Fonte Ampliada) ---
+  // --- Seção II: Páginas de Heróis ---
   renderHeroPage(idx, LX, RX, PW) {
     const h = __CODEX_HEROES[idx];
     if (!h) return;
     const L = this.L, R = this.R;
 
     // === PÁGINA ESQUERDA: ILUSTRAÇÃO DO HERÓI & DADOS ===
-    L.add(this.add.text(LX + 10, 30, h.name.toUpperCase(), {
-      fontFamily: "Georgia, serif", fontSize: "15px", fontStyle: "bold", color: "#1c2e42"
+    L.add(this.add.text(LX + 10, 38, h.name.toUpperCase(), {
+      fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#1c2e42"
     }));
 
-    L.add(this.add.text(LX + 10, 47, h.subtitle, {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9.5px", color: "#6a523a"
+    L.add(this.add.text(LX + 10, 53, h.subtitle, {
+      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", color: "#6a523a"
     }));
 
     // Moldura do Retrato / Sprite
     const fBox = this.add.graphics();
-    const fx = LX + 10, fy = 64, fw = PW - 20, fh = 108;
-    fBox.fillStyle(0x0e141c, 0.95).fillRoundedRect(fx, fy, fw, fh, 6);
-    fBox.lineStyle(1.5, 0x4a78a0, 0.75).strokeRoundedRect(fx, fy, fw, fh, 6);
+    const fx = LX + 8, fy = 66, fw = PW - 16, fh = 100;
+    fBox.fillStyle(0x0e141c, 0.95).fillRoundedRect(fx, fy, fw, fh, 5);
+    fBox.lineStyle(1.5, 0x4a78a0, 0.75).strokeRoundedRect(fx, fy, fw, fh, 5);
     L.add(fBox);
 
     // Sprite do Campeao animado oficial
@@ -608,19 +616,24 @@ class __CodexScene extends j.Scene {
     if (this.textures.exists(sKey)) {
       const layout = this.cache?.json?.get?.(`${sKey}-layout`);
       const footY = (layout?.footY ?? 119) / 128;
-      const sp = this.add.sprite(fx + fw / 2, fy + fh - 12, sKey, 0)
-        .setScale(1.5 * (layout?.hires ?? 1))
+      const sp = this.add.sprite(fx + fw / 2, fy + fh - 10, sKey, 0)
+        .setScale(1.45 * (layout?.hires ?? 1))
         .setOrigin(0.5, footY);
       this.anims.exists(`${sKey}-idle`) && sp.play(`${sKey}-idle`);
       L.add(sp);
     } else {
       L.add(this.add.text(fx + fw / 2, fy + fh / 2, `[ ${h.name} ]`, {
-        fontFamily: "Georgia, serif", fontSize: "15px", fontStyle: "bold", color: "#a8c0d8"
+        fontFamily: "Georgia, serif", fontSize: "14px", fontStyle: "bold", color: "#a8c0d8"
       }).setOrigin(0.5));
     }
 
-    // Informacoes da Origem Cosmica com espacamento limpo
-    const infoY = 178;
+    // Painel de Origem Cósmica
+    const infoBox = this.add.graphics();
+    const infoY = 172, infoH = 128;
+    infoBox.fillStyle(0x0e141c, 0.06).fillRoundedRect(LX + 8, infoY, PW - 16, infoH, 4);
+    infoBox.lineStyle(1, 0x4a78a0, 0.4).strokeRoundedRect(LX + 8, infoY, PW - 16, infoH, 4);
+    L.add(infoBox);
+
     const items = [
       ["Era de Origem:", h.era],
       ["Plano / Dimensão:", h.dimension],
@@ -628,83 +641,88 @@ class __CodexScene extends j.Scene {
       ["Arma & Estilo:", h.weapon]
     ];
 
-    items.forEach(([lbl, val], i) => {
-      const yy = infoY + i * 27;
-      L.add(this.add.text(LX + 10, yy, lbl, {
-        fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#5a7288"
-      }));
-      L.add(this.add.text(LX + 10, yy + 11, val, {
-        fontFamily: "Georgia, serif", fontSize: "9px", color: "#243648", wordWrap: { width: PW - 20 }
-      }));
+    let itemY = infoY + 6;
+    items.forEach(([lbl, val]) => {
+      const lTxt = this.add.text(LX + 14, itemY, lbl, {
+        fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold", color: "#5a7288"
+      });
+      const vTxt = this.add.text(LX + 14, itemY + 10, val, {
+        fontFamily: "Georgia, serif", fontSize: "8px", color: "#243648", wordWrap: { width: PW - 28 }, lineSpacing: 2
+      });
+      L.add([lTxt, vTxt]);
+      itemY += 10 + vTxt.height + 4;
     });
 
-    // === PÁGINA DIREITA: BIOGRAFIA & HABILIDADES (FLUXO DINÂMICO E ALTA LEGIBILIDADE) ===
-    let curY = 30;
+    // === PÁGINA DIREITA: BIOGRAFIA & HABILIDADES ===
+    let curY = 38;
     R.add(this.add.text(RX + 10, curY, "BIOGRAFIA & CONVOCAÇÃO", {
-      fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#1c2e42"
+      fontFamily: "Georgia, serif", fontSize: "12px", fontStyle: "bold", color: "#1c2e42"
     }));
 
-    curY += 18;
+    curY += 16;
     const tLore = this.add.text(RX + 10, curY, h.lore, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#243648", wordWrap: { width: PW - 20 }
+      fontFamily: "Georgia, serif", fontSize: "8.5px", lineSpacing: 3.5, color: "#243648", wordWrap: { width: PW - 20 }
     });
     R.add(tLore);
 
-    curY += tLore.height + 10;
+    curY += tLore.height + 8;
     const tMotH = this.add.text(RX + 10, curY, "MOTIVAÇÃO NA CAMPANHA:", {
-      fontFamily: "'Courier New', monospace", fontSize: "9px", fontStyle: "bold", color: "#6a4a20"
+      fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#6a4a20"
     });
     R.add(tMotH);
 
-    curY += tMotH.height + 4;
+    curY += tMotH.height + 3;
     const tMot = this.add.text(RX + 10, curY, h.motivation, {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", lineSpacing: 4.5, color: "#3a2818", wordWrap: { width: PW - 20 }
+      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", lineSpacing: 3, color: "#3a2818", wordWrap: { width: PW - 20 }
     });
     R.add(tMot);
 
-    curY += tMot.height + 10;
-    const skBoxH = Math.min(312 - curY, 114);
+    curY += tMot.height + 8;
+    const maxBoxBottom = 302;
+    const skBoxH = Math.min(maxBoxBottom - curY, 108);
     if (skBoxH > 40) {
       const skBox = this.add.graphics();
       skBox.fillStyle(0x0e141c, 0.08).fillRoundedRect(RX + 8, curY, PW - 16, skBoxH, 4);
       skBox.lineStyle(1, 0x4a78a0, 0.5).strokeRoundedRect(RX + 8, curY, PW - 16, skBoxH, 4);
       R.add(skBox);
 
-      R.add(this.add.text(RX + 14, curY + 6, "ARSENAL & HABILIDADES:", {
-        fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#204a70"
+      R.add(this.add.text(RX + 14, curY + 5, "ARSENAL & HABILIDADES:", {
+        fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#204a70"
       }));
 
-      h.abilities.forEach((ab, i) => {
-        const abY = curY + 20 + i * 29;
-        if (abY + 20 <= curY + skBoxH) {
-          R.add(this.add.text(RX + 14, abY, `• ${ab}`, {
-            fontFamily: "Georgia, serif", fontSize: "9px", lineSpacing: 3.5, color: "#203040", wordWrap: { width: PW - 28 }
-          }));
+      let abY = curY + 18;
+      h.abilities.forEach((ab) => {
+        if (abY + 14 <= curY + skBoxH) {
+          const abTxt = this.add.text(RX + 14, abY, `• ${ab}`, {
+            fontFamily: "Georgia, serif", fontSize: "8px", lineSpacing: 2.5, color: "#203040", wordWrap: { width: PW - 28 }
+          });
+          R.add(abTxt);
+          abY += abTxt.height + 3;
         }
       });
     }
   }
 
-  // --- Seção III: Lendas das Profundezas (Rei e Guardiã - Fonte Ampliada) ---
+  // --- Seção III: Lendas das Profundezas (Rei e Guardiã) ---
   renderLegendPage(idx, LX, RX, PW) {
     const leg = __CODEX_LEGENDS[idx];
     if (!leg) return;
     const L = this.L, R = this.R;
 
     // === PÁGINA ESQUERDA: RETRATO DA LENDA ===
-    L.add(this.add.text(LX + 10, 30, leg.name.toUpperCase(), {
-      fontFamily: "Georgia, serif", fontSize: "15px", fontStyle: "bold", color: "#4a1220"
+    L.add(this.add.text(LX + 10, 38, leg.name.toUpperCase(), {
+      fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#4a1220"
     }));
 
-    L.add(this.add.text(LX + 10, 47, leg.title, {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9.5px", color: "#7a4820"
+    L.add(this.add.text(LX + 10, 53, leg.title, {
+      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", color: "#7a4820"
     }));
 
     // Retrato da Imagem de Cinematica
     const pBox = this.add.graphics();
-    const px = LX + 10, py = 64, pw = PW - 20, ph = 135;
-    pBox.fillStyle(0x130a0e, 0.95).fillRoundedRect(px, py, pw, ph, 6);
-    pBox.lineStyle(1.5, 0xa04058, 0.8).strokeRoundedRect(px, py, pw, ph, 6);
+    const px = LX + 8, py = 66, pw = PW - 16, ph = 126;
+    pBox.fillStyle(0x130a0e, 0.95).fillRoundedRect(px, py, pw, ph, 5);
+    pBox.lineStyle(1.5, 0xa04058, 0.8).strokeRoundedRect(px, py, pw, ph, 5);
     L.add(pBox);
 
     const imgKey = leg.image;
@@ -719,49 +737,60 @@ class __CodexScene extends j.Scene {
       }).setOrigin(0.5));
     }
 
-    // Citacao Solene
-    L.add(this.add.text(LX + 10, 212, leg.quote, {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9.5px", lineSpacing: 4.5, color: "#6a2034", wordWrap: { width: PW - 20 }
+    // Citação Solene
+    const qBox = this.add.graphics();
+    const qY = 198, qH = 102;
+    qBox.fillStyle(0x280e14, 0.06).fillRoundedRect(LX + 8, qY, PW - 16, qH, 4);
+    qBox.lineStyle(1, 0x8a2840, 0.4).strokeRoundedRect(LX + 8, qY, PW - 16, qH, 4);
+    L.add(qBox);
+
+    L.add(this.add.text(LX + 14, qY + 6, "REGISTRO DE VOZ & JURAMENTO:", {
+      fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold", color: "#8a2840"
     }));
 
-    // === PÁGINA DIREITA: CRÔNICA HISTÓRICA & MISTÉRIO (COM ESPAÇAMENTO RESPIRADO) ===
-    let curY = 30;
+    L.add(this.add.text(LX + 14, qY + 20, leg.quote, {
+      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", lineSpacing: 3.5, color: "#6a2034", wordWrap: { width: PW - 28 }
+    }));
+
+    // === PÁGINA DIREITA: CRÔNICA HISTÓRICA & MISTÉRIO ===
+    let curY = 38;
     R.add(this.add.text(RX + 10, curY, "A HISTÓRIA ANCESTRAL", {
-      fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#4a1220"
+      fontFamily: "Georgia, serif", fontSize: "12px", fontStyle: "bold", color: "#4a1220"
     }));
 
-    curY += 18;
+    curY += 16;
     const tChron = this.add.text(RX + 10, curY, leg.chronicle, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#3a1820", wordWrap: { width: PW - 20 }
+      fontFamily: "Georgia, serif", fontSize: "8.5px", lineSpacing: 3.5, color: "#3a1820", wordWrap: { width: PW - 20 }
     });
     R.add(tChron);
 
-    curY += tChron.height + 12;
+    curY += tChron.height + 8;
     const tEnigH = this.add.text(RX + 10, curY, "❖ O ENIGMA DOS PORTAIS", {
-      fontFamily: "'Courier New', monospace", fontSize: "9px", fontStyle: "bold", color: "#8a2840"
+      fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#8a2840"
     });
     R.add(tEnigH);
 
-    curY += tEnigH.height + 4;
+    curY += tEnigH.height + 3;
     const tEnig = this.add.text(RX + 10, curY, leg.mystery, {
-      fontFamily: "Georgia, serif", fontSize: "9.5px", lineSpacing: 5, color: "#3a1820", wordWrap: { width: PW - 20 }
+      fontFamily: "Georgia, serif", fontSize: "8.5px", lineSpacing: 3.5, color: "#3a1820", wordWrap: { width: PW - 20 }
     });
     R.add(tEnig);
 
-    curY += tEnig.height + 10;
-    const sgBoxH = Math.min(312 - curY, 66);
+    curY += tEnig.height + 8;
+    const maxBoxBottom = 302;
+    const sgBoxH = Math.min(maxBoxBottom - curY, 78);
     if (sgBoxH > 35) {
       const sG = this.add.graphics();
       sG.fillStyle(0x280e14, 0.08).fillRoundedRect(RX + 8, curY, PW - 16, sgBoxH, 4);
       sG.lineStyle(1, 0x8a2840, 0.45).strokeRoundedRect(RX + 8, curY, PW - 16, sgBoxH, 4);
       R.add(sG);
 
-      R.add(this.add.text(RX + 14, curY + 6, "REGISTRO SELADO PELAS SENTINELAS", {
-        fontFamily: "'Courier New', monospace", fontSize: "8.5px", fontStyle: "bold", color: "#8a2840"
+      R.add(this.add.text(RX + 14, curY + 5, "REGISTRO SELADO PELAS SENTINELAS", {
+        fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: "#8a2840"
       }));
 
-      R.add(this.add.text(RX + 14, curY + 20, "As revelações finais acerca da natureza do Abismo aguardam aqueles que alcançarem a Câmara do Trono e desvendarem os últimos selos.", {
-        fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", lineSpacing: 4, color: "#501824", wordWrap: { width: PW - 28 }
+      R.add(this.add.text(RX + 14, curY + 18, "As revelações finais acerca da natureza do Abismo aguardam aqueles que alcançarem a Câmara do Trono e desvendarem os últimos selos.", {
+        fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8px", lineSpacing: 3, color: "#501824", wordWrap: { width: PW - 28 }
       }));
     }
   }

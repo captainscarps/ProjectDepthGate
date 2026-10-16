@@ -51,3 +51,8 @@ def patch_file(rel_path):
     print(f"[OK] Replaced __CodexScene with standardized implementation in {rel_path}")
     return True
 
+if __name__ == "__main__":
+    patch_file(r"assets\index-D6qIWtA7-p209.js")
+    if os.path.exists(os.path.join(ROOT, r"Projeto atualizado\assets\index-D6qIWtA7-p209.js")):
+        patch_file(r"Projeto atualizado\assets\index-D6qIWtA7-p209.js")
+
