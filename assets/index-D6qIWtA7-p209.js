@@ -4782,7 +4782,7 @@ class __CollectiblesScene extends j.Scene {
   init(d) {
     this.from = d?.from ?? null;
     this.__closing = !1;
-    this.idx = 0;
+    this.selected = 0;
   }
   create() {
     le(this);
@@ -4792,61 +4792,57 @@ class __CollectiblesScene extends j.Scene {
     this.cx = Math.round(_ / 2);
     this.cy = Math.round(st / 2);
 
-    // Fundo semitransparente
-    this.add.rectangle(this.cx, this.cy, _ * 1.5, st * 1.5, 0x070504, 0.88).setInteractive();
+    // Fundo escuro com vinheta
+    this.add.rectangle(this.cx, this.cy, _ * 1.5, st * 1.5, 0x050403, 0.88).setInteractive();
 
-    // Painel principal
+    // Painel Ornato no padrão oficial da UI
     this.panelG = this.add.graphics();
-    this.panelG.fillStyle(0x1a130e, 0.98);
-    this.panelG.fillRoundedRect(this.cx - 260, this.cy - 165, 520, 330, 8);
-    this.panelG.lineStyle(2, 0xc9a24a, 0.85);
-    this.panelG.strokeRoundedRect(this.cx - 260, this.cy - 165, 520, 330, 8);
-    this.panelG.lineStyle(1, 0x5a4228, 0.6);
-    this.panelG.strokeRoundedRect(this.cx - 256, this.cy - 161, 512, 322, 6);
+    const pw = 580, ph = 320, px = this.cx - pw / 2, py = this.cy - ph / 2;
+    if (typeof __ornatePanel === "function") {
+      __ornatePanel(this.panelG, px, py, pw, ph);
+    } else {
+      this.panelG.fillStyle(0x130e0a, 0.98).fillRoundedRect(px, py, pw, ph, 12);
+      this.panelG.lineStyle(2, 0xc9a24a, 0.85).strokeRoundedRect(px, py, pw, ph, 12);
+    }
 
-    // Cabeçalho
-    this.add.text(this.cx, this.cy - 146, "✦ RELÍQUIAS DA CAMPANHA ✦", {
-      fontFamily: "Georgia, serif", fontSize: "15px", fontStyle: "bold", color: "#ffd24a"
+    // Cabeçalho da Janela
+    this.add.text(this.cx, py + 22, "✦ RELÍQUIAS DA CAMPANHA ✦", {
+      fontFamily: "Georgia, serif", fontSize: "14px", fontStyle: "bold", color: "#ffd24a"
     }).setOrigin(0.5);
 
-    this.add.text(this.cx, this.cy - 128, "Convergência das Eras · Heróis convocados de realidades divergentes para selar o Abismo", {
-      fontFamily: "'Courier New', monospace", fontSize: "7px", color: "#a89468"
-    }).setOrigin(0.5);
-
-    // Medidor de Progresso
     const pct = Math.round((this.count / this.total) * 100);
-    this.progText = this.add.text(this.cx, this.cy - 110, `Colecionáveis Resgatados: ${this.count} / ${this.total} (${pct}%)`, {
-      fontFamily: "'Courier New', monospace", fontSize: "9px", fontStyle: "bold", color: "#8ae0b0"
+    this.add.text(this.cx, py + 38, `Colecionáveis Resgatados: ${this.count} / ${this.total} (${pct}%) · Toque em um item para examinar`, {
+      fontFamily: "'Courier New', monospace", fontSize: "7.5px", color: "#a89468"
     }).setOrigin(0.5);
 
-    this.cardContainer = this.add.container(0, 0);
-    this.renderCard();
+    // Divisor dourado sutil
+    this.panelG.lineStyle(1, 0xc9a24a, 0.35).lineBetween(px + 20, py + 48, px + pw - 20, py + 48);
 
-    // Botões de navegação
-    const prevB = this.add.text(this.cx - 210, this.cy + 138, "◀ ANTERIOR", {
+    // Container do Grid (Lado Esquerdo)
+    this.gridContainer = this.add.container(0, 0);
+    this.slotCards = [];
+    this.buildGrid(px + 22, py + 58);
+
+    // Container de Detalhes (Lado Direito)
+    this.detailsX = px + 288;
+    this.detailsY = py + 58;
+    this.detailsW = pw - 310;
+    this.detailsH = ph - 105;
+    this.detailsG = this.add.graphics();
+    this.detailsContainer = this.add.container(0, 0);
+    this.renderDetails();
+
+    // Rodapé / Botão Voltar
+    const botY = py + ph - 24;
+    const closeB = this.add.text(this.cx, botY, "[ ◀ VOLTAR ]", {
       fontFamily: "'Courier New', monospace", fontSize: "10px", fontStyle: "bold", color: "#e8d8b8",
-      backgroundColor: "#2b1810", padding: { x: 12, y: 7 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    prevB.on("pointerdown", () => this.prev());
-    typeof Gt === "function" && Gt(prevB, 18, 14);
-
-    const nextB = this.add.text(this.cx + 210, this.cy + 138, "PRÓXIMO ▶", {
-      fontFamily: "'Courier New', monospace", fontSize: "10px", fontStyle: "bold", color: "#e8d8b8",
-      backgroundColor: "#2b1810", padding: { x: 12, y: 7 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    nextB.on("pointerdown", () => this.next());
-    typeof Gt === "function" && Gt(nextB, 18, 14);
-
-    // Botão Voltar / Fechar
-    const closeB = this.add.text(this.cx, this.cy + 138, "[ ✕ FECHAR ]", {
-      fontFamily: "'Courier New', monospace", fontSize: "10px", fontStyle: "bold", color: "#ff8877",
-      backgroundColor: "#3a1510", padding: { x: 14, y: 7 }
+      backgroundColor: "#2b1810", padding: { x: 16, y: 7 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeB.on("pointerdown", () => this.close());
     typeof Gt === "function" && Gt(closeB, 20, 16);
 
     // Botão X no topo direito
-    const xTop = this.add.text(this.cx + 242, this.cy - 148, "✕", {
+    const xTop = this.add.text(px + pw - 24, py + 20, "✕", {
       fontFamily: "Arial, sans-serif", fontSize: "14px", fontStyle: "bold", color: "#d8cdb4",
       backgroundColor: "#3a1810", padding: { x: 10, y: 6 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -4856,100 +4852,195 @@ class __CollectiblesScene extends j.Scene {
     // Teclas de atalho
     this.__kd = ev => {
       if (!this.sys.isActive()) return;
-      if (ev.key === "ArrowLeft") this.prev();
-      else if (ev.key === "ArrowRight") this.next();
+      if (ev.key === "ArrowLeft") this.select((this.selected - 1 + this.total) % this.total);
+      else if (ev.key === "ArrowRight") this.select((this.selected + 1) % this.total);
+      else if (ev.key === "ArrowUp") this.select((this.selected - 4 + this.total) % this.total);
+      else if (ev.key === "ArrowDown") this.select((this.selected + 4) % this.total);
       else if (ev.key === "Escape" || ev.key === "Enter") this.close();
     };
     window.addEventListener("keydown", this.__kd);
   }
 
-  prev() {
-    this.idx = (this.idx - 1 + this.total) % this.total;
-    this.renderCard();
+  buildGrid(gx, gy) {
+    this.gridContainer.removeAll(true);
+    this.slotCards = [];
+    const cols = 4;
+    const slotW = 58, slotH = 62, gapX = 8, gapY = 8;
+
+    __CAMPAIGN_RELICS.forEach((relic, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const sx = gx + col * (slotW + gapX);
+      const sy = gy + row * (slotH + gapY);
+      const isCollected = !!this.collected[relic.id];
+      const isSel = this.selected === i;
+
+      // Gráficos do Slot
+      const g = this.add.graphics();
+      this.drawSlotBox(g, sx, sy, slotW, slotH, isCollected, isSel);
+      this.gridContainer.add(g);
+
+      // Número do Slot
+      const numTxt = this.add.text(sx + 5, sy + 4, `#${i < 9 ? "0" + (i + 1) : (i + 1)}`, {
+        fontFamily: "'Courier New', monospace", fontSize: "7px", color: isCollected ? "#8ae0b0" : "#5a4530"
+      });
+      this.gridContainer.add(numTxt);
+
+      // Ícone / Silhueta do Colecionável
+      if (isCollected) {
+        const colInt = parseInt(relic.color.replace("#", "0x")) || 0xffd24a;
+        const ico = this.add.sprite(sx + slotW / 2, sy + slotH / 2 + 2, relic.icon || "icon-fragment")
+          .setScale(1.25)
+          .setTint(colInt);
+        this.gridContainer.add(ico);
+
+        // Selo de coletado no canto
+        const chk = this.add.text(sx + slotW - 6, sy + 3, "✔", {
+          fontFamily: "Arial, sans-serif", fontSize: "7px", color: "#8ae0b0"
+        }).setOrigin(1, 0);
+        this.gridContainer.add(chk);
+      } else {
+        // SILHUETA MISTERIOSA: Sprite tingido de preto/sombra sem revelar o item
+        const sil = this.add.sprite(sx + slotW / 2, sy + slotH / 2 + 2, relic.icon || "icon-fragment")
+          .setScale(1.25)
+          .setTint(0x1a1510)
+          .setAlpha(0.65);
+        this.gridContainer.add(sil);
+
+        const qMark = this.add.text(sx + slotW / 2, sy + slotH / 2 + 2, "?", {
+          fontFamily: "Georgia, serif", fontSize: "16px", fontStyle: "bold", color: "#4a3520"
+        }).setOrigin(0.5);
+        this.gridContainer.add(qMark);
+      }
+
+      // Zona Interativa (Click/Touch)
+      const zone = this.add.zone(sx, sy, slotW, slotH).setOrigin(0).setInteractive({ useHandCursor: true });
+      zone.on("pointerdown", () => this.select(i));
+      typeof Gt === "function" && Gt(zone, 18, 16);
+      this.gridContainer.add(zone);
+
+      this.slotCards.push({ g, sx, sy, slotW, slotH, isCollected, i });
+    });
   }
 
-  next() {
-    this.idx = (this.idx + 1) % this.total;
-    this.renderCard();
+  drawSlotBox(g, x, y, w, h, isCollected, isSel) {
+    g.clear();
+    // Fundo do slot
+    g.fillStyle(isSel ? 0x22180e : (isCollected ? 0x140e08 : 0x0a0806), 0.95);
+    g.fillRoundedRect(x, y, w, h, 6);
+
+    // Bordas
+    if (isSel) {
+      g.lineStyle(2, 0xffd24a, 1).strokeRoundedRect(x, y, w, h, 6);
+      g.lineStyle(1, 0xffea88, 0.4).strokeRoundedRect(x - 2, y - 2, w + 4, h + 4, 8);
+    } else if (isCollected) {
+      g.lineStyle(1.5, 0xc9a24a, 0.75).strokeRoundedRect(x, y, w, h, 6);
+    } else {
+      g.lineStyle(1, 0x3a2c1e, 0.6).strokeRoundedRect(x, y, w, h, 6);
+    }
   }
 
-  renderCard() {
-    this.cardContainer.removeAll(true);
-    const relic = __CAMPAIGN_RELICS[this.idx];
+  select(i) {
+    if (this.selected === i) return;
+    const old = this.selected;
+    this.selected = i;
+
+    // Atualizar caixas de seleção no grid
+    if (this.slotCards[old]) {
+      const c = this.slotCards[old];
+      this.drawSlotBox(c.g, c.sx, c.sy, c.slotW, c.slotH, c.isCollected, !1);
+    }
+    if (this.slotCards[i]) {
+      const c = this.slotCards[i];
+      this.drawSlotBox(c.g, c.sx, c.sy, c.slotW, c.slotH, c.isCollected, !0);
+    }
+
+    this.renderDetails();
+  }
+
+  renderDetails() {
+    this.detailsG.clear();
+    this.detailsContainer.removeAll(true);
+
+    const relic = __CAMPAIGN_RELICS[this.selected];
     const isCollected = !!this.collected[relic.id];
+    const dx = this.detailsX, dy = this.detailsY, dw = this.detailsW, dh = this.detailsH;
 
-    // Moldura do Cartão
-    const g = this.add.graphics();
-    g.fillStyle(0x110c08, 0.95);
-    g.fillRoundedRect(this.cx - 240, this.cy - 92, 480, 208, 6);
-    g.lineStyle(1.5, isCollected ? 0xc9a24a : 0x5a4228, 0.7);
-    g.strokeRoundedRect(this.cx - 240, this.cy - 92, 480, 208, 6);
-    this.cardContainer.add(g);
+    // Painel de Detalhes no padrão __softPanel
+    if (typeof __softPanel === "function") {
+      __softPanel(this.detailsG, dx, dy, dw, dh);
+    } else {
+      this.detailsG.fillStyle(0x0e0a07, 0.95).fillRoundedRect(dx, dy, dw, dh, 6);
+      this.detailsG.lineStyle(1, 0x5a4228, 0.6).strokeRoundedRect(dx, dy, dw, dh, 6);
+    }
 
-    // Lado Esquerdo: Ícone e Status
+    // Moldura do Ícone
     const icoBox = this.add.graphics();
-    icoBox.fillStyle(0x0a0705, 0.9);
-    icoBox.fillRoundedRect(this.cx - 225, this.cy - 78, 100, 110, 4);
-    icoBox.lineStyle(1, isCollected ? 0xc9a24a : 0x443020, 0.8);
-    icoBox.strokeRoundedRect(this.cx - 225, this.cy - 78, 100, 110, 4);
-    this.cardContainer.add(icoBox);
+    icoBox.fillStyle(0x0a0705, 0.95).fillRoundedRect(dx + 12, dy + 12, 60, 60, 4);
+    icoBox.lineStyle(1, isCollected ? 0xc9a24a : 0x3a281a, 0.8).strokeRoundedRect(dx + 12, dy + 12, 60, 60, 4);
+    this.detailsContainer.add(icoBox);
 
     if (isCollected) {
       const colInt = parseInt(relic.color.replace("#", "0x")) || 0xffd24a;
-      const ico = this.add.sprite(this.cx - 175, this.cy - 30, relic.icon || "icon-fragment").setScale(2.0).setTint(colInt);
-      this.cardContainer.add(ico);
+      const ico = this.add.sprite(dx + 42, dy + 42, relic.icon || "icon-fragment").setScale(1.8).setTint(colInt);
+      this.detailsContainer.add(ico);
     } else {
-      const lockIco = this.add.text(this.cx - 175, this.cy - 30, "?", {
-        fontFamily: "Georgia, serif", fontSize: "36px", fontStyle: "bold", color: "#5a4530"
+      // Silhueta no painel de detalhes
+      const sil = this.add.sprite(dx + 42, dy + 42, relic.icon || "icon-fragment").setScale(1.8).setTint(0x1a1510).setAlpha(0.7);
+      this.detailsContainer.add(sil);
+      const q = this.add.text(dx + 42, dy + 42, "?", {
+        fontFamily: "Georgia, serif", fontSize: "24px", fontStyle: "bold", color: "#4a3520"
       }).setOrigin(0.5);
-      this.cardContainer.add(lockIco);
+      this.detailsContainer.add(q);
     }
 
-    const stTag = this.add.text(this.cx - 175, this.cy + 16, isCollected ? "✔ COLETADO" : "✖ NÃO DESCOBERTO", {
-      fontFamily: "'Courier New', monospace", fontSize: "7px", fontStyle: "bold",
-      color: isCollected ? "#8ae0b0" : "#d9534f"
-    }).setOrigin(0.5);
-    this.cardContainer.add(stTag);
-
-    // Paginação numérica
-    const numTag = this.add.text(this.cx, this.cy + 104, `[ Relíquia ${this.idx + 1} de ${this.total} ]`, {
-      fontFamily: "'Courier New', monospace", fontSize: "8px", color: "#a89468"
-    }).setOrigin(0.5);
-    this.cardContainer.add(numTag);
-
-    // Lado Direito: Nome, Localização, Descrição e Curiosidade
-    const nameText = this.add.text(this.cx - 110, this.cy - 78, isCollected ? relic.name : "??? (Relíquia Oculta)", {
-      fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: isCollected ? "#ffd24a" : "#7d6648"
+    // Título e Status (SEM NENHUMA LOCALIZAÇÃO)
+    const titleTxt = this.add.text(dx + 82, dy + 14, isCollected ? relic.name : "??? (Relíquia Oculta)", {
+      fontFamily: "Georgia, serif", fontSize: "12px", fontStyle: "bold",
+      color: isCollected ? "#ffd24a" : "#7d6648"
     });
-    this.cardContainer.add(nameText);
+    this.detailsContainer.add(titleTxt);
 
-    const mapTag = this.add.text(this.cx - 110, this.cy - 58, `Localização: ${relic.mapName}`, {
-      fontFamily: "'Courier New', monospace", fontSize: "8px", fontStyle: "bold", color: isCollected ? "#7fe8e0" : "#d8cdb4"
+    const stTag = this.add.text(dx + 82, dy + 32, isCollected ? "✔ COLECIONÁVEL RESGATADO" : "✖ NÃO LOCALIZADO", {
+      fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold",
+      color: isCollected ? "#8ae0b0" : "#a85040"
     });
-    this.cardContainer.add(mapTag);
+    this.detailsContainer.add(stTag);
 
-    const descText = this.add.text(this.cx - 110, this.cy - 44, isCollected ? relic.desc : "Esta relíquia ancestral ainda não foi encontrada nas profundezas da campanha.", {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", color: "#d8cdb4", wordWrap: { width: 330 }
+    const numTxt = this.add.text(dx + 82, dy + 46, `Registro Arcano #${this.selected < 9 ? "0" + (this.selected + 1) : (this.selected + 1)} de ${this.total}`, {
+      fontFamily: "'Courier New', monospace", fontSize: "7px", color: "#8a7860"
     });
-    this.cardContainer.add(descText);
+    this.detailsContainer.add(numTxt);
 
-    // Caixa de Curiosidade / Pista
+    // Divisor
+    this.detailsG.lineStyle(1, 0x4a3822, 0.4).lineBetween(dx + 12, dy + 80, dx + dw - 12, dy + 80);
+
+    // Descrição
+    const desc = isCollected ? relic.desc : "Uma relíquia ancestral esquecida nas profundezas. Seu paradeiro permanece um enigma até que você a descubra em suas jornadas.";
+    const descTxt = this.add.text(dx + 12, dy + 88, desc, {
+      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8px", color: "#d8cdb4", wordWrap: { width: dw - 24 }
+    });
+    this.detailsContainer.add(descTxt);
+
+    // Caixa de Curiosidade da Campanha
     const curBox = this.add.graphics();
-    curBox.fillStyle(0x0e0906, 0.95);
-    curBox.fillRoundedRect(this.cx - 110, this.cy - 12, 335, 96, 4);
-    curBox.lineStyle(1, isCollected ? 0xc9a24a : 0x5a4228, 0.5);
-    curBox.strokeRoundedRect(this.cx - 110, this.cy - 12, 335, 96, 4);
-    this.cardContainer.add(curBox);
+    const cbX = dx + 10, cbY = dy + 124, cbW = dw - 20, cbH = dh - 132;
+    curBox.fillStyle(0x090604, 0.95).fillRoundedRect(cbX, cbY, cbW, cbH, 4);
+    curBox.lineStyle(1, isCollected ? 0xc9a24a : 0x3a281a, 0.5).strokeRoundedRect(cbX, cbY, cbW, cbH, 4);
+    this.detailsContainer.add(curBox);
 
-    const curTitle = this.add.text(this.cx - 102, this.cy - 6, isCollected ? "✦ CURIOSIDADE DA CAMPANHA ✦" : "✦ PISTA DE EXPEDIÇÃO ✦", {
-      fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold", color: isCollected ? "#ffd24a" : "#e8b070"
+    const curTitle = this.add.text(cbX + 8, cbY + 6, isCollected ? "✦ CURIOSIDADE DA CAMPANHA ✦" : "✦ SEGREDO OCULTO ✦", {
+      fontFamily: "'Courier New', monospace", fontSize: "7px", fontStyle: "bold", color: isCollected ? "#ffd24a" : "#7d6648"
     });
-    this.cardContainer.add(curTitle);
+    this.detailsContainer.add(curTitle);
 
-    const curBody = this.add.text(this.cx - 102, this.cy + 9, isCollected ? relic.curiosity : `Explore cuidadosamente as salas, câmaras secretas e altares em ${relic.mapName} para resgatar este colecionável ancestral.`, {
-      fontFamily: "Georgia, serif", fontSize: "8px", lineSpacing: 2.5, color: isCollected ? "#f4ebd0" : "#948a76", wordWrap: { width: 320 }
+    const curText = isCollected
+      ? relic.curiosity
+      : "As memórias, crônicas e segredos deste artefato permanecem selados pelas brumas do tempo. Explore os caminhos e salas da campanha para encontrá-lo e revelar sua história.";
+    const curBody = this.add.text(cbX + 8, cbY + 19, curText, {
+      fontFamily: "Georgia, serif", fontSize: "7.5px", lineSpacing: 2, color: isCollected ? "#f4ebd0" : "#7a6e5a", wordWrap: { width: cbW - 16 }
     });
-    this.cardContainer.add(curBody);
+    this.detailsContainer.add(curBody);
   }
 
   close() {
@@ -4960,7 +5051,6 @@ class __CollectiblesScene extends j.Scene {
     if (this.from) this.scene.resume(this.from);
   }
 }
-
 class __BookScene extends j.Scene {
   constructor() { super("BestiaryBook") }
   init(d) { this.from = d?.from ?? null; this.__closing = !1; this.busy = !1 }
