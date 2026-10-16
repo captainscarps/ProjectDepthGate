@@ -6332,27 +6332,27 @@ class __CodexScene extends j.Scene {
       fontFamily: "Georgia, serif", fontSize: "13px", fontStyle: "bold", color: "#2b190c"
     }));
 
-    L.add(this.add.text(LX + 10, 48, `Mapa do Nível • ${b.title}`, {
+    L.add(this.add.text(LX + 10, 48, `Topografia • ${b.title}`, {
       fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", color: "#7a5c36"
     }));
 
     // Canvas do Mapa Topográfico
     const mapG = this.add.graphics();
-    const mapX = LX + 8, mapY = 62, mapW = PW - 16, mapH = 132;
+    const mapX = LX + 8, mapY = 60, mapW = PW - 16, mapH = 138;
 
     // Moldura base de pergaminho escuro
     mapG.fillStyle(0x130e09, 0.95).fillRoundedRect(mapX, mapY, mapW, mapH, 6);
     mapG.lineStyle(1.5, 0x8a6230, 0.85).strokeRoundedRect(mapX, mapY, mapW, mapH, 6);
     L.add(mapG);
 
-    // IMAGEM REAL DO MAPA DO NÍVEL (Estilo top-down autêntico do jogo)
+    // IMAGEM REAL DO MAPA DO NÍVEL (SOMENTE PARTE GRÁFICA, PURA E NÍTIDA)
     const mapKey = `codex-map-${b.id}`;
     if (this.textures.exists(mapKey)) {
       const mapImg = this.add.image(mapX + mapW / 2, mapY + mapH / 2, mapKey);
       mapImg.setDisplaySize(mapW - 6, mapH - 6);
       L.add(mapImg);
 
-      // Vinheta de borda para integração ao livro
+      // Vinheta sutil de borda para perfeita integração à página
       const vig = this.add.graphics();
       vig.lineStyle(3, 0x160f0a, 0.65).strokeRoundedRect(mapX + 2, mapY + 2, mapW - 4, mapH - 4, 5);
       vig.lineStyle(1, 0xc9a24a, 0.75).strokeRoundedRect(mapX + 1, mapY + 1, mapW - 2, mapH - 2, 6);
@@ -6371,49 +6371,8 @@ class __CodexScene extends j.Scene {
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + 3, mapY + mapH - 3, mapX + 3, mapY + mapH - 3 - cSize));
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + mapW - 3, mapY + mapH - 3, mapX + mapW - 3 - cSize, mapY + mapH - 3));
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + mapW - 3, mapY + mapH - 3, mapX + mapW - 3, mapY + mapH - 3 - cSize));
-    L.add(fg);
 
-    // Pins e Câmaras Táticas posicionadas sobre o mapa
-    const cellW = (mapW - 30) / 9, cellH = (mapH - 28) / 8;
-    b.rooms.forEach((rm, rIdx) => {
-      const rx = mapX + 16 + (rm.x - 1) * cellW;
-      const ry = mapY + 14 + (rm.y - 1) * cellH;
-      const rw = Math.max(26, rm.w * cellW);
-      const rh = Math.max(14, rm.h * cellH);
-
-      const rG = this.add.graphics();
-      let pinColor = 0x1e3624, borderColor = 0x56a066, textColor = "#e6dcc8", prefix = "";
-
-      if (rm.boss) {
-        pinColor = 0x4a1210; borderColor = 0xe23c2c; textColor = "#ff9a8a"; prefix = "☠ ";
-      } else if (rm.secret) {
-        pinColor = 0x2d123d; borderColor = 0xb04fe6; textColor = "#deb8ff"; prefix = "★ ";
-      } else if (rIdx === 0) {
-        pinColor = 0x122434; borderColor = 0x38a0d4; textColor = "#9fe2ff"; prefix = "◈ ";
-      }
-
-      // Caixa de identificação com sombra
-      rG.fillStyle(0x060403, 0.7).fillRoundedRect(rx - rw / 2 + 1, ry - rh / 2 + 1, rw, rh, 3);
-      rG.fillStyle(pinColor, 0.9).fillRoundedRect(rx - rw / 2, ry - rh / 2, rw, rh, 3);
-      rG.lineStyle(1.2, borderColor, 0.9).strokeRoundedRect(rx - rw / 2, ry - rh / 2, rw, rh, 3);
-      L.add(rG);
-
-      const lbl = this.add.text(rx, ry, prefix + rm.label, {
-        fontFamily: "'Courier New', monospace", fontSize: "7px", fontStyle: "bold", color: textColor
-      }).setOrigin(0.5);
-      L.add(lbl);
-
-      const hitZone = this.add.zone(rx, ry, rw + 6, rh + 6).setOrigin(0.5).setInteractive({ useHandCursor: true });
-      hitZone.on("pointerdown", () => {
-        this.game.audioEngine?.sfx("sfx-ui-click");
-        this.updateRoomBriefing(b, rm, rIdx);
-      });
-      hitZone.on("pointerover", () => { lbl.setColor("#ffff55"); rG.lineStyle(2, 0xffd24a, 1).strokeRoundedRect(rx - rw / 2, ry - rh / 2, rw, rh, 3); });
-      hitZone.on("pointerout", () => { lbl.setColor(textColor); rG.lineStyle(1.2, borderColor, 0.9).strokeRoundedRect(rx - rw / 2, ry - rh / 2, rw, rh, 3); });
-      L.add(hitZone);
-    });
-
-    // Rosa dos Ventos
+    // Rosa dos Ventos (canto superior direito)
     const roseX = mapX + mapW - 14, roseY = mapY + 14;
     fg.fillStyle(0x0a0705, 0.8).fillCircle(roseX, roseY, 10);
     fg.lineStyle(1, 0xc9a24a, 0.85).strokeCircle(roseX, roseY, 10);
@@ -6424,7 +6383,7 @@ class __CodexScene extends j.Scene {
     fg.fillStyle(0xecd79b, 0.8).fillTriangle(roseX, roseY + 9, roseX - 2, roseY + 1, roseX + 2, roseY + 1);
     L.add(this.add.text(roseX, roseY - 10, "N", { fontFamily: "'Courier New', monospace", fontSize: "7px", fontStyle: "bold", color: "#ecd79b" }).setOrigin(0.5, 1));
 
-    // Barra de escala cartográfica
+    // Barra de escala cartográfica (canto inferior esquerdo)
     fg.lineStyle(1, 0xc9a24a, 0.8);
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + 8, mapY + mapH - 7, mapX + 42, mapY + mapH - 7));
     fg.strokeLineShape(new Phaser.Geom.Line(mapX + 8, mapY + mapH - 9, mapX + 8, mapY + mapH - 5));
@@ -6436,12 +6395,13 @@ class __CodexScene extends j.Scene {
     L.add(this.add.text(mapX + 10, mapY + 5, "VISTA TOPOGRÁFICA DO REINO", {
       fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold", color: "#ecd79b"
     }));
+    L.add(fg);
 
     // Painel de Parâmetros Geográficos & Ameaças
-    const legY = 200;
+    const legY = 204;
     const hudBox = this.add.graphics();
-    hudBox.fillStyle(0x130e09, 0.08).fillRoundedRect(LX + 8, legY, PW - 16, 92, 4);
-    hudBox.lineStyle(1, 0x8a6230, 0.45).strokeRoundedRect(LX + 8, legY, PW - 16, 92, 4);
+    hudBox.fillStyle(0x130e09, 0.08).fillRoundedRect(LX + 8, legY, PW - 16, 88, 4);
+    hudBox.lineStyle(1, 0x8a6230, 0.45).strokeRoundedRect(LX + 8, legY, PW - 16, 88, 4);
     L.add(hudBox);
 
     L.add(this.add.text(LX + 12, legY + 5, "DADOS CARTOGRÁFICOS & AMEAÇAS", {
@@ -6456,7 +6416,7 @@ class __CodexScene extends j.Scene {
     ];
 
     rows.forEach(([k, v, c], i) => {
-      const yy = legY + 16 + i * 15;
+      const yy = legY + 16 + i * 16;
       L.add(this.add.text(LX + 12, yy, k, {
         fontFamily: "'Courier New', monospace", fontSize: "7.5px", fontStyle: "bold", color: "#7a6244"
       }));
@@ -6464,12 +6424,6 @@ class __CodexScene extends j.Scene {
         fontFamily: "Georgia, serif", fontSize: "8px", color: c, wordWrap: { width: PW - 94 }
       }));
     });
-
-    // Faixa interativa de briefing
-    this.roomBriefingText = this.add.text(LX + 12, legY + 77, `[✦ Clique nas câmaras no mapa para inspecionar]`, {
-      fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "7.5px", color: "#8a5822", wordWrap: { width: PW - 24 }
-    });
-    L.add(this.roomBriefingText);
 
     // === PÁGINA DIREITA: CRÔNICA, SEGREDOS E DICAS (FONTE AMPLIADA) ===
     R.add(this.add.text(RX + 10, 32, "CRÔNICA DA REGIÃO", {
@@ -6504,22 +6458,6 @@ class __CodexScene extends j.Scene {
     R.add(this.add.text(tbX + 8, tbY + 20, b.tip, {
       fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "9px", lineSpacing: 2, color: "#3a2818", wordWrap: { width: tbW - 16 }
     }));
-  }
-
-  updateRoomBriefing(b, rm, rIdx) {
-    if (!this.roomBriefingText) return;
-    let desc = "";
-    if (rm.boss) {
-      desc = `[COVIL DO CHEFE] ${rm.label}: Santuário do lorde supremo ${b.boss}. Prepare-se antes de cruzar!`;
-    } else if (rm.secret) {
-      desc = `[SEGREDO OCULTO] ${rm.label}: Câmara selada por runas. Contém oferendas raras e baús esquecidos.`;
-    } else if (rIdx === 0) {
-      desc = `[PORTAL DE ENTRADA] ${rm.label}: Ponto de chegada do vórtice dimensional e refúgio temporário.`;
-    } else {
-      desc = `[CÂMARA] ${rm.label}: Corredores patrulhados por ${b.threat.split(' e ')[0] || 'inimigos hostis'}.`;
-    }
-    this.roomBriefingText.setText(desc);
-    this.roomBriefingText.setColor(rm.boss ? "#a02818" : rm.secret ? "#6e2ca0" : "#1e4828");
   }
 
   // --- Seção II: Páginas de Heróis (Fonte Ampliada) ---
