@@ -5489,6 +5489,48 @@ class __CollectiblesScene extends j.Scene {
     this.detailsContainer.add(curBody);
   }
 
+  padState() {
+    try {
+      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+      const p = Array.from(pads).find(pad => pad && pad.connected);
+      if (!p) return {};
+      const B = i => !!p.buttons[i]?.pressed || (p.buttons[i]?.value || 0) > 0.5;
+      const ax = p.axes[0] || 0, ay = p.axes[1] || 0;
+      return {
+        l: B(14) || B(4) || ax < -0.5,
+        r: B(15) || B(5) || ax > 0.5,
+        u: B(12) || ay < -0.5,
+        d: B(13) || ay > 0.5,
+        a: B(0), b: B(1), x: B(2), y: B(3),
+        lb: B(4), rb: B(5),
+        back: B(8), start: B(9)
+      };
+    } catch (e) { return {}; }
+  }
+
+  update() {
+    if (this.__closing || !this.sys.isActive()) return;
+    const s = this.padState(), p = this.__pad || {};
+    this.__pad = s;
+    const ed = k => s[k] && !p[k];
+
+    if (ed("b") || ed("back") || ed("start")) {
+      this.close();
+      return;
+    }
+    if (ed("l") || ed("lb")) {
+      this.select((this.selected - 1 + this.total) % this.total);
+    } else if (ed("r") || ed("rb")) {
+      this.select((this.selected + 1) % this.total);
+    } else if (ed("u")) {
+      this.select((this.selected - 4 + this.total) % this.total);
+    } else if (ed("d")) {
+      this.select((this.selected + 4) % this.total);
+    } else if (ed("a")) {
+      this.game.audioEngine?.sfx("sfx-ui-click");
+    }
+  }
+
   close() {
     if (this.__closing) return;
     this.__closing = !0;
@@ -6253,9 +6295,12 @@ class __CodexScene extends j.Scene {
     R.add(openIdx);
   }
 
-  // --- Índice Geral ---
+  // --- Índice Geral (Navegável por Mouse, Touch e Gamepad) ---
   renderIndex(LX, RX, PW) {
     const L = this.L, R = this.R;
+    this.indexEntries = [];
+    this.indexG = this.add.graphics();
+    L.add(this.indexG);
 
     // Coluna Esquerda: Biomas
     L.add(this.add.text(LX + PW / 2, 36, "❖ SEÇÃO I: BIOMAS & MAPAS ❖", {
@@ -6273,6 +6318,7 @@ class __CodexScene extends j.Scene {
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
       const act = () => this.go(this.BIOMES_START + i);
+      this.indexEntries.push({ x: LX + 10, y: y, w: PW - 20, h: 18, spread: this.BIOMES_START + i });
       t.on("pointerdown", act); pg.on("pointerdown", act);
       t.on("pointerover", () => t.setColor("#a03520")); t.on("pointerout", () => t.setColor("#3a2614"));
       L.add([t, pg]);
@@ -6294,6 +6340,7 @@ class __CodexScene extends j.Scene {
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
       const act = () => this.go(this.HEROES_START + i);
+      this.indexEntries.push({ x: RX + 10, y: y, w: PW - 20, h: 16, spread: this.HEROES_START + i });
       t.on("pointerdown", act); pg.on("pointerdown", act);
       t.on("pointerover", () => t.setColor("#a03520")); t.on("pointerout", () => t.setColor("#243a50"));
       R.add([t, pg]);
@@ -6315,6 +6362,7 @@ class __CodexScene extends j.Scene {
       }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
 
       const act = () => this.go(this.LEGENDS_START + i);
+      this.indexEntries.push({ x: RX + 10, y: y, w: PW - 20, h: 16, spread: this.LEGENDS_START + i });
       t.on("pointerdown", act); pg.on("pointerdown", act);
       t.on("pointerover", () => t.setColor("#a03520")); t.on("pointerout", () => t.setColor("#501824"));
       R.add([t, pg]);
@@ -6623,6 +6671,96 @@ class __CodexScene extends j.Scene {
     R.add(this.add.text(sgX + 8, sgY + 20, "As revelações finais acerca da natureza do Abismo aguardam aqueles que alcançarem a Câmara do Trono e desvendarem os últimos selos.", {
       fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8.5px", lineSpacing: 1.5, color: "#501824", wordWrap: { width: sgW - 16 }
     }));
+  }
+
+  padState() {
+    try {
+      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+      const p = Array.from(pads).find(pad => pad && pad.connected);
+      if (!p) return {};
+      const B = i => !!p.buttons[i]?.pressed || (p.buttons[i]?.value || 0) > 0.5;
+      const ax = p.axes[0] || 0, ay = p.axes[1] || 0;
+      return {
+        l: B(14) || B(4) || ax < -0.5,
+        r: B(15) || B(5) || ax > 0.5,
+        u: B(12) || ay < -0.5,
+        d: B(13) || ay > 0.5,
+        a: B(0), b: B(1), x: B(2), y: B(3),
+        lb: B(4), rb: B(5),
+        lt: B(6), rt: B(7),
+        back: B(8), start: B(9)
+      };
+    } catch (e) { return {}; }
+  }
+
+  update() {
+    if (this.__closing || !this.sys.isActive() || this.busy) return;
+    const s = this.padState(), p = this.__pad || {};
+    this.__pad = s;
+    const ed = k => s[k] && !p[k];
+
+    // Fechar com B, Back ou Start
+    if (ed("b") || ed("back") || ed("start")) {
+      this.close();
+      return;
+    }
+
+    // Virar páginas
+    if (ed("l") || ed("lb") || ed("lt")) {
+      this.go(this.spread - 1);
+      return;
+    }
+    if (ed("r") || ed("rb") || ed("rt")) {
+      this.go(this.spread + 1);
+      return;
+    }
+
+    // Atalhos
+    if (ed("y")) {
+      this.go(1);
+      return;
+    }
+    if (ed("x")) {
+      this.go(this.BIOMES_START);
+      return;
+    }
+
+    // Navegação no Índice
+    if (this.spread === 1) {
+      const totalEntries = (this.indexEntries ? this.indexEntries.length : (this.totalBiomes + this.totalHeroes + this.totalLegends));
+      if (ed("u")) {
+        this.indexCursor = ((this.indexCursor ?? 0) - 1 + totalEntries) % totalEntries;
+        this.highlightIndexCursor();
+      } else if (ed("d")) {
+        this.indexCursor = ((this.indexCursor ?? 0) + 1) % totalEntries;
+        this.highlightIndexCursor();
+      } else if (ed("a")) {
+        this.openIndexCursor();
+      }
+    } else if (this.spread === 0 && ed("a")) {
+      this.go(1);
+    }
+  }
+
+  highlightIndexCursor() {
+    if (this.spread !== 1 || !this.indexEntries || !this.indexEntries.length) return;
+    const cur = Phaser.Math.Clamp(this.indexCursor ?? 0, 0, this.indexEntries.length - 1);
+    this.indexG?.clear();
+    const item = this.indexEntries[cur];
+    if (item && this.indexG) {
+      this.indexG.fillStyle(0xc9a24a, 0.22).fillRoundedRect(item.x - 4, item.y - 2, item.w + 8, item.h + 4, 3);
+      this.indexG.lineStyle(1, 0x8a6230, 0.7).strokeRoundedRect(item.x - 4, item.y - 2, item.w + 8, item.h + 4, 3);
+      this.game.audioEngine?.sfx("sfx-ui-hover");
+    }
+  }
+
+  openIndexCursor() {
+    if (this.spread !== 1 || !this.indexEntries || !this.indexEntries.length) return;
+    const cur = Phaser.Math.Clamp(this.indexCursor ?? 0, 0, this.indexEntries.length - 1);
+    const item = this.indexEntries[cur];
+    if (item && item.spread != null) {
+      this.go(item.spread);
+    }
   }
 
   close() {
@@ -7011,14 +7149,14 @@ class __BookScene extends j.Scene {
     try {
       const p = [...(navigator.getGamepads ? navigator.getGamepads() : [])].find(Boolean); if (!p) return {};
       const B = i => !!p.buttons[i]?.pressed, ax = p.axes[0] || 0, ay = p.axes[1] || 0;
-      return { l: B(14) || B(4) || ax < -.6, r: B(15) || B(5) || ax > .6, u: B(12) || ay < -.6, d: B(13) || ay > .6, a: B(0), b: B(1), y: B(3) };
+      return { l: B(14) || B(4) || ax < -.6, r: B(15) || B(5) || ax > .6, u: B(12) || ay < -.6, d: B(13) || ay > .6, a: B(0), b: B(1), y: B(3), lb: B(4), rb: B(5), back: B(8), start: B(9) };
     } catch (e) { return {} }
   }
   update() {
     const s = this.padState(), p = this.__pad || {}; this.__pad = s;
     const ed = k => s[k] && !p[k];
     ed("l") && this.key("ArrowLeft"); ed("r") && this.key("ArrowRight"); ed("u") && this.key("ArrowUp"); ed("d") && this.key("ArrowDown");
-    ed("a") && this.key("Enter"); ed("b") && this.key("Escape"); ed("y") && this.go(1);
+    ed("a") && this.key("Enter"); (ed("b") || ed("start") || ed("back")) && this.close(); ed("y") && this.go(1);
   }
   close() {
     if (this.__closing) return; this.__closing = !0;
