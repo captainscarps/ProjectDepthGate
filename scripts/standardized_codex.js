@@ -132,20 +132,20 @@ class __CodexScene extends j.Scene {
   drawChrome() {
     const cx = this.cx, X1 = cx + 306;
     
-    // Abas de navegacao no topo
+    // Abas de navegacao no topo perfeitamente proporcionadas para a moldura
     const tabDefs = [
-      ["ÍNDICE", 0x8a6230, () => this.go(1)],
-      ["BIOMAS & MAPAS", 0x3d7055, () => this.go(this.BIOMES_START)],
-      ["HERÓIS DE OUTRAS ERAS", 0x355a80, () => this.go(this.HEROES_START)],
-      ["LENDAS DO ABISMO", 0x753a48, () => this.go(this.LEGENDS_START)]
+      [typeof __L3 === "function" ? __L3("ÍNDICE", "INDEX", "ÍNDICE") : "ÍNDICE", 0x8a6230, () => this.go(1)],
+      [typeof __L3 === "function" ? __L3("BIOMAS", "BIOMES", "BIOMAS") : "BIOMAS", 0x3d7055, () => this.go(this.BIOMES_START)],
+      [typeof __L3 === "function" ? __L3("HERÓIS", "HEROES", "HÉROES") : "HERÓIS", 0x355a80, () => this.go(this.HEROES_START)],
+      [typeof __L3 === "function" ? __L3("LENDAS", "LEGENDS", "LEYENDAS") : "LENDAS", 0x753a48, () => this.go(this.LEGENDS_START)]
     ];
 
     this.tabG = this.add.graphics();
-    const tabW = 120, tabH = 17, startX = cx - (tabDefs.length * tabW) / 2;
+    const tabW = 125, tabH = 18, startX = cx - (tabDefs.length * tabW) / 2;
     this.tabs = tabDefs.map(([label, col, act], idx) => {
       const tx = startX + idx * tabW;
       const t = this.add.text(tx + tabW / 2, 9, label, {
-        fontFamily: __BK_SERIF, fontSize: "8.5px", fontStyle: "bold", color: "#f3e6c4"
+        fontFamily: __BK_SERIF, fontSize: "9px", fontStyle: "bold", color: "#f3e6c4"
       }).setOrigin(0.5);
       const z = this.add.zone(tx + 4, 2, tabW - 8, tabH + 4).setOrigin(0).setInteractive({ useHandCursor: true });
       z.on("pointerdown", act);
