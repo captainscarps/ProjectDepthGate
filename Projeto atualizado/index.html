@@ -163,7 +163,17 @@
         }, 60);
       }
 
+      function setFsPref(val) {
+        try {
+          localStorage.setItem("depthgate:fullscreen", val ? "true" : "false");
+          const s = JSON.parse(localStorage.getItem("dungeon-crawler:settings") || "{}");
+          s.fullscreen = !!val;
+          localStorage.setItem("dungeon-crawler:settings", JSON.stringify(s));
+        } catch(e) {}
+      }
+
       function enterFs() {
+        setFsPref(true);
         const el = document.documentElement || document.body;
         const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
         if (req) {
@@ -206,6 +216,7 @@
       }
 
       function exitFs() {
+        setFsPref(false);
         const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
         if (exit) {
           try {
@@ -230,7 +241,33 @@
       }
 
       window.__toggleFullscreen = toggleFs;
+      window.__enterFs = enterFs;
+      window.__exitFs = exitFs;
       window.__isFs = isFs;
+
+      // Persistência ao atualizar (F5 / reload): só sai se o usuário desabilitar explicitamente
+      const savedFs = (function() {
+        try {
+          if (localStorage.getItem("depthgate:fullscreen") === "true") return true;
+          const s = JSON.parse(localStorage.getItem("dungeon-crawler:settings") || "{}");
+          return s.fullscreen === true;
+        } catch(e) { return false; }
+      })();
+
+      if (savedFs) {
+        enterFs();
+        function resumeFs() {
+          if (localStorage.getItem("depthgate:fullscreen") === "true" && !isFs()) {
+            enterFs();
+          }
+          window.removeEventListener("pointerdown", resumeFs, true);
+          window.removeEventListener("keydown", resumeFs, true);
+          window.removeEventListener("touchend", resumeFs, true);
+        }
+        window.addEventListener("pointerdown", resumeFs, true);
+        window.addEventListener("keydown", resumeFs, true);
+        window.addEventListener("touchend", resumeFs, true);
+      }
 
       if (btn) {
         let lastClick = 0;

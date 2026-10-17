@@ -47,8 +47,78 @@ def patch_file(rel_path):
     new_codex = open(os.path.join(ROOT, "scripts", "standardized_codex.js"), "r", encoding="utf-8").read()
 
     content = content[:codex_start] + new_codex + content[codex_end:]
-    open(full_path, "w", encoding="utf-8").write(content)
     print(f"[OK] Replaced __CodexScene with standardized implementation in {rel_path}")
+
+    # -------------------------------------------------------------
+    # 3. FIX BESTIARY KILL COUNTERS (DATA NORMALIZATION & DISPLAY)
+    # -------------------------------------------------------------
+    p_bk = content.find("function __bkKills()")
+    p_bk_end = content.find("function __bkEntries()", p_bk)
+    if p_bk != -1 and p_bk_end != -1:
+        new_bk_logic = """function __bkKills() {
+  try {
+    const raw = JSON.parse(localStorage.getItem("depthgate:bestiary") || "{}");
+    if (raw["SATYR_SISTERS"]) {
+      const leg = raw["SATYR_SISTERS"], c = (typeof leg === "object" ? leg.campaign : Number(leg)) || 0, e = (typeof leg === "object" ? leg.endless : 0) || 0;
+      raw["SATYR_SISTER_1"] ||= { campaign: c, endless: e, total: c + e };
+      raw["SATYR_SISTER_2"] ||= { campaign: c, endless: e, total: c + e };
+    }
+    for (const [k, v] of Object.entries(raw)) {
+      if (typeof v === "number") {
+        raw[k] = { campaign: v, endless: 0, total: v };
+      } else if (typeof v === "object" && v !== null) {
+        const c = Number(v.campaign) || 0, e = Number(v.endless) || 0, t = Number(v.total) || (c + e);
+        raw[k] = { campaign: c, endless: e, total: t };
+      }
+    }
+    return raw;
+  } catch (e) { return {} }
+}
+function __bkKill(k, isEndless = false) {
+  if (!k) return;
+  const K = __bkKills();
+  let entry = K[k];
+  if (!entry || typeof entry !== "object") {
+    const n = typeof entry === "number" ? entry : 0;
+    entry = { campaign: n, endless: 0, total: n };
+  }
+  if (isEndless) {
+    entry.endless = (entry.endless || 0) + 1;
+  } else {
+    entry.campaign = (entry.campaign || 0) + 1;
+  }
+  entry.total = (entry.campaign || 0) + (entry.endless || 0);
+  K[k] = entry;
+  try { localStorage.setItem("depthgate:bestiary", JSON.stringify(K)) } catch (e) { }
+}
+function __bestTrack(G) {
+  if (!G || G.__bkTr) return; G.__bkTr = !0;
+  const isEnd = () => { try { return G.registry?.get("mode") === "endless"; } catch(e) { return false; } };
+  G.events.on("enemy:died", e => { e && !e.isMinion && __bkKill(e.typeKey, isEnd()) });
+  G.events.on("boss:defeated", b => __bkKill(b?.typeKey, isEnd()));
+}
+"""
+        content = content[:p_bk] + new_bk_logic + content[p_bk_end:]
+        print(f"[OK] Patched __bkKills, __bkKill and __bestTrack in {rel_path}")
+
+    # In __BookScene.pageEntryL:
+    p_pe = content.find("const kd = this.K[e.k]")
+    p_pe_end = content.find("this.T(L, X + PW / 2, 300, kTxt", p_pe)
+    if p_pe != -1 and p_pe_end != -1:
+        new_pe_kill = """const rawKd = this.K[e.k];
+    let tot = 0, cK = 0, eK = 0;
+    if (typeof rawKd === "number") { tot = rawKd; cK = rawKd; eK = 0; }
+    else if (typeof rawKd === "object" && rawKd !== null) {
+      cK = Number(rawKd.campaign) || 0;
+      eK = Number(rawKd.endless) || 0;
+      tot = Number(rawKd.total) || (cK + eK);
+    }
+    const kTxt = tot > 0 ? `${__L3("Derrotados", "Defeated", "Derrotados")}: ${tot} (Campanha: ${cK} | Infinito: ${eK})` : __L3("Ainda não derrotado", "Not yet defeated", "Aún no derrotado");
+    """
+        content = content[:p_pe] + new_pe_kill + content[p_pe_end:]
+        print(f"[OK] Patched Bestiary pageEntryL kill display in {rel_path}")
+
+    open(full_path, "w", encoding="utf-8").write(content)
     return True
 
 if __name__ == "__main__":
