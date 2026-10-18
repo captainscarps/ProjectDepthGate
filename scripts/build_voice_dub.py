@@ -45,7 +45,10 @@ VOICES = {
     "hero-SHAMAN": dict(sid=3, speed=.95, fx="dry"),
     "echo-m": dict(sid=7, speed=.88, fx="ghost"),
     "echo-f": dict(sid=4, speed=.88, fx="ghost"),
+    "vision": dict(sid=6, speed=.88, fx="temple"),
+    "video": dict(sid=6, speed=.95, fx="room", maxd=8.3),
 }
+LANGS = ("pt", "en")
 
 
 def voice_cfg(v):
@@ -141,6 +144,8 @@ def fx(x, kind, sr, emo="talk"):
         y = B.mix(.55 * x, .9 * low, .45 * lower)
         y = B.sat(y, 2.2)
         x = B.space(y, "stone", .28)
+    elif kind == "vision":
+        x = B.space(x, "stone", .2)
     elif kind == "ghost":
         ch = np.roll(x, int(.017 * sr)) * .5
         x = B.filt(B.mix(x, ch), "lowpass", 6500)
@@ -180,6 +185,30 @@ def prepare_model(d):
         open(os.path.join(d, fn), "wb").write(data)
 
 
+def synth(tts, S, text, lang, cfg, emo, speed_mul=1.0):
+    c = S.GenerationConfig()
+    c.sid, c.num_steps, c.speed = cfg["sid"], 16, cfg["speed"] * EMO[emo][0] * speed_mul
+    c.silence_scale = EMO[emo][2]
+    c.extra = {"lang": lang}
+    a = tts.generate(prep_text(text), c)
+    sr = a.sample_rate
+    x = np.array(a.samples, dtype=np.float64)
+    nz = np.where(np.abs(x) > .01)[0]
+    if len(nz):
+        x = x[max(0, nz[0] - int(.03 * sr)):nz[-1] + int(.08 * sr)]
+    return fx(x, cfg["fx"], sr, emo), sr
+
+
+def save_mp3(x, sr, f):
+    with tempfile.TemporaryDirectory() as td:
+        w = os.path.join(td, "v.wav")
+        ww = wave.open(w, "wb")
+        ww.setnchannels(1), ww.setsampwidth(2), ww.setframerate(sr)
+        ww.writeframes((np.clip(x, -1, 1) * 32767).astype(np.int16).tobytes())
+        ww.close()
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", w, "-ac", "1", "-ar", "32000", "-c:a", "libmp3lame", "-b:a", "48k", f], check=True)
+
+
 def main():
     import sherpa_onnx as S
     prepare_model(MODEL)
@@ -188,61 +217,65 @@ def main():
         env = dict(os.environ, NODE_PATH=NODE_MODULES)
         subprocess.run(["node", os.path.join(ROOT, "scripts", "extract_story_lines.cjs"), BUNDLE, lj], check=True, env=env)
         lines = json.load(open(lj))
+    over = json.load(open(os.path.join(ROOT, "scripts", "story_en_overrides.json"), encoding="utf-8"))
     M = MODEL.rstrip("/") + "/"
     tts = S.OfflineTts(S.OfflineTtsConfig(model=S.OfflineTtsModelConfig(supertonic=S.OfflineTtsSupertonicModelConfig(
         duration_predictor=M + "duration_predictor.onnx", text_encoder=M + "text_encoder.onnx", vector_estimator=M + "vector_estimator.onnx",
         vocoder=M + "vocoder.onnx", tts_json=M + "tts.json", unicode_indexer=M + "unicode_indexer.bin", voice_style=M + "voice.bin"), num_threads=2)))
-    os.makedirs(OUT, exist_ok=True)
+    for L in LANGS:
+        os.makedirs(os.path.join(OUT, L), exist_ok=True)
     mpath = os.path.join(OUT, "voice-manifest.json")
     old = json.load(open(mpath)) if os.path.exists(mpath) else {}
-    man = {}
+    if old and "k" not in old:      # formato antigo (só português, arquivos na raiz)
+        for h, e in old.items():
+            f = os.path.join(OUT, h + ".mp3")
+            if os.path.exists(f):
+                os.replace(f, os.path.join(OUT, "pt", h + ".mp3"))
+        old = {"k": {}, "d": {h: {"pt": e["d"]} for h, e in old.items()}, "s": {h: {"pt": e["s"]} for h, e in old.items()}}
+    man = {"k": {}, "d": {}, "s": {}}
     for i, ln in enumerate(lines):
-        text = norm(ln["text"])
-        h = fnv(text)
-        if h in man:
+        pt = norm(ln["text"])
+        hid = fnv(pt)
+        texts = {"pt": pt, "en": norm(ln.get("en") or over.get(ln["text"]) or over.get(pt) or ""), "es": norm(ln.get("es") or "")}
+        for t in texts.values():
+            if t:
+                man["k"].setdefault(fnv(t), hid)
+        if hid in man["d"]:
             continue
         cfg = voice_cfg(ln["voice"])
         emo = emotion_of(ln)
-        sig = hashlib.md5(json.dumps([text, cfg, emo, EMO[emo], 2], ensure_ascii=False).encode()).hexdigest()[:10]
-        f = os.path.join(OUT, h + ".mp3")
-        if old.get(h, {}).get("s") == sig and os.path.exists(f):
-            man[h] = old[h]
-            continue
-        c = S.GenerationConfig()
-        c.sid, c.num_steps, c.speed = cfg["sid"], 16, cfg["speed"] * EMO[emo][0]
-        c.silence_scale = EMO[emo][2]
-        c.extra = {"lang": "pt"}
-        a = tts.generate(prep_text(text), c)
-        sr = a.sample_rate
-        x = np.array(a.samples, dtype=np.float64)
-        nz = np.where(np.abs(x) > .01)[0]
-        if len(nz):
-            x = x[max(0, nz[0] - int(.03 * sr)):nz[-1] + int(.08 * sr)]
-        x = fx(x, cfg["fx"], sr, emo)
-        with tempfile.TemporaryDirectory() as td:
-            w = os.path.join(td, "v.wav")
-            ww = wave.open(w, "wb")
-            ww.setnchannels(1), ww.setsampwidth(2), ww.setframerate(sr)
-            ww.writeframes((np.clip(x, -1, 1) * 32767).astype(np.int16).tobytes())
-            ww.close()
-            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", w, "-ac", "1", "-ar", "32000", "-c:a", "libmp3lame", "-b:a", "48k", f], check=True)
-        man[h] = {"d": round(len(x) / sr, 2), "v": ln["voice"], "s": sig}
-        print(f"[{i + 1}/{len(lines)}] {ln['voice']:16s} {emo:10s} {man[h]['d']:5.1f}s  {text[:60]}")
-    # remove falas que não existem mais
+        man["d"][hid], man["s"][hid] = {}, {}
+        for L in LANGS:
+            text = texts[L]
+            if not text:
+                continue
+            sig = hashlib.md5(json.dumps([text, cfg, emo, EMO[emo], 2] + ([L] if L != "pt" else []), ensure_ascii=False).encode()).hexdigest()[:10]
+            f = os.path.join(OUT, L, hid + ".mp3")
+            if old.get("s", {}).get(hid, {}).get(L) == sig and os.path.exists(f):
+                man["d"][hid][L], man["s"][hid][L] = old["d"][hid][L], sig
+                continue
+            x, sr = synth(tts, S, text, L, cfg, emo)
+            if cfg.get("maxd") and len(x) / sr > cfg["maxd"]:            # cabe na legenda do vídeo
+                x, sr = synth(tts, S, text, L, cfg, emo, len(x) / sr / (cfg["maxd"] - .3))
+            save_mp3(x, sr, f)
+            man["d"][hid][L], man["s"][hid][L] = round(len(x) / sr, 2), sig
+            print(f"[{i + 1}/{len(lines)}] {L} {ln['voice']:16s} {emo:10s} {man['d'][hid][L]:5.1f}s  {text[:60]}")
+    for L in LANGS:
+        d = os.path.join(OUT, L)
+        for g in os.listdir(d):
+            if g[:-4] not in man["d"] or L not in man["d"][g[:-4]]:
+                os.remove(os.path.join(d, g))
     for g in os.listdir(OUT):
-        if g.endswith(".mp3") and g[:-4] not in man:
+        if g.endswith(".mp3"):
             os.remove(os.path.join(OUT, g))
     json.dump(man, open(mpath, "w"), ensure_ascii=False, separators=(",", ":"))
-    os.makedirs(MIRROR, exist_ok=True)
-    for g in os.listdir(MIRROR):
-        if g not in os.listdir(OUT):
-            os.remove(os.path.join(MIRROR, g))
-    for g in os.listdir(OUT):
-        with open(os.path.join(OUT, g), "rb") as a, open(os.path.join(MIRROR, g), "wb") as b:
-            b.write(a.read())
-    tot = sum(v["d"] for v in man.values())
-    size = sum(os.path.getsize(os.path.join(OUT, g)) for g in os.listdir(OUT))
-    print("dublagem:", len(man), "falas,", round(tot / 60, 1), "min,", size // 1024, "KB")
+    import shutil
+    shutil.rmtree(MIRROR, ignore_errors=True)
+    shutil.copytree(OUT, MIRROR)
+    for L in LANGS:
+        tot = sum(v.get(L, 0) for v in man["d"].values())
+        size = sum(os.path.getsize(os.path.join(OUT, L, g)) for g in os.listdir(os.path.join(OUT, L)))
+        print(f"dublagem {L}:", sum(1 for v in man["d"].values() if L in v), "falas,", round(tot / 60, 1), "min,", size // 1024, "KB")
 
 
 if __name__ == "__main__":

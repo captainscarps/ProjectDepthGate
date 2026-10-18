@@ -23,6 +23,21 @@ const gh=decls.__GHERO; if(gh)for(const p of gh.properties){const cls=p.key.name
 const ec=decls.__ECHO; if(ec)for(const lv of ec.properties){const f=prop(lv.value,'f'),l=prop(lv.value,'l'); const spr=f.value.elements.map(e=>lit(e.elements[0])); for(const e of l.value.elements){const idx=e.elements[0].value; add(lit(e.elements[1]),'echo-'+(/mage|rogue|shaman/.test(spr[idx]||'')?'f':'m'),'echo');}}
 // cinemática HTML (SLIDES)
 walk.full(ast,n=>{ if(n.type==='VariableDeclarator'&&n.id.name==='SLIDES'&&n.init?.type==='ArrayExpression'){for(const sl of n.init.elements){const sp=prop(sl,'speaker'); const who=sp?lit(sp.value):null; const ln=prop(sl,'lines'); if(ln)for(const e of ln.value.elements)add(lit(e),who?'cine-'+who:'narrator','slides');}}});
+// visões dos cristais (narrador)
+const vis=decls.__VIS; if(vis)for(const p of vis.properties){const v=p.value; if(v.type==='ArrayExpression')for(const e of v.elements)add(lit(e),'vision','vis.'+(p.key.name||p.key.value));}
+add('(Ao tocar o cristal, uma memória antiga invade a sua mente…)','vision','vis'); add('(Uma visão invade a sua mente…)','vision','vis');
+// tabelas de tradução do jogo
+const toJSON=n=>{if(!n)return null; if(n.type==='ObjectExpression'){const o={}; for(const p of n.properties){if(p.type!=='Property')continue; const k=p.key.name??p.key.value; o[k]=toJSON(p.value);} return o;} if(n.type==='ArrayExpression')return n.elements.map(toJSON); const v=lit(n); return v;};
+const TR=toJSON(decls.__TR)||{};
+const GI={}; {const g=decls.gi; for(const p of g.properties){GI[p.key.name]=toJSON(p.value);}}
+const I18N={}; walk.full(ast,n=>{ if(n.type!=='ObjectExpression')return; const p=prop(n,'intro.l1'); if(!p)return; const o={}; for(const q of n.properties){const k=q.key?.value??q.key?.name; if(typeof k==='string'&&k.startsWith('intro.'))o[k]=lit(q.value);} const v=o['intro.l1']||''; const L=/Nas orlas/.test(v)?'pt':/At the kingdom/.test(v)?'en':'es'; I18N[L]=o;});
+// vídeo de abertura: as legendas juntam duas frases por vez
+if(I18N.pt){for(const [a,b] of [['intro.l1','intro.l2'],['intro.l3','intro.l4'],['intro.l5','intro.l6'],['intro.l7',null]]){add(I18N.pt[a]+(b?' '+I18N.pt[b]:''),'video','intro:'+a+(b?'+'+b:''));}}
+// equivalentes em inglês/espanhol de cada fala
+const norm=t=>(t||'').replace(/\s+/g,' ').trim();
+const giIdx={}; for(const L of ['pt','en','es'])for(const lv in (GI[L]||{}))for(const k of ['intro','postBoss'])(GI[L][lv][k]||[]).forEach((t,i)=>{if(L==='pt')giIdx[norm(t)]=[lv,k,i];});
+const tr=(t,L)=>{const D=TR[L]||{}; if(D[t]!=null)return D[t]; const m=t.match(/^“(.*)”$/s); if(m&&D[m[1]]!=null)return '“'+D[m[1]]+'”'; const g=giIdx[norm(t)]; if(g){const x=GI[L]?.[g[0]]?.[g[1]]?.[g[2]]; if(x)return x;} return null;};
+for(const o of out){ if(o.voice==='video'){const m=o.where.slice(6).split('+'); for(const L of ['en','es']){const D=I18N[L]||{}; o[L]=m.map(k=>D[k]).join(' ');} continue;} o.en=tr(o.text,'en'); o.es=tr(o.text,'es'); }
 fs.writeFileSync(process.argv[3],JSON.stringify(out,null,1));
 const by={}; for(const o of out){by[o.voice]=(by[o.voice]||0)+1;}
 console.log(out.length,'falas',out.reduce((a,o)=>a+o.text.length,0),'caracteres',by);
