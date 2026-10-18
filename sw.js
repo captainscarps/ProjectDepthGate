@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.65.0-origens-herois";
+const CACHE = "ded-web-v4.65.1-cacador-gelido";
 
 self.addEventListener("install", () => self.skipWaiting());
 

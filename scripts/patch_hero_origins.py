@@ -6,7 +6,8 @@ Origens dos heróis (falas ao entrar na terra natal + crônica + Códex):
   Ladina (Seris)      -> Ilhas (rio)
   Maga (Arthelia)     -> Deserto Esquecido (temple)
   Druida (Tharion)    -> Ruínas Antigas
-  Xamã, Necromante e Caçador continuam como estavam.
+  Caçador (Kael)      -> Cidadela Glacial (terras gélidas do norte)
+  Xamã e Necromante continuam como estavam.
 Re-executável.
 """
 import os
@@ -81,7 +82,16 @@ H = {
               "The temple did not burn the darkness. It held it. This is not a door… it is a cell.",
               "El templo no quemaba la oscuridad. La encerraba. Esto no es una puerta… es una celda.")),
     "NECROMANCER": ("morta", None, None),       # inalterado
-    "HUNTER": ("fortress", None, None),          # inalterado
+    "HUNTER": ("glacial",
+               [("Neve que não derrete, vento que corta a pele… estou em casa.",
+                 "Snow that never melts, wind that cuts the skin… I am home.",
+                 "Nieve que no se derrite, viento que corta la piel… estoy en casa."),
+                ("Os lobos do norte não uivam mais aqui. Alguma coisa os calou.",
+                 "The northern wolves no longer howl here. Something silenced them.",
+                 "Los lobos del norte ya no aúllan aquí. Algo los silenció.")],
+               ("O Golem de Gelo não caçava. Vigiava. As feras fugiam da prisão, não dele.",
+                "The Ice Golem did not hunt. It kept watch. The beasts were fleeing the prison, not it.",
+                "El Gólem de Hielo no cazaba. Vigilaba. Las fieras huían de la prisión, no de él.")),
 }
 
 # lê o objeto atual para manter os heróis inalterados exatamente como estão
@@ -156,6 +166,12 @@ CODEX = {
         "dimension": "Bosque sagrado sob as Ruínas Antigas",
         "lore": "Tharion foi consagrado no último círculo druídico que cuidava do bosque sagrado onde hoje estão as Ruínas Antigas, derrubado pelos Antigos para erguer os primeiros portais. Ainda ouve as raízes sob o mármore. Quando as fendas voltaram a rasgar a terra, canalizou a fúria do javali e do lobisomem para defender o solo com dentes e garras.",
         "motivation": "Devolver a vida à terra sob as Ruínas, proteger os santuários naturais e esmagar as abominações que desonram a cadeia natural.",
+    },
+    "HUNTER": {
+        "era": "Era Pré-Imperial das Terras Geladas",
+        "dimension": "Territórios Gélidos do Norte",
+        "lore": "Kael cresceu nas terras geladas do norte, onde a neve nunca derrete e os homens são presas fáceis. Ao lado de seu fiel lobo espiritual, aprendeu a ler cada pegada na neve, cada galho quebrado e cada mudança no vento. Atravessou a fenda quando as feras corrompidas começaram a descer das geleiras para suas terras sagradas de caça.",
+        "motivation": "Rastrear a besta suprema que lidera a corrupção das criaturas, devolver o uivo aos lobos do norte e garantir a sobrevivência de sua matilha.",
     },
 }
 ca = s.index("const __CODEX_HEROES = [")
