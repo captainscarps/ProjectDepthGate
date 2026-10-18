@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.63.0-corpo-a-corpo";
+const CACHE = "ded-web-v4.63.1-druida-formas";
 
 self.addEventListener("install", () => self.skipWaiting());
 
