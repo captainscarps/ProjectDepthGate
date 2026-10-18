@@ -126,14 +126,14 @@ def voice_cfg(v):
 
 # emoção: (multiplicador de velocidade, semitons, pausas, respiração antes, suspiro depois, intensidade)
 EMO = {
-    "sadness": (.86, -.6, .5, True, True, 0),
-    "aggression": (1.03, .4, .14, False, False, 1.6),
-    "smile": (.98, .7, .26, False, False, 0),
-    "calm": (.92, -.2, .38, True, False, 0),
-    "special": (.85, -.4, .55, True, False, 0),
+    "sadness": (.88, -.25, .5, True, True, 0),
+    "aggression": (1.02, .15, .14, False, False, 1.3),
+    "smile": (.98, .25, .26, False, False, 0),
+    "calm": (.93, -.1, .38, True, False, 0),
+    "special": (.86, -.15, .55, True, False, 0),
     "talk": (1.0, 0, .3, False, False, 0),
-    "excited": (1.02, .5, .2, False, False, 1.2),
-    "pensive": (.9, -.3, .45, True, False, 0),
+    "excited": (1.02, .2, .2, False, False, 1.1),
+    "pensive": (.91, -.1, .45, True, False, 0),
 }
 
 
@@ -192,7 +192,7 @@ def fx(x, kind, sr, emo="talk"):
     if inten:
         x = B.shelf(B.sat(x, inten), 2500, 2.0, "high")       # voz mais tensa e projetada
     if emo == "sadness":
-        x = B.filt(x, "lowpass", 7000)
+        x = B.filt(x, "lowpass", 9500)
     x = B.filt(x, "highpass", 70)
     x = B.shelf(x, 180, 2.2, "low")                            # calor/corpo de microfone próximo
     pk = np.abs(x).max() + 1e-9

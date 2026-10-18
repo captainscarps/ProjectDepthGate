@@ -23,6 +23,9 @@ const gh=decls.__GHERO; if(gh)for(const p of gh.properties){const cls=p.key.name
 const ec=decls.__ECHO; if(ec)for(const lv of ec.properties){const f=prop(lv.value,'f'),l=prop(lv.value,'l'); const spr=f.value.elements.map(e=>lit(e.elements[0])); for(const e of l.value.elements){const idx=e.elements[0].value; add(lit(e.elements[1]),'echo-'+(/mage|rogue|shaman/.test(spr[idx]||'')?'f':'m'),'echo');}}
 // cinemática HTML (SLIDES)
 walk.full(ast,n=>{ if(n.type==='VariableDeclarator'&&n.id.name==='SLIDES'&&n.init?.type==='ArrayExpression'){for(const sl of n.init.elements){const sp=prop(sl,'speaker'); const who=sp?lit(sp.value):null; const ln=prop(sl,'lines'); if(ln)for(const e of ln.value.elements)add(lit(e),who?'cine-'+who:'narrator','slides');}}});
+// comentários da Guardiã ao voltar de cada selo
+const gc=decls.__GCRY2; if(gc)for(const p of gc.properties)add(lit(p.value),'guardia','__GCRY2.'+(p.key.name||p.key.value));
+add('Mais um selo. Sinto a ferida se acalmar.','guardia','__GCRY2.default');
 // visões dos cristais (narrador)
 const vis=decls.__VIS; if(vis)for(const p of vis.properties){const v=p.value; if(v.type==='ArrayExpression')for(const e of v.elements)add(lit(e),'vision','vis.'+(p.key.name||p.key.value));}
 add('(Ao tocar o cristal, uma memória antiga invade a sua mente…)','vision','vis'); add('(Uma visão invade a sua mente…)','vision','vis');
