@@ -18,7 +18,7 @@ mk("vh-sf","vh-smith-forge",0,5,8,-1);mk("vh-sfi","vh-smith-fidle",0,5,6,-1);mk(
 mk("vh-ht","vh-hunter-tans",0,5,6,-1);mk("vh-htk","vh-hunter-take",0,4,7,0);mk("vh-hlv","vh-hunter-leave",0,4,7,0);
 A.exists("hub-portal-a")||A.create({key:"hub-portal-a",frames:A.generateFrameNumbers("hub-portal",{start:0,end:13}),frameRate:10,repeat:-1})}
 create(){le(this);this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
-const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main,z=cam.zoom||Pt;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
+const __D=this.sys.settings.data||{};this.fromForest=!!__D.fromForest;this.retSlot=__D.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main,z=cam.zoom||Pt;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
 const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];
 /* chão, casa, props */
 this.add.image(0,0,"vh-ground").setOrigin(0).setDepth(-50);const H=M.house;
@@ -56,7 +56,7 @@ const cid=this.game.registry.get("hub:classId")??"WARRIOR";this.classDef=pe[cid]
 this.__inters();
 /* placas com nomes */
 const lab=(x,y,t,c="#e8c873")=>{const o=this.add.text(x,y,t,{...Le,fontSize:"8px",color:c,stroke:"#120c08",strokeThickness:3}).setOrigin(.5,1).setDepth(9100).setAlpha(.9);this.labels.push(o);return o};
-lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-96,W("hub.portal"),"#c7a8ff");lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,L3("SAÍDA","EXIT","SALIDA"));lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");
+lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-96,W("hub.portal"),"#c7a8ff");lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),this.fromForest?"#9fe08a":"#e8c873");lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");
 /* câmera */
 this.__area("out",!0);
 /* HUD */
@@ -69,7 +69,8 @@ this.input.on("pointerdown",p=>{if(this.panel||this.__busy)return;if(this.__uiTa
 if(it){if(Math.hypot(it.x-this.playerX,it.y-this.playerY)<=it.r){this.__do(it);return}this.pending=it;this.__goto(it.ax??it.x,it.ay??it.y+14)}else{this.pending=null;this.__goto(wx,wy)}});
 this.input.keyboard.on("keydown-ESC",()=>{this.panel?this.closePanel():this.exitToMenu()});this.input.keyboard.on("keydown-ENTER",()=>{this.panel?this.panelConfirm():this.tryInteract()});this.input.keyboard.on("keydown-E",()=>{this.panel||this.tryInteract()});this.input.keyboard.on("keydown-UP",()=>this.panelNav(-1)),this.input.keyboard.on("keydown-DOWN",()=>this.panelNav(1));
 this.refreshFragments();cam.fadeIn(400,0,0,0);
-this.time.delayedCall(700,()=>this.__say(this.playerX,this.playerY-40,L3("Bem-vindo ao Refúgio. Explore a vila!","Welcome to the Refuge. Explore the village!","Bienvenido al Refugio. ¡Explora la aldea!"),2600,"#ffe7a8"))}
+this.time.delayedCall(700,()=>this.__say(this.playerX,this.playerY-40,this.fromForest?L3("Bem-vindo ao Refúgio! A placa da FLORESTA leva você de volta.","Welcome to the Refuge! The FOREST sign takes you back.","¡Bienvenido al Refugio! El cartel del BOSQUE te lleva de vuelta."):L3("Bem-vindo ao Refúgio. Explore a vila!","Welcome to the Refuge. Explore the village!","Bienvenido al Refugio. ¡Explora la aldea!"),3000,"#ffe7a8"))}
+__backToForest(){if(this.__busy)return;this.__busy=!0;this.game.audioEngine?.sfx("sfx-endless-start");try{if(Dn(this.retSlot).ok){$o.prototype.continueGame.call(this,this.retSlot);return}}catch(e){}this.__busy=!1;this.exitToMenu()}
 __glow(x,y,s,c,a,d,dp){const o=this.add.image(x,y,"light").setScale(s).setBlendMode(j.BlendModes.ADD).setTint(c).setAlpha(a).setDepth(dp??9001);this.tweens.add({targets:o,alpha:a*.55,duration:d,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});return o}
 __area(a,instant){this.area=a;const cam=this.cameras.main,M=this.M,vw=cam.width/cam.zoom,vh=cam.height/cam.zoom;cam.stopFollow();
 if(a==="out"){const bx=M.w<vw?(M.w-vw)/2:0,bw=Math.max(M.w,vw),by=M.h<vh?(M.h-vh)/2:0,bh=Math.max(M.h,vh);cam.setBounds(bx,by,bw,bh);cam.startFollow(this.rig.container,!0,instant?1:.14,instant?1:.14);this.shade.setAlpha(.26);this.title?.setText(W("hub.title"))}
@@ -96,7 +97,7 @@ add({id:"board",x:S.board[0],y:S.board[1],ay:S.board[1]+14,r:30,label:L3("MURAL"
 add({id:"shrine",x:S.shrine[0],y:S.shrine[1],ay:S.shrine[1]+14,r:34,label:W("hub.shrine"),desc:W("hub.shrineDesc"),act:()=>{this.game.audioEngine?.sfx("sfx-shrine-use");this.openMetaPanel(W("hub.shrine"),W("hub.shrineQuote"),["VITALITY","SWIFTNESS","ALCHEMY","PRECISION","MIGHT"])}});
 add({id:"campfire",x:S.campfire[0],y:S.campfire[1],ay:S.campfire[1]+16,r:34,label:L3("FOGUEIRA","CAMPFIRE","HOGUERA"),desc:L3("Descansar um pouco","Rest for a while","Descansar un poco"),act:()=>this.__rest()});
 add({id:"portal",x:S.portal[0],y:S.portal[1]-8,ay:S.portal[1]+10,r:34,tap:40,label:W("hub.portal"),desc:W("hub.portalDesc"),act:()=>this.enterPortal()});
-add({id:"sign",x:S.sign[0],y:S.sign[1],ay:S.sign[1]+12,r:28,label:L3("SAÍDA","EXIT","SALIDA"),desc:L3("Voltar ao menu","Back to the menu","Volver al menú"),act:()=>this.exitToMenu()});
+add({id:"sign",x:S.sign[0],y:S.sign[1],ay:S.sign[1]+12,r:28,label:this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),desc:this.fromForest?L3("Voltar ao Coração da Floresta","Back to the Heart of the Forest","Volver al Corazón del Bosque"):L3("Voltar ao menu","Back to the menu","Volver al menú"),act:()=>this.fromForest?this.__backToForest():this.exitToMenu()});
 add({id:"hunter",x:S.hunter[0],y:S.hunter[1],ay:S.hunter[1]+16,r:32,label:L3("CURTIDOR","TANNER","CURTIDOR"),desc:L3("Conversar","Talk","Hablar"),act:()=>this.__talk("hunter")});
 add({id:"cabin",x:S.cabin[0]-12,y:S.cabin[1],ay:S.cabin[1]+12,r:26,label:L3("CABANA","CABIN","CABAÑA"),desc:L3("Bater na porta","Knock on the door","Llamar a la puerta"),act:()=>{this.game.audioEngine?.sfx("sfx-door-locked");this.__say(S.cabin[0]-12,S.cabin[1]-40,L3("Trancada. O curtidor guarda as peles lá dentro.","Locked. The tanner keeps his hides inside.","Cerrada. El curtidor guarda las pieles dentro."))}});
 this.dummies.forEach((d,i)=>add({id:"dummy"+i,x:d.x,y:d.y,ay:d.y+14,r:30,label:L3("BONECO DE TREINO","TRAINING DUMMY","MUÑECO DE ENTRENAMIENTO"),desc:L3("Atacar","Attack","Atacar"),dummy:d,act:()=>this.__hit(d)}));

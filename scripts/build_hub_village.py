@@ -142,7 +142,7 @@ def put(x, y, gid, layer=0):
 # pavimento: blocos 3x3 alinhados (padrão do pacote) com variações lisas
 BLOCK = [(328, 329, 330), (349, 350, 351), (370, 371, 372)]
 PLAIN = [275, 275, 275, 278, 281, 284, 276, 277]
-for by in range(9, H, 3):
+for by in range(6, H, 3):
     for bx in range(0, W, 3):
         r = random.random()
         for j in range(3):
@@ -150,8 +150,8 @@ for by in range(9, H, 3):
                 x, y = bx + i, by + j
                 if x >= W or y >= H:
                     continue
-                put(x, y, BLOCK[j][i] if r < .72 else random.choice(PLAIN))
-# muralha da cidade + faixa de grama (topo)
+                put(x, y, BLOCK[j][i] if r < .94 else random.choice(PLAIN))
+# muralha da cidade (topo)
 SLAB = [204] * 12 + [205, 206, 225, 226, 227, 228]
 for x in range(W):
     for y in range(0, 3):
@@ -159,50 +159,114 @@ for x in range(W):
     tiles[(x, 3)] = [44]
     tiles[(x, 4)] = [65 if random.random() > .12 else random.choice([437, 380, 608])]
     tiles[(x, 5)] = [(120, 121, 122)[x % 3]]
-    tiles[(x, 6)] = [193]
-    tiles[(x, 7)] = [193]
-    tiles[(x, 8)] = [random.choice([214, 214, 214, 219, 220, 221])]
-block_px(0, 0, W * T, 9 * T - 2)
-block_px(0, 0, 12, H * T)
-block_px(W * T - 12, 0, W * T, H * T)
+block_px(0, 0, W * T, 6 * T + 4)
+block_px(0, 0, 14, H * T)
+block_px(W * T - 14, 0, W * T, H * T)
 block_px(0, H * T - 14, W * T, H * T)
 
-
-# canteiros (9-slice da grama com borda de pedra)
-def bed(x0, y0, w, h, solid=True):
-    for y in range(y0, y0 + h):
-        for x in range(x0, x0 + w):
-            col = 0 if x == x0 else 2 if x == x0 + w - 1 else 1
-            row = 0 if y == y0 else 2 if y == y0 + h - 1 else 1
-            tiles[(x, y)] = [((171, 172, 173), (192, 193, 194), (213, 214, 215))[row][col]]
-    if solid:
-        block_px(x0 * T + 2, y0 * T + 2, (x0 + w) * T - 2, (y0 + h) * T - 4)
-
-
-# gramados (andáveis) e canteiros (sólidos)
-for b in [(0, 10, 20, 12), (44, 10, 20, 12), (0, 30, 20, 14), (44, 30, 20, 14)]:
-    bed(*b, solid=False)
-BEDS = [(22, 41, 7, 3), (35, 41, 7, 3), (24, 23, 3, 3), (37, 23, 3, 3)]
-for b in BEDS:
-    bed(*b)
-
-# render do chão
 for (x, y), gs in tiles.items():
     for g in gs:
         ground.alpha_composite(STREET.tile(g), (x * T, y * T))
-# detalhes: folhas perto da grama e tijolinhos soltos
+
+# ── grama orgânica: campo escalar (bolhas + bordas) com ruído, sem cantos retos ──
+import numpy as np
+PW, PH = W * T, H * T
+rng = np.random.default_rng(11)
+
+
+def vnoise(scale, amp):
+    gw, gh = PW // scale + 3, PH // scale + 3
+    g = rng.random((gh, gw))
+    ys, xs = np.mgrid[0:PH, 0:PW] / scale
+    x0, y0 = xs.astype(int), ys.astype(int)
+    fx, fy = xs - x0, ys - y0
+    fx, fy = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy)
+    a = g[y0, x0] * (1 - fx) + g[y0, x0 + 1] * fx
+    b = g[y0 + 1, x0] * (1 - fx) + g[y0 + 1, x0 + 1] * fx
+    return (a * (1 - fy) + b * fy - .5) * 2 * amp
+
+
+YY, XX = np.mgrid[0:PH, 0:PW].astype(float)
+field = np.full((PH, PW), -1.0)
+
+
+def blob(cx, cy, rx, ry, k=1.0):
+    global field
+    d = np.sqrt(((XX - cx) / rx) ** 2 + ((YY - cy) / ry) ** 2)
+    field = np.maximum(field, (1 - d) * k)
+
+
+LAWNS = [(150, 262, 196, 128), (872, 250, 176, 118), (148, 584, 200, 132), (874, 592, 186, 132),
+         (318, 318, 40, 26), (704, 336, 46, 26), (420, 652, 56, 40), (604, 652, 56, 40),
+         (296, 470, 44, 30), (724, 474, 44, 30), (512, 132, 70, 30), (260, 150, 80, 30), (760, 150, 80, 30)]
+for b in LAWNS:
+    blob(*b)
+field = np.maximum(field, (150 - YY) / 46)                  # faixa sob a muralha
+field = np.maximum(field, (44 - XX) / 34)                   # bordas da floresta
+field = np.maximum(field, (XX - (PW - 44)) / 34)
+field = np.maximum(field, (YY - (PH - 40)) / 30)
+field += vnoise(48, .22) + vnoise(14, .08) + vnoise(5, .035)
+grass = field > 0
+grass[:6 * T - 6] = False                                    # a muralha fica por cima
+
+# textura da grama (tile 193 do pacote) + variação de tom
+gt = STREET.tile(193)
+gtex = Image.new("RGBA", (PW, PH))
+for y in range(0, PH, T):
+    for x in range(0, PW, T):
+        gtex.alpha_composite(gt, (x, y))
+ga = np.array(gtex).astype(float)
+tone = vnoise(60, .07)[..., None]
+ga[..., :3] = np.clip(ga[..., :3] * (1 + tone), 0, 255)
+base = np.array(ground).astype(float)
+
+
+def shift(m, dx, dy):
+    o = np.zeros_like(m)
+    ys, ye = max(0, dy), PH + min(0, dy)
+    xs, xe = max(0, dx), PW + min(0, dx)
+    o[ys:ye, xs:xe] = m[ys - dy:ye - dy, xs - dx:xe - dx]
+    return o
+
+
+dil = grass | shift(grass, 1, 0) | shift(grass, -1, 0) | shift(grass, 0, 1) | shift(grass, 0, -1)
+ero = grass & shift(grass, 1, 0) & shift(grass, -1, 0) & shift(grass, 0, 1) & shift(grass, 0, -1)
+shadow = (shift(grass, 0, 3) | shift(grass, 1, 2)) & ~dil
+base[shadow, :3] *= .72                                     # sombra da grama no calçamento
+base[grass] = ga[grass]
+rim_hi = grass & ~ero & ~shift(grass, 0, 1)                  # borda de cima (luz)
+rim_lo = grass & ~ero & ~shift(grass, 0, -1)                 # borda de baixo
+base[rim_hi, :3] = (150, 196, 86)
+base[rim_lo, :3] = (62, 112, 52)
+base[dil & ~grass, :3] = (38, 70, 40)                        # contorno escuro
+base[..., 3] = 255
+ground = Image.fromarray(base.astype(np.uint8), "RGBA")
+
+# tufos de folhas na borda e espalhados, flores, pedrinhas
 LEAF = [245, 246, 247, 248, 249, 250, 266, 267, 268, 269, 270, 287, 288, 289, 290, 291, 308, 309, 310]
 BRICK = [331, 332, 333, 334, 335, 352, 353, 354, 355, 356, 373, 374, 375, 376, 377]
-for y in range(9, H):
-    for x in range(W):
-        near = any(tiles.get((x + dx, y + dy), [0])[0] in (192, 193, 194, 171, 172, 173, 213, 214, 215) for dx in (-1, 0, 1) for dy in (-1, 0, 1))
-        if near and random.random() < .22:
-            ground.alpha_composite(STREET.tile(random.choice(LEAF)), (x * T, y * T))
-        elif random.random() < .05 and tiles.get((x, y), [0])[0] not in (171, 172, 173, 192, 193, 194, 213, 214, 215):
-            ground.alpha_composite(STREET.tile(random.choice(BRICK)), (x * T, y * T))
-for x in range(W):
-    if random.random() < .35:
-        ground.alpha_composite(STREET.tile(random.choice(LEAF)), (x * T, 9 * T))
+edge = dil & ~ero
+ey, ex = np.nonzero(edge[::6, ::6])
+for y, x in zip(ey * 6, ex * 6):
+    if y > 6 * T and random.random() < .2:
+        ground.alpha_composite(STREET.tile(random.choice(LEAF)), (int(x) - 8, int(y) - 8))
+GG = Image.open(os.path.join(LODGE, "Ground_grass.png")).convert("RGBA")
+FLOWERS = [GG.crop((x, y, x + 16, y + 16)) for y in (272, 288, 304, 320) for x in (0, 16, 32, 64, 96, 128, 160) if GG.crop((x, y, x + 16, y + 16)).getbbox()]
+SPOTS = Image.open(os.path.join(LODGE, "Spots.png")).convert("RGBA")
+SPOT = [SPOTS.crop((x, y, x + 16, y + 16)) for y in range(0, 128, 16) for x in range(0, 336, 16) if SPOTS.crop((x, y, x + 16, y + 16)).getbbox()]
+for _ in range(2600):
+    x, y = random.randrange(8, PW - 24), random.randrange(6 * T, PH - 24)
+    if ero[y + 8, x + 8] and ero[min(PH - 1, y + 15), x + 8]:
+        r = random.random()
+        if r < .09:
+            ground.alpha_composite(random.choice(FLOWERS), (x, y))
+        elif r < .2:
+            ground.alpha_composite(STREET.tile(random.choice(LEAF)), (x, y))
+        elif r < .24:
+            ground.alpha_composite(random.choice(SPOT), (x, y))
+    elif not dil[y + 8, x + 8] and random.random() < .03:
+        ground.alpha_composite(STREET.tile(random.choice(BRICK)), (x // T * T, y // T * T))
+GRASS = grass
 
 # ───────────────────────────── casa do ferreiro ─────────────────────────────
 OX, OY = 30 * T, 13 * T             # origem (0,0) do TMX exterior no mundo

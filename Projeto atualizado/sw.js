@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.66.0-refugio-vila";
+const CACHE = "ded-web-v4.67.0-refugio-organico";
 
 self.addEventListener("install", () => self.skipWaiting());
 
