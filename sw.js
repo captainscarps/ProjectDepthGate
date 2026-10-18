@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.78.0-dublagem-en";
+const CACHE = "ded-web-v4.78.1-dublagem-kokoro";
 
 self.addEventListener("install", () => self.skipWaiting());
 

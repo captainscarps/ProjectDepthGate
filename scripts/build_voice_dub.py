@@ -5,7 +5,8 @@ Dublagem da história com voz neural (Supertonic 3, licença OpenRAIL-M, roda of
   3. aplica o "acabamento" de cada voz (eco de templo, voz demoníaca do Rei corrompido, fantasma dos ecos…)
   4. salva assets/audio/voice/<hash>.mp3 + voice-manifest.json (o jogo toca pela frase exibida)
 Re-executável: falas já geradas com a mesma voz são reaproveitadas.
-Uso: python3 scripts/build_voice_dub.py <pasta_do_modelo> <pasta_node_modules_com_acorn>
+Uso: python3 scripts/build_voice_dub.py <pasta_do_modelo_supertonic> <pasta_node_modules_com_acorn> <pasta_do_kokoro>
+Inglês: Kokoro-82M (pip install kokoro-onnx). Português: Supertonic 3.
 Pré-requisitos: pip install sherpa-onnx librosa; npm i acorn acorn-walk (na pasta passada). O modelo é baixado do npm se faltar.
 """
 import hashlib
@@ -25,7 +26,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BUNDLE = os.path.join(ROOT, "assets", "index-D6qIWtA7-p209.js")
 OUT = os.path.join(ROOT, "assets", "audio", "voice")
 MIRROR = os.path.join(ROOT, "Projeto atualizado", "assets", "audio", "voice")
-MODEL, NODE_MODULES = (sys.argv[1:3] + ["", ""])[:2]
+MODEL, NODE_MODULES, KOKORO = (sys.argv[1:4] + ["", "", ""])[:3]
 
 # sid: 0-4 vozes femininas, 5-9 masculinas do Supertonic 3
 VOICES = {
@@ -49,6 +50,72 @@ VOICES = {
     "video": dict(sid=6, speed=.95, fx="room", maxd=8.3),
 }
 LANGS = ("pt", "en")
+
+# inglês com Kokoro-82M (Apache-2.0): voz por personagem, algumas misturadas para um timbre único
+KVOICE = {
+    "narrator": ({"bm_george": .7, "bm_fable": .3}, "en-gb", .9),
+    "vision": ({"bm_george": .7, "bm_fable": .3}, "en-gb", .9),
+    "video": ({"bm_george": .7, "bm_fable": .3}, "en-gb", .95),
+    "guardia": ({"af_heart": .6, "bf_emma": .4}, "en-gb", .92),
+    "guardia-corrupt": ({"af_heart": .6, "bf_emma": .4}, "en-gb", .88),
+    "rei": ({"bm_fable": .6, "am_onyx": .4}, "en-gb", .88),
+    "rei-corrupt": ({"bm_fable": .6, "am_onyx": .4}, "en-gb", .86),
+    "hero-WARRIOR": ({"am_michael": 1}, "en-us", .97),
+    "hero-BERSERKER": ({"am_fenrir": 1}, "en-us", .95),
+    "hero-ARCHER": ({"am_puck": 1}, "en-us", .97),
+    "hero-HUNTER": ({"bm_lewis": .6, "am_fenrir": .4}, "en-gb", .94),
+    "hero-DRUID": ({"am_liam": .5, "bm_daniel": .5}, "en-gb", .92),
+    "hero-NECROMANCER": ({"am_onyx": .7, "bm_george": .3}, "en-gb", .9),
+    "hero-MAGE": ({"af_bella": 1}, "en-us", .96),
+    "hero-ROGUE": ({"af_nicole": .6, "af_sky": .4}, "en-us", 1.0),
+    "hero-SHAMAN": ({"af_kore": .7, "af_aoede": .3}, "en-us", .95),
+    "echo-m": ({"bm_daniel": .6, "am_michael": .4}, "en-gb", .88),
+    "echo-f": ({"bf_isabella": .6, "bf_emma": .4}, "en-gb", .88),
+}
+
+
+def kvoice(v):
+    if v.startswith("cine-"):
+        return KVOICE["guardia"] if "GUARDI" in v.upper() else KVOICE["narrator"]
+    return KVOICE.get(v) or KVOICE["narrator"]
+
+
+def prepare_kokoro(d):
+    """modelo Kokoro q8 (npm kokoro-q8-shards) + vozes (npm kokoro-js) → kokoro-q8.onnx e voices.npz"""
+    import io
+    import tarfile
+    import urllib.request
+    if os.path.exists(os.path.join(d, "voices.npz")):
+        return
+    os.makedirs(d, exist_ok=True)
+    tf = tarfile.open(fileobj=io.BytesIO(urllib.request.urlopen("https://registry.npmjs.org/kokoro-q8-shards/-/kokoro-q8-shards-1.0.0.tgz").read()))
+    parts = {m.name: tf.extractfile(m).read() for m in tf.getmembers() if m.name.endswith(".bin")}
+    with open(os.path.join(d, "kokoro-q8.onnx"), "wb") as f:
+        for i in range(6):
+            f.write(parts[f"package/kokoro-q8.part{i}.bin"])
+    tf = tarfile.open(fileobj=io.BytesIO(urllib.request.urlopen("https://registry.npmjs.org/kokoro-js/-/kokoro-js-1.2.1.tgz").read()))
+    V = {os.path.basename(m.name)[:-4]: np.frombuffer(tf.extractfile(m).read(), dtype=np.float32).reshape(-1, 1, 256)
+         for m in tf.getmembers() if m.name.startswith("package/voices/") and m.name.endswith(".bin")}
+    np.savez(os.path.join(d, "voices.npz"), **V)
+
+
+_K = {}
+
+
+def synth_en(text, voice, emo, mul=1.0):
+    from kokoro_onnx import Kokoro
+    if "k" not in _K:
+        prepare_kokoro(KOKORO)
+        _K["k"] = Kokoro(os.path.join(KOKORO, "kokoro-q8.onnx"), os.path.join(KOKORO, "voices.npz"))
+    k = _K["k"]
+    mixv, lang, spd = kvoice(voice)
+    style = sum(k.get_voice_style(n) * w for n, w in mixv.items())
+    s, sr = k.create(prep_text(text), voice=style, speed=spd * EMO[emo][0] * mul, lang=lang)
+    x = np.array(s, dtype=np.float64)
+    nz = np.where(np.abs(x) > .01)[0]
+    if len(nz):
+        x = x[max(0, nz[0] - int(.03 * sr)):nz[-1] + int(.08 * sr)]
+    return x, sr
 
 
 def voice_cfg(v):
@@ -249,14 +316,18 @@ def main():
             text = texts[L]
             if not text:
                 continue
-            sig = hashlib.md5(json.dumps([text, cfg, emo, EMO[emo], 2] + ([L] if L != "pt" else []), ensure_ascii=False).encode()).hexdigest()[:10]
+            sig = hashlib.md5(json.dumps([text, cfg, emo, EMO[emo], 2] + ([L, "kokoro", kvoice(ln["voice"])] if L == "en" else []), ensure_ascii=False).encode()).hexdigest()[:10]
             f = os.path.join(OUT, L, hid + ".mp3")
             if old.get("s", {}).get(hid, {}).get(L) == sig and os.path.exists(f):
                 man["d"][hid][L], man["s"][hid][L] = old["d"][hid][L], sig
                 continue
-            x, sr = synth(tts, S, text, L, cfg, emo)
+            if L == "en":
+                x, sr = synth_en(text, ln["voice"], emo)
+                x = fx(x, cfg["fx"], sr, emo)
+            else:
+                x, sr = synth(tts, S, text, L, cfg, emo)
             if cfg.get("maxd") and len(x) / sr > cfg["maxd"]:            # cabe na legenda do vídeo
-                x, sr = synth(tts, S, text, L, cfg, emo, len(x) / sr / (cfg["maxd"] - .3))
+                x, sr = synth(tts, S, text, L, cfg, emo, len(x) / sr / (cfg["maxd"] - .3)) if L != "en" else (lambda r: (fx(r[0], cfg["fx"], r[1], emo), r[1]))(synth_en(text, ln["voice"], emo, len(x) / sr / (cfg["maxd"] - .3)))
             save_mp3(x, sr, f)
             man["d"][hid][L], man["s"][hid][L] = round(len(x) / sr, 2), sig
             print(f"[{i + 1}/{len(lines)}] {L} {ln['voice']:16s} {emo:10s} {man['d'][hid][L]:5.1f}s  {text[:60]}")
