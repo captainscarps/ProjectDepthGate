@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.70.0-refugio-controles";
+const CACHE = "ded-web-v4.71.0-bosque-amaldicoado";
 
 self.addEventListener("install", () => self.skipWaiting());
 
