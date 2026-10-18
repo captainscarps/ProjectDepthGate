@@ -546,6 +546,296 @@ def r_lever():
     return fin(room(x, .3, .1))
 
 
+
+# ═══════════════════════ segunda rodada: camadas, saturação, espaço e transientes reais ═══════════════════════
+def sat(x, drive=2.0):
+    """saturação suave (como um pré de gravação): engorda o som e segura picos"""
+    m = np.abs(x).max() + 1e-9
+    return np.tanh(drive * x / m) / math.tanh(drive) * m
+
+
+def shelf(x, f, db, kind="low"):
+    g = 10 ** (db / 20) - 1
+    return x + g * filt(x, "lowpass" if kind == "low" else "highpass", f)
+
+
+_IR = {}
+
+
+def ir_space(kind):
+    """resposta de sala: reflexões iniciais discretas + cauda difusa com graves decaindo mais devagar"""
+    if kind in _IR:
+        return _IR[kind]
+    cfg = {"stone": (.55, 14, .035, 5200), "small": (.22, 9, .018, 6500), "out": (.12, 5, .012, 4000)}[kind]
+    rt, taps, span, damp = cfg
+    n = int(rt * SR)
+    ir = np.zeros(n)
+    ir[0] = 1.0
+    for k in range(taps):
+        t = rng.uniform(.002, span)
+        ir[int(t * SR)] += rng.uniform(.25, .6) * (1 - t / span * .6) * rng.choice([-1, 1])
+    t = np.arange(n) / SR
+    lo = filt(rng.standard_normal(n), "lowpass", 700) * np.exp(-t / (rt / 5.5))
+    hi = filt(rng.standard_normal(n), "highpass", 700) * np.exp(-t / (rt / 9))
+    tail = filt(lo * 1.4 + hi, "lowpass", damp) * np.clip((t - span * .6) / .01, 0, 1)
+    ir += tail * .35
+    _IR[kind] = ir / np.abs(ir).sum() ** .5
+    return _IR[kind]
+
+
+def space(x, kind="small", wet=.16):
+    ir = ir_space(kind)
+    y = fftconvolve(x, ir)
+    y = y / (np.abs(y).max() + 1e-9) * (np.abs(x).max() + 1e-9)
+    return mix(x * (1 - wet * .3), y * wet)
+
+
+def tick(f=3000, d=.002, bw=1.6):
+    return filt(noise(d + .004) * env_ad(d + .004, .0001, d / 3), "bandpass", [f / bw, min(f * bw, SR / 2 - 200)])
+
+
+def plate_modes(f0, n, d, spread=(1, 9), dec0=.25, amp_tilt=.8):
+    """placa de metal: modos inarmônicos aleatórios, agudos somem mais rápido"""
+    fs = np.sort(f0 * np.exp(rng.uniform(math.log(spread[0]), math.log(spread[1]), n)))
+    fs[0] = f0
+    decs = dec0 * (f0 / fs) ** .7
+    amps = (f0 / fs) ** amp_tilt * rng.uniform(.5, 1, n)
+    return modal(fs, decs, amps, d, strike=.0008)
+
+
+def wet_squish(d=.08, lo=250, hi=1100):
+    """camada molhada de impacto em carne: micro-rajadas de ruído grave"""
+    g = grains(d, 900, 150, lo, hi, glen=(.002, .006), amp=(.2, 1))
+    return filt(g, "lowpass", hi * 1.5)
+
+
+def glottal(f0, d, jitter=.03, shimmer=.15, sub=.35):
+    """voz de criatura: pulsos glotais (Rosenberg) com tremor, sub-harmônico e aspiração"""
+    n = int(d * SR)
+    o = np.zeros(n)
+    t = 0.0
+    k = 0
+    while t < d:
+        f = f0 * (1 + rng.normal(0, jitter)) * (1 + .1 * math.sin(2 * math.pi * 4.5 * t))
+        per = 1 / max(f, 20)
+        L = int(per * SR)
+        tp = np.arange(L) / L
+        pulse = np.where(tp < .6, .5 * (1 - np.cos(np.pi * tp / .6)), np.cos(np.pi * (tp - .6) / .8))
+        pulse = np.clip(pulse, 0, None) * (1 + rng.normal(0, shimmer)) * (1 + (sub if k % 2 else -sub))
+        i = int(t * SR)
+        o[i:i + L] += np.diff(np.concatenate([[0], pulse]))[:max(0, n - i)]
+        t += per
+        k += 1
+    return o + .08 * filt(noise(d), "highpass", 1500)
+
+
+def formant(x, fms, bws, gains=None):
+    gains = gains or [1] * len(fms)
+    return sum(g * filt(x, "bandpass", [f - b / 2, f + b / 2]) for f, b, g in zip(fms, bws, gains))
+
+
+def swing(d, lo, pk, hi, whistle_q=11, air=1.0, wh=.8, peak=.5):
+    """golpe de lâmina: assobio estreito da borda (Doppler) + rajada de ar larga + roupa no começo"""
+    t = T(d)
+    u = t / d
+    fc = np.where(u < peak, lo * (pk / lo) ** (u / peak), pk * (hi / pk) ** ((u - peak) / (1 - peak)))
+    trem = 1 + .35 * np.sin(2 * np.pi * J(22, 38) * t) * env_bell(d, peak, 1)
+    whistle = svf_bp(noise(d), fc, whistle_q) * env_bell(d, peak, 3.2) * trem
+    airx = svf_bp(noise(d), fc * .8, 1.1, 1) * env_bell(d, peak * .9, 2.2)
+    cloth = filt(noise(.07) * env_ad(.07, .004, .02), "bandpass", [180, 900]) * .5
+    return mix(wh * whistle / (np.abs(whistle).max() + 1e-9), air * airx / (np.abs(airx).max() + 1e-9) * .8, cloth)
+
+
+def r_sword():
+    d = J(.28, .36)
+    return fin(space(swing(d, J(500, 650), J(1250, 1650), J(600, 800)), "small", .1))
+
+
+def r_heavy_swing():
+    d = J(.38, .48)
+    return fin(space(swing(d, J(220, 280), J(560, 720), J(260, 330), whistle_q=8, air=1.3, wh=.6), "small", .1))
+
+
+def r_dagger():
+    d = J(.17, .22)
+    return fin(swing(d, J(1000, 1300), J(2300, 2900), J(1300, 1600), whistle_q=13, air=.7, wh=.9, peak=.42))
+
+
+def r_staff():
+    d = J(.3, .38)
+    return fin(swing(d, J(240, 300), J(620, 800), J(280, 360), whistle_q=5, air=1.4, wh=.4))
+
+
+def r_dash():
+    d = J(.24, .3)
+    x = mix(swing(d, 200, J(700, 900), 260, whistle_q=3, air=1.4, wh=.25, peak=.35),
+            .35 * grains(d, 400, 60, 1500, 5000, glen=(.001, .003), amp=(.05, .3)))   # areia/cascalho sob os pés
+    return fin(x)
+
+
+def r_miss():
+    d = J(.22, .28)
+    return fin(swing(d, J(450, 550), J(1000, 1300), J(500, 650), whistle_q=7, air=1.0, wh=.5), -5)
+
+
+def r_hit():
+    """golpe acertando: estalo, tapa, corpo grave saturado, camada molhada e às vezes osso"""
+    d = .32
+    body = thump(J(85, 110), J(45, 55), d, J(.05, .07))
+    smack = filt(noise(.03) * env_ad(.03, .0003, .007), "bandpass", [J(700, 900), J(2400, 3200)])
+    x = mix(1.1 * body, .9 * smack, .5 * tick(J(2500, 4000), .0015), .55 * at(wet_squish(.09), .004))
+    if rng.random() < .45:
+        x = mix(x, .35 * at(grains(.05, 900, 300, 1800, 4500, glen=(.0008, .002), amp=(.3, 1)), .008))
+    return fin(space(sat(x, 2.6), "small", .12))
+
+
+def r_player_hurt():
+    d = .4
+    x = mix(1.0 * thump(J(90, 110), 48, d, .065), .8 * filt(noise(.035) * env_ad(.035, .0003, .008), "bandpass", [600, 2200]),
+            .45 * at(wet_squish(.08, 200, 900), .004),
+            .5 * plate_modes(J(700, 900), 8, .25, (1, 6), .06),                                  # placa da armadura
+            .35 * grains(.22, 500, 40, 3500, 9000, glen=(.0006, .0016), amp=(.1, .6)))          # malha chacoalhando
+    return fin(space(sat(x, 2.4), "small", .12))
+
+
+def r_shield():
+    d = .7
+    x = mix(1.0 * plate_modes(J(260, 340), 16, d, (1, 14), .32), .9 * thump(110, 55, .25, .05),
+            .6 * tick(J(4000, 6000), .002), .4 * filt(noise(.05) * env_ad(.05, .0005, .012), "bandpass", [1500, 5000]))
+    return fin(space(sat(x, 1.8), "stone", .14))
+
+
+def r_hit_metal():
+    d = .55
+    x = mix(plate_modes(J(380, 480), 14, d, (1, 12), .2), .8 * thump(150, 70, .15, .03), .5 * tick(5000, .002))
+    return fin(space(sat(x, 2.0), "stone", .14))
+
+
+def drop_bounce(f0, n=4, gap0=.09, ratio=.62, partials=(1, 2.71, 5.2), dec=.025):
+    """objeto duro caindo e quicando: intervalos e força diminuindo"""
+    o = np.zeros(int(1.2 * SR))
+    t, a = 0.0, 1.0
+    for k in range(n):
+        f = f0 * rng.uniform(.95, 1.05)
+        h = modal([f * p for p in partials], [dec, dec * .6, dec * .4], [1, .45, .25], .12, strike=.0004)
+        h = mix(h, .5 * tick(f * 2.5, .0012))
+        i = int(t * SR)
+        o[i:i + len(h)] += a * h[:max(0, len(o) - i)]
+        t += gap0 * ratio ** k * rng.uniform(.85, 1.15)
+        a *= rng.uniform(.45, .7)
+    return o
+
+
+def r_bones():
+    d = 1.1
+    x = .9 * thump(75, 40, .3, .06)
+    for _ in range(int(J(5, 8))):
+        x = mix(x, at(drop_bounce(J(700, 1700), int(J(2, 5)), J(.06, .12)) * J(.3, .8), J(0, .25)))
+    x = mix(x, .6 * at(drop_bounce(J(380, 520), 3, .14, partials=(1, 2.4, 4.4), dec=.04), .02))   # crânio
+    return fin(space(pad(x, d), "stone", .14))
+
+
+def r_death():
+    """corpo caindo: baque do tronco, baque do braço/arma, terra e um suspiro"""
+    d = 1.0
+    fall = lambda: mix(thump(J(65, 80), 36, .4, J(.07, .1)), .6 * filt(noise(.08) * env_ad(.08, .002, .025), "lowpass", 900),
+                       .3 * grains(.12, 500, 60, 600, 2500, amp=(.1, .5)))
+    exhale = filt(noise(.5), "bandpass", [250, 900]) * env_bell(.5, .2, 1.5) * .25
+    x = mix(sat(fall(), 2.2), .55 * at(sat(fall(), 2), J(.12, .2)), exhale,
+            .3 * at(grains(.3, 120, 10, 1200, 4000, amp=(.1, .5)), .05))
+    return fin(space(pad(x, d), "stone", .12))
+
+
+def r_step():
+    """passo: calcanhar + ponta do pé, com terra e folhas"""
+    d = .26
+    heel = mix(thump(J(80, 95), 50, .1, .018), .7 * filt(noise(.03) * env_ad(.03, .001, .008), "lowpass", 700))
+    toe = mix(.5 * filt(noise(.06) * env_ad(.06, .002, .018), "bandpass", [400, 1800]),
+              .5 * grains(.08, 700, 120, 1800, 6000, glen=(.0006, .002), amp=(.1, .6)))
+    x = mix(sat(heel, 1.8), at(toe, J(.04, .07)))
+    return fin(space(pad(x, d), "out", .08), -6)
+
+
+def r_water_step():
+    """pé entrando em água rasa: impacto, borrifo, bolhas, 'plunk' grave e gotas caindo de volta"""
+    d = .55
+    impact = filt(noise(.025) * env_ad(.025, .0005, .006), "highpass", 900)
+    spray_env = env_ad(.2, .004, .05)
+    spray = filt(noise(.2) * spray_env * (1 + .8 * filt(noise(.2), "lowpass", 60) * 8), "bandpass", [J(1800, 2600), 9000])
+    x = mix(.7 * impact, .55 * spray, .6 * bubble(J(160, 260), d=.14, rise=J(2, 4)))
+    for _ in range(int(J(10, 16))):
+        x = mix(x, at(bubble(J(600, 3200), amp=J(.1, .45)), J(.005, .14), d))
+    for _ in range(int(J(2, 5))):                                                        # gotas voltando
+        x = mix(x, at(bubble(J(900, 2200), amp=J(.08, .2)), J(.18, .45), d))
+    return fin(space(pad(x, d), "out", .08), -4)
+
+
+def r_door_open():
+    d = J(1.1, 1.4)
+    latch = mix(plate_modes(J(1400, 1800), 6, .12, (1, 4), .03), .6 * thump(160, 100, .05, .01))
+    hinge = creak(d * .7, J(35, 45), J(110, 150), wobble=.3, res=(380, 900, 1700, 3100), q=14)
+    body = creak(d * .7, J(18, 25), J(40, 55), wobble=.2, res=(140, 320, 620), q=6) * .5
+    air = filt(noise(d * .7), "lowpass", 400) * env_bell(d * .7, .6, 1.2) * .2
+    x = mix(latch, at(mix(hinge, body, air), .1), .9 * at(sat(thump(85, 45, .3, .06), 2), d * .78))
+    return fin(space(pad(x, d + .2), "stone", .16))
+
+
+def r_heavy_smash():
+    d = 1.3
+    boom = sat(thump(J(60, 72), 28, d, .2), 3)
+    crack = filt(noise(.03) * env_ad(.03, .0003, .006), "highpass", 1200)
+    debris = mix(*[at(drop_bounce(J(500, 1600), int(J(2, 4)), J(.05, .1)) * J(.1, .35), J(.03, .3)) for _ in range(8)])
+    dust = filt(noise(d) * env_ad(d, .02, .35), "bandpass", [200, 1500]) * .3
+    x = mix(boom, .7 * crack, .5 * filt(noise(.3) * env_ad(.3, .002, .07), "lowpass", 1100), pad(debris, d), dust)
+    return fin(space(x, "stone", .2))
+
+
+def r_coins():
+    d = .7
+    x = np.zeros(int(d * SR))
+    t = 0.0
+    for k in range(int(J(6, 10))):
+        f = J(3800, 6200)
+        c = modal([f * r for r in (1, 1.59, 2.14, 2.65, 3.25)], [J(.12, .22), .1, .07, .05, .04], [1, .55, .4, .3, .2], .4, strike=.0003)
+        x = mix(x, at(c * J(.25, 1), t, d))
+        t += rng.exponential(.03) + (.04 if k % 3 == 2 else 0)
+        if t > .45:
+            break
+    x = mix(x, .4 * filt(noise(.05) * env_ad(.05, .002, .015), "lowpass", 800))      # bolsa de couro
+    return fin(space(x, "small", .1))
+
+
+def r_growl(f0=None, d=None, formants=(420, 950, 2300), rough=.35):
+    d = d or J(.5, .7)
+    f0 = f0 or J(70, 90)
+    v = glottal(f0, d, jitter=.04 + rough * .05, shimmer=.2 + rough * .2, sub=.25 + rough * .3)
+    x = formant(v, formants, [f * .35 for f in formants], [1, .7, .4])
+    x = sat(x * env_bell(d, .25, 1.3), 2.5 + rough * 3)
+    return x
+
+
+def r_roar():
+    d = J(1.2, 1.5)
+    x = mix(r_growl(J(48, 58), d, formants=(320, 760, 1900), rough=.8), .5 * filt(brown(d), "lowpass", 160) * env_bell(d, .3, 1))
+    return fin(space(x, "stone", .2))
+
+
+def r_fire():
+    d = J(.75, .95)
+    t = T(d)
+    roar = svf_lp(noise(d) * (1 + .6 * np.sin(2 * np.pi * J(9, 14) * t)), 250 + 1500 * env_bell(d, .25, 1.5), .9)
+    crackle = grains(d, 50, 220, 1500, 7000, glen=(.0004, .0015), amp=(.1, 1))
+    x = mix(sat(roar * env_bell(d, .2, 1.3), 2.2), .45 * crackle, .5 * swing(d, 180, 700, 220, whistle_q=2, air=1.3, wh=.1, peak=.3))
+    return fin(space(x, "small", .1))
+
+
+def r_explosion():
+    d = 1.6
+    x = mix(sat(thump(60, 24, d, .32), 3.2), filt(noise(d) * env_ad(d, .002, .25), "lowpass", 1600),
+            .6 * filt(brown(d) * env_ad(d, .01, .5), "lowpass", 160),
+            pad(mix(*[at(drop_bounce(J(500, 1800), int(J(2, 4)), J(.05, .1)) * J(.1, .3), J(.05, .5)) for _ in range(10)]), d))
+    return fin(space(x, "stone", .2))
+
 RECIPES = {
     # armas e ataques
     "sword-swing": (r_sword, 4, .6), "weapon-sword": (r_sword, 4, .6), "attack": (r_sword, 3, .55), "attack-miss": (r_miss, 3, .45),

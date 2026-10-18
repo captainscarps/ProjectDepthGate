@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.75.0-sons-realistas";
+const CACHE = "ded-web-v4.75.1-sons-v2";
 
 self.addEventListener("install", () => self.skipWaiting());
 
