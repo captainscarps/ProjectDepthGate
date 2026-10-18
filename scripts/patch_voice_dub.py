@@ -43,7 +43,8 @@ DUB = (r'const __DUB={m:null,a:null,d:0,tok:0};function __dubInit(){if(__DUB.m!=
        r'function __dubAuto(text,cb){const tok=++__DUB.tok;__DUB.q=[];const fire=()=>{__DUB.tok===tok&&cb()},rd=1600+45*String(text||"").length;'
        r'__dub(text,ok=>{__DUB.tok===tok&&setTimeout(fire,ok?650:rd)})}'
        r'function __voLbl(){try{Un["set.voiceLang"]="VOZ DA HISTÓRIA";Hn["set.voiceLang"]="STORY VOICE";Po["set.voiceLang"]="VOZ DE LA HISTORIA"}catch(e){}}'
-       r'__dubInit();window.__dub=__dub;window.__dubStop=__dubStop;window.__dubQ=__dubQ;window.__dubAuto=__dubAuto;')
+       r'function __dubHas(t){const id=__DUB.m?.k?.[__dubH(t)];return!!(id&&__DUB.m.d[id])}function __dubReady(){__dubInit();return!!(__DUB.m&&__DUB.m.k&&Object.keys(__DUB.m.k).length)}'
+       r'__dubInit();window.__dubHas=__dubHas;window.__dubReady=__dubReady;window.__dub=__dub;window.__dubStop=__dubStop;window.__dubQ=__dubQ;window.__dubAuto=__dubAuto;')
 put("class Bl{constructor(i){this.scene=i,this.musicKey=null", DUB + "class Bl{constructor(i){this.scene=i,this.musicKey=null")
 # diálogos
 put('full=__T(e.text);shown=0;tx.setText("");e.onShow?.();', 'full=__T(e.text);shown=0;tx.setText("");e.onShow?.();__dub(full);')
@@ -58,7 +59,15 @@ put('closeStory(){', 'closeStory(){__dubStop();')
 put('textLine.textContent = s.lines[curLine] || "";', 'textLine.textContent = s.lines[curLine] || ""; window.__dubAuto?.(s.lines[curLine] || "", next);')
 put('audioEl.src = options.music || "assets/audio/cinematic_intro.mp3";', 'audioEl.src = options.music || "assets/audio/cinematic_intro.mp3"; window.__dubAu = audioEl;')
 # vídeo de abertura: narração das legendas
-put('sub.textContent=S[k][2],sub.style.opacity="1"', 'sub.textContent=S[k][2],sub.style.opacity="1",window.__dubQ?.(S[k][2])')
+TICK = 'const tick=()=>{if(done||!t0)return;const e=(performance.now()-t0)/1e3,S=o.subs??[];let k=S.findIndex(q=>e>=q[0]&&e<q[1]);'
+# legendas guiadas pela narração: cada legenda fica na tela enquanto a voz fala, e o vídeo só fecha depois da última fala
+put(TICK, 'let __nar=null,__narDone=!1;const tick=()=>{if(done||!t0)return;const S0=o.subs??[];'
+    'if(__nar===null&&window.__dubReady?.()){__nar=!!(window.__dubHas&&S0.length&&S0.every(q=>window.__dubHas(q[2])));'
+    'if(__nar){let n=0;const show=()=>{if(done)return;if(n>=S0.length){__narDone=!0;sub.style.opacity="0";return}const q=S0[n++];sub.textContent=q[2];sub.style.opacity="1";'
+    'window.__dub(q[2],ok=>{setTimeout(()=>{if(n<S0.length)sub.style.opacity="0";setTimeout(show,ok?650:(q[1]-q[0])*1e3)},ok?250:0)})};'
+    'setTimeout(show,Math.max(0,S0[0][0]*1e3-(performance.now()-t0)))}}if(__nar)return;'
+    + TICK[len('const tick=()=>{if(done||!t0)return;'):])
+put('v.addEventListener("ended",()=>{k===vids.length-1&&close()})', 'v.addEventListener("ended",()=>{k===vids.length-1&&(function w(){__nar&&!__narDone&&!done?setTimeout(w,300):close()})()})')
 put('done=!0,clearInterval(subT),', 'done=!0,window.__dubStop?.(),clearInterval(subT),')
 put('au.__tv=tv,au.loop=!!o.musicLoop', 'au.__tv=tv,au.loop=!!o.musicLoop,window.__dubAu=au')
 # configurações: idioma da voz (padrão inglês)

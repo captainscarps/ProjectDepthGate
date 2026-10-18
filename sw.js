@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.78.1-dublagem-kokoro";
+const CACHE = "ded-web-v4.78.2-legendas-video";
 
 self.addEventListener("install", () => self.skipWaiting());
 
