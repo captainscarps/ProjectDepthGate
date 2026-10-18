@@ -56,6 +56,14 @@ for _o, _n in [
         panel = panel.replace(_o, _n)
 new = HEAD + SRC + PB + panel + PE
 s = s[:a] + new + s[b:]
+# cena dos controles de toque (igual ao gameplay), antes da classe do Refúgio
+UT = "/*__HUBUI__*/"
+while UT in s:
+    x0 = s.index(UT)
+    x1 = s.index(UT, x0 + 1) + len(UT)
+    s = s[:x0] + s[x1:]
+UI = open(os.path.join(ROOT, "scripts", "source", "hub-ui.js"), encoding="utf-8").read().strip()
+s = s.replace(HEAD, UT + UI + UT + HEAD, 1)
 
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):

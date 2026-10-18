@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.69.0-refugio-por-modo";
+const CACHE = "ded-web-v4.70.0-refugio-controles";
 
 self.addEventListener("install", () => self.skipWaiting());
 
