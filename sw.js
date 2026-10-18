@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.64.0-druida-javali-lobisomem";
+const CACHE = "ded-web-v4.65.0-origens-herois";
 
 self.addEventListener("install", () => self.skipWaiting());
 
