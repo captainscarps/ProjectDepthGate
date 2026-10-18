@@ -216,9 +216,9 @@ def room(x, size=.25, wet=.12, damp=3000):
 
 def fin(x, gain_db=-3.0, fade=0.004, hp=35):
     x = filt(x, "highpass", hp)
-    i = np.where(np.abs(x) > 1e-4 * np.abs(x).max())[0]
+    i = np.where(np.abs(x) > 2e-3 * np.abs(x).max())[0]
     x = x[i[0]:i[-1] + 1] if len(i) else x
-    nf = int(fade * SR)
+    nf = int(max(fade, min(.08, len(x) / SR * .15)) * SR)
     x[-nf:] *= np.linspace(1, 0, nf)
     x[:16] *= np.linspace(0, 1, 16)
     pk = np.abs(x).max() + 1e-9
@@ -838,18 +838,17 @@ def r_explosion():
 
 RECIPES = {
     # armas e ataques
-    "sword-swing": (r_sword, 4, .6), "weapon-sword": (r_sword, 4, .6), "attack": (r_sword, 3, .55), "attack-miss": (r_miss, 3, .45),
+    "sword-swing": (r_sword, 4, .6), "attack-miss": (r_miss, 3, .45),
     "weapon-axe": (r_heavy_swing, 3, .65), "weapon-dagger": (r_dagger, 4, .55), "weapon-staff": (r_staff, 3, .55),
-    "weapon-bow": (r_bow, 3, .6), "dash": (r_dash, 3, .5), "warrior-heavy-strike": (r_heavy_smash, 2, .7),
-    "warrior-whirlwind": (r_whirlwind, 2, .6), "rogue-backstab": (r_dagger, 3, .6), "rogue-smoke": (r_smoke, 2, .55),
-    "rogue-shadow-step": (r_shadow_step, 3, .55), "archer-multishot": (r_bow, 3, .6), "archer-explosive-arrow": (r_explosion, 2, .65),
-    "mage-fireball": (r_fire, 3, .65), "mage-meteor": (r_explosion, 2, .75), "mage-arcane-blast": (r_arcane, 3, .55), "ice-bolt": (r_ice, 3, .6),
+    "weapon-bow": (r_bow, 3, .6), "dash": (r_dash, 3, .5),
+    "warrior-whirlwind": (r_whirlwind, 2, .6), "rogue-smoke": (r_smoke, 2, .55),
+    "rogue-shadow-step": (r_shadow_step, 3, .55), "archer-explosive-arrow": (r_explosion, 2, .65),
+    "mage-fireball": (r_fire, 3, .65), "mage-arcane-blast": (r_arcane, 3, .55), "ice-bolt": (r_ice, 3, .6),
     # impactos
     "hit": (r_hit, 4, .7), "shield-block": (r_shield, 3, .65), "shield-block-heavy": (r_hit_metal, 3, .7), "player-hurt": (r_player_hurt, 3, .7),
     "heavy-smash": (r_heavy_smash, 3, .75), "enemy-death": (r_death, 3, .6), "skeleton-attack": (r_skel_attack, 3, .55),
-    "orc-attack": (r_orc_attack, 3, .6), "ranged-enemy-attack": (r_bow, 3, .5), "beast-alert": (r_beast_alert, 3, .5),
-    "lava-damage": (r_lava, 3, .5), "ancient-dragon-roar": (r_roar, 2, .8), "dragon-alert": (r_roar, 2, .7),
-    "ancient-dragon-meteor": (r_explosion, 2, .8), "dragon-fire-breath": (r_fire, 2, .7), "ancient-dragon-fire": (r_fire, 2, .7),
+    "orc-attack": (r_orc_attack, 3, .6), "beast-alert": (r_beast_alert, 3, .5),
+    "lava-damage": (r_lava, 3, .5), "ancient-dragon-roar": (r_roar, 2, .8),
     # mundo
     "door-open": (r_door_open, 3, .6), "door-locked": (r_door_locked, 3, .55), "chest-open": (r_chest, 3, .6),
     "item-pickup": (r_pickup, 3, .5), "gold": (r_coins, 4, .5), "potion-use": (r_potion, 2, .55), "secret-reveal": (r_secret, 2, .65),
@@ -859,16 +858,18 @@ RECIPES = {
 
 
 # outros nomes de eventos do jogo que usam os mesmos sons
-ALIAS = {"boss-hit": "hit", "boss-attack": "heavy-smash", "ancient-dragon-bite": "heavy-smash", "ancient-dragon-claw": "warrior-heavy-strike",
+ALIAS = {"weapon-sword": "sword-swing", "attack": "sword-swing", "rogue-backstab": "weapon-dagger", "archer-multishot": "weapon-bow", "ranged-enemy-attack": "weapon-bow", "mage-meteor": "archer-explosive-arrow", "ancient-dragon-meteor": "archer-explosive-arrow", "dragon-alert": "ancient-dragon-roar", "dragon-fire-breath": "mage-fireball", "ancient-dragon-fire": "mage-fireball", "warrior-heavy-strike": "heavy-smash", "boss-hit": "hit", "boss-attack": "heavy-smash", "ancient-dragon-bite": "heavy-smash", "ancient-dragon-claw": "heavy-smash",
          "ancient-dragon-tail": "heavy-smash", "dragon-bite": "heavy-smash", "dragon-knight-attack": "weapon-axe", "frost-demon-attack": "orc-attack",
          "elemental-attack": "mage-arcane-blast", "frost-warden-nova": "ice-bolt", "rogue-fan": "weapon-dagger", "equip": "item-pickup",
          "dragon-priest-cast": "mage-arcane-blast", "sfx-heavy-smash": "heavy-smash"}
 
 
 def main():
+    import sfx_voices
+    RECIPES.update(sfx_voices.voice_recipes())
     os.makedirs(OUT, exist_ok=True)
     clips, meta, pos = [], {}, 0.0
-    gap = np.zeros(int(.12 * SR))
+    gap = np.zeros(int(.04 * SR))
     lead = np.zeros(int(.15 * SR))   # silêncio inicial (atraso do codificador mp3)
     clips.append(lead)
     pos = len(lead) / SR
@@ -891,11 +892,14 @@ def main():
         w.writeframes((np.clip(audio, -1, 1) * 32767).astype(np.int16).tobytes())
         w.close()
         mp3 = os.path.join(OUT, "sfx-bank.mp3")
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-c:a", "libmp3lame", "-b:a", "96k", "-ar", str(SR), mp3], check=True)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-c:a", "libmp3lame", "-b:a", "80k", "-ar", str(SR), mp3], check=True)
         if "--preview" in sys.argv:
             # prévia: cada som em sequência com 0,5 s de pausa
             pv = []
+            only = os.environ.get("PREVIEW_KEYS")
             for key, m in meta.items():
+                if only and not any(key.startswith(p) for p in only.split(",")):
+                    continue
                 for a, l in m["v"][:2]:
                     i = int(a * SR)
                     pv += [audio[i:i + int(l * SR)] * m["g"] / .7, np.zeros(int(.45 * SR))]
