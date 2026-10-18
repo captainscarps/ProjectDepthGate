@@ -40,6 +40,10 @@ else:
                     panel = panel[:i] + panel[k2 + 1:]
                     break
 
+OPEN = 'o=this.add.container(this.__ox||0,this.__oy||0).setDepth(9800).setScrollFactor(0)'
+if OPEN + '.setScale' not in panel:
+    assert panel.count(OPEN) == 1
+    panel = panel.replace(OPEN, OPEN + '.setScale(this.__us||1)')
 new = HEAD + SRC + PB + panel + PE
 s = s[:a] + new + s[b:]
 
