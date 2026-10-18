@@ -142,7 +142,7 @@ const __GARMENT = {
   necromancer: (h, s, v) => __in(h, 0, 50) && v < .42 && s > .12,              // manto
   shaman: (h, s, v) => (__in(h, 80, 178) && s > .25) || (__in(h, 340, 12) && s > .55 && v > .4),  // tangas e tinta corporal
   hunter: (h, s, v) => __in(h, 15, 42) && s > .3 && v > .72,                   // pelagem
-  paladin: (h, s, v) => __in(h, 70, 160) && s > .2,                            // manto verde
+  druid: (h, s, v) => __in(h, 70, 160) && s > .2,                            // manto verde
 };
 function __skinTex(scene, srcKey, cls, color) {
   const key = `${srcKey}-c${color.toString(16)}`;

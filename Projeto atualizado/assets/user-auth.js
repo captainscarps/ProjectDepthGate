@@ -47,11 +47,11 @@
       color: "#3a86ff",
       svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#0d1b2a" stroke="#c9a24a" stroke-width="2.5"/><path d="M20 20 L44 44 M44 20 L20 44" stroke="#3a86ff" stroke-width="3"/><circle cx="32" cy="32" r="6" fill="#ffd24a"/><path d="M26 16 L32 24 L38 16" fill="#e8d8b8"/></svg>'
     },
-    paladin: {
-      id: "paladin",
-      name: "Paladino",
-      color: "#ffb703",
-      svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#2b1f06" stroke="#c9a24a" stroke-width="2.5"/><path d="M22 24 H42 V38 C42 44 32 50 32 50 C32 50 22 44 22 38 Z" fill="#ffb703" stroke="#ffd24a" stroke-width="1.5"/><line x1="32" y1="26" x2="32" y2="44" stroke="#ffffff" stroke-width="2.5"/><line x1="26" y1="32" x2="38" y2="32" stroke="#ffffff" stroke-width="2.5"/></svg>'
+    druid: {
+      id: "druid",
+      name: "Druida",
+      color: "#86e080",
+      svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#0f2210" stroke="#c9a24a" stroke-width="2.5"/><path d="M32 14 C44 22 46 36 32 50 C18 36 20 22 32 14 Z" fill="#4f9a3c" stroke="#86e080" stroke-width="1.5"/><path d="M32 18 V48 M32 28 L38 23 M32 35 L26 30 M32 41 L38 37" stroke="#1d3a17" stroke-width="2" fill="none" stroke-linecap="round"/></svg>'
     }
   };
 
@@ -290,7 +290,7 @@
       if (cls.includes("archer") || cls.includes("arqueiro")) return getHeroAvatarDataUrl("archer");
       if (cls.includes("mage") || cls.includes("mago")) return getHeroAvatarDataUrl("mage");
       if (cls.includes("rogue") || cls.includes("ladino")) return getHeroAvatarDataUrl("rogue");
-      if (cls.includes("paladin") || cls.includes("paladino")) return getHeroAvatarDataUrl("paladin");
+      if (cls.includes("druid") || cls.includes("paladin")) return getHeroAvatarDataUrl("druid");
 
       return getHeroAvatarDataUrl("warrior");
     }

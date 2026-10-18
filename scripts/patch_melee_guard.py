@@ -1,6 +1,6 @@
 """
 Resistência dos corpo a corpo e escudo do Guerreiro.
-  - Guerreiro (WARRIOR), Ladina (ROGUE), Samurai (BERSERKER) e Druida transformado (PALADIN em forma
+  - Guerreiro (WARRIOR), Ladina (ROGUE), Samurai (BERSERKER) e Druida transformado (DRUID em forma
     de Lobisomem/Javali): dano de CONTATO (encostar em chefe
     ou inimigo) ×0.5 e +50% de invulnerabilidade depois de um golpe de contato.
   - Escudo do Guerreiro: defesa segurada deixa passar 15% (antes 40%), golpes pequenos podem ser
@@ -26,7 +26,7 @@ def rep(old, new, n=1):
 
 
 HELPER = ('const __MELEE_CLS=new Set(["WARRIOR","ROGUE","BERSERKER"]);'
-          'function __meleeRes(p){if(p&&(__MELEE_CLS.has(p.__cls)||(p.__cls==="PALADIN"&&p.scene?.__form))){p.__contactHit=!0;return .5}return 1}')
+          'function __meleeRes(p){if(p&&(__MELEE_CLS.has(p.__cls)||(p.__cls==="DRUID"&&p.scene?.__form))){p.__contactHit=!0;return .5}return 1}')
 
 # guarda a classe no herói
 rep('this.data_=cs,this.tex=d.texture,', 'this.data_=cs,this.__cls=d.id,this.tex=d.texture,')
