@@ -31,7 +31,7 @@ assert s.count(END) == 1
 s = s.replace(END, 'P.push(cp);' + PORTAL + 'S.__hubPortals=P}')
 
 ENTER = 'function __hubEnter(S,p){'
-GO = (TAG + 'if(p.__level==="__refugio"){if(S.transitioning)return;S.transitioning=!0;S.state==="playing"&&di(S);const sl=Es(S.game);S.game.registry.set("hub:classId",S.classDef.id);'
+GO = (TAG + 'if(p.__level==="__refugio"){if(S.transitioning)return;S.transitioning=!0;S.state==="playing"&&di(S);const sl=Es(S.game);S.game.registry.set("hub:classId",S.classDef.id);S.game.registry.set("hub:fromForest",{slot:sl});'
       'S.game.audioEngine?.stinger?.("portal");S.cameraSys.fadeOut(650,()=>{S.scene.stop("UI");S.scene.start("Hub",{fromForest:!0,slot:sl})});return}' + TAG)
 assert s.count(ENTER) == 1
 s = s.replace(ENTER, ENTER + GO)

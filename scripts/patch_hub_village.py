@@ -44,6 +44,16 @@ OPEN = 'o=this.add.container(this.__ox||0,this.__oy||0).setDepth(9800).setScroll
 if OPEN + '.setScale' not in panel:
     assert panel.count(OPEN) == 1
     panel = panel.replace(OPEN, OPEN + '.setScale(this.__us||1)')
+for _o, _n in [
+    ("refreshFragments(){this.meta=Xe(),this.fragText.setText(`◆ ${this.meta.fragments}`)}",
+     "refreshFragments(){this.meta=this.fromForest?__cmeta(this):Xe(),this.fragText.setText(this.fromForest?`● ${this.meta.fragments}`:`◆ ${this.meta.fragments}`)}"),
+    ('n=a?"—":`${er(t,o)}◆`', 'n=a?"—":this.fromForest?`${__cCost(t,o)}●`:`${er(t,o)}◆`'),
+    ("if(Ol(i)){", "if(this.fromForest?__cBuy(this,i):Ol(i)){"),
+    ('this.panelMsg.setText(W("hub.noFrags"))', 'this.panelMsg.setText(this.fromForest?__L3("Ouro da campanha insuficiente.","Not enough campaign gold.","Oro de campaña insuficiente."):W("hub.noFrags"))'),
+]:
+    if _n not in panel:
+        assert panel.count(_o) == 1, _o
+        panel = panel.replace(_o, _n)
 new = HEAD + SRC + PB + panel + PE
 s = s[:a] + new + s[b:]
 
