@@ -95,7 +95,7 @@ GATE = (r'function __gateOk(d){const sc=d.scene,rm=sc?.roomManager,g=d.def?.gate
         r'if(!t.hidden){const gl=i.add.image(this.x,this.y-6,"light").setScale(.12).setBlendMode(j.BlendModes.ADD).setTint(13214282).setAlpha(.35).setDepth(this.depth-1);i.tweens.add({targets:gl,alpha:.12,duration:900,yoyo:!0,repeat:-1});this.__gl=gl}}'
         r'get interactLabel(){return this.pulled?null:this.def.hidden?__L3("Examinar a caveira na parede","Examine the skull on the wall","Examinar la calavera en la pared"):__L3("Puxar a alavanca","Pull the lever","Tirar de la palanca")}'
         r'interact(){if(this.pulled)return;this.pulled=!0;const sc=this.scene;this.setTexture(this.def.hidden?"cx-hidden-on":"cx-lever-on");this.__gl?.destroy();(sc.__levers??={})[this.def.id]=!0;'
-        r'sc.cameraSys?.shake?.(.006,260);sc.effectsRef?.burstTinted(this.x,this.y-8,this.def.hidden?8382688:13214282,16);sc.audioRef?.play?.("sfx-door-open");'
+        r'sc.cameraSys?.shake?.(.006,260);sc.effectsRef?.burstTinted(this.x,this.y-8,this.def.hidden?8382688:13214282,16);sc.audioRef?.play?.("sfx-lever");'
         r'this.def.hidden&&sc.game.events.emit("ui:banner",__L3("SEGREDO DESCOBERTO!","SECRET DISCOVERED!","¡SECRETO DESCUBIERTO!"),"#7fe8e0");sc.time.delayedCall(400,()=>__gateOpenAll(sc,"lever"))}}')
 put("class _l{constructor(i,t){", GATE + "class _l{constructor(i,t){")
 put('jl={"cd-obj":(c,i,t)=>new __CdObj(c,i,t),', 'jl={lever:(c,i,t)=>new __Lever(c,i,t),"cd-obj":(c,i,t)=>new __CdObj(c,i,t),')
