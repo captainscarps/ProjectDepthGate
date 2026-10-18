@@ -54,6 +54,51 @@ def voice_cfg(v):
     return VOICES.get(v) or VOICES["narrator"]
 
 
+# emoção: (multiplicador de velocidade, semitons, pausas, respiração antes, suspiro depois, intensidade)
+EMO = {
+    "sadness": (.86, -.6, .5, True, True, 0),
+    "aggression": (1.03, .4, .14, False, False, 1.6),
+    "smile": (.98, .7, .26, False, False, 0),
+    "calm": (.92, -.2, .38, True, False, 0),
+    "special": (.85, -.4, .55, True, False, 0),
+    "talk": (1.0, 0, .3, False, False, 0),
+    "excited": (1.02, .5, .2, False, False, 1.2),
+    "pensive": (.9, -.3, .45, True, False, 0),
+}
+
+
+def emotion_of(ln):
+    e = ln.get("expr")
+    if e in EMO:
+        return e
+    if ln["voice"].startswith("cine-"):
+        return "special"
+    t = ln["text"]
+    if "!" in t:
+        return "excited"
+    if "…" in t or "..." in t:
+        return "pensive"
+    return "calm" if ln["voice"] == "narrator" else "talk"
+
+
+def prep_text(t):
+    """pontuação que vira pausa e respiro na leitura"""
+    t = t.replace("—", ",").replace("–", ",").replace("…", "...")
+    t = t.replace("“", "").replace("”", "").replace('"', "")
+    return " ".join(t.split())
+
+
+def breath(sr, d=.38, out=False):
+    n = int(d * sr)
+    t = np.arange(n) / sr
+    env = np.sin(np.pi * t / d) ** (1.5 if not out else .8)
+    if out:
+        env *= np.exp(-t / (d * .5))
+    x = B.filt(np.random.default_rng().standard_normal(n), "bandpass", [450, 2600]) * env
+    x += .4 * B.filt(np.random.default_rng().standard_normal(n), "bandpass", [1200, 1700]) * env
+    return x
+
+
 def fnv(text):
     """FNV-1a 32 bits sobre unidades UTF-16 (idêntico ao do jogo)"""
     h = 0x811C9DC5
@@ -68,10 +113,23 @@ def norm(t):
     return " ".join(t.split()).strip()
 
 
-def fx(x, kind, sr):
+def fx(x, kind, sr, emo="talk"):
     import librosa
     x = x.astype(np.float64)
+    sp, st, sil, br_in, br_out, inten = EMO[emo]
+    if abs(st) > .05:
+        x = librosa.effects.pitch_shift(x.astype(np.float32), sr=sr, n_steps=st, res_type="soxr_hq").astype(np.float64)
+    if inten:
+        x = B.shelf(B.sat(x, inten), 2500, 2.0, "high")       # voz mais tensa e projetada
+    if emo == "sadness":
+        x = B.filt(x, "lowpass", 7000)
     x = B.filt(x, "highpass", 70)
+    x = B.shelf(x, 180, 2.2, "low")                            # calor/corpo de microfone próximo
+    pk = np.abs(x).max() + 1e-9
+    if br_in:
+        x = np.concatenate([breath(sr, .36) * pk * .05, np.zeros(int(.06 * sr)), x])
+    if br_out:
+        x = np.concatenate([x, np.zeros(int(.12 * sr)), breath(sr, .6, True) * pk * .045])
     if kind == "room":
         x = B.space(x, "small", .1)
     elif kind == "temple":
@@ -144,21 +202,23 @@ def main():
         if h in man:
             continue
         cfg = voice_cfg(ln["voice"])
-        sig = hashlib.md5(json.dumps([text, cfg], ensure_ascii=False).encode()).hexdigest()[:10]
+        emo = emotion_of(ln)
+        sig = hashlib.md5(json.dumps([text, cfg, emo, EMO[emo], 2], ensure_ascii=False).encode()).hexdigest()[:10]
         f = os.path.join(OUT, h + ".mp3")
         if old.get(h, {}).get("s") == sig and os.path.exists(f):
             man[h] = old[h]
             continue
         c = S.GenerationConfig()
-        c.sid, c.num_steps, c.speed = cfg["sid"], 12, cfg["speed"]
+        c.sid, c.num_steps, c.speed = cfg["sid"], 16, cfg["speed"] * EMO[emo][0]
+        c.silence_scale = EMO[emo][2]
         c.extra = {"lang": "pt"}
-        a = tts.generate(text, c)
+        a = tts.generate(prep_text(text), c)
         sr = a.sample_rate
         x = np.array(a.samples, dtype=np.float64)
         nz = np.where(np.abs(x) > .01)[0]
         if len(nz):
             x = x[max(0, nz[0] - int(.03 * sr)):nz[-1] + int(.08 * sr)]
-        x = fx(x, cfg["fx"], sr)
+        x = fx(x, cfg["fx"], sr, emo)
         with tempfile.TemporaryDirectory() as td:
             w = os.path.join(td, "v.wav")
             ww = wave.open(w, "wb")
@@ -167,7 +227,7 @@ def main():
             ww.close()
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", w, "-ac", "1", "-ar", "32000", "-c:a", "libmp3lame", "-b:a", "48k", f], check=True)
         man[h] = {"d": round(len(x) / sr, 2), "v": ln["voice"], "s": sig}
-        print(f"[{i + 1}/{len(lines)}] {ln['voice']:16s} {man[h]['d']:5.1f}s  {text[:60]}")
+        print(f"[{i + 1}/{len(lines)}] {ln['voice']:16s} {emo:10s} {man[h]['d']:5.1f}s  {text[:60]}")
     # remove falas que não existem mais
     for g in os.listdir(OUT):
         if g.endswith(".mp3") and g[:-4] not in man:

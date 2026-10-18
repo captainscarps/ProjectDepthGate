@@ -3,11 +3,11 @@ const fs=require('fs'),acorn=require('acorn'),walk=require('acorn-walk');
 const src=fs.readFileSync(process.argv[2],'utf8');
 const ast=acorn.parse(src,{ecmaVersion:'latest',sourceType:'module'});
 const out=[]; const seen=new Set();
-const add=(text,voice,where)=>{text=(text||'').replace(/\s+/g,' ').trim(); if(!text||text.length<3)return; const k=voice+'|'+text; if(seen.has(k))return; seen.add(k); out.push({text,voice,where});};
+const add=(text,voice,where,expr)=>{text=(text||'').replace(/\s+/g,' ').trim(); if(!text||text.length<3)return; const k=voice+'|'+text; if(seen.has(k))return; seen.add(k); out.push({text,voice,where,expr:expr||null});};
 const lit=n=>n&&n.type==='Literal'&&typeof n.value==='string'?n.value:(n&&n.type==='TemplateLiteral'&&n.expressions.length===0?n.quasis[0].value.cooked:null);
 const prop=(o,k)=>o.properties?.find(p=>p.type==='Property'&&((p.key.name||p.key.value)===k));
 // 1) objetos de diálogo com who/text
-walk.full(ast,n=>{ if(n.type!=='ObjectExpression')return; const w=prop(n,'who'),t=prop(n,'text'); if(w&&t){const who=lit(w.value),tx=lit(t.value); const c=prop(n,'corrupt'); const cor=c&&c.value.type==='UnaryExpression'&&c.value.argument.value===0; if(who&&tx)add(tx,cor?who+'-corrupt':who,'dlg');}});
+walk.full(ast,n=>{ if(n.type!=='ObjectExpression')return; const w=prop(n,'who'),t=prop(n,'text'); if(w&&t){const who=lit(w.value),tx=lit(t.value); const c=prop(n,'corrupt'); const cor=c&&c.value.type==='UnaryExpression'&&c.value.argument.value===0; const ex=prop(n,'expr'); if(who&&tx)add(tx,cor?who+'-corrupt':who,'dlg',ex?lit(ex.value):null);}});
 // 2) tabelas nomeadas
 const D={}; walk.full(ast,n=>{if(n.type==='VariableDeclarator'&&n.id.type==='Identifier'&&n.init)(D[n.id.name]??=[]).push(n.init);});
 const decls=new Proxy({}, {get:(_,k)=>(D[k]||[]).find(x=>x.type==='ObjectExpression'&&(k!=='gi'||x.properties.some(p=>(p.key?.name)==='pt')))});
