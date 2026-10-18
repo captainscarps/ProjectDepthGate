@@ -221,7 +221,7 @@ def tex(gid):
 
 grass_t, dirt_t, water_t = tex(5954), tex(6314), tex(1)
 # máscaras orgânicas
-gfield = blur(floor, 7) + vnoise(40, .16) + vnoise(10, .06)
+gfield = blur(floor, 12) + vnoise(52, .24) + vnoise(16, .09) + vnoise(5, .035)
 grass = gfield > .5
 wfield = blur(water, 6) + vnoise(30, .12)
 wat = (wfield > .55) & ~grass | (wfield > .62)
@@ -291,6 +291,7 @@ for _ in range(5200):
         base.alpha_composite(tile(random.choice(LIL)), (x, y))
 
 # ───────────────────────── árvores e objetos ─────────────────────────
+EDGE_BUSH = []
 TREES = ["Tree1", "Tree2", "Tree3", "Tree5", "Tree6", "Tree11", "Tree4", "Tree7", "Tree8", "Tree9", "Tree12", "Tree13"]
 DEAD = ["Broken_tree1", "Broken_tree2", "Broken_tree3"]
 ROCKS = ["Light_stone_grass1", "Light_stone_grass2", "Light_stone_grass3", "Brown_stone_grass1", "Beige_stone_grass4"]
@@ -341,6 +342,23 @@ for x, y in wallc:
             PROPS.append(["rf-" + k, x * T + 16 + random.randint(-8, 8), (y + 1) * T - random.randint(0, 8)])
     elif near_floor(x, y, 3):
         deep.append((x, y))
+# moitas e capim alto ao longo de toda a borda (esconde a grade das salas)
+for y in range(R0, ROWS):
+    for x in range(COLS):
+        if not grid[y, x] or (x, y) in POND:
+            continue
+        nb = [(dx, dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if 0 <= x + dx < COLS and R0 <= y + dy < ROWS and not grid[y + dy, x + dx]]
+        for dx, dy in nb:
+            for _ in range(2):
+                if random.random() < .7:
+                    k = random.choice(["rf-Bush1", "rf-Bush11", "rf-Bush3", "rf-Bush4", "rf-Bush7", "rf-Bush9", "rf-Bush12", "rf-Bush13", "rf-Bush2"])
+                    t = FR[k]
+                    px = x * T + 16 - dx * 6 + random.randint(-14, 14)
+                    py = (y - R0) * T + 22 - dy * 6 + random.randint(-12, 12)
+                    EDGE_BUSH.append((py, k, px))
+for py, k, px in sorted(EDGE_BUSH):
+    t = FR[k]
+    base.alpha_composite(t, (max(0, px - t.width // 2), max(0, py - t.height // 2)))
 # mata fechada: árvores assadas direto no chão (o herói nunca chega lá)
 deep.sort(key=lambda p: p[1])
 for x, y in deep:

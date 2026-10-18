@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.71.0-bosque-amaldicoado";
+const CACHE = "ded-web-v4.72.0-catacumbas-segredos";
 
 self.addEventListener("install", () => self.skipWaiting());
 
