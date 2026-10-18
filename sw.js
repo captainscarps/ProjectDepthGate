@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.78.2-legendas-video";
+const CACHE = "ded-web-v4.78.3-guardia-voz";
 
 self.addEventListener("install", () => self.skipWaiting());
 
