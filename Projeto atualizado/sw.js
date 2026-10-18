@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.62.1-chefe-destrava";
+const CACHE = "ded-web-v4.63.0-corpo-a-corpo";
 
 self.addEventListener("install", () => self.skipWaiting());
 
