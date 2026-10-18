@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.73.0-lago-raso-mural";
+const CACHE = "ded-web-v4.73.1-hud-objetivo";
 
 self.addEventListener("install", () => self.skipWaiting());
 
