@@ -117,6 +117,19 @@ for lst in ENEMIES.values():
     for _, x, y in lst:
         keep |= {(x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)}
 
+PTS = [[(31, 77), (31, 73), (20, 73), (14, 73), (14, 66), (13, 62), (17, 54), (24, 54), (31, 55), (31, 49)],
+       [(31, 73), (40, 73), (46, 73), (46, 66), (47, 61), (46, 54), (39, 54), (31, 55)]]
+# a trilha nunca recebe obstáculo (nem pedra, nem moita, nem mordida de borda)
+PATHC = set()
+for line in PTS:
+    for (ax, ay), (bx, by) in zip(line, line[1:]):
+        n = max(abs(bx - ax), abs(by - ay)) * 3 + 1
+        for i in range(n + 1):
+            fx, fy = ax + (bx - ax) * i / n, ay + (by - ay) * i / n
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    PATHC.add((round(fx) + dx, round(fy) + dy))
+keep |= PATHC
 walls = {r["id"]: [] for r in ROOMS}
 
 
@@ -171,8 +184,11 @@ lq = ROOMS[2]["rect"]
 pcx, pcy = lq["x"] + lq["w"] / 2 - .5, lq["y"] + lq["h"] / 2 - .5
 for y in range(lq["y"], lq["y"] + lq["h"]):
     for x in range(lq["x"], lq["x"] + lq["w"]):
-        if ((x - pcx) / 3.6) ** 2 + ((y - pcy) / 2.2) ** 2 <= 1 and add_wall("rf-lago", x, y):
+        if ((x - pcx) / 3.6) ** 2 + ((y - pcy) / 2.2) ** 2 <= 1 and not grid[y, x]:
             POND.add((x, y))
+            if ((x - pcx) / 1.9) ** 2 + ((y - pcy) / 1.0) ** 2 <= 1:
+                add_wall("rf-lago", x, y)
+SHALLOW = sorted(p for p in POND if not grid[p[1], p[0]])
 # moitas de árvores dentro das clareiras (cobertura)
 CLUMP = set()
 for rid, spots in (("rf-clareira", [(8, 58), (19, 65), (14, 59)]), ("rf-bosque", [(25, 52), (37, 52), (27, 58), (35, 58)]), ("rf-trilha", [(27, 71), (35, 76)])):
@@ -228,8 +244,6 @@ wat = (wfield > .55) & ~grass | (wfield > .62)
 # trilha de terra ligando o início, os corredores e o portão
 path = Image.new("L", (PW, PH), 0)
 pd = ImageDraw.Draw(path)
-PTS = [[(31, 77), (31, 73), (20, 73), (14, 73), (14, 66), (13, 62), (17, 54), (24, 54), (31, 55), (31, 49)],
-       [(31, 73), (40, 73), (46, 73), (46, 66), (47, 61), (46, 54), (39, 54), (31, 55)]]
 for line in PTS:
     pts = [((x + .5) * T, (y - R0 + .5) * T) for x, y in line]
     pd.line(pts, fill=255, width=44, joint="curve")
@@ -335,10 +349,10 @@ for x, y in wallc:
         below_floor = any(0 <= x + dx < COLS and not grid[y - 1, x + dx] for dx in (-1, 0, 1)) and not any(0 <= x + dx < COLS and y + 1 < ROWS and not grid[y + 1, x + dx] for dx in (-1, 0, 1))
         if below_floor:
             # borda de baixo de uma sala: só moitas e pedras baixas (a copa não pode cobrir a clareira)
-            random.random() < .7 and PROPS.append(["rf-" + random.choice(["Bush1", "Bush11", "Bush3", "Bush9", "Bush12", "Light_stone_grass3", "Brown_stone_grass1"]), x * T + 16 + random.randint(-6, 6), (y + 1) * T - random.randint(4, 12)])
+            random.random() < .7 and PROPS.append(["rf-" + random.choice(["Bush1", "Bush11", "Bush3", "Bush9", "Bush12", "Bush4", "Bush13"]), x * T + 16 + random.randint(-6, 6), (y + 1) * T - random.randint(4, 12)])
             continue
         if random.random() < .62:
-            k = random.choice(TREES + DEAD) if random.random() < .82 else random.choice(ROCKS)
+            k = random.choice(TREES + DEAD)
             PROPS.append(["rf-" + k, x * T + 16 + random.randint(-8, 8), (y + 1) * T - random.randint(0, 8)])
     elif near_floor(x, y, 3):
         deep.append((x, y))
@@ -381,8 +395,8 @@ for _ in range(900):
     x, y = random.randrange(0, PW), random.randrange(0, PH)
     if grass[y, x] and ge[y, x] and not dirt[y, x]:
         cx, cy = x // T, y // T + R0
-        if not grid[cy, cx] and random.random() < .5:
-            FLAT.append([random.choice(SMALL[:13]), x, y + Y0])
+        if not grid[cy, cx] and (cx, cy) not in PATHC and random.random() < .5:
+            FLAT.append([random.choice(SMALL[:12]), x, y + Y0])
 # os objetos pequenos vão para o chão assado (não atrapalham a leitura do combate)
 for k, x, y in FLAT:
     t = FR["rf-" + k]
@@ -427,7 +441,7 @@ for _ in range(140):
     if grid[y, x] and near_floor(x, y, 2) or (x, y) in POND:
         FOG.append([x * T + 16, y * T + 16])
 meta = {"row0": R0, "chunks": meta_chunks, "props": PROPS, "fog": FOG[:90],
-        "pond": [[x * T + 16, y * T + 16] for x, y in sorted(POND)]}
+        "pond": [[x * T + 16, y * T + 16] for x, y in sorted(POND)], "shallow": [[x, y] for x, y in SHALLOW]}
 json.dump(meta, open(os.path.join(OUT, "rfb-meta.json"), "w"), separators=(",", ":"))
 
 # ───────────────────────── salas do nível ─────────────────────────

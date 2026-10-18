@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.72.0-catacumbas-segredos";
+const CACHE = "ded-web-v4.73.0-lago-raso-mural";
 
 self.addEventListener("install", () => self.skipWaiting());
 
