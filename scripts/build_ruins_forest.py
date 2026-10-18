@@ -393,7 +393,7 @@ for rid, lst in (("rf-clareira", [("rf-Ruin_grass4", 7, 66), ("rf-Ruin_orange3",
 FLAT = []
 for _ in range(900):
     x, y = random.randrange(0, PW), random.randrange(0, PH)
-    if grass[y, x] and ge[y, x] and not dirt[y, x]:
+    if grass[y, x] and ge[y, x] and not dirt[y, x] and not wd[min(PH - 1, y + 6), x] and not wd[y, x]:
         cx, cy = x // T, y // T + R0
         if not grid[cy, cx] and (cx, cy) not in PATHC and random.random() < .5:
             FLAT.append([random.choice(SMALL[:12]), x, y + Y0])

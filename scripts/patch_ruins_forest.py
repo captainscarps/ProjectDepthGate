@@ -74,13 +74,22 @@ put('this.load.json("cab-meta","assets/pixel-art/castle/cab-meta.json");',
     'this.load.json("rfb-meta","assets/pixel-art/ruins-forest/rfb-meta.json");this.load.atlas("rf-props","assets/pixel-art/ruins-forest/rf-props.png","assets/pixel-art/ruins-forest/rf-props.json");')
 
 # ── desenho: chão assado, árvores, névoa; paredes de pedra só na parte das ruínas ──
+WATER = (r'const SH=new Set((M.shallow||[]).map(([x,y])=>x+","+y));if(SH.size){const fb=o=>o.body?o.body.bottom:o.y+12,inW=o=>SH.has(Math.floor(o.x/dt)+","+Math.floor((fb(o)-3)/dt));'
+         r'const foot=d.add.graphics();let lx=0,ly=0,tR=0,tS=0,tD=0,ph=0;'
+         r'const rip=(x,y,big,col)=>{const e=d.add.ellipse(x,y,12,5).setStrokeStyle(1,col||12437215,.85).setFillStyle().setDepth(y-30);d.tweens.add({targets:e,scaleX:big?3.4:2.2,scaleY:big?3.4:2.2,alpha:0,duration:big?700:1200,ease:"Sine.easeOut",onComplete:()=>e.destroy()})};'
+         r'const drop=(x,y)=>{const c=d.add.rectangle(x,y,2,2,R()<.5?14610431:11392767).setDepth(y+40);const vx=(R()-.5)*44,h=8+R()*14;d.tweens.add({targets:c,x:x+vx,duration:420});d.tweens.add({targets:c,y:y-h,duration:210,ease:"Quad.easeOut",yoyo:!0,onComplete:()=>{R()<.5&&rip(c.x,c.y,!1);c.destroy()}})};'
+         r'const fn=(t,ms)=>{foot.clear();const p=d.player;if(!p||!p.active||!d.sys.isActive())return;const fy=fb(p),w=inW(p),mv=Math.hypot(p.x-lx,p.y-ly)>.6;lx=p.x;ly=p.y;'
+         r'if(w){ph+=ms*.006;foot.setDepth(Math.max(p.depth,d.playerVisual?.depth??0)+.5);const ww=32+Math.sin(ph)*2.5;foot.fillStyle(3818672,.72).fillEllipse(p.x,fy-4,ww,12);foot.fillStyle(2768471,.45).fillEllipse(p.x,fy-3,ww-8,6);foot.lineStyle(1.5,14019327,.85).strokeEllipse(p.x,fy-4,ww+2,13);foot.lineStyle(1,14019327,.35).strokeEllipse(p.x,fy-4,ww+10+Math.sin(ph*1.7)*3,17);'
+         r'tR-=ms;if(tR<=0){tR=mv?150:800;rip(p.x,fy-2,mv)}if(mv){tD-=ms;if(tD<=0){tD=95;for(let k=0;k<2;k++)drop(p.x+(R()-.5)*14,fy-5)}tS-=ms;if(tS<=0){tS=380;d.game.audioEngine?.sfx?.("sfx-step")}}}'
+         r'if(R()<.06)for(const e of d.enemies?.getChildren?.()||[])e.active&&!e.dead&&inW(e)&&rip(e.x,fb(e)-2,!1,10403034)};'
+         r'd.events.on("update",fn);d.events.once("shutdown",()=>d.events.off("update",fn))}')
 FN = (r'function __rfBake(B){if(B.level?.id!=="ruins")return;const d=B.scene,M=d.cache.json.get("rfb-meta");if(!M||!d.textures.exists(M.chunks[0][0]))return;B.__rfRow=M.row0;'
       r'for(const[k,x,y]of M.chunks)d.add.image(x,y,k).setOrigin(0).setDepth(.3);'
       r'if(d.textures.exists("rf-props"))for(const[k,x,y]of M.props)d.add.image(x,y,"rf-props",k).setOrigin(.5,1).setDepth(y);'
       r'const ADD=j.BlendModes.ADD,R=Math.random;for(const[x,y]of M.fog){const f=d.add.image(x,y,"light").setScale(.5+R()*.5).setTint(R()<.5?3809608:2829104).setAlpha(.16+R()*.1).setDepth(y+40);d.tweens.add({targets:f,x:x+(R()-.5)*60,y:y+(R()-.5)*30,alpha:.06,duration:4e3+R()*4e3,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"})}'
       r'for(const[x,y]of M.pond){if(R()<.35){const g=d.add.image(x,y,"light").setScale(.25).setBlendMode(ADD).setTint(7864524).setAlpha(.12).setDepth(.5);d.tweens.add({targets:g,alpha:.03,duration:1500+R()*1500,yoyo:!0,repeat:-1})}}'
       r'const sp=()=>{if(!d.sys?.isActive?.())return;const p=d.player;if(p&&p.y>B.__rfRow*dt){const c=d.add.rectangle(p.x+(R()-.5)*300,p.y+(R()-.5)*200,2,2,R()<.5?12224762:9502463).setBlendMode(ADD).setAlpha(0).setDepth(9e3);d.tweens.add({targets:c,alpha:.8,y:c.y-20-R()*20,x:c.x+(R()-.5)*30,duration:1400,yoyo:!0,onComplete:()=>c.destroy()})}d.time.delayedCall(260,sp)};d.time.delayedCall(500,sp);'
-      r'const SH=new Set((M.shallow||[]).map(([x,y])=>x+","+y));let lx=0,ly=0;SH.size&&d.time.addEvent({delay:170,loop:!0,callback:()=>{const p=d.player;if(!p||!p.active)return;const k=Math.floor(p.x/dt)+","+Math.floor(p.y/dt);const mv=Math.hypot(p.x-lx,p.y-ly)>2;lx=p.x;ly=p.y;if(!SH.has(k))return;const e=d.add.ellipse(p.x,p.y+10,10,4).setStrokeStyle(1,12437215,.8).setFillStyle().setDepth(p.y-1);d.tweens.add({targets:e,scaleX:mv?2.6:1.8,scaleY:mv?2.6:1.8,alpha:0,duration:mv?520:900,onComplete:()=>e.destroy()});mv&&Math.random()<.5&&d.effectsRef?.burstTinted(p.x,p.y+8,10403034,2)}})}')
+      + WATER + '}')
 put("class _l{constructor(i,t){", FN + "class _l{constructor(i,t){")
 put('buildWallVisuals(){const i=this.level.theme.id,d=this.scene;', 'buildWallVisuals(){const i=this.level.theme.id,d=this.scene;__rfBake(this);')
 put('for(let a=0;a<this.rows;a++)for(let n=0;n<this.cols;n++){if(!this.isWallTile(n,a))continue;const s=o(n,a-1)',

@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.73.1-hud-objetivo";
+const CACHE = "ded-web-v4.74.0-andar-na-agua";
 
 self.addEventListener("install", () => self.skipWaiting());
 
