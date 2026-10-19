@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.88.1-bloco-pedra";
+const CACHE = "ded-web-v4.88.2-musica-abertura";
 
 self.addEventListener("install", () => self.skipWaiting());
 
