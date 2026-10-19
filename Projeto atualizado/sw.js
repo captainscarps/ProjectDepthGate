@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.79.0-gamepad-completo";
+const CACHE = "ded-web-v4.79.1-video-narracao";
 
 self.addEventListener("install", () => self.skipWaiting());
 

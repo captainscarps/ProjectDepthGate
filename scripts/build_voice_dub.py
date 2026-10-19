@@ -47,7 +47,7 @@ VOICES = {
     "echo-m": dict(sid=7, speed=.88, fx="ghost"),
     "echo-f": dict(sid=4, speed=.88, fx="ghost"),
     "vision": dict(sid=6, speed=.88, fx="temple"),
-    "video": dict(sid=6, speed=.95, fx="room", maxd=8.3),
+    "video": dict(sid=6, speed=.95, fx="room"),  # legendas do vídeo seguem a narração: sem acelerar
 }
 LANGS = ("pt", "en")
 
@@ -319,6 +319,12 @@ def phrased(gen, text, voice, emo, mul=1.0):
         if len(ps) == 1:
             v = .95 if myst else 1.0
         x, sr = gen(p, mul * v)
+        # trecho curto demais para o texto = palavras engolidas/aceleradas: refaz mais devagar
+        for _ in range(2):
+            letters = sum(c.isalpha() for c in p)
+            if letters < 8 or len(x) / sr >= letters / 15.5:
+                break
+            x, sr = gen(p, mul * v * .9)
         g = 1.0
         if last and len(ps) > 1:
             g = .8 if myst else .9
