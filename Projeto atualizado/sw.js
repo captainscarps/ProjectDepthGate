@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.87.0-relicario-congelado";
+const CACHE = "ded-web-v4.88.0-enigmas-todas-fases";
 
 self.addEventListener("install", () => self.skipWaiting());
 

@@ -47,7 +47,7 @@ if(i===0){g.moveTo(12,16);g.lineTo(12,34);g.moveTo(8,20);g.lineTo(16,28)}else if
 
 function __gsPuzzles(S,def,solids){__gsTex(S);__leverTex(S);const T=dt,L3=__L3,R=Math.random,ADD=j.BlendModes.ADD,C=(c,r)=>[c*T+T/2,r*T+T/2],K=(c,r)=>c+","+r,P=__GSPZ_DEF;
 const slot=S.game.registry.get("save:slot")??1,KEY="depthgate:gspz:"+slot;let done={};try{done=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
-const OBJ=[],SOL=new Set,sfx=k=>S.game.audioEngine?.sfx?.(k),banner=(t,c)=>S.game.events.emit("ui:banner",t,c||"#8ae0ff"),wall=(c,r)=>{const D=S.dungeon;return!D||D.isWallTile(c,r)};
+const on=f=>{S.events.on("update",f);S.events.once("shutdown",()=>S.events.off("update",f))};const OBJ=[],SOL=new Set,sfx=k=>S.game.audioEngine?.sfx?.(k),banner=(t,c)=>S.game.events.emit("ui:banner",t,c||"#8ae0ff"),wall=(c,r)=>{const D=S.dungeon;return!D||D.isWallTile(c,r)};
 const zone=(c,r,w=26,h=22)=>{const[x,y]=C(c,r),z=S.add.zone(x,y+4,w,h);S.physics.add.existing(z,!0);solids.add(z);SOL.add(K(c,r));return z};
 const label=(o,f)=>{Object.defineProperty(o,"interactLabel",{get:f,configurable:!0})};
 const glow=(x,y,s,c,a)=>S.add.image(x,y,"light").setScale(s).setBlendMode(ADD).setTint(c).setAlpha(a);
@@ -74,7 +74,7 @@ const check=()=>{let all=!0;for(const p of plates){const on=blocks.some(b=>!b.mv
 /* pedra de recomeçar */
 {const[c,r]=D.reset,[x,y]=C(c,r),o=S.add.image(x,y+T/2,"pz-reset").setOrigin(.5,1).setDepth(y+T/2);zone(c,r,20,18);label(o,()=>done[id]?null:L3("Recomeçar os blocos de gelo","Reset the ice blocks","Reiniciar los bloques de hielo"));o.interact=()=>{for(const b of blocks){if(b.mv)return}for(const b of blocks){SOL.delete(K(b.c,b.r));b.c=b.c0;b.r=b.r0;place(b,!0);S.effectsRef?.burstTinted(b.img.x,b.img.y-12,9437183,10)}sfx("sfx-shrine-use");check()};OBJ.push(o)}
 /* empurrar: o herói encosta no bloco e segura a direção */
-let hold=0,hb=null;S.events.on("update",(t,ms)=>{if(done[id]||S.state!=="playing")return;const p=S.player;if(!p?.body)return;const im=S.inputMgr;let a=im?.axis?.()||{x:0,y:0};const k=im?.keyboardAxis?.()||{x:0,y:0};Math.hypot(k.x,k.y)>Math.hypot(a.x,a.y)&&(a=k);
+let hold=0,hb=null;on((t,ms)=>{if(done[id]||S.state!=="playing")return;const p=S.player;if(!p?.body)return;const im=S.inputMgr;let a=im?.axis?.()||{x:0,y:0};const k=im?.keyboardAxis?.()||{x:0,y:0};Math.hypot(k.x,k.y)>Math.hypot(a.x,a.y)&&(a=k);
 const px=p.body.center.x,py=p.body.bottom-6;let tgt=null,dx=0,dy=0;if(Math.abs(a.x)>.55&&Math.abs(a.x)>Math.abs(a.y))dx=Math.sign(a.x);else if(Math.abs(a.y)>.55)dy=Math.sign(a.y);
 if(dx||dy)for(const b of blocks){const[x,y]=C(b.c,b.r);if(dx&&Math.abs(py-y)<14&&Math.abs(px+dx*22-x)<12||dy&&Math.abs(px-x)<14&&Math.abs(py+dy*20-y)<12){tgt=b;break}}
 if(tgt&&tgt===hb){hold+=ms;if(hold>170){hold=-250;slide(tgt,dx,dy)}}else{hb=tgt;hold=0}})}
@@ -87,7 +87,7 @@ const mirrors=D.mirrors.map(([c,r,o])=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/
 const bg=S.add.graphics().setDepth(1.2).setBlendMode(ADD);let hit=!1,pts=[];
 const beam=()=>{let c=D.source[0],r=D.source[1],dx=1,dy=0;pts=[[sx,sy-10]];hit=!1;for(let n=0;n<70;n++){c+=dx;r+=dy;if(wall(c,r)){const[x,y]=C(c-dx*.5,r-dy*.5);pts.push([x,y-10]);break}if(c===D.target[0]&&r===D.target[1]){pts.push([tx,ty-10]);hit=!0;break}const m=mirrors.find(q=>q.c===c&&q.r===r);if(m){const[x,y]=C(c,r);pts.push([x,y-12]);[dx,dy]=m.o==="/"?[-dy,-dx]:[dy,dx];continue}if(SOL.has(K(c,r))){const[x,y]=C(c-dx*.4,r-dy*.4);pts.push([x,y-10]);break}}
 if(hit){tgtI.setTint(14745599);tg.setAlpha(.6);if(!done[id]){solved(id,ch,L3("o feixe de luz","the light beam","el haz de luz"));lights.push({x:tx,y:ty-8,col:9437183,r:160,i:1.6})}}};
-S.events.on("update",(t)=>{bg.clear();if(pts.length<2)return;const w=.55+.2*Math.sin(t/90);for(const[lw,al,col]of[[7,.18*w,9437183],[3,.55*w,11534335],[1.2,.95,16777215]]){bg.lineStyle(lw,col,al);bg.beginPath();bg.moveTo(pts[0][0],pts[0][1]);for(let k=1;k<pts.length;k++)bg.lineTo(pts[k][0],pts[k][1]);bg.strokePath()}if(R()<.3){const q=pts[1+Math.floor(R()*(pts.length-1))],q0=pts[0];const s=S.add.rectangle(q0[0]+(q[0]-q0[0])*R(),q0[1]+(q[1]-q0[1])*R(),1.5,1.5,16777215).setBlendMode(ADD).setDepth(1.3);S.tweens.add({targets:s,y:s.y-6,alpha:0,duration:500,onComplete:()=>s.destroy()})}});
+on((t)=>{bg.clear();if(pts.length<2)return;const w=.55+.2*Math.sin(t/90);for(const[lw,al,col]of[[7,.18*w,9437183],[3,.55*w,11534335],[1.2,.95,16777215]]){bg.lineStyle(lw,col,al);bg.beginPath();bg.moveTo(pts[0][0],pts[0][1]);for(let k=1;k<pts.length;k++)bg.lineTo(pts[k][0],pts[k][1]);bg.strokePath()}if(R()<.3){const q=pts[1+Math.floor(R()*(pts.length-1))],q0=pts[0];const s=S.add.rectangle(q0[0]+(q[0]-q0[0])*R(),q0[1]+(q[1]-q0[1])*R(),1.5,1.5,16777215).setBlendMode(ADD).setDepth(1.3);S.tweens.add({targets:s,y:s.y-6,alpha:0,duration:500,onComplete:()=>s.destroy()})}});
 S.time.delayedCall(50,beam);done[id]&&ch.show(!0)}
 
 /* ── 3. alavancas na ordem ── */
@@ -104,7 +104,7 @@ const b={img,f,g,L,t:0};label(img,()=>done[id]||b.t>0?null:L3("Acender o braseir
 const set=(b,on,k=1)=>{b.f.setVisible(on).setScale(1.25*k);b.g.setAlpha(on?.42*k:0);b.L.i=on?1.8*k:0};
 const check=()=>{if(br.every(b=>b.t>0)&&!done[id]){solved(id,ch,L3("os braseiros","the braziers","los braseros"))}};
 if(done[id]){br.forEach(b=>{b.t=1e9;set(b,!0)});ch.show(!0)}
-S.events.on("update",(t,ms)=>{for(const b of br){if(done[id]){set(b,!0,1+.05*Math.sin(t/120));continue}if(b.t>0){b.t-=ms/1e3;if(b.t<=0){b.t=0;set(b,!1);S.effectsRef?.burstTinted(b.img.x,b.img.y-20,7368816,6)}else{const k=b.t<3?.45+.55*(b.t/3)*(.8+.2*Math.sin(t/60)):1;set(b,!0,k)}}}})}
+on((t,ms)=>{for(const b of br){if(done[id]){set(b,!0,1+.05*Math.sin(t/120));continue}if(b.t>0){b.t-=ms/1e3;if(b.t<=0){b.t=0;set(b,!1);S.effectsRef?.burstTinted(b.img.x,b.img.y-20,7368816,6)}else{const k=b.t<3?.45+.55*(b.t/3)*(.8+.2*Math.sin(t/60)):1;set(b,!0,k)}}}})}
 
 /* ── Relicário Congelado: os quatro selos da floresta libertam o Coração do Inverno ── */
 {const D=P.relic,SEALS=[["ice",8384511,L3("Selo do Gelo","Seal of Ice","Sello del Hielo"),L3("os blocos de gelo do Lago Congelado","the ice blocks of the Frozen Lake","los bloques de hielo del Lago Congelado")],
