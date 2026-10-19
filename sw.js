@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.79.1-video-narracao";
+const CACHE = "ded-web-v4.80.0-herborista";
 
 self.addEventListener("install", () => self.skipWaiting());
 

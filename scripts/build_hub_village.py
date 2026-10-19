@@ -595,6 +595,9 @@ meta = {
     "dog": [[440, 520], [590, 520], [600, 420], [470, 400], [330, 470], [700, 470], [512, 560], [240, 340]],
 }
 json.dump(meta, open(os.path.join(OUT, "village.json"), "w"), separators=(",", ":"))
+# cabana da herborista (canto de cima, à direita) — reaplica posições/colisão no village.json
+import subprocess
+subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "build_hub_herbalist.py"), "--json-only"], check=True)
 
 # prévia para conferência
 # espelho em "Projeto atualizado"
