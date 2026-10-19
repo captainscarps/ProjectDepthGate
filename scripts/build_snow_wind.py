@@ -11,9 +11,12 @@ O laço é contínuo (o fim se funde ao começo). Também grava o envelope das r
 
 Saída: assets/audio/ambient/snow-wind.ogg, .mp3 e snow-wind.json
 Uso: python3 scripts/build_snow_wind.py
+     python3 scripts/build_snow_wind.py --desert   → vento de tempestade de areia (desert-wind.*):
+       uivo mais seco e baixo, chiado de areia forte e grãos batendo (estalos finos) nas rajadas
 """
 import json
 import os
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -28,7 +31,9 @@ os.makedirs(OUT, exist_ok=True)
 SR = 44100
 DUR = 48.0           # duração do laço
 XF = 5.0             # fusão fim→começo
-rng = np.random.default_rng(1913)
+DESERT = "--desert" in sys.argv
+NAME = "desert-wind" if DESERT else "snow-wind"
+rng = np.random.default_rng(2207 if DESERT else 1913)
 N = int((DUR + XF) * SR)
 t = np.arange(N) / SR
 
@@ -92,12 +97,21 @@ def channel(seed):
     brown /= np.abs(brown).max()
     rumble = lp(brown, 260) * (.4 + .9 * env)
     howls = np.zeros(N)
-    for k, (lo, amp, w) in enumerate(((210, 260, .05), (330, 380, .045))):
+    for k, (lo, amp, w) in enumerate(((150, 200, .08), (260, 300, .07)) if DESERT else ((210, 260, .05), (330, 380, .045))):
         fcurve = lo + smooth_curve(.18 + .05 * k, amp) * (.6 + .5 * env)
         howls += varying_band(fcurve, w, r.standard_normal(N)) * (.25 + 1.1 * env ** 1.6) * (1.0 if k == 0 else .7)
     wcurve = 1300 + smooth_curve(.4, 900)
     whistle = varying_band(wcurve, .02, r.standard_normal(N)) * np.clip(env - .55, 0, 1) ** 1.5 * 2.2
     hiss = hp(r.standard_normal(N), 3500) * (.05 + .22 * env ** 2)
+    if DESERT:
+        # areia: chiado largo e áspero + grãos batendo (estalos finos, densidade acompanha a rajada)
+        sand = lp(bp(r.standard_normal(N), 1500, 7000), 5200) * (.015 + .42 * env ** 2.6)
+        clicks = np.zeros(N)
+        dens = (25 + 900 * env ** 3) / SR
+        hit = r.random(N) < dens
+        clicks[hit] = r.uniform(-1, 1, hit.sum())
+        grains = hp(bp(clicks, 2500, 9500), 2000) * (.15 + .9 * env ** 2)
+        return rumble * 1.2 + howls * 2.2 + whistle * .5 + sand * .5 + grains * .45
     x = rumble * .9 + howls * 2.4 + whistle * 1.0 + hiss * .35
     return x
 
@@ -123,14 +137,14 @@ with tempfile.TemporaryDirectory() as td:
     w.setnchannels(2), w.setsampwidth(2), w.setframerate(SR)
     w.writeframes((np.clip(loop, -1, 1) * 32767).astype(np.int16).tobytes())
     w.close()
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-c:a", "libvorbis", "-q:a", "3", os.path.join(OUT, "snow-wind.ogg")], check=True)
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-c:a", "libmp3lame", "-b:a", "96k", os.path.join(OUT, "snow-wind.mp3")], check=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-c:a", "libvorbis", "-q:a", "3", os.path.join(OUT, NAME + ".ogg")], check=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-c:a", "libmp3lame", "-b:a", "96k", os.path.join(OUT, NAME + ".mp3")], check=True)
 step = SR // 4
 json.dump({"dur": DUR, "env": [round(float(env_loop[i:i + step].mean()), 3) for i in range(0, n0, step)]},
-          open(os.path.join(OUT, "snow-wind.json"), "w"), separators=(",", ":"))
+          open(os.path.join(OUT, NAME + ".json"), "w"), separators=(",", ":"))
 MIR = os.path.join(ROOT, "Projeto atualizado", "assets", "audio", "ambient")
 if os.path.isdir(os.path.dirname(MIR)):
     os.makedirs(MIR, exist_ok=True)
-    for f in ("snow-wind.ogg", "snow-wind.mp3", "snow-wind.json"):
+    for f in (NAME + ".ogg", NAME + ".mp3", NAME + ".json"):
         shutil.copy2(os.path.join(OUT, f), os.path.join(MIR, f))
-print("vento de nevasca gerado:", DUR, "s, rajadas em", gust_times)
+print(NAME, "gerado:", DUR, "s, rajadas em", gust_times)
