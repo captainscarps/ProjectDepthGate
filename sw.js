@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.88.0-enigmas-todas-fases";
+const CACHE = "ded-web-v4.88.1-bloco-pedra";
 
 self.addEventListener("install", () => self.skipWaiting());
 

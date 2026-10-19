@@ -12,14 +12,14 @@
      - sem fechar passagem (o mapa continua todo alcançável)
    Fora do modo infinito. Estado salvo por fase e slot (localStorage depthgate:pz:<fase>:<slot>).   */
 const __PZL={
- temple:{item:"sun_eye",shell:16767904,orb:16763955,title:["RELICÁRIO DO SOL","RELIQUARY OF THE SUN","RELICARIO DEL SOL"]},
- catacombs:{item:"ancients_lantern",shell:12632319,orb:11829759,title:["RELICÁRIO DOS ANTIGOS","RELIQUARY OF THE ANCIENTS","RELICARIO DE LOS ANTIGUOS"]},
- ruins:{item:"lock_sigil",shell:15259050,orb:16770229,title:["RELICÁRIO DAS FECHADURAS","RELIQUARY OF THE LOCKS","RELICARIO DE LAS CERRADURAS"]},
- fortress:{item:"warden_scale",shell:16758400,orb:16733500,title:["RELICÁRIO DO CARCEREIRO","WARDEN'S RELIQUARY","RELICARIO DEL CARCELERO"]},
- bosque:{item:"anhanga_seed",shell:11730864,orb:8317046,title:["RELICÁRIO DA MATA","RELIQUARY OF THE WILDS","RELICARIO DE LA SELVA"]},
- rio:{item:"tide_pearl",shell:10476543,orb:7397375,title:["RELICÁRIO DA MARÉ","RELIQUARY OF THE TIDE","RELICARIO DE LA MAREA"]},
- morta:{item:"dead_bell",shell:13612511,orb:12950783,title:["RELICÁRIO DOS MORTOS","RELIQUARY OF THE DEAD","RELICARIO DE LOS MUERTOS"]},
- vulcao:{item:"ember_core",shell:16757120,orb:16737826,title:["RELICÁRIO DA BRASA","RELIQUARY OF EMBERS","RELICARIO DE LA BRASA"]}};
+ temple:{stone:15255696,item:"sun_eye",shell:16767904,orb:16763955,title:["RELICÁRIO DO SOL","RELIQUARY OF THE SUN","RELICARIO DEL SOL"]},
+ catacombs:{stone:12105900,item:"ancients_lantern",shell:12632319,orb:11829759,title:["RELICÁRIO DOS ANTIGOS","RELIQUARY OF THE ANCIENTS","RELICARIO DE LOS ANTIGUOS"]},
+ ruins:{stone:12109984,item:"lock_sigil",shell:15259050,orb:16770229,title:["RELICÁRIO DAS FECHADURAS","RELIQUARY OF THE LOCKS","RELICARIO DE LAS CERRADURAS"]},
+ fortress:{stone:10127492,item:"warden_scale",shell:16758400,orb:16733500,title:["RELICÁRIO DO CARCEREIRO","WARDEN'S RELIQUARY","RELICARIO DEL CARCELERO"]},
+ bosque:{stone:11057304,item:"anhanga_seed",shell:11730864,orb:8317046,title:["RELICÁRIO DA MATA","RELIQUARY OF THE WILDS","RELICARIO DE LA SELVA"]},
+ rio:{stone:11582664,item:"tide_pearl",shell:10476543,orb:7397375,title:["RELICÁRIO DA MARÉ","RELIQUARY OF THE TIDE","RELICARIO DE LA MAREA"]},
+ morta:{stone:11841216,item:"dead_bell",shell:13612511,orb:12950783,title:["RELICÁRIO DOS MORTOS","RELIQUARY OF THE DEAD","RELICARIO DE LOS MUERTOS"]},
+ vulcao:{stone:9075316,item:"ember_core",shell:16757120,orb:16737826,title:["RELICÁRIO DA BRASA","RELIQUARY OF EMBERS","RELICARIO DE LA BRASA"]}};
 Object.assign(Xt,{
  sun_eye:{name:"Olho do Sol",type:"accessory",slot:"accessory",icon:"icon-pz-sun_eye",minRarity:"LEGENDARY",stats:{damage:2,critChance:3,maxHp:2},value:300,desc:"Guarda a luz do meio-dia que um dia iluminou o templo."},
  ancients_lantern:{name:"Lanterna dos Antigos",type:"accessory",slot:"accessory",icon:"icon-pz-ancients_lantern",minRarity:"LEGENDARY",stats:{magicDamage:2,maxMana:5,maxHp:2,defense:1},value:300,desc:"A chama nunca se apaga — nem mesmo entre os mortos."},
@@ -36,6 +36,15 @@ function __pzAuto(B){const S=B?.scene,id=B?.level?.id;if(!S||!__PZL[id])return;S
 
 function __pzBuild(S,D,cfg,lid){__gsTex(S);__leverTex(S);
 if(!S.textures.exists("pz-orb")){const t=S.textures.createCanvas("pz-orb",20,20),g=t.getContext(),q=g.createRadialGradient(8,7,1,10,10,9);q.addColorStop(0,"#ffffff");q.addColorStop(.45,"#e8e8e8");q.addColorStop(1,"rgba(150,150,150,.0)");g.fillStyle=q;g.beginPath();g.arc(10,10,9,0,7);g.fill();g.fillStyle="#ffffff";g.beginPath();g.arc(10,10,5,0,7);g.fill();t.refresh()}
+if(!S.textures.exists("pz-stone")){const t=S.textures.createCanvas("pz-stone",32,40),g=t.getContext(),gr=(x0,y0,x1,y1,st)=>{const q=g.createLinearGradient(x0,y0,x1,y1);for(const[o,c]of st)q.addColorStop(o,c);return q};
+g.fillStyle="rgba(0,0,0,.35)";g.beginPath();g.ellipse(16,37,15,3.2,0,0,7);g.fill();
+g.fillStyle=gr(0,12,0,38,[[0,"#e2e2e2"],[1,"#8c8c8c"]]);g.beginPath();g.moveTo(2,14);g.lineTo(30,14);g.lineTo(30,36);g.lineTo(28,38);g.lineTo(4,38);g.lineTo(2,36);g.closePath();g.fill();
+g.fillStyle=gr(0,3,0,15,[[0,"#ffffff"],[1,"#d0d0d0"]]);g.beginPath();g.moveTo(2,14);g.lineTo(6,5);g.lineTo(9,4);g.lineTo(27,4);g.lineTo(30,6);g.lineTo(30,14);g.closePath();g.fill();
+g.strokeStyle="rgba(60,60,60,.55)";g.lineWidth=1;g.beginPath();g.moveTo(2,25.5);g.lineTo(30,25.5);g.moveTo(15.5,14);g.lineTo(15.5,25.5);g.moveTo(9.5,25.5);g.lineTo(9.5,38);g.moveTo(22.5,25.5);g.lineTo(22.5,38);g.stroke();
+g.strokeStyle="rgba(255,255,255,.55)";g.beginPath();g.moveTo(3,15);g.lineTo(29,15);g.stroke();
+g.strokeStyle="rgba(50,50,50,.6)";g.lineWidth=1.4;g.beginPath();g.arc(16,9,3.2,0,6.3);g.moveTo(16,5);g.lineTo(16,13);g.stroke();
+g.strokeStyle="rgba(40,40,40,.45)";g.lineWidth=1;g.beginPath();g.moveTo(25,27);g.lineTo(27,31);g.lineTo(25,34);g.moveTo(5,17);g.lineTo(7,20);g.stroke();
+g.fillStyle="rgba(30,30,30,.25)";g.fillRect(26,30,3,2);g.fillRect(4,31,2,3);g.fillStyle="rgba(0,0,0,.28)";g.fillRect(29,14,1,22);t.refresh()}
 const T=dt,L3=__L3,R=Math.random,ADD=j.BlendModes.ADD,C=(c,r)=>[c*T+T/2,r*T+T/2],K=(c,r)=>c+","+r,LV=D.level;
 let sd=[...lid].reduce((a,ch)=>(a*31+ch.charCodeAt(0))>>>0,7);const RS=()=>(sd=(Math.imul(sd,1664525)+1013904223)>>>0)/4294967296;
 const slot=S.game.registry.get("save:slot")??1,KEY="depthgate:pz:"+lid+":"+slot;let done={};try{done=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
@@ -126,14 +135,14 @@ S.time.delayedCall(60,beam);done[id]&&ch.show(!0);return{id,name:L3("Selo da Luz
 /* ── blocos de pedra e placas (empurrar uma casa por vez) ── */
 KITS.blocks=()=>{let P=fit(rect(6,5),[[1,1],[4,3],[5,4]]),two=!0;if(!P){P=fit(rect(4,4),[[1,1],[3,3]]);two=!1}if(!P)return null;const id="blocks",X=P.x,Y=P.y,ch=chest(id,X,Y+(two?4:3),"RARE");P.q={x:X,y:Y,w:two?6:4,h:two?5:4};
 const plates=(two?[[X+3,Y+3],[X+4,Y+1]]:[[X+2,Y+3]]).map(([c,r])=>{const[x,y]=C(c,r);return{c,r,img:S.add.image(x,y+2,"pz-plate").setDepth(.8),gl:glow(x,y,.16,16765514,0).setDepth(.81)}});
-const blocks=(two?[[X+1,Y+1],[X+4,Y+3]]:[[X+1,Y+1]]).map(([c,r])=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2+2,"pz-block").setOrigin(.5,1).setDepth(y+T/2).setTint(14205860),z=zone(c,r,28,24);return{c,r,c0:c,r0:r,img,z,mv:!1}});
+const blocks=(two?[[X+1,Y+1],[X+4,Y+3]]:[[X+1,Y+1]]).map(([c,r])=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2+2,"pz-stone").setOrigin(.5,1).setDepth(y+T/2).setTint(cfg.stone),z=zone(c,r,28,24);return{c,r,c0:c,r0:r,img,z,mv:!1}});
 const put=(b,c,r)=>{SOL.delete(K(b.c,b.r));b.c=c;b.r=r;SOL.add(K(c,r));const[x,y]=C(c,r);b.img.setPosition(x,y+T/2+2).setDepth(y+T/2);b.z.setPosition(x,y+4);b.z.body.updateFromGameObject()};
 if(done[id])plates.forEach((p,k)=>put(blocks[k],p.c,p.r));
 const occ=(c,r,me)=>blocks.some(b=>b!==me&&b.c===c&&b.r===r)||SOL.has(K(c,r))&&!blocks.some(b=>b.c===c&&b.r===r);
 const check=()=>{let all=!0;for(const p of plates){const on=blocks.some(b=>!b.mv&&b.c===p.c&&b.r===p.r);p.img.setTexture(on?"pz-plate-on":"pz-plate");p.gl.setAlpha(on?.45:0);on&&!p.on&&sfx("sfx-lever");p.on=on;all=all&&on}if(all&&!done[id])solved(id,ch,L3("os blocos de pedra","the stone blocks","los bloques de piedra"))};
 const push=(b,dx,dy)=>{if(b.mv||done[id])return;const c=b.c+dx,r=b.r+dy;if(!inR(P.q,c,r)||wall(c,r)||occ(c,r,b))return;const[x,y]=C(c,r);b.mv=!0;SOL.delete(K(b.c,b.r));b.c=c;b.r=r;SOL.add(K(c,r));sfx("sfx-door-locked");
 S.tweens.add({targets:b.img,x,y:y+T/2+2,duration:150,ease:"Quad.easeOut",onUpdate:()=>{b.img.setDepth(b.img.y);b.z.setPosition(b.img.x,b.img.y-T/2+2);b.z.body.updateFromGameObject()},onComplete:()=>{b.mv=!1;b.z.setPosition(x,y+4);b.z.body.updateFromGameObject();S.effectsRef?.burstTinted(x,y+10,13417386,6);check()}})};
-{const[c,r]=two?[X+5,Y+4]:[X+3,Y+3],[x,y]=C(c,r),o=S.add.image(x,y+T/2,"pz-reset").setOrigin(.5,1).setDepth(y+T/2).setTint(16771264);zone(c,r,20,18);label(o,()=>done[id]?null:L3("Recomeçar os blocos","Reset the blocks","Reiniciar los bloques"));o.interact=()=>{if(blocks.some(b=>b.mv))return;for(const b of blocks){put(b,b.c0,b.r0);S.effectsRef?.burstTinted(b.img.x,b.img.y-12,13417386,10)}sfx("sfx-shrine-use");check()};OBJ.push(o)}
+{const[c,r]=two?[X+5,Y+4]:[X+3,Y+3],[x,y]=C(c,r),o=S.add.image(x,y+T/2,"pz-reset").setOrigin(.5,1).setDepth(y+T/2).setTint(cfg.stone);zone(c,r,20,18);label(o,()=>done[id]?null:L3("Recomeçar os blocos","Reset the blocks","Reiniciar los bloques"));o.interact=()=>{if(blocks.some(b=>b.mv))return;for(const b of blocks){put(b,b.c0,b.r0);S.effectsRef?.burstTinted(b.img.x,b.img.y-12,13417386,10)}sfx("sfx-shrine-use");check()};OBJ.push(o)}
 let hold=0,hb=null;on((t,ms)=>{if(done[id]||S.state!=="playing")return;const p=S.player;if(!p?.body)return;const im=S.inputMgr;let a=im?.axis?.()||{x:0,y:0};const k=im?.keyboardAxis?.()||{x:0,y:0};Math.hypot(k.x,k.y)>Math.hypot(a.x,a.y)&&(a=k);
 const px=p.body.center.x,py=p.body.bottom-6;let tg=null,dx=0,dy=0;if(Math.abs(a.x)>.55&&Math.abs(a.x)>Math.abs(a.y))dx=Math.sign(a.x);else if(Math.abs(a.y)>.55)dy=Math.sign(a.y);
 if(dx||dy)for(const b of blocks){const[x,y]=C(b.c,b.r);if(dx&&Math.abs(py-y)<14&&Math.abs(px+dx*22-x)<12||dy&&Math.abs(px-x)<14&&Math.abs(py+dy*20-y)<12){tg=b;break}}
