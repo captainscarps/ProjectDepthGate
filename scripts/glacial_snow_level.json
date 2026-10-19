@@ -821,7 +821,13 @@
      "row": 64
     }
    ],
-   "decor": []
+   "decor": [
+    {
+     "type": "gs-puzzles",
+     "col": 53,
+     "row": 60
+    }
+   ]
   },
   {
    "id": "gs-bosque",

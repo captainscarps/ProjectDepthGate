@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.85.0-otimizacao-luz";
+const CACHE = "ded-web-v4.86.0-enigmas-glaciais";
 
 self.addEventListener("install", () => self.skipWaiting());
 

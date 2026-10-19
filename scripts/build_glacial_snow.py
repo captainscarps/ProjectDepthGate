@@ -563,7 +563,8 @@ json.dump(meta, open(os.path.join(OUT, "gsb-meta.json"), "w"), separators=(",", 
 
 LEVEL = {"rooms": [], "corridors": CORR, "door": DOOR, "spawn": SPAWN}
 for r in ROOMS:
-    LEVEL["rooms"].append({**r, "walls": walls[r["id"]], "enemies": [{"type": t, "col": x, "row": y} for t, x, y in ENEMIES[r["id"]]], "decor": []})
+    LEVEL["rooms"].append({**r, "walls": walls[r["id"]], "enemies": [{"type": t, "col": x, "row": y} for t, x, y in ENEMIES[r["id"]]],
+                           "decor": [{"type": "gs-puzzles", "col": 53, "row": 60}] if r["id"] == "gs-lago" else []})   # enigmas: patch_glacial_puzzles.py
 json.dump(LEVEL, open(os.path.join(ROOT, "scripts", "glacial_snow_level.json"), "w"), ensure_ascii=False, indent=1)
 
 MIR = os.path.join(ROOT, "Projeto atualizado", "assets", "pixel-art")
