@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.88.2-musica-abertura";
+const CACHE = "ded-web-v4.89.0-enigmas-variados";
 
 self.addEventListener("install", () => self.skipWaiting());
 

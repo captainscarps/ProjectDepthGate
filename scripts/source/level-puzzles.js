@@ -1,9 +1,13 @@
 /* ── Enigmas nas outras fases da campanha ─────────────────────────────────────────────────────────
    Deserto Esquecido, Catacumbas, Ruínas Antigas, Fortaleza dos Dragões, Profundezas Amazônicas, Ilhas,
    Floresta Morta e Vulcão de Cinzas (a Cidadela Glacial tem os seus em glacial-puzzles.js).
-   Cada fase recebe quatro enigmas, escolhidos entre:
-     alavancas na ordem (dica na lápide) · braseiros acesos ao mesmo tempo · espelhos e feixe de luz ·
-     blocos de pedra empurrados até as placas · runas da memória
+   Cada fase recebe quatro enigmas, escolhidos entre os cinco tipos abaixo, e cada fase resolve de um jeito
+   diferente (tabela __PZV):
+     alavancas: 3 a 5, dica pela posição (contando do oeste ou do leste) ou pelos glifos acima delas
+     braseiros: todos ao mesmo tempo (com tempo) · numa ordem dada por glifos · só os glifos marcados
+     espelhos: feixe com 2 ou 3 curvas e de 1 a 3 espelhos-isca
+     blocos de pedra: arranjo gerado por fase (pilares, 1 ou 2 blocos) e conferido por um resolvedor
+     runas da memória: tamanho das rodadas por fase, algumas de trás para frente
    e um Relicário Selado. Cada enigma resolvido acende um selo no Relicário; com todos os selos a casca
    se quebra e libera um acessório lendário único da fase.
    As peças são posicionadas na hora em que a fase é montada, só em chão livre:
@@ -32,6 +36,16 @@ Object.assign(Xt,{
 try{Object.assign(_s,{"item.sun_eye":"Eye of the Sun","item.ancients_lantern":"Lantern of the Ancients","item.lock_sigil":"Signet of the Locks","item.warden_scale":"Warden's Scale","item.anhanga_seed":"Anhangá Seed","item.tide_pearl":"Tide Pearl","item.dead_bell":"Bell of the Dead","item.ember_core":"Ember Core"});
 Object.assign(Io,{"item.sun_eye":"Ojo del Sol","item.ancients_lantern":"Linterna de los Antiguos","item.lock_sigil":"Sello de las Cerraduras","item.warden_scale":"Escama del Carcelero","item.anhanga_seed":"Semilla del Anhangá","item.tide_pearl":"Perla de la Marea","item.dead_bell":"Campana de los Muertos","item.ember_core":"Núcleo de Brasa"})}catch(e){}
 
+/* variações por fase: cada fase resolve de um jeito diferente */
+const __PZV={
+ temple:{levers:{n:4,hint:"pos"},braziers:{mode:"all",n:4},mirror:{turns:2,decoys:1},blocks:{blocks:2,pillars:1},runes:{len:[3,4,5]}},
+ catacombs:{levers:{n:5,hint:"glyph"},braziers:{mode:"some",n:6,lit:3},mirror:{turns:3,decoys:2},blocks:{blocks:1,pillars:2},runes:{len:[4,5],rev:1}},
+ ruins:{levers:{n:3,hint:"glyph"},braziers:{mode:"order",n:4},mirror:{turns:2,decoys:2},blocks:{blocks:2,pillars:2},runes:{len:[3,4,5,6]}},
+ fortress:{levers:{n:4,hint:"glyph"},braziers:{mode:"all",n:5},mirror:{turns:3,decoys:1},blocks:{blocks:1,pillars:1},runes:{len:[3,4],rev:1}},
+ bosque:{levers:{n:5,hint:"pos",fromEast:1},braziers:{mode:"order",n:5},mirror:{turns:2,decoys:3},blocks:{blocks:2,pillars:3},runes:{len:[4,5,6]}},
+ rio:{levers:{n:3,hint:"pos",fromEast:1},braziers:{mode:"some",n:5,lit:2},mirror:{turns:3,decoys:3},blocks:{blocks:1,pillars:3},runes:{len:[3,5],rev:1}},
+ morta:{levers:{n:4,hint:"pos",fromEast:1},braziers:{mode:"some",n:6,lit:4},mirror:{turns:2,decoys:1},blocks:{blocks:2,pillars:1},runes:{len:[5,6]}},
+ vulcao:{levers:{n:5,hint:"glyph"},braziers:{mode:"order",n:6},mirror:{turns:3,decoys:2},blocks:{blocks:1,pillars:2},runes:{len:[4,5,6],rev:1}}};
 function __pzAuto(B){const S=B?.scene,id=B?.level?.id;if(!S||!__PZL[id])return;S.time.delayedCall(90,()=>{if(!S.sys?.isActive?.()||S.level?.endless||S.game.registry.get("mode")==="endless")return;try{__pzBuild(S,B,__PZL[id],id)}catch(e){window.__pzErr=String(e&&e.stack||e)}})}
 
 function __pzBuild(S,D,cfg,lid){__gsTex(S);__leverTex(S);
@@ -90,74 +104,105 @@ label(o,()=>o.visible&&!o.opened?W("g.openChest"):null);o.interact=()=>{if(o.ope
 o.show=inst=>{o.setVisible(!0);if(inst)return;o.setAlpha(0).setScale(.4);S.tweens.add({targets:o,alpha:1,scale:1,duration:500,ease:"Back.easeOut"});S.effectsRef?.burstTinted(x,y-6,9437183,24);S.effectsRef?.shockwaveRing?.(x,y,30)};OBJ.push(o);return o};
 const solved=(id,ch,t,inst)=>{if(!inst){done[id]=1;save();banner(L3("ENIGMA RESOLVIDO: ","PUZZLE SOLVED: ","ENIGMA RESUELTO: ")+t,"#9ff0ff");sfx("sfx-secret-reveal");S.cameraSys?.shake?.(.004,200)}ch.show(inst)};
 const tone=(f,d=.38)=>{const E=S.game.audioEngine;if(!E?.ctx||!E.sfxBus)return;try{const t0=E.ctx.currentTime,o=E.ctx.createOscillator(),o2=E.ctx.createOscillator(),g=E.ctx.createGain();o.type="sine";o2.type="triangle";o.frequency.value=f;o2.frequency.value=f*2.01;g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.32,t0+.01);g.gain.exponentialRampToValueAtTime(.001,t0+d*2.2);o.connect(g);o2.connect(g);g.connect(E.sfxBus);o.start(t0);o2.start(t0);o.stop(t0+d*2.4);o2.stop(t0+d*2.4)}catch(e){}};
-const KITS={};
+const KITS={},V=__PZV[lid]||__PZV.temple;
+/* glifos (Sol, Lua, Estrela, Triângulo, Losango, Olho) desenhados uma vez */
+if(!S.textures.exists("pz-glyph-0"))for(let k=0;k<6;k++){const t=S.textures.createCanvas("pz-glyph-"+k,16,16),g=t.getContext();g.fillStyle="#ffffff";g.strokeStyle="#ffffff";g.lineWidth=1.6;g.beginPath();
+if(k===0){g.arc(8,8,3.4,0,7);g.fill();for(let a=0;a<8;a++){const q=a*Math.PI/4;g.moveTo(8+Math.cos(q)*5,8+Math.sin(q)*5);g.lineTo(8+Math.cos(q)*7.4,8+Math.sin(q)*7.4)}g.stroke()}
+else if(k===1){g.arc(8,8,6,0,7);g.fill();g.globalCompositeOperation="destination-out";g.beginPath();g.arc(11,6,5.4,0,7);g.fill();g.globalCompositeOperation="source-over"}
+else if(k===2){for(let a=0;a<10;a++){const q=-Math.PI/2+a*Math.PI/5,r=a%2?3:7.2;a?g.lineTo(8+Math.cos(q)*r,8+Math.sin(q)*r):g.moveTo(8+Math.cos(q)*r,8+Math.sin(q)*r)}g.closePath();g.fill()}
+else if(k===3){g.moveTo(8,1.5);g.lineTo(14.5,14);g.lineTo(1.5,14);g.closePath();g.fill()}
+else if(k===4){g.moveTo(8,1);g.lineTo(14,8);g.lineTo(8,15);g.lineTo(2,8);g.closePath();g.fill()}
+else{g.moveTo(1,8);g.quadraticCurveTo(8,1,15,8);g.quadraticCurveTo(8,15,1,8);g.closePath();g.fill();g.globalCompositeOperation="destination-out";g.beginPath();g.arc(8,8,2.6,0,7);g.fill();g.globalCompositeOperation="source-over"}t.refresh()}
+if(!S.textures.exists("pz-post")){const t=S.textures.createCanvas("pz-post",22,34),g=t.getContext(),q=g.createLinearGradient(3,0,19,0);q.addColorStop(0,"#7c7c7c");q.addColorStop(.45,"#d8d8d8");q.addColorStop(1,"#6a6a6a");g.fillStyle="rgba(0,0,0,.35)";g.beginPath();g.ellipse(11,31,10,3,0,0,7);g.fill();g.fillStyle=q;g.fillRect(4,6,14,25);g.fillStyle="#efefef";g.beginPath();g.moveTo(3,7);g.lineTo(11,1);g.lineTo(19,7);g.closePath();g.fill();g.fillStyle="rgba(0,0,0,.3)";g.fillRect(4,28,14,3);t.refresh()}
+const GN=[["Sol","Sun","Sol"],["Lua","Moon","Luna"],["Estrela","Star","Estrella"],["Triângulo","Triangle","Triángulo"],["Losango","Diamond","Rombo"],["Olho","Eye","Ojo"]],gname=k=>L3(...GN[k]),gde=k=>L3(["do","da","da","do","do","do"][k]+" "+GN[k][0],"the "+GN[k][1],["del","de la","de la","del","del","del"][k]+" "+GN[k][2]);
+const perm=n=>{const a=[...Array(n).keys()];for(let k=n-1;k>0;k--){const m=Math.floor(RS()*(k+1));[a[k],a[m]]=[a[m],a[k]]}return a};
+const glyph=(x,y,k,d)=>S.add.image(x,y,"pz-glyph-"+k).setDepth(d).setTint(16766072).setAlpha(.95);
+const ORD=[["primeira","first","primera"],["segunda","second","segunda"],["terceira","third","tercera"],["quarta","fourth","cuarta"],["quinta","fifth","quinta"],["sexta","sixth","sexta"]];
+const plaque=(c,r,title,lines)=>{const[x,y]=C(c,r),pl=S.add.image(x,y+T/2,"pz-plaque").setOrigin(.5,1).setDepth(y+T/2);zone(c,r,20,16);label(pl,()=>L3("Ler a lápide","Read the tombstone","Leer la lápida"));pl.interact=()=>S.game.events.emit("story:show",{title,lines:lines()});OBJ.push(pl);return pl};
 
-/* ── alavancas na ordem ── */
-KITS.levers=()=>{let P=null;for(let t=0;t<6&&!P;t++){P=pick(5,2,8,4);if(P){const xs=P.sel.slice(0,3).map(q=>q[0]);if(new Set(xs).size<3){for(const[c,r]of P.sel.slice(0,4))SOLC.delete(K(c,r));P=null}}}if(!P)return null;const id="levers",LP=P.sel.slice(0,3).sort((a,b)=>a[0]-b[0]),PL=P.sel[3],CH=P.sel[4],ch=chest(id,CH[0],CH[1],"RARE");
-const order=[0,1,2];for(let k=2;k>0;k--){const m=Math.floor(RS()*(k+1));[order[k],order[m]]=[order[m],order[k]]}order[0]===0&&order[1]===1&&([order[0],order[1]]=[order[1],order[0]]);let seq=[];
-const lv=LP.map(([lc,lr],k)=>{const[x,y]=C(lc,lr),img=S.add.image(x,y,"cx-lever-off").setOrigin(.5,.75).setDepth(y);zone(lc,lr,18,14);done[id]&&img.setTexture("cx-lever-on");label(img,()=>done[id]||seq.includes(k)?null:L3("Puxar a alavanca","Pull the lever","Tirar de la palanca"));
-img.interact=()=>{if(done[id]||seq.includes(k))return;seq.push(k);img.setTexture("cx-lever-on");sfx("sfx-lever");S.effectsRef?.burstTinted(x,y-8,13214282,8);if(seq.length===3){if(seq.every((v,q)=>v===order[q]))solved(id,ch,L3("as alavancas","the levers","las palancas"));else{S.time.delayedCall(500,()=>{sfx("sfx-event-refuse");S.cameraSys?.shake?.(.005,180);S.effectsRef?.floatText(x,y-30,L3("Ordem errada…","Wrong order…","Orden equivocado…"),"#e08a7a");seq=[];lv.forEach(o=>o.setTexture("cx-lever-off"))})}}};OBJ.push(img);return img});
-const NM=[["oeste","west","oeste"],["meio","middle","medio"],["leste","east","este"]],nm=k=>L3(...NM[order[k]]);
-const[x,y]=C(...PL),pl=S.add.image(x,y+T/2,"pz-plaque").setOrigin(.5,1).setDepth(y+T/2);zone(PL[0],PL[1],20,16);label(pl,()=>L3("Ler a lápide","Read the tombstone","Leer la lápida"));
-pl.interact=()=>S.game.events.emit("story:show",{title:L3("LÁPIDE ANTIGA","ANCIENT TOMBSTONE","LÁPIDA ANTIGUA"),lines:[L3("“Primeiro desperta a do "+nm(0)+".","“First wake the "+nm(0)+" one.","“Primero despierta la del "+nm(0)+"."),L3("Depois, a do "+nm(1)+".","Then the "+nm(1)+" one.","Después, la del "+nm(1)+"."),L3("Por último, a do "+nm(2)+".”","Last, the "+nm(2)+" one.”","Por último, la del "+nm(2)+".”")]});OBJ.push(pl);done[id]&&ch.show(!0);
+/* ── alavancas: 3 a 5, dica pela posição (contando de um lado) ou pelos glifos ── */
+KITS.levers=()=>{const N=V.levers.n;let P=null;for(let t=0;t<6&&!P;t++){P=pick(N+2,2,9,N+1);if(P){const xs=P.sel.slice(0,N).map(q=>q[0]);if(new Set(xs).size<N){for(const[c,r]of P.sel.slice(0,N+1))SOLC.delete(K(c,r));P=null}}}if(!P)return null;
+const id="levers",LP=P.sel.slice(0,N).sort((a,b)=>a[0]-b[0]),PL=P.sel[N],CH=P.sel[N+1],ch=chest(id,CH[0],CH[1],"RARE"),order=perm(N),gl=perm(6).slice(0,N),fromE=V.levers.fromEast;let seq=[];
+order.every((v,k)=>v===k)&&order.reverse();
+const lv=LP.map(([lc,lr],k)=>{const[x,y]=C(lc,lr),img=S.add.image(x,y,"cx-lever-off").setOrigin(.5,.75).setDepth(y);zone(lc,lr,18,14);V.levers.hint==="glyph"&&glyph(x,y-30,gl[k],y+1);done[id]&&img.setTexture("cx-lever-on");label(img,()=>done[id]||seq.includes(k)?null:L3("Puxar a alavanca","Pull the lever","Tirar de la palanca"));
+img.interact=()=>{if(done[id]||seq.includes(k))return;seq.push(k);img.setTexture("cx-lever-on");sfx("sfx-lever");S.effectsRef?.burstTinted(x,y-8,13214282,8);if(seq.length===N){if(seq.every((v,q)=>v===order[q]))solved(id,ch,L3("as alavancas","the levers","las palancas"));else{S.time.delayedCall(500,()=>{sfx("sfx-event-refuse");S.cameraSys?.shake?.(.005,180);S.effectsRef?.floatText(x,y-30,L3("Ordem errada…","Wrong order…","Orden equivocado…"),"#e08a7a");seq=[];lv.forEach(o=>o.setTexture("cx-lever-off"))})}}};OBJ.push(img);return img});
+const say=k=>V.levers.hint==="glyph"?L3("a "+gde(gl[k]),gde(gl[k])+" one","la "+gde(gl[k])):(()=>{const q=fromE?N-1-k:k;return L3("a "+ORD[q][0]+" contando do "+(fromE?"leste":"oeste"),"the "+ORD[q][1]+" counting from the "+(fromE?"east":"west"),"la "+ORD[q][2]+" contando desde el "+(fromE?"este":"oeste"))})();
+plaque(PL[0],PL[1],L3("LÁPIDE ANTIGA","ANCIENT TOMBSTONE","LÁPIDA ANTIGUA"),()=>{const st=order.map((k,q)=>(q===0?L3("“Primeiro, ","“First, ","“Primero, "):q===N-1?L3("por último, ","last, ","por último, "):L3("depois, ","then, ","después, "))+say(k)+(q===N-1?".”":";")),o=[];for(let q=0;q<st.length;q+=2)o.push(st.slice(q,q+2).join(" "));return o});done[id]&&ch.show(!0);
 return{id,name:L3("Selo do Ferro","Seal of Iron","Sello del Hierro"),col:13161184,at:PL,room:P.room,dbg:{solve:()=>order.forEach(k=>lv[k].interact())}}};
 
-/* ── braseiros ── */
-KITS.braziers=()=>{const P=pick(5,3,9,4);if(!P)return null;const id="braziers",BP=P.sel.slice(0,4),CH=P.sel[4],ch=chest(id,CH[0],CH[1],"RARE");let tour=0;{const left=BP.slice(1);let cur=BP[0];while(left.length){left.sort((a,b)=>Math.hypot(a[0]-cur[0],a[1]-cur[1])-Math.hypot(b[0]-cur[0],b[1]-cur[1]));const nx=left.shift();tour+=Math.hypot(nx[0]-cur[0],nx[1]-cur[1]);cur=nx}}const BURN=Math.max(6,Math.min(13,3.5+tour*.42));
-const br=BP.map(([c,r])=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2,"pz-brazier").setOrigin(.5,1).setDepth(y+T/2);zone(c,r,20,16);const f=S.add.sprite(x,y+T/2-20,"torch-flame",0).setOrigin(.5,1).setScale(1.25).setDepth(y+T/2+1).setVisible(!1);S.anims.exists("torch-flame-burn")&&f.play("torch-flame-burn");const g=glow(x,y-6,.5,16750130,0).setDepth(9001),Lt=lit(x,y-10,16750130,120,0);
-const b={img,f,g,Lt,t:0};label(img,()=>done[id]||b.t>0?null:L3("Acender o braseiro","Light the brazier","Encender el brasero"));img.interact=()=>{if(done[id]||b.t>0)return;b.t=BURN;sfx("sfx-mage-fireball");S.effectsRef?.burstTinted(x,y-14,16750130,12);check()};OBJ.push(img);return b});
-const set=(b,on,k=1)=>{b.f.setVisible(on).setScale(1.25*k);b.g.setAlpha(on?.42*k:0);b.Lt.intensity=on?1.3*k:0};
-const check=()=>{if(br.every(b=>b.t>0)&&!done[id])solved(id,ch,L3("os braseiros","the braziers","los braseros"))};
-if(done[id]){br.forEach(b=>{b.t=1e9;set(b,!0)});ch.show(!0)}
-on((t,ms)=>{for(const b of br){if(done[id]){set(b,!0,1+.05*Math.sin(t/120));continue}if(b.t>0){b.t-=ms/1e3;if(b.t<=0){b.t=0;set(b,!1);S.effectsRef?.burstTinted(b.img.x,b.img.y-20,7368816,6)}else set(b,!0,b.t<2.5?.45+.55*(b.t/2.5)*(.8+.2*Math.sin(t/60)):1)}}});
-return{id,name:L3("Selo do Fogo","Seal of Fire","Sello del Fuego"),col:16750154,at:BP[0],room:P.room,dbg:{solve:()=>br.forEach(b=>b.img.interact())}}};
+/* ── braseiros: todos ao mesmo tempo (com tempo) · numa ordem (glifos) · só os marcados (glifos) ── */
+KITS.braziers=()=>{const M=V.braziers.mode,N=V.braziers.n,needPl=M!=="all",P=pick(N+1+(needPl?1:0),3,10,N+(needPl?1:0));if(!P)return null;const id="braziers",BP=P.sel.slice(0,N),PL=needPl?P.sel[N]:null,CH=P.sel[P.sel.length-1],ch=chest(id,CH[0],CH[1],"RARE");
+let tour=0;{const left=BP.slice(1);let cur=BP[0];while(left.length){left.sort((a,b)=>Math.hypot(a[0]-cur[0],a[1]-cur[1])-Math.hypot(b[0]-cur[0],b[1]-cur[1]));const nx=left.shift();tour+=Math.hypot(nx[0]-cur[0],nx[1]-cur[1]);cur=nx}}
+const BURN=M==="all"?Math.max(6,Math.min(14,3.5+tour*.42)):1e9,gl=perm(6).slice(0,N),order=perm(N),want=M==="some"?new Set(perm(N).slice(0,V.braziers.lit)):null;let seq=[];
+const br=BP.map(([c,r],k)=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2,"pz-brazier").setOrigin(.5,1).setDepth(y+T/2);zone(c,r,20,16);M!=="all"&&glyph(x,y+T/2-6,gl[k],y+T/2+.5).setScale(.8);const f=S.add.sprite(x,y+T/2-20,"torch-flame",0).setOrigin(.5,1).setScale(1.25).setDepth(y+T/2+1).setVisible(!1);S.anims.exists("torch-flame-burn")&&f.play("torch-flame-burn");const g=glow(x,y-6,.5,16750130,0).setDepth(9001),Lt=lit(x,y-10,16750130,120,0);
+const b={img,f,g,Lt,t:0,k};label(img,()=>done[id]||b.t>0?null:L3("Acender o braseiro","Light the brazier","Encender el brasero"));img.interact=()=>{if(done[id]||b.t>0)return;b.t=BURN;sfx("sfx-mage-fireball");S.effectsRef?.burstTinted(x,y-14,16750130,12);set(b,!0);M==="all"||seq.push(k);check()};OBJ.push(img);return b});
+function set(b,on,k=1){b.f.setVisible(on).setScale(1.25*k);b.g.setAlpha(on?.42*k:0);b.Lt.intensity=on?1.3*k:0}
+const fail=()=>{S.time.delayedCall(450,()=>{sfx("sfx-event-refuse");S.cameraSys?.shake?.(.005,180);for(const b of br){b.t=0;set(b,!1);S.effectsRef?.burstTinted(b.img.x,b.img.y-20,7368816,6)}seq=[]})};
+const check=()=>{if(done[id])return;if(M==="all"){br.every(b=>b.t>0)&&solved(id,ch,L3("os braseiros","the braziers","los braseros"));return}
+if(M==="order"){const n=seq.length;if(seq[n-1]!==order[n-1])return fail();n===N&&solved(id,ch,L3("os braseiros","the braziers","los braseros"));return}
+const last=seq[seq.length-1];if(!want.has(last))return fail();seq.length===want.size&&solved(id,ch,L3("os braseiros","the braziers","los braseros"))};
+needPl&&plaque(PL[0],PL[1],L3("LÁPIDE DO FOGO","TOMBSTONE OF FIRE","LÁPIDA DEL FUEGO"),()=>M==="order"?[L3("“Acenda o fogo na ordem em que os astros despertam:","“Light the fire in the order the signs awaken:","“Enciende el fuego en el orden en que despiertan los signos:"),order.map(k=>gname(gl[k])).join("  →  ")+"”"]:[L3("“Só o fogo certo abre o caminho. Acenda apenas:","“Only the right fire opens the way. Light only:","“Solo el fuego correcto abre el camino. Enciende solo:"),[...want].map(k=>gname(gl[k])).join(" · ")+"”",L3("Um fogo errado apaga todos.","A wrong fire puts them all out.","Un fuego equivocado los apaga todos.")]);
+if(done[id]){br.forEach(b=>{if(M!=="some"||want.has(b.k)){b.t=1e9;set(b,!0)}});ch.show(!0)}
+M==="all"&&on((t,ms)=>{for(const b of br){if(done[id]){b.t>0&&set(b,!0,1+.05*Math.sin(t/120));continue}if(b.t>0){b.t-=ms/1e3;if(b.t<=0){b.t=0;set(b,!1);S.effectsRef?.burstTinted(b.img.x,b.img.y-20,7368816,6)}else set(b,!0,b.t<2.5?.45+.55*(b.t/2.5)*(.8+.2*Math.sin(t/60)):1)}}});
+return{id,name:L3("Selo do Fogo","Seal of Fire","Sello del Fuego"),col:16750154,at:BP[0],room:P.room,dbg:{solve:()=>{(M==="all"?br.map((b,k)=>k):M==="order"?order:[...want]).forEach(k=>br[k].img.interact())}}}};
 
-/* ── espelhos e feixe de luz ── */
-KITS.mirror=()=>{let P=null;for(const R0 of rooms()){const q=R0.r.rect,res=[];
-for(let y=q.y;y<q.y+q.h;y++)for(let x=q.x;x<q.x+q.w;x++){if(!ok(q,x,y))continue;for(const d1 of[1,-1])for(let a=1;a<=8;a++){if(!ok(q,x+d1*a,y))break;if(a<3)continue;const ax=x+d1*a;
-for(const d2 of[1,-1])for(let b=1;b<=5;b++){if(!ok(q,ax,y+d2*b))break;if(b<2)continue;const by=y+d2*b;for(let c=1;c<=a;c++){if(!ok(q,ax-d1*c,by))break;c>=2&&res.push([x,y,d1,a,d2,b,c])}}}}
-for(const m of shuf(res).slice(0,40)){const[x,y,d1,a,d2,b,c]=m,ax=x+d1*a,by=y+d2*b,PT=new Set;for(let k=0;k<=a;k++)PT.add(K(x+d1*k,y));for(let k=0;k<=b;k++)PT.add(K(ax,y+d2*k));for(let k=0;k<=c;k++)PT.add(K(ax-d1*k,by));
-const F=[];for(let yy=q.y;yy<q.y+q.h;yy++)for(let xx=q.x;xx<q.x+q.w;xx++){if(!ok(q,xx,yy)||PT.has(K(xx,yy)))continue;let adj=!1;for(let dx=-1;dx<=1&&!adj;dx++)for(let dy=-1;dy<=1;dy++)if(PT.has(K(xx+dx,yy+dy))){adj=!0;break}adj||F.push([xx,yy])}
-const ex=shuf(F).filter(f=>N4.some(([dx,dy])=>ok(q,f[0]+dx,f[1]+dy)&&!PT.has(K(f[0]+dx,f[1]+dy))||PT.has(K(f[0]+dx,f[1]+dy))));if(ex.length<2)continue;
-const sol=[[x,y],[ax,y],[ax,by],[ax-d1*c,by],ex[0]];if(!conn(sol))continue;commit(R0,sol,[...[...PT].map(k=>k.split(",").map(Number)),ex[0],ex[1]]);
-P={room:R0.r,q,SRC:[x,y],TGT:[ax-d1*c,by],A:[ax,y,d2===-d1?"/":"\\"],B:[ax,by,d2===d1?"/":"\\"],DC:ex[0],CH:ex[1]};break}if(P)break}
-if(!P)return null;const id="mirror",ch=chest(id,P.CH[0],P.CH[1],"RARE"),SRC=P.SRC,TGT=P.TGT,flip=o=>o==="/"?"\\":"/",MS=[[P.A[0],P.A[1],flip(P.A[2])],[P.B[0],P.B[1],flip(P.B[2])],[P.DC[0],P.DC[1],RS()<.5?"/":"\\"]],D1=Math.sign(P.A[0]-SRC[0]);
+/* ── espelhos: caminho do feixe com 2 ou 3 curvas, espelhos-isca ── */
+KITS.mirror=()=>{const TURNS=V.mirror.turns,DEC=V.mirror.decoys;let P=null;
+for(const R0 of rooms()){const q=R0.r.rect,starts=[];for(let y=q.y;y<q.y+q.h;y++)for(let x=q.x;x<q.x+q.w;x++)ok(q,x,y)&&starts.push([x,y]);
+for(const st of shuf(starts).slice(0,60)){/* caminho: segmentos retos alternando eixo, sem cruzar */
+for(let tr=0;tr<12&&!P;tr++){const pts=[st],used=new Set([K(...st)]);let dir=RS()<.5?[RS()<.5?1:-1,0]:[0,RS()<.5?1:-1],good=!0;const turns=[];
+for(let sg=0;sg<=TURNS&&good;sg++){const len=2+Math.floor(RS()*4);let[c,r]=pts[pts.length-1];for(let k=0;k<len;k++){c+=dir[0];r+=dir[1];if(!ok(q,c,r)||used.has(K(c,r))){good=!1;break}used.add(K(c,r))}if(!good)break;pts.push([c,r]);
+if(sg<TURNS){const nd=dir[0]?[0,RS()<.5?1:-1]:[RS()<.5?1:-1,0];turns.push([c,r,dir,nd]);dir=nd}}if(!good)continue;
+const tg=pts[pts.length-1],F=[];for(let yy=q.y;yy<q.y+q.h;yy++)for(let xx=q.x;xx<q.x+q.w;xx++){if(!ok(q,xx,yy)||used.has(K(xx,yy)))continue;let adj=!1;for(let dx=-1;dx<=1&&!adj;dx++)for(let dy=-1;dy<=1;dy++)if(used.has(K(xx+dx,yy+dy))){adj=!0;break}adj||F.push([xx,yy])}
+const ex=shuf(F).filter(f=>N4.some(([dx,dy])=>ok(q,f[0]+dx,f[1]+dy)));if(ex.length<DEC+1)continue;const sol=[st,...turns.map(t=>[t[0],t[1]]),tg,...ex.slice(0,DEC)];if(!conn(sol))continue;
+commit(R0,sol,[...[...used].map(k=>k.split(",").map(Number)),...ex.slice(0,DEC+1)]);
+/* tipo de espelho que cada curva precisa: '/' leva (dx,dy) em (-dy,-dx); '\' em (dy,dx) */
+P={room:R0.r,q,SRC:st,TGT:tg,D0:turns.length?turns[0][2]:dir,TU:turns.map(([c,r,di,no])=>[c,r,(-di[1]===no[0]&&-di[0]===no[1])?"/":"\\"]),DC:ex.slice(0,DEC),CH:ex[DEC]};}if(P)break}if(P)break}
+if(!P)return null;const id="mirror",ch=chest(id,P.CH[0],P.CH[1],"RARE"),SRC=P.SRC,TGT=P.TGT,flip=o=>o==="/"?"\\":"/";
+const MS=[...P.TU.map(([c,r,need],k)=>[c,r,k===0||RS()<.6?flip(need):need]),...P.DC.map(([c,r])=>[c,r,RS()<.5?"/":"\\"])];
 const[sx,sy]=C(...SRC),[tx,ty]=C(...TGT);S.add.image(sx,sy+T/2,"ice-crystal").setOrigin(.5,1).setDepth(sy+T/2).setTint(16775880);zone(...SRC,20,18);const sg=glow(sx,sy-8,.3,16769658,.55).setDepth(9001);S.tweens.add({targets:sg,alpha:.3,duration:900,yoyo:!0,repeat:-1});lit(sx,sy-8,16769658,110,1);
 const tgtI=S.add.image(tx,ty+T/2,"ice-crystal").setOrigin(.5,1).setDepth(ty+T/2).setTint(6976640);zone(...TGT,20,18);const tg=glow(tx,ty-8,.32,16769658,0).setDepth(9001);let tL=null;
-const mirrors=MS.map(([c,r,o])=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2+2,o==="/"?"pz-mirror-a":"pz-mirror-b").setOrigin(.5,1).setDepth(y+T/2);zone(c,r,20,18);const m={c,r,o,img};label(img,()=>done[id]?null:L3("Girar o espelho","Turn the mirror","Girar el espejo"));img.interact=()=>{if(done[id])return;m.o=m.o==="/"?"\\":"/";img.setTexture(m.o==="/"?"pz-mirror-a":"pz-mirror-b");S.tweens.add({targets:img,scaleX:{from:-.2,to:1},duration:200,ease:"Back.easeOut"});sfx("sfx-ui-tab");beam()};OBJ.push(img);return m});
-if(done[id])for(const[k,need]of[[0,P.A[2]],[1,P.B[2]]]){mirrors[k].o=need;mirrors[k].img.setTexture(need==="/"?"pz-mirror-a":"pz-mirror-b")}
+const mirrors=MS.map(([c,r,o])=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2+2,o==="/"?"pz-mirror-a":"pz-mirror-b").setOrigin(.5,1).setDepth(y+T/2);zone(c,r,20,18);const m={c,r,o,img};label(img,()=>done[id]?null:L3("Girar o espelho","Turn the mirror","Girar el espejo"));img.interact=()=>{if(done[id])return;m.o=flip(m.o);img.setTexture(m.o==="/"?"pz-mirror-a":"pz-mirror-b");S.tweens.add({targets:img,scaleX:{from:-.2,to:1},duration:200,ease:"Back.easeOut"});sfx("sfx-ui-tab");beam()};OBJ.push(img);return m});
+if(done[id])P.TU.forEach(([c,r,need],k)=>{mirrors[k].o=need;mirrors[k].img.setTexture(need==="/"?"pz-mirror-a":"pz-mirror-b")});
 const bg=S.add.graphics().setDepth(1.2).setBlendMode(ADD);let pts=[];
-const beam=()=>{let c=SRC[0],r=SRC[1],dx=D1,dy=0,hit=!1;pts=[[sx,sy-10]];for(let n=0;n<60;n++){c+=dx;r+=dy;if(wall(c,r)||!inR(P.q,c,r)||VIS.has(K(c,r))&&!mirrors.some(q=>q.c===c&&q.r===r)&&!(c===TGT[0]&&r===TGT[1])){const[x,y]=C(c-dx*.5,r-dy*.5);pts.push([x,y-10]);break}if(c===TGT[0]&&r===TGT[1]){pts.push([tx,ty-10]);hit=!0;break}const m=mirrors.find(q=>q.c===c&&q.r===r);if(m){const[x,y]=C(c,r);pts.push([x,y-12]);[dx,dy]=m.o==="/"?[-dy,-dx]:[dy,dx];continue}if(SOL.has(K(c,r))){const[x,y]=C(c-dx*.4,r-dy*.4);pts.push([x,y-10]);break}}
+const beam=()=>{let c=SRC[0],r=SRC[1],[dx,dy]=P.D0,hit=!1;pts=[[sx,sy-10]];for(let n=0;n<80;n++){c+=dx;r+=dy;if(wall(c,r)||!inR(P.q,c,r)){const[x,y]=C(c-dx*.5,r-dy*.5);pts.push([x,y-10]);break}if(c===TGT[0]&&r===TGT[1]){pts.push([tx,ty-10]);hit=!0;break}const m=mirrors.find(q=>q.c===c&&q.r===r);if(m){const[x,y]=C(c,r);pts.push([x,y-12]);[dx,dy]=m.o==="/"?[-dy,-dx]:[dy,dx];continue}if(SOL.has(K(c,r))||SOLC.has(K(c,r))&&!(c===SRC[0]&&r===SRC[1])){const[x,y]=C(c-dx*.4,r-dy*.4);pts.push([x,y-10]);break}}
 if(hit){tgtI.setTint(16777164);tg.setAlpha(.6);tL||(tL=lit(tx,ty-8,16769658,120,1.2));done[id]||solved(id,ch,L3("o feixe de luz","the light beam","el haz de luz"))}};
 on(t=>{bg.clear();if(pts.length<2)return;const w=.55+.2*Math.sin(t/90);for(const[lw,al,col]of[[7,.18*w,16769658],[3,.55*w,16775880],[1.2,.95,16777215]]){bg.lineStyle(lw,col,al);bg.beginPath();bg.moveTo(pts[0][0],pts[0][1]);for(let k=1;k<pts.length;k++)bg.lineTo(pts[k][0],pts[k][1]);bg.strokePath()}});
-S.time.delayedCall(60,beam);done[id]&&ch.show(!0);return{id,name:L3("Selo da Luz","Seal of Light","Sello de la Luz"),col:16769658,at:SRC,room:P.room,dbg:{solve:()=>{for(const[k,need]of[[0,P.A[2]],[1,P.B[2]]])mirrors[k].o!==need&&mirrors[k].img.interact()}}}};
+S.time.delayedCall(60,beam);done[id]&&ch.show(!0);return{id,name:L3("Selo da Luz","Seal of Light","Sello de la Luz"),col:16769658,at:SRC,room:P.room,dbg:{solve:()=>P.TU.forEach(([c,r,need],k)=>{mirrors[k].o!==need&&mirrors[k].img.interact()})}}};
 
-/* ── blocos de pedra e placas (empurrar uma casa por vez) ── */
-KITS.blocks=()=>{let P=fit(rect(6,5),[[1,1],[4,3],[5,4]]),two=!0;if(!P){P=fit(rect(4,4),[[1,1],[3,3]]);two=!1}if(!P)return null;const id="blocks",X=P.x,Y=P.y,ch=chest(id,X,Y+(two?4:3),"RARE");P.q={x:X,y:Y,w:two?6:4,h:two?5:4};
-const plates=(two?[[X+3,Y+3],[X+4,Y+1]]:[[X+2,Y+3]]).map(([c,r])=>{const[x,y]=C(c,r);return{c,r,img:S.add.image(x,y+2,"pz-plate").setDepth(.8),gl:glow(x,y,.16,16765514,0).setDepth(.81)}});
-const blocks=(two?[[X+1,Y+1],[X+4,Y+3]]:[[X+1,Y+1]]).map(([c,r])=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2+2,"pz-stone").setOrigin(.5,1).setDepth(y+T/2).setTint(cfg.stone),z=zone(c,r,28,24);return{c,r,c0:c,r0:r,img,z,mv:!1}});
-const put=(b,c,r)=>{SOL.delete(K(b.c,b.r));b.c=c;b.r=r;SOL.add(K(c,r));const[x,y]=C(c,r);b.img.setPosition(x,y+T/2+2).setDepth(y+T/2);b.z.setPosition(x,y+4);b.z.body.updateFromGameObject()};
+/* ── blocos de pedra: arranjo gerado por fase (pilares, 1 ou 2 blocos) e conferido por um resolvedor ── */
+const sokoban=(W,H,pil,blk,pl,start)=>{const idx=(x,y)=>y*W+x,inn=(x,y)=>x>=0&&y>=0&&x<W&&y<H,PIL=new Set(pil.map(([x,y])=>idx(x,y))),PLs=new Set(pl.map(([x,y])=>idx(x,y)));
+const reachP=(p,bs)=>{const B=new Set(bs),seen=new Set([p]),q=[p];while(q.length){const c=q.pop(),x=c%W,y=(c-x)/W;for(const[dx,dy]of N4){const nx=x+dx,ny=y+dy,n=idx(nx,ny);if(!inn(nx,ny)||PIL.has(n)||B.has(n)||seen.has(n))continue;seen.add(n);q.push(n)}}return seen};
+const key=(p,bs)=>Math.min(...reachP(p,bs))+"|"+bs.slice().sort((a,b)=>a-b).join(",");let fr=[[idx(...start),blk.map(([x,y])=>idx(x,y)),0,[]]];const seen=new Set([key(fr[0][0],fr[0][1])]);
+while(fr.length){const nx=[];for(const[p,bs,d,path]of fr){if(bs.every(b=>PLs.has(b)))return path;const R=reachP(p,bs);for(let i=0;i<bs.length;i++){const b=bs[i],bx=b%W,by=(b-bx)/W;for(const[dx,dy]of N4){const px=bx-dx,py=by-dy,tx=bx+dx,ty=by+dy;if(!inn(px,py)||!R.has(idx(px,py))||!inn(tx,ty))continue;const t=idx(tx,ty);if(PIL.has(t)||bs.includes(t))continue;const nb=bs.slice();nb[i]=t;const k=key(b,nb);if(seen.has(k))continue;seen.add(k);nx.push([b,nb,d+1,[...path,[i,dx,dy]]])}}}fr=nx;if(seen.size>60000)return null}return null};
+KITS.blocks=()=>{const NB=V.blocks.blocks,NP=Math.max(1,V.blocks.pillars),MIN=NB===2?6:5;let P=null,lay=null;
+for(const[w,h]of[[6,5],[5,5],[6,4],[5,4]]){const R0=fit(rect(w,h),[]);if(!R0)continue;for(let t=0;t<160&&!lay;t++){const cells=shuf(rect(w,h).slice()),pil=cells.slice(0,NP),blk=cells.slice(NP,NP+NB),pl=cells.slice(NP+NB,NP+NB*2),st=cells[NP+NB*2];
+if(blk.some(([x,y])=>(x===0||x===w-1)&&(y===0||y===h-1)))continue;const sol=sokoban(w,h,pil,blk,pl,st);if(sol&&sol.length>=MIN&&sol.length<=MIN+8&&conn([...pil,...blk].map(([a,b])=>[R0.x+a,R0.y+b])))lay={w,h,pil,blk,pl,sol}}
+if(lay){P=R0;const ex=new Set([...lay.pil,...lay.blk].map(([a,b])=>K(R0.x+a,R0.y+b)));for(const k of ex)SOLC.add(k);break}for(let dy=-1;dy<=h;dy++)for(let dx=-1;dx<=w;dx++)BUSY.delete(K(R0.x+dx,R0.y+dy));}
+if(!P)return null;const id="blocks",X=P.x,Y=P.y,Q={x:X,y:Y,w:lay.w,h:lay.h},PLc=lay.pl.map(([a,b])=>[X+a,Y+b]),CHc=rect(lay.w,lay.h).map(([a,b])=>[X+a,Y+b]).find(([c,r])=>!lay.pil.some(([a,b])=>X+a===c&&Y+b===r)&&!PLc.some(([a,b])=>a===c&&b===r)&&!lay.blk.some(([a,b])=>X+a===c&&Y+b===r)),ch=chest(id,CHc[0],CHc[1],"RARE");
+lay.pil.forEach(([a,b],k)=>{const[x,y]=C(X+a,Y+b);if(k===0){const o=S.add.image(x,y+T/2,"pz-reset").setOrigin(.5,1).setDepth(y+T/2).setTint(cfg.stone);zone(X+a,Y+b,20,18);label(o,()=>done[id]?null:L3("Recomeçar os blocos","Reset the blocks","Reiniciar los bloques"));o.interact=()=>{if(blocks.some(b=>b.mv))return;for(const b of blocks){put(b,b.c0,b.r0);S.effectsRef?.burstTinted(b.img.x,b.img.y-12,13417386,10)}sfx("sfx-shrine-use");check()};OBJ.push(o)}else{S.add.image(x,y+T/2,"pz-post").setOrigin(.5,1).setDepth(y+T/2).setTint(cfg.stone);zone(X+a,Y+b,20,18)}});
+const plates=PLc.map(([c,r])=>{const[x,y]=C(c,r);return{c,r,img:S.add.image(x,y+2,"pz-plate").setDepth(.8),gl:glow(x,y,.16,16765514,0).setDepth(.81)}});
+const blocks=lay.blk.map(([a,b])=>{const c=X+a,r=Y+b,[x,y]=C(c,r),img=S.add.image(x,y+T/2+2,"pz-stone").setOrigin(.5,1).setDepth(y+T/2).setTint(cfg.stone),z=zone(c,r,28,24);return{c,r,c0:c,r0:r,img,z,mv:!1}});
+function put(b,c,r){SOL.delete(K(b.c,b.r));b.c=c;b.r=r;SOL.add(K(c,r));const[x,y]=C(c,r);b.img.setPosition(x,y+T/2+2).setDepth(y+T/2);b.z.setPosition(x,y+4);b.z.body.updateFromGameObject()}
 if(done[id])plates.forEach((p,k)=>put(blocks[k],p.c,p.r));
 const occ=(c,r,me)=>blocks.some(b=>b!==me&&b.c===c&&b.r===r)||SOL.has(K(c,r))&&!blocks.some(b=>b.c===c&&b.r===r);
-const check=()=>{let all=!0;for(const p of plates){const on=blocks.some(b=>!b.mv&&b.c===p.c&&b.r===p.r);p.img.setTexture(on?"pz-plate-on":"pz-plate");p.gl.setAlpha(on?.45:0);on&&!p.on&&sfx("sfx-lever");p.on=on;all=all&&on}if(all&&!done[id])solved(id,ch,L3("os blocos de pedra","the stone blocks","los bloques de piedra"))};
-const push=(b,dx,dy)=>{if(b.mv||done[id])return;const c=b.c+dx,r=b.r+dy;if(!inR(P.q,c,r)||wall(c,r)||occ(c,r,b))return;const[x,y]=C(c,r);b.mv=!0;SOL.delete(K(b.c,b.r));b.c=c;b.r=r;SOL.add(K(c,r));sfx("sfx-door-locked");
+function check(){let all=!0;for(const p of plates){const on=blocks.some(b=>!b.mv&&b.c===p.c&&b.r===p.r);p.img.setTexture(on?"pz-plate-on":"pz-plate");p.gl.setAlpha(on?.45:0);on&&!p.on&&sfx("sfx-lever");p.on=on;all=all&&on}if(all&&!done[id])solved(id,ch,L3("os blocos de pedra","the stone blocks","los bloques de piedra"))}
+const push=(b,dx,dy)=>{if(b.mv||done[id])return;const c=b.c+dx,r=b.r+dy;if(!inR(Q,c,r)||wall(c,r)||occ(c,r,b))return;const[x,y]=C(c,r);b.mv=!0;SOL.delete(K(b.c,b.r));b.c=c;b.r=r;SOL.add(K(c,r));sfx("sfx-door-locked");
 S.tweens.add({targets:b.img,x,y:y+T/2+2,duration:150,ease:"Quad.easeOut",onUpdate:()=>{b.img.setDepth(b.img.y);b.z.setPosition(b.img.x,b.img.y-T/2+2);b.z.body.updateFromGameObject()},onComplete:()=>{b.mv=!1;b.z.setPosition(x,y+4);b.z.body.updateFromGameObject();S.effectsRef?.burstTinted(x,y+10,13417386,6);check()}})};
-{const[c,r]=two?[X+5,Y+4]:[X+3,Y+3],[x,y]=C(c,r),o=S.add.image(x,y+T/2,"pz-reset").setOrigin(.5,1).setDepth(y+T/2).setTint(cfg.stone);zone(c,r,20,18);label(o,()=>done[id]?null:L3("Recomeçar os blocos","Reset the blocks","Reiniciar los bloques"));o.interact=()=>{if(blocks.some(b=>b.mv))return;for(const b of blocks){put(b,b.c0,b.r0);S.effectsRef?.burstTinted(b.img.x,b.img.y-12,13417386,10)}sfx("sfx-shrine-use");check()};OBJ.push(o)}
 let hold=0,hb=null;on((t,ms)=>{if(done[id]||S.state!=="playing")return;const p=S.player;if(!p?.body)return;const im=S.inputMgr;let a=im?.axis?.()||{x:0,y:0};const k=im?.keyboardAxis?.()||{x:0,y:0};Math.hypot(k.x,k.y)>Math.hypot(a.x,a.y)&&(a=k);
 const px=p.body.center.x,py=p.body.bottom-6;let tg=null,dx=0,dy=0;if(Math.abs(a.x)>.55&&Math.abs(a.x)>Math.abs(a.y))dx=Math.sign(a.x);else if(Math.abs(a.y)>.55)dy=Math.sign(a.y);
 if(dx||dy)for(const b of blocks){const[x,y]=C(b.c,b.r);if(dx&&Math.abs(py-y)<14&&Math.abs(px+dx*22-x)<12||dy&&Math.abs(px-x)<14&&Math.abs(py+dy*20-y)<12){tg=b;break}}
 if(tg&&tg===hb){hold+=ms;if(hold>170){hold=-200;push(tg,dx,dy)}}else{hb=tg;hold=0}});
-check();done[id]&&ch.show(!0);return{id,name:L3("Selo da Pedra","Seal of Stone","Sello de la Piedra"),col:13942398,at:[X+1,Y+1],room:P.room,dbg:{blocks,push,two,steps:two?[[0,1,0],[0,1,0],[0,0,1],[0,0,1],[1,0,-1],[1,0,-1]]:[[0,1,0],[0,0,1],[0,0,1]]}}};
+check();done[id]&&ch.show(!0);return{id,name:L3("Selo da Pedra","Seal of Stone","Sello de la Piedra"),col:13942398,at:[X+1,Y+1],room:P.room,dbg:{blocks,push,steps:lay.sol}}};
 
-/* ── runas da memória ── */
-KITS.runes=()=>{const P=pick(5,2,7,4);if(!P)return null;const id="runes",RP=P.sel.slice(0,4),CH=P.sel[4],ch=chest(id,CH[0],CH[1],"RARE"),FR=[392,494,587,740],COL=[8384511,13146111,16765802,9105062];let st="idle",seq=[],inp=0,round=0;const LEN=[3,4,5];
+/* ── runas da memória: tamanho das rodadas e modo (normal ou de trás para frente) por fase ── */
+KITS.runes=()=>{const P=pick(5,2,7,4);if(!P)return null;const id="runes",RP=P.sel.slice(0,4),CH=P.sel[4],ch=chest(id,CH[0],CH[1],"RARE"),FR=[392,494,587,740],COL=[8384511,13146111,16765802,9105062],LEN=V.runes.len,REV=!!V.runes.rev;let st="idle",seq=[],inp=0,round=0;
 const pil=RP.map(([c,r],k)=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2,"pz-pillar-"+k).setOrigin(.5,1).setDepth(y+T/2);zone(c,r,18,14);const g=glow(x,y-20,.34,COL[k],done[id]?.35:0).setDepth(9001);
 const flash=()=>{g.setAlpha(.8);tone(FR[k]);S.tweens.add({targets:g,alpha:done[id]?.35:0,duration:520})};
 label(img,()=>done[id]||st==="show"?null:st==="idle"?L3("Tocar a runa (começar)","Touch the rune (start)","Tocar la runa (empezar)"):L3("Tocar a runa","Touch the rune","Tocar la runa"));
-img.interact=()=>{if(done[id]||st==="show")return;if(st==="idle"){round=0;play();return}flash();if(k!==seq[inp]){st="show";S.time.delayedCall(300,()=>{sfx("sfx-event-refuse");S.cameraSys?.shake?.(.005,180);S.effectsRef?.floatText(x,y-40,L3("A sequência se desfez…","The sequence broke…","La secuencia se rompió…"),"#e08a7a");st="idle"});return}inp++;if(inp>=seq.length){st="show";round++;if(round>=LEN.length){S.time.delayedCall(450,()=>{st="done";solved(id,ch,L3("as runas da memória","the memory runes","las runas de la memoria"));pil.forEach(p=>p.flash())})}else S.time.delayedCall(900,play)}};OBJ.push(img);return{flash,img}});
+img.interact=()=>{if(done[id]||st==="show")return;if(st==="idle"){round=0;REV&&S.effectsRef?.floatText(x,y-46,L3("Repita de trás para frente","Repeat it backwards","Repítela al revés"),"#d8c8ff");play();return}flash();const want=REV?seq[seq.length-1-inp]:seq[inp];if(k!==want){st="show";S.time.delayedCall(300,()=>{sfx("sfx-event-refuse");S.cameraSys?.shake?.(.005,180);S.effectsRef?.floatText(x,y-40,L3("A sequência se desfez…","The sequence broke…","La secuencia se rompió…"),"#e08a7a");st="idle"});return}inp++;if(inp>=seq.length){st="show";round++;if(round>=LEN.length){S.time.delayedCall(450,()=>{st="done";solved(id,ch,L3("as runas da memória","the memory runes","las runas de la memoria"));pil.forEach(p=>p.flash())})}else S.time.delayedCall(900,play)}};OBJ.push(img);return{flash,img}});
 const play=()=>{st="show";seq=Array.from({length:LEN[round]},()=>Math.floor(R()*4));inp=0;seq.forEach((k,q)=>S.time.delayedCall(450+q*620,()=>pil[k].flash()));S.time.delayedCall(450+seq.length*620,()=>{st="input"})};
-done[id]&&ch.show(!0);return{id,name:L3("Selo da Memória","Seal of Memory","Sello de la Memoria"),col:13146111,at:RP[0],room:P.room,dbg:{st:()=>st,seq:()=>seq,pil}}};
-
+done[id]&&ch.show(!0);return{id,name:L3("Selo da Memória","Seal of Memory","Sello de la Memoria"),col:13146111,at:RP[0],room:P.room,dbg:{st:()=>st,seq:()=>REV?seq.slice().reverse():seq,pil}}};
 /* quatro enigmas por fase (ordem embaralhada pela fase; se um não couber, entra o próximo) */
 const order=["levers","braziers","mirror","blocks","runes"];for(let k=order.length-1;k>0;k--){const m=Math.floor(RS()*(k+1));[order[k],order[m]]=[order[m],order[k]]}
 /* o Relicário vai primeiro (precisa de espaço), longe do início */
