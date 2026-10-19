@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.82.1-toque-inventario";
+const CACHE = "ded-web-v4.82.2-pocao-normal-slot1";
 
 self.addEventListener("install", () => self.skipWaiting());
 
