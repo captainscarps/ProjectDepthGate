@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.82.2-pocao-normal-slot1";
+const CACHE = "ded-web-v4.82.3-trava-entrada-video";
 
 self.addEventListener("install", () => self.skipWaiting());
 
