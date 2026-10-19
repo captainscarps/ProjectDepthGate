@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.78.5-refugio-gamepad";
+const CACHE = "ded-web-v4.79.0-gamepad-completo";
 
 self.addEventListener("install", () => self.skipWaiting());
 
