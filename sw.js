@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.84.0-vento-deserto";
+const CACHE = "ded-web-v4.85.0-otimizacao-luz";
 
 self.addEventListener("install", () => self.skipWaiting());
 
