@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.78.4-voz-misterio";
+const CACHE = "ded-web-v4.78.5-refugio-gamepad";
 
 self.addEventListener("install", () => self.skipWaiting());
 
