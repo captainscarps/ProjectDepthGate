@@ -6,6 +6,7 @@ Gera em assets/pixel-art/hub/village/:
   herb-bed.png       canteiro de flores (fileiras do jardim)
   herb-shelf.png     estante de poções
   herb-boiler.png    herborista mexendo o caldeirão (12 quadros 32x64)
+  herb-cauldron.png  só o caldeirão fervendo (12 quadros 32x48) — fora da campanha ela não está lá
 e acrescenta a chave "herb" ao village.json (posições + colisão), tirando as pedras/arbustos que ocupavam o canto.
 
 Uso: python3 scripts/build_hub_herbalist.py <pasta-do-pacote-herbalist>   (a pasta que contém Tiled_files/)
@@ -24,7 +25,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "assets", "pixel-art", "hub", "village")
 MIR = os.path.join(ROOT, "Projeto atualizado", "assets", "pixel-art", "hub", "village")
 ARG = sys.argv[1] if len(sys.argv) > 1 else ""
-FILES = ["herb-hut.png", "herb-bed.png", "herb-shelf.png", "herb-boiler.png"]
+FILES = ["herb-hut.png", "herb-bed.png", "herb-shelf.png", "herb-boiler.png", "herb-cauldron.png"]
 
 
 def render(tmx, names):
@@ -67,6 +68,7 @@ if ARG and ARG != "--json-only":
     bed.crop(bed.getbbox()).save(os.path.join(OUT, "herb-bed.png"))
     Image.open(os.path.join(TF, "Interior_objects.png")).convert("RGBA").crop((14, 3, 86, 62)).save(os.path.join(OUT, "herb-shelf.png"))
     Image.open(os.path.join(TF, "Herbalist_boiler_idle.png")).convert("RGBA").save(os.path.join(OUT, "herb-boiler.png"))
+    Image.open(os.path.join(TF, "Boiler.png")).convert("RGBA").save(os.path.join(OUT, "herb-cauldron.png"))   # só o caldeirão (modo infinito)
 
 # ───────────────────────────── village.json ─────────────────────────────
 VJ = os.path.join(OUT, "village.json")
