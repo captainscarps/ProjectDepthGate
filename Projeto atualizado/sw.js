@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.82.3-trava-entrada-video";
+const CACHE = "ded-web-v4.83.0-floresta-nevada";
 
 self.addEventListener("install", () => self.skipWaiting());
 

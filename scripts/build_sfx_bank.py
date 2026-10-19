@@ -356,6 +356,17 @@ def r_heavy_smash():
     return fin(room(x, .45, .14))
 
 
+def r_snow_step():
+    """passo na neve fofa: o pé afunda e compacta os cristais — rangido granulado e abafado"""
+    d = .34
+    sink = filt(noise(.12) * env_ad(.12, .006, .04), "lowpass", 520) * .7
+    crunch = grains(.2, J(2600, 3400), J(300, 500), 500, 4200, glen=(.0004, .0016), amp=(.15, .9))
+    crunch = filt(crunch, "lowpass", J(3200, 4200)) * env_ad(.2, .012, .07)
+    squeak = filt(noise(.09) * env_ad(.09, .01, .03), "bandpass", [J(900, 1200), J(1600, 2100)]) * .25
+    x = mix(sink, at(crunch, .008), at(squeak, J(.03, .06)))
+    return fin(space(pad(x, d), "out", .05), -7)
+
+
 def r_door_open():
     d = J(.9, 1.2)
     x = mix(creak(d * .8, J(25, 35), J(90, 130), wobble=.3), .7 * at(thump(90, 50, .25, .05), d * .8))
@@ -867,6 +878,7 @@ ALIAS = {"weapon-sword": "sword-swing", "attack": "sword-swing", "rogue-backstab
 def main():
     import sfx_voices
     RECIPES.update(sfx_voices.voice_recipes())
+    RECIPES["snow-step"] = (r_snow_step, 5, .45)   # no fim: não muda a sorte dos sons anteriores
     os.makedirs(OUT, exist_ok=True)
     clips, meta, pos = [], {}, 0.0
     gap = np.zeros(int(.04 * SR))

@@ -1,65 +1,88 @@
 """
-Script para adicionar manchas de neve no chão e montículos de neve no cenário gélido (glacial).
+Integra a Floresta Nevada na fase da Cidadela Glacial (gerada por build_glacial_snow.py):
+  - mapa da Cidadela cresce para 80 linhas; o herói começa na Trilha Nevada e chega ao Portão Congelado pela porta
+  - 4 salas novas com poucos inimigos da própria Cidadela (goblins, esqueleto de gelo, urso glacial)
+  - chão de neve assado + árvores/pedras com profundidade + lampiões, neblina fria e neve caindo
+  - pegadas na neve (sempre por baixo do personagem), poeira de neve nos pés e som de passo na neve
+Re-executável (blocos com marcador e texto original em base64).
 """
+import base64
+import json
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TARGETS = [
-    os.path.join(ROOT, 'assets', 'index-D6qIWtA7-p209.js'),
-    os.path.join(ROOT, 'Projeto atualizado', 'assets', 'index-D6qIWtA7-p209.js')
-]
+BUNDLE = os.path.join(ROOT, "assets", "index-D6qIWtA7-p209.js")
+MIRROR = os.path.join(ROOT, "Projeto atualizado", "assets", "index-D6qIWtA7-p209.js")
+s = open(BUNDLE, encoding="utf-8").read()
+LV = json.load(open(os.path.join(ROOT, "scripts", "glacial_snow_level.json"), encoding="utf-8"))
+META = json.load(open(os.path.join(ROOT, "assets", "pixel-art", "glacial-snow", "gsb-meta.json")))
+T = "/*__GS__*/"
 
-# 1. no["tiles-frozen"] config: add snowPatches:!0
-OLD_TILES_FROZEN = '"tiles-frozen":{floorRGB:c=>`rgb(${c-8},${c+2},${c+14})`,wallRGB:c=>`rgb(${c-10},${c-2},${c+12})`,moss:"rgba(170,215,255,0.3)",mossHeavy:!0,emberCracks:!0,emberColor:"rgba(122,200,255,0.7)",ashFlecks:!0,fleckColor:"rgba(230,242,255,0.5)"}'
-NEW_TILES_FROZEN = '"tiles-frozen":{floorRGB:c=>`rgb(${c-8},${c+2},${c+14})`,wallRGB:c=>`rgb(${c-10},${c-2},${c+12})`,moss:"rgba(170,215,255,0.3)",mossHeavy:!0,emberCracks:!0,emberColor:"rgba(122,200,255,0.7)",ashFlecks:!0,fleckColor:"rgba(230,242,255,0.5)",snowPatches:!0}'
 
-# 2. In Ue: snow patches on floor tiles
-OLD_UE_ASH = 'if(o.ashFlecks){c.fillStyle=o.fleckColor??"rgba(120,112,104,0.35)";for(let v=0;v<4;v++){const f=i+Math.floor(Ot(t*37+v,v*11)*(a-6))+2,m=Math.floor(Ot(v*17,t*41+v)*(a-6))+2;c.fillRect(f,m,2,1),v%2&&c.fillRect(f+1,m+1,1,1)}}'
-NEW_UE_ASH = 'if(o.ashFlecks){c.fillStyle=o.fleckColor??"rgba(120,112,104,0.35)";for(let v=0;v<4;v++){const f=i+Math.floor(Ot(t*37+v,v*11)*(a-6))+2,m=Math.floor(Ot(v*17,t*41+v)*(a-6))+2;c.fillRect(f,m,2,1),v%2&&c.fillRect(f+1,m+1,1,1)}}if(o.snowPatches){const sn=Ot(t*43,t*19+7);if(sn>.35){const sx=i+Math.floor(Ot(t*31,5)*(a-16))+2,sy=Math.floor(Ot(7,t*29)*(a-14))+2,sw=8+Math.floor(sn*14),sh=5+Math.floor(sn*8);c.fillStyle="rgba(145,195,230,0.65)",c.fillRect(sx,sy+sh-1,sw,2),c.fillRect(sx+sw-1,sy,2,sh),c.fillStyle="rgba(232,244,255,0.92)",c.fillRect(sx,sy,sw,sh),c.fillRect(sx+1,sy-1,sw-2,1),c.fillRect(sx+2,sy+sh,sw-4,1),c.fillStyle="rgba(255,255,255,0.98)",c.fillRect(sx+1,sy,Math.max(2,sw-3),2),c.fillRect(sx+2,sy+2,Math.max(1,sw-5),1)}}'
+def strip_all():
+    global s
+    while T in s:
+        a = s.index(T)
+        b = s.index(T, a + 1)
+        inner = s[a + len(T):b]
+        k = inner.rindex("/*§")
+        orig = base64.b64decode(inner[k + 3:inner.rindex("*/")]).decode("utf-8")
+        s = s[:a] + orig + s[b + len(T):]
 
-# 3. Add more snow-pile decor to glacial rooms (dl)
-OLD_DL_1 = '{type:"snow-pile",col:30,row:46},{type:"frozen-corpse",col:34,row:46},{type:"chains",col:27,row:40},{type:"chains",col:35,row:40},{type:"snow-pile",col:28,row:46}'
-NEW_DL_1 = '{type:"snow-pile",col:30,row:46},{type:"frozen-corpse",col:34,row:46},{type:"chains",col:27,row:40},{type:"chains",col:35,row:40},{type:"snow-pile",col:28,row:46},{type:"snow-pile",col:29,row:43},{type:"snow-pile",col:33,row:45},{type:"snow-pile",col:31,row:42}'
 
-OLD_DL_2 = '{type:"frozen-corpse",col:24,row:34},{type:"frozen-corpse",col:33,row:35},{type:"snow-pile",col:29,row:35}'
-NEW_DL_2 = '{type:"frozen-corpse",col:24,row:34},{type:"frozen-corpse",col:33,row:35},{type:"snow-pile",col:29,row:35},{type:"snow-pile",col:25,row:31},{type:"snow-pile",col:36,row:34},{type:"snow-pile",col:28,row:36},{type:"snow-pile",col:34,row:30}'
+strip_all()
 
-OLD_DL_3 = '{type:"dead-tree-frozen",col:12,row:28,solid:!0},{type:"frost-torch",col:10,row:26},{type:"snow-pile",col:13,row:35},{type:"ice-crystal",col:6,row:33}'
-NEW_DL_3 = '{type:"dead-tree-frozen",col:12,row:28,solid:!0},{type:"frost-torch",col:10,row:26},{type:"snow-pile",col:13,row:35},{type:"ice-crystal",col:6,row:33},{type:"snow-pile",col:8,row:29},{type:"snow-pile",col:15,row:33},{type:"snow-pile",col:6,row:34},{type:"snow-pile",col:12,row:35}'
 
-OLD_DL_4 = '{type:"frozen-corpse",col:45,row:31},{type:"snow-pile",col:53,row:33},{type:"trap-frost",col:50,row:31}'
-NEW_DL_4 = '{type:"frozen-corpse",col:45,row:31},{type:"snow-pile",col:53,row:33},{type:"trap-frost",col:50,row:31},{type:"snow-pile",col:47,row:32},{type:"snow-pile",col:52,row:29},{type:"snow-pile",col:48,row:35},{type:"snow-pile",col:54,row:34}'
+def put(old, new):
+    global s
+    assert s.count(old) == 1, old[:80]
+    s = s.replace(old, T + new + "/*§" + base64.b64encode(old.encode("utf-8")).decode() + "*/" + T, 1)
 
-OLD_DL_5 = '{type:"snow-pile",col:26,row:12},{type:"snow-pile",col:36,row:12},{type:"frozen-corpse",col:40,row:5}'
-NEW_DL_5 = '{type:"snow-pile",col:26,row:12},{type:"snow-pile",col:36,row:12},{type:"frozen-corpse",col:40,row:5},{type:"snow-pile",col:23,row:5},{type:"snow-pile",col:39,row:5},{type:"snow-pile",col:24,row:11},{type:"snow-pile",col:38,row:11},{type:"snow-pile",col:29,row:13},{type:"snow-pile",col:33,row:13}'
 
-for path in TARGETS:
-    with open(path, 'r', encoding='utf-8') as f:
-        src = f.read()
+# ── nível ──
+rooms_js = ",".join(json.dumps(r, ensure_ascii=False, separators=(",", ":")) for r in LV["rooms"])
+corr_js = ",".join(json.dumps(c, separators=(",", ":")) for c in LV["corridors"])
+door_js = json.dumps(LV["door"], separators=(",", ":"))
+put("hl={cols:60,rows:50}", "hl={cols:60,rows:80}")
+put('glacial:{id:"glacial",name:"Cidadela Glacial",theme:Qn,world:hl,rooms:_e("glacial",dl),corridors:ul,doors:fl,playerSpawn:cl,next:null}',
+    'glacial:{id:"glacial",name:"Cidadela Glacial",theme:Qn,world:hl,rooms:[..._e("glacial",dl),' + rooms_js + '],corridors:[...ul,' + corr_js +
+    '],doors:[...fl,' + door_js + '],playerSpawn:' + json.dumps(LV["spawn"]) + ',next:null}')
 
-    assert OLD_TILES_FROZEN in src, f"OLD_TILES_FROZEN not found in {path}"
-    src = src.replace(OLD_TILES_FROZEN, NEW_TILES_FROZEN, 1)
+# ── carregamento ──
+chunks = [c[0] for c in META["chunks"]]
+put('this.load.spritesheet("hub-portal","assets/pixel-art/hub/hub-portal2.png",{frameWidth:56,frameHeight:65});',
+    'this.load.spritesheet("hub-portal","assets/pixel-art/hub/hub-portal2.png",{frameWidth:56,frameHeight:65});for(const f of ' + json.dumps(chunks) +
+    ')this.load.image(f,`assets/pixel-art/glacial-snow/${f}.png`);this.load.json("gsb-meta","assets/pixel-art/glacial-snow/gsb-meta.json");this.load.image("gsb-drift","assets/pixel-art/glacial-snow/gsb-drift.png");this.load.image("gsb-gate","assets/pixel-art/glacial-snow/gsb-gate.png");this.load.image("gsb-ext","assets/pixel-art/glacial-snow/gsb-ext.png");'
+    'this.load.atlas("gs-props","assets/pixel-art/glacial-snow/gs-props.png","assets/pixel-art/glacial-snow/gs-props.json");')
 
-    assert OLD_UE_ASH in src, f"OLD_UE_ASH not found in {path}"
-    src = src.replace(OLD_UE_ASH, NEW_UE_ASH, 1)
+# ── desenho + efeitos ──
+FN = (r'function __gsBake(B){if(B.level?.id!=="glacial")return;const d=B.scene,M=d.cache.json.get("gsb-meta");if(!M||!d.textures.exists(M.chunks[0][0]))return;B.__rfRow=M.row0;const R=Math.random,ADD=j.BlendModes.ADD,ROW=M.row0*dt;'
+      r'for(const[k,x,y]of M.chunks)d.add.image(x,y,k).setOrigin(0).setDepth(.3);M.gate&&d.textures.exists("gsb-gate")&&d.add.image(M.gate[0],M.gate[1],"gsb-gate").setOrigin(0).setDepth(.35);M.ext&&d.textures.exists("gsb-ext")&&d.add.image(M.ext[0],M.ext[1],"gsb-ext").setOrigin(0).setDepth(-5);M.drift&&d.textures.exists("gsb-drift")&&d.add.image(M.drift[0],M.drift[1],"gsb-drift").setOrigin(0).setDepth(ROW-40);'
+      r'if(d.textures.exists("gs-props"))for(const[k,x,y]of M.props)d.add.image(x,y,"gs-props",k).setOrigin(.5,1).setDepth(y);'
+      # lampiões: luz quente que tremula
+      r'for(const[x,y]of M.lamps||[]){const g=d.add.image(x,y,"light").setScale(.62).setBlendMode(ADD).setTint(16758116).setAlpha(.5).setDepth(9001);d.tweens.add({targets:g,alpha:.36,scale:.58,duration:180+R()*160,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"})}'
+      # neblina fria entre as árvores
+      r'for(const[x,y]of M.mist||[]){const f=d.add.image(x,y,"light").setScale(.6+R()*.5).setTint(R()<.5?15069183:13421823).setAlpha(.1+R()*.08).setDepth(y+40);d.tweens.add({targets:f,x:x+(R()-.5)*70,y:y+(R()-.5)*30,alpha:.04,duration:5e3+R()*4e3,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"})}'
+      # textura da pegada (bota: ponta + calcanhar, sombra azulada com borda clara)
+      r'if(!d.textures.exists("gs-print")){const g=d.make.graphics({x:0,y:0,add:!1});g.fillStyle(8360376,1).fillEllipse(5,4.5,7,8).fillEllipse(5,12,6,5);g.fillStyle(10598358,1).fillEllipse(5,5.2,5,6).fillEllipse(5,12.4,4.2,3.4);g.fillStyle(15925247,.9).fillEllipse(5,1.2,6,1.6);g.generateTexture("gs-print",10,15);g.destroy()}'
+      r'const ICE=new Set((M.ice||[]).map(([x,y])=>x+","+y)),fb=o=>o.body?o.body.bottom:o.y+12,ST=new WeakMap,PR=[];'
+      r'const step=(o,isP)=>{const fy=fb(o);let s=ST.get(o);if(!s){ST.set(o,{x:o.x,y:fy,a:0,side:1,n:0});return}const dx=o.x-s.x,dy=fy-s.y,m=Math.hypot(dx,dy);s.x=o.x;s.y=fy;if(m>26||m<.05)return;'
+      r'if(fy<ROW+4||ICE.has(Math.floor(o.x/dt)+","+Math.floor((fy-3)/dt))){s.a=0;return}s.a+=m;if(s.a<(isP?11:13))return;s.a=0;s.side=-s.side;'
+      r'const an=Math.atan2(dy,dx),nx=-Math.sin(an),ny=Math.cos(an),px=o.x+nx*3.2*s.side,py=fy-2+ny*1.6*s.side,sc=isP?.9:.78;'
+      r'const im=d.add.image(px,py,"gs-print").setRotation(an+Math.PI/2).setDepth(.6).setScale(sc).setAlpha(isP?.78:.6);PR.push(im);d.tweens.add({targets:im,alpha:0,delay:isP?6e3:3500,duration:5e3,onComplete:()=>im.destroy()});if(PR.length>170){const q=PR.shift();q.active&&q.destroy()}'
+      # poeira de neve chutada pelos pés — sempre atrás do personagem (profundidade menor)
+      r'const dp=(o.depth??py)-2;for(let k=0;k<(isP?3:2);k++){const c=d.add.rectangle(px-dx*.4,py,R()<.5?2:1.5,R()<.5?2:1.5,R()<.3?14018815:16777215).setDepth(dp).setAlpha(.9);d.tweens.add({targets:c,x:c.x-Math.cos(an)*(4+R()*6)+(R()-.5)*6,y:c.y-3-R()*5,alpha:0,duration:300+R()*200,ease:"Quad.easeOut",onComplete:()=>c.destroy()})}'
+      r'if(isP&&(s.n=(s.n+1)%2)===0)d.game.audioEngine?.sfx?.("sfx-snow-step")};'
+      r'const fn=()=>{const p=d.player;if(!p||!p.active||!d.sys.isActive())return;p.dead||step(p,!0);const P2=d.player2;P2&&P2.active&&!P2.dead&&step(P2,!0);for(const e of d.enemies?.getChildren?.()||[])e.active&&!e.dead&&Math.abs(e.y-p.y)<400&&step(e,!1)};'
+      r'd.events.on("update",fn);d.events.once("shutdown",()=>d.events.off("update",fn));'
+      # neve caindo (clima) — só na floresta
+      r'const fl=()=>{if(!d.sys?.isActive?.())return;const p=d.player,V=d.cameras.main.worldView;if(p&&p.y>ROW-160){for(let k=0;k<2;k++){const x=V.x+R()*V.width,y=V.y-6,r=R()<.7?.8:1.3,c=d.add.circle(x,y,r,16777215).setAlpha(.55+R()*.4).setDepth(9e3),dur=3500+R()*3e3;d.tweens.add({targets:c,y:y+V.height+20,x:x+(R()-.5)*90-20,duration:dur,ease:"Linear",onComplete:()=>c.destroy()})}}d.time.delayedCall(90,fl)};d.time.delayedCall(200,fl)}')
+# a floresta nevada fica fora dos desafios aleatórios (emboscadas/ondas): poucos inimigos, como pedido
+put('special=r=>r.boss||r.final||r.crystal||r.hub||r.secret||', 'special=r=>r.boss||r.final||r.crystal||r.hub||r.secret||/^gs-/.test(r.id)||')
+put('function __ekBake(B){', FN + 'function __ekBake(B){')
+put('if(__EK2[i]&&__ekBake(this))return;', '__gsBake(this);if(__EK2[i]&&__ekBake(this))return;')
 
-    assert OLD_DL_1 in src, f"OLD_DL_1 not found in {path}"
-    src = src.replace(OLD_DL_1, NEW_DL_1, 1)
-
-    assert OLD_DL_2 in src, f"OLD_DL_2 not found in {path}"
-    src = src.replace(OLD_DL_2, NEW_DL_2, 1)
-
-    assert OLD_DL_3 in src, f"OLD_DL_3 not found in {path}"
-    src = src.replace(OLD_DL_3, NEW_DL_3, 1)
-
-    assert OLD_DL_4 in src, f"OLD_DL_4 not found in {path}"
-    src = src.replace(OLD_DL_4, NEW_DL_4, 1)
-
-    assert OLD_DL_5 in src, f"OLD_DL_5 not found in {path}"
-    src = src.replace(OLD_DL_5, NEW_DL_5, 1)
-
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(src)
-    print(f"[OK] Patched {path} with floor snow patches and snowdrifts!")
-
-print("[SUCCESS] All files updated with ground snow in the glacial scenario!")
+for p in (BUNDLE, MIRROR):
+    if os.path.isdir(os.path.dirname(p)):
+        open(p, "w", encoding="utf-8").write(s)
+print("Floresta Nevada integrada à Cidadela Glacial")
