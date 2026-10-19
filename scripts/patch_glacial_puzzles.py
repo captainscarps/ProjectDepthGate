@@ -1,6 +1,6 @@
 """
 Enigmas da Cidadela Glacial + luz realista (normal maps) e sombras dinâmicas nos personagens.
-Código em scripts/source/glacial-puzzles.js; posições abaixo (verificadas: chão livre, fora da trilha).
+Código em scripts/source/glacial-puzzles.js; posições em scripts/glacial_puzzles_def.json.
 O bloco de gelo foi conferido por um resolvedor (busca em largura): solução mínima de 6 empurrões.
 Re-executável (bloco com marcador e texto original em base64).
 """
@@ -14,13 +14,9 @@ MIRROR = os.path.join(ROOT, "Projeto atualizado", "assets", "index-D6qIWtA7-p209
 s = open(BUNDLE, encoding="utf-8").read()
 SRC = open(os.path.join(ROOT, "scripts", "source", "glacial-puzzles.js"), encoding="utf-8").read()
 T = "/*__GSPZ__*/"
-DEF = {
-    "ice": {"blocks": [[49, 61], [50, 63]], "plates": [[51, 62], [43, 65]], "reset": [53, 60], "chest": [52, 64]},
-    "mirror": {"source": [7, 59], "target": [9, 64], "mirrors": [[18, 59, "/"], [18, 64, "\\"], [16, 66, "/"]], "chest": [10, 66]},
-    "levers": {"pos": [[8, 58], [5, 62], [7, 65]], "order": [1, 0, 2], "plaque": [6, 60], "chest": [7, 62]},
-    "braziers": {"pos": [[22, 52], [29, 51], [36, 51], [40, 52]], "burn": 9, "chest": [33, 52]},
-    "runes": {"pos": [[26, 43], [36, 43], [26, 46], [36, 46]], "chest": [33, 47]},
-}
+# posições das peças: scripts/glacial_puzzles_def.json (também lido por build_glacial_snow.py, que deixa
+# o lugar de cada peça livre de árvores e pedras na frente)
+DEF = json.load(open(os.path.join(ROOT, "scripts", "glacial_puzzles_def.json"), encoding="utf-8"))
 
 
 def strip_all():
@@ -45,6 +41,8 @@ def put(old, new):
 
 code = "const __GSPZ_DEF=" + json.dumps(DEF, separators=(",", ":")) + ";\n" + SRC + "\n"
 put("function __vidLock(on){", code + "function __vidLock(on){")
+# ícone do Coração do Inverno (desenhado junto com os outros ícones de item)
+put('vt(c,"icon-dragon-heart",', 'vt(c,"icon-winter-heart",i=>{i.fillStyle="#1d3f63",i.beginPath(),i.arc(7,8,4.6,0,Math.PI*2),i.arc(13,8,4.6,0,Math.PI*2),i.fill(),i.beginPath(),i.moveTo(2.6,9.6),i.lineTo(10,18.6),i.lineTo(17.4,9.6),i.closePath(),i.fill(),i.fillStyle="#7fd6ff",i.beginPath(),i.arc(7,8,3.4,0,Math.PI*2),i.arc(13,8,3.4,0,Math.PI*2),i.fill(),i.beginPath(),i.moveTo(4,9.6),i.lineTo(10,16.8),i.lineTo(16,9.6),i.closePath(),i.fill(),i.fillStyle="#d9f6ff",i.fillRect(5,6,3,2),i.fillRect(10,10,2,4),i.fillStyle="#ffffff",i.fillRect(6,6,1,1),i.fillRect(16,3,1,3),i.fillRect(15,4,3,1)}),vt(c,"icon-dragon-heart",')
 put("sprite:(c,i,t)=>new Ql(c,i,t),merchant:", '"gs-puzzles":(c,i,t)=>__gsPuzzles(c,i,t),sprite:(c,i,t)=>new Ql(c,i,t),merchant:')
 
 for p in (BUNDLE, MIRROR):

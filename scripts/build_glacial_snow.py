@@ -98,6 +98,34 @@ for line in PTS:
                 for dy in (-1, 0, 1):
                     PATHC.add((round(fx) + dx, round(fy) + dy))
 keep |= PATHC
+# enigmas (scripts/glacial_puzzles_def.json): o lugar de cada peça e uma volta de 1 célula ficam livres de mata,
+# e o caminho do feixe de luz também. O lago (blocos de gelo) não entra: as paredes dele fazem parte do enigma.
+PZ = json.load(open(os.path.join(ROOT, "scripts", "glacial_puzzles_def.json"), encoding="utf-8"))
+PZC = []                                    # (col, row, altura em px) de cada peça no chão da floresta
+for k, d in PZ.items():
+    if k == "runes":
+        continue
+    for v in d.values():
+        if isinstance(v, list) and v and isinstance(v[0], list):
+            PZC += [(q[0], q[1]) for q in v]
+        elif isinstance(v, list) and len(v) == 2 and isinstance(v[0], int):
+            PZC.append(tuple(v))
+PZKEEP = set()
+for k, d in PZ.items():
+    if k in ("ice", "runes"):
+        continue
+    for v in d.values():
+        pts = [q[:2] for q in v] if isinstance(v, list) and v and isinstance(v[0], list) else ([v] if isinstance(v, list) and len(v) == 2 and isinstance(v[0], int) else [])
+        for c, r in pts:
+            PZKEEP |= {(c + dx, r + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)}
+_m = PZ["mirror"]
+_line = [tuple(_m["source"]), tuple(_m["mirrors"][0][:2]), tuple(_m["mirrors"][1][:2]), tuple(_m["target"])]
+for (ax, ay), (bx, by) in zip(_line, _line[1:]):
+    for t_ in range(max(abs(bx - ax), abs(by - ay)) + 1):
+        PZKEEP.add((ax + (bx - ax) * t_ // max(1, abs(bx - ax) + abs(by - ay)), ay + (by - ay) * t_ // max(1, abs(bx - ax) + abs(by - ay))))
+_pzc, _pzr = PZ["relic"]["pos"]
+PZKEEP |= {(_pzc + dx, _pzr + dy) for dx in (-2, -1, 0, 1, 2) for dy in (-2, -1, 0, 1)}
+keep |= PZKEEP
 walls = {r["id"]: [] for r in ROOMS}
 
 
@@ -423,6 +451,28 @@ for rid, k, x0, y0 in SPECIAL:
             if k == "gs-lamp":
                 LAMPS.append([x * T + 16, (y + 1) * T - 3 - 34])
             break
+
+# nada de árvore ou pedra alta na frente de uma peça de enigma: troca por moita/toco baixo ou tira
+PZBOX = [(c * T - 6, r * T - 34, c * T + T + 6, r * T + T + 4, r * T + T) for c, r in PZC]
+PZBOX.append((_pzc * T - 40, _pzr * T - 60, _pzc * T + T + 40, _pzr * T + T + 4, _pzr * T + T))
+LOW = ["gs-" + q for q in BUSH + ROCKS[1:] + STUMP]
+
+
+def _hides(k, x, y):
+    w, h = FR[k].size
+    return any(y > dep and x + w / 2 > x0 and x - w / 2 < x1 and y > y0 and y - h < y1 for x0, y0, x1, y1, dep in PZBOX)
+
+
+_np = []
+for k, x, y in PROPS:
+    if _hides(k, x, y):
+        for k2 in sorted(LOW, key=lambda q: (FR[q].height, (x * 7 + y * 13 + len(q)) % 5)):
+            if not _hides(k2, x, y):
+                _np.append([k2, x, y])
+                break
+    else:
+        _np.append([k, x, y])
+PROPS[:] = _np
 
 # moitas de neve e capim seco ao longo da borda (escondem a grade)
 EDGE = []

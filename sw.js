@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.86.2-guardia-fala";
+const CACHE = "ded-web-v4.87.0-relicario-congelado";
 
 self.addEventListener("install", () => self.skipWaiting());
 
