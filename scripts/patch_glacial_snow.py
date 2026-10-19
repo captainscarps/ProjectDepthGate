@@ -52,7 +52,7 @@ put('glacial:{id:"glacial",name:"Cidadela Glacial",theme:Qn,world:hl,rooms:_e("g
 chunks = [c[0] for c in META["chunks"]]
 put('this.load.spritesheet("hub-portal","assets/pixel-art/hub/hub-portal2.png",{frameWidth:56,frameHeight:65});',
     'this.load.spritesheet("hub-portal","assets/pixel-art/hub/hub-portal2.png",{frameWidth:56,frameHeight:65});for(const f of ' + json.dumps(chunks) +
-    ')this.load.image(f,`assets/pixel-art/glacial-snow/${f}.png`);this.load.json("gsb-meta","assets/pixel-art/glacial-snow/gsb-meta.json");this.load.image("gsb-drift","assets/pixel-art/glacial-snow/gsb-drift.png");this.load.image("gsb-gate","assets/pixel-art/glacial-snow/gsb-gate.png");this.load.image("gsb-ext","assets/pixel-art/glacial-snow/gsb-ext.png");'
+    ')this.load.image(f,`assets/pixel-art/glacial-snow/${f}.png`);this.load.json("gsb-meta","assets/pixel-art/glacial-snow/gsb-meta.json");this.load.image("gsb-drift","assets/pixel-art/glacial-snow/gsb-drift.png");this.load.image("gsb-gate","assets/pixel-art/glacial-snow/gsb-gate.png");this.load.image("gsb-ext","assets/pixel-art/glacial-snow/gsb-ext.png");this.load.json("gs-wind","assets/audio/ambient/snow-wind.json");'
     'this.load.atlas("gs-props","assets/pixel-art/glacial-snow/gs-props.png","assets/pixel-art/glacial-snow/gs-props.json");')
 
 # ── desenho + efeitos ──
@@ -75,9 +75,20 @@ FN = (r'function __gsBake(B){if(B.level?.id!=="glacial")return;const d=B.scene,M
       r'if(isP&&(s.n=(s.n+1)%2)===0)d.game.audioEngine?.sfx?.("sfx-snow-step")};'
       r'const fn=()=>{const p=d.player;if(!p||!p.active||!d.sys.isActive())return;p.dead||step(p,!0);const P2=d.player2;P2&&P2.active&&!P2.dead&&step(P2,!0);for(const e of d.enemies?.getChildren?.()||[])e.active&&!e.dead&&Math.abs(e.y-p.y)<400&&step(e,!1)};'
       r'd.events.on("update",fn);d.events.once("shutdown",()=>d.events.off("update",fn));'
-      # neve caindo (clima) — só na floresta
-      r'const fl=()=>{if(!d.sys?.isActive?.())return;const p=d.player,V=d.cameras.main.worldView;if(p&&p.y>ROW-160){for(let k=0;k<2;k++){const x=V.x+R()*V.width,y=V.y-6,r=R()<.7?.8:1.3,c=d.add.circle(x,y,r,16777215).setAlpha(.55+R()*.4).setDepth(9e3),dur=3500+R()*3e3;d.tweens.add({targets:c,y:y+V.height+20,x:x+(R()-.5)*90-20,duration:dur,ease:"Linear",onComplete:()=>c.destroy()})}}d.time.delayedCall(90,fl)};d.time.delayedCall(200,fl)}')
-# a floresta nevada fica fora dos desafios aleatórios (emboscadas/ondas): poucos inimigos, como pedido
+      # vento sombrio de nevasca (laço contínuo no canal de ambiente) + nevasca na tela que segue as rajadas do som
+      r'const E=d.game.audioEngine,WJ=d.cache.json.get("gs-wind"),WD=WJ?.dur||48,WE=WJ?.env||[];let W=null,gv=.4,lastIn=0;'
+      r'const wplay=buf=>{if(!d.sys?.isActive?.()||W||!E?.ctx||!E.ambientBus)return;const src=E.ctx.createBufferSource();src.buffer=buf;src.loop=!0;const g=E.ctx.createGain();g.gain.value=0;src.connect(g);g.connect(E.ambientBus);src.start();W={src,g,t0:E.ctx.currentTime}};'
+      r'const wload=()=>{if(!d.sys?.isActive?.())return;if(!E?.ctx||!E.ambientBus){d.time.delayedCall(600,wload);return}if(window.__gsWindBuf){wplay(window.__gsWindBuf);return}const ogg=(new Audio).canPlayType("audio/ogg; codecs=vorbis");fetch("assets/audio/ambient/snow-wind."+(ogg?"ogg":"mp3")).then(r=>r.arrayBuffer()).then(b=>E.ctx.decodeAudioData(b)).then(buf=>{window.__gsWindBuf=buf;wplay(buf)}).catch(()=>{})};d.time.delayedCall(300,wload);'
+      r'd.events.once("shutdown",()=>{if(W){try{W.g.gain.setTargetAtTime(0,E.ctx.currentTime,.15);const S=W.src;setTimeout(()=>{try{S.stop();S.disconnect()}catch(e){}},500)}catch(e){}W=null}});'
+      r'const haze=d.add.rectangle(0,0,d.scale.width*2,d.scale.height*2,15265535).setOrigin(0).setScrollFactor(0).setDepth(8999).setAlpha(0);'
+      r'const wt=()=>{const p=d.player;if(!p||!d.sys.isActive())return;const inF=p.y>ROW-40?1:p.y>ROW-360?Math.max(0,(p.y-(ROW-360))/320)*.55:0;'
+      r'if(W&&E?.ctx){const ph=((E.ctx.currentTime-W.t0)%WD+WD)%WD;gv=WE.length?WE[Math.min(WE.length-1,Math.floor(ph*4))]:.5;W.g.gain.setTargetAtTime(inF*.95,E.ctx.currentTime,.8)}else gv=.45+.3*Math.sin(d.time.now/4e3);'
+      r'lastIn+=(inF-lastIn)*.03;haze.setAlpha(lastIn*(.02+Math.max(0,gv-.35)*.2))};d.events.on("update",wt);d.events.once("shutdown",()=>d.events.off("update",wt));'
+      r'const fl=()=>{if(!d.sys?.isActive?.())return;const V=d.cameras.main.worldView;if(lastIn>.05){const g=gv,n=Math.round((1+g*6)*lastIn),wx=140+g*420;for(let k=0;k<n;k++){const side=R()<.35,x=side?V.x-20:V.x+R()*V.width*1.1-V.width*.15,y=side?V.y+R()*V.height*.8:V.y-8,dur=(2600+R()*1600)*(1-g*.45),big=R()<.18,str=g>.6&&R()<.5;'
+      r'const c=str?d.add.rectangle(x,y,1,4+R()*4,16777215).setRotation(-Math.atan2(wx,V.height)):d.add.circle(x,y,big?1.6:.6+R()*.7,R()<.15?14018815:16777215);c.setAlpha((.45+R()*.45)*Math.min(1,lastIn*1.5)).setDepth(9e3);'
+      r'd.tweens.add({targets:c,x:x+wx*dur/2600+(R()-.5)*40,y:y+V.height+30,duration:dur,ease:"Linear",onComplete:()=>c.destroy()})}'
+      # neve correndo rente ao chão nas rajadas (por baixo dos personagens)
+      r'if(g>.5&&R()<g*.9){const p=d.player,y=p.y+(R()-.3)*160,x=V.x-30,w=30+R()*60,e=d.add.ellipse(x,y,w,2+R()*3,16777215).setAlpha(0).setDepth(.7);d.tweens.add({targets:e,alpha:.22+R()*.18,duration:400,yoyo:!0,hold:500});d.tweens.add({targets:e,x:x+V.width+120,y:y+(R()-.5)*20,duration:1500+R()*700,ease:"Sine.easeIn",onComplete:()=>e.destroy()})}}d.time.delayedCall(45,fl)};d.time.delayedCall(200,fl)}')
 put('special=r=>r.boss||r.final||r.crystal||r.hub||r.secret||', 'special=r=>r.boss||r.final||r.crystal||r.hub||r.secret||/^gs-/.test(r.id)||')
 put('function __ekBake(B){', FN + 'function __ekBake(B){')
 put('if(__EK2[i]&&__ekBake(this))return;', '__gsBake(this);if(__EK2[i]&&__ekBake(this))return;')

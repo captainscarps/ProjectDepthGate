@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.83.0-floresta-nevada";
+const CACHE = "ded-web-v4.83.1-vento-nevasca";
 
 self.addEventListener("install", () => self.skipWaiting());
 
