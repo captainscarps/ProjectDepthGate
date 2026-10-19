@@ -31,7 +31,7 @@ MODEL, NODE_MODULES, KOKORO = (sys.argv[1:4] + ["", "", ""])[:3]
 # sid: 0-4 vozes femininas, 5-9 masculinas do Supertonic 3
 VOICES = {
     "narrator": dict(sid=6, speed=.9, fx="room"),
-    "guardia": dict(sid=0, speed=.93, fx="temple"),
+    "guardia": dict(sid=0, speed=.9, fx="temple"),
     "guardia-corrupt": dict(sid=0, speed=.88, fx="demon"),
     "rei": dict(sid=9, speed=.88, fx="room"),
     "rei-corrupt": dict(sid=9, speed=.85, fx="demon"),
@@ -56,7 +56,7 @@ KVOICE = {
     "narrator": ({"bm_george": .7, "bm_fable": .3}, "en-gb", .9),
     "vision": ({"bm_george": .7, "bm_fable": .3}, "en-gb", .9),
     "video": ({"bm_george": .7, "bm_fable": .3}, "en-gb", .95),
-    "guardia": ({"af_heart": .6, "bf_emma": .4}, "en-gb", .92),
+    "guardia": ({"af_heart": .6, "bf_emma": .4}, "en-gb", .9),
     "guardia-corrupt": ({"af_heart": .6, "bf_emma": .4}, "en-gb", .88),
     "rei": ({"bm_fable": .6, "am_onyx": .4}, "en-gb", .88),
     "rei-corrupt": ({"bm_fable": .6, "am_onyx": .4}, "en-gb", .86),
@@ -102,7 +102,7 @@ def prepare_kokoro(d):
 _K = {}
 
 
-def synth_en(text, voice, emo, mul=1.0):
+def synth_en_raw(text, voice, emo, mul=1.0):
     from kokoro_onnx import Kokoro
     if "k" not in _K:
         prepare_kokoro(KOKORO)
@@ -153,7 +153,8 @@ def emotion_of(ln):
 
 def prep_text(t):
     """pontuação que vira pausa e respiro na leitura"""
-    t = t.replace("—", ",").replace("–", ",").replace("…", "...")
+    t = t.replace(" — ", ", ").replace("—", ", ").replace(" – ", ", ").replace("…", "...")
+    t = t.replace(" ,", ",")
     t = t.replace("“", "").replace("”", "").replace('"', "")
     return " ".join(t.split())
 
@@ -183,40 +184,59 @@ def norm(t):
     return " ".join(t.split()).strip()
 
 
-def fx(x, kind, sr, emo="talk"):
+def vverb(x, sr, rt=.8, wet=.14, pre=.018, damp=5200):
+    """reverberação suave para voz: cauda difusa sem ecos discretos (evita som metálico)"""
+    n = int(rt * sr)
+    t = np.arange(n) / sr
+    rg = np.random.default_rng(11)
+    ir = (B.filt(rg.standard_normal(n), "lowpass", 900) * 1.3 * np.exp(-t / (rt / 5)) +
+          B.filt(rg.standard_normal(n), "highpass", 900) * np.exp(-t / (rt / 8)))
+    ir = B.filt(ir, "lowpass", damp) * np.clip(t / .03, 0, 1)
+    ir = np.concatenate([np.zeros(int(pre * sr)), ir])
+    from scipy.signal import fftconvolve
+    y = fftconvolve(x, ir)[:len(x) + int(rt * .6 * sr)]
+    y = y / (np.abs(y).max() + 1e-9) * (np.abs(x).max() + 1e-9)
+    return B.mix(x, y * wet)
+
+
+def air(x, sr, amt=.035):
+    """sopro: ar acompanhando a fala (voz mais íntima e misteriosa)"""
+    env = np.convolve(np.abs(x), np.ones(int(.02 * sr)) / int(.02 * sr), "same")
+    nz = B.filt(np.random.default_rng(5).standard_normal(len(x)), "bandpass", [2500, 7500])
+    return x + nz * env * amt * 4
+
+
+def fx(x, kind, sr, emo="talk", breathy=0.0):
     import librosa
     x = x.astype(np.float64)
     sp, st, sil, br_in, br_out, inten = EMO[emo]
-    if abs(st) > .05:
-        x = librosa.effects.pitch_shift(x.astype(np.float32), sr=sr, n_steps=st, res_type="soxr_hq").astype(np.float64)
     if inten:
-        x = B.shelf(B.sat(x, inten), 2500, 2.0, "high")       # voz mais tensa e projetada
-    if emo == "sadness":
-        x = B.filt(x, "lowpass", 9500)
+        x = B.shelf(x, 2500, 1.5, "high")                     # voz mais projetada (sem distorção)
     x = B.filt(x, "highpass", 70)
-    x = B.shelf(x, 180, 2.2, "low")                            # calor/corpo de microfone próximo
+    x = B.shelf(x, 180, 2.0, "low")                            # calor/corpo de microfone próximo
+    if breathy:
+        x = air(x, sr, breathy)
     pk = np.abs(x).max() + 1e-9
     if br_in:
         x = np.concatenate([breath(sr, .36) * pk * .05, np.zeros(int(.06 * sr)), x])
     if br_out:
         x = np.concatenate([x, np.zeros(int(.12 * sr)), breath(sr, .6, True) * pk * .045])
     if kind == "room":
-        x = B.space(x, "small", .1)
+        x = vverb(x, sr, .35, .07)
     elif kind == "temple":
-        ch = np.roll(x, int(.011 * sr)) * .35
-        x = B.space(B.mix(x, ch), "stone", .22)
+        x = vverb(x, sr, 1.3, .17, .025)
     elif kind == "demon":
         low = librosa.effects.pitch_shift(x.astype(np.float32), sr=sr, n_steps=-5).astype(np.float64)
         lower = librosa.effects.pitch_shift(x.astype(np.float32), sr=sr, n_steps=-12).astype(np.float64)
         y = B.mix(.55 * x, .9 * low, .45 * lower)
         y = B.sat(y, 2.2)
-        x = B.space(y, "stone", .28)
+        x = vverb(y, sr, 1.4, .25)
     elif kind == "vision":
-        x = B.space(x, "stone", .2)
+        x = vverb(x, sr, 1.1, .16)
     elif kind == "ghost":
-        ch = np.roll(x, int(.017 * sr)) * .5
+        ch = np.roll(x, int(.017 * sr)) * .4
         x = B.filt(B.mix(x, ch), "lowpass", 6500)
-        x = B.space(x, "stone", .35)
+        x = vverb(x, sr, 1.6, .3)
     # nível: RMS de fala parecido entre vozes, pico sob controle
     rms = np.sqrt(np.mean(x[np.abs(x) > .01 * np.abs(x).max()] ** 2)) + 1e-9
     x = x * (.12 / rms)
@@ -263,7 +283,57 @@ def synth(tts, S, text, lang, cfg, emo, speed_mul=1.0):
     nz = np.where(np.abs(x) > .01)[0]
     if len(nz):
         x = x[max(0, nz[0] - int(.03 * sr)):nz[-1] + int(.08 * sr)]
-    return fx(x, cfg["fx"], sr, emo), sr
+    return x, sr
+
+
+MYSTERY = {"guardia": .03, "guardia-corrupt": .02, "narrator": .012, "vision": .02, "video": .012, "echo-m": .02, "echo-f": .02}
+
+
+def phrases(text):
+    """quebra a fala em trechos de respiração, com a pausa certa depois de cada um"""
+    import re
+    t = prep_text(text)
+    parts = [p.strip() for p in re.findall(r"[^.,;:!?]+(?:\.\.\.|[.,;:!?])*", t) if p.strip()]
+    out = []
+    for p in parts:
+        if out and len(out[-1]) < 14 and not out[-1].endswith(("...", ".", "?", "!")):
+            out[-1] = out[-1] + " " + p
+        else:
+            out.append(p)
+    res = []
+    for p in out:
+        pause = .62 if p.endswith("...") else .42 if p.endswith((".", "?")) else .36 if p.endswith("!") else .3 if p.endswith((";", ":")) else .2
+        res.append((p, pause))
+    return res
+
+
+def phrased(gen, text, voice, emo, mul=1.0):
+    """gera trecho por trecho variando ritmo e intensidade: o fim desacelera e baixa (tom de mistério)"""
+    ps = phrases(text)
+    rg = np.random.default_rng(abs(hash(text)) % (2 ** 32))
+    myst = voice.split("-")[0] in ("guardia", "narrator", "vision", "video", "echo") or voice.startswith("cine-")
+    chunks, sr = [], 44100
+    for k, (p, pause) in enumerate(ps):
+        last = k == len(ps) - 1
+        v = rg.uniform(.94, 1.05) if not last else (.9 if myst else .96)
+        if len(ps) == 1:
+            v = .95 if myst else 1.0
+        x, sr = gen(p, mul * v)
+        g = 1.0
+        if last and len(ps) > 1:
+            g = .8 if myst else .9
+        elif k == 0 and myst and len(ps) > 1:
+            g = .9
+        if p.endswith("?"):
+            g *= 1.05
+        x = x * g
+        fade = int(.012 * sr)
+        x[:fade] *= np.linspace(0, 1, fade)
+        x[-fade:] *= np.linspace(1, 0, fade)
+        chunks.append(x)
+        if not last:
+            chunks.append(np.zeros(int(pause * (1.15 if myst else 1.0) * sr)))
+    return np.concatenate(chunks), sr
 
 
 def save_mp3(x, sr, f):
@@ -316,18 +386,19 @@ def main():
             text = texts[L]
             if not text:
                 continue
-            sig = hashlib.md5(json.dumps([text, cfg, emo, EMO[emo], 2] + ([L, "kokoro", kvoice(ln["voice"])] if L == "en" else []), ensure_ascii=False).encode()).hexdigest()[:10]
+            sig = hashlib.md5(json.dumps([text, cfg, emo, EMO[emo], 3] + ([L, "kokoro", kvoice(ln["voice"])] if L == "en" else []), ensure_ascii=False).encode()).hexdigest()[:10]
             f = os.path.join(OUT, L, hid + ".mp3")
             if old.get("s", {}).get(hid, {}).get(L) == sig and os.path.exists(f):
                 man["d"][hid][L], man["s"][hid][L] = old["d"][hid][L], sig
                 continue
-            if L == "en":
-                x, sr = synth_en(text, ln["voice"], emo)
-                x = fx(x, cfg["fx"], sr, emo)
-            else:
-                x, sr = synth(tts, S, text, L, cfg, emo)
+            v = ln["voice"]
+            gen = (lambda p, m: synth_en_raw(p, v, emo, m)) if L == "en" else (lambda p, m: synth(tts, S, p, L, cfg, emo, m))
+            breathy = MYSTERY.get("guardia" if v.startswith("cine-") else v, 0)
+            x, sr = phrased(gen, text, v, emo)
+            x = fx(x, cfg["fx"], sr, emo, breathy)
             if cfg.get("maxd") and len(x) / sr > cfg["maxd"]:            # cabe na legenda do vídeo
-                x, sr = synth(tts, S, text, L, cfg, emo, len(x) / sr / (cfg["maxd"] - .3)) if L != "en" else (lambda r: (fx(r[0], cfg["fx"], r[1], emo), r[1]))(synth_en(text, ln["voice"], emo, len(x) / sr / (cfg["maxd"] - .3)))
+                x, sr = phrased(gen, text, v, emo, len(x) / sr / (cfg["maxd"] - .3))
+                x = fx(x, cfg["fx"], sr, emo, breathy)
             save_mp3(x, sr, f)
             man["d"][hid][L], man["s"][hid][L] = round(len(x) / sr, 2), sig
             print(f"[{i + 1}/{len(lines)}] {L} {ln['voice']:16s} {emo:10s} {man['d'][hid][L]:5.1f}s  {text[:60]}")

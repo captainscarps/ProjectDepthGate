@@ -36,7 +36,7 @@ SB = (r'const __SB={st:0,buf:null,m:null,al:{},last:{},load(E){if(this.st||!E.ct
       r'src.start(c.currentTime+.005,o,l+.02);src.onended=()=>{try{src.disconnect();g.disconnect()}catch(e){}};return!0}};window.__SB=__SB;')
 VO = (r'function __voOf(e){if(!e)return null;if(e.corrupt)return e.who==="guardia"?"demonf":"demon";if(e.who==="guardia")return"guardia";if(e.who==="rei")return"rei";if(e.voice)return e.voice;'
       r'const nm=String(e.name||"");if(!nm)return null;const lo=nm.toLowerCase();let hf=!1;try{hf=["ROGUE","MAGE","SHAMAN"].some(k=>{const h=String(__HN?.[k]||"").toLowerCase();return h&&lo.includes(h)})}catch(_){}return hf||/seris|arthelia|ladina|maga|xam|guardi|rainha|queen|bruxa/i.test(nm)?"female":/rei|king|velho|anci|mestre|ferreiro/i.test(nm)?"old":"male"}'
-      r'function __voTick(sc,e,full,n){if(window.__dubOn)return;const v=__voOf(e);if(!v||!sc)return;const st=sc.__voSt||(sc.__voSt={n:0,t:0});if(n<st.n)st.n=0;const ch=full.slice(st.n,n);st.n=n;'
+      r'function __voTick(sc,e,full,n){if(window.__dubOn)return;if(e&&(e.who==="guardia"||e.who==="rei")&&window.__dubReady?.())return;const v=__voOf(e);if(!v||!sc)return;const st=sc.__voSt||(sc.__voSt={n:0,t:0});if(n<st.n)st.n=0;const ch=full.slice(st.n,n);st.n=n;'
       r'if(!/[A-Za-zÀ-ÿ]/.test(ch))return;const now=performance.now();if(now-st.t<(v==="demon"?150:v==="guardia"?120:95))return;st.t=now;window.__DED_GAME?.audioEngine?.sfx?.("sfx-vo-talk-"+v)}'
       r'function __voHeroF(id){return/rogue|shaman|mage|huntress/i.test(id||"")}')
 put("class zr{constructor(){", SB + VO + "class zr{constructor(){")
