@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.86.1-falas-enigmas";
+const CACHE = "ded-web-v4.86.2-guardia-fala";
 
 self.addEventListener("install", () => self.skipWaiting());
 
