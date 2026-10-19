@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.82.0-pocoes-furia-arcana";
+const CACHE = "ded-web-v4.82.1-toque-inventario";
 
 self.addEventListener("install", () => self.skipWaiting());
 
