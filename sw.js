@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.89.0-enigmas-variados";
+const CACHE = "ded-web-v4.90.0-reliquias";
 
 self.addEventListener("install", () => self.skipWaiting());
 
