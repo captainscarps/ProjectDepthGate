@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.90.0-reliquias";
+const CACHE = "ded-web-v4.90.1-controles-tela-dividida";
 
 self.addEventListener("install", () => self.skipWaiting());
 
