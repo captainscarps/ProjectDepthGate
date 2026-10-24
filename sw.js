@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.90.3-enigmas-revisados";
+const CACHE = "ded-web-v4.90.4-runas-alavancas-feedback";
 
 self.addEventListener("install", () => self.skipWaiting());
 
