@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.97.1-animais-agua";
+const CACHE = "ded-web-v4.98.0-ingles-natural";
 
 self.addEventListener("install", () => self.skipWaiting());
 

@@ -415,6 +415,18 @@ def main():
     if os.path.exists(xf):
         lines += json.load(open(xf, encoding="utf-8"))
     over = json.load(open(os.path.join(ROOT, "scripts", "story_en_overrides.json"), encoding="utf-8"))
+    # inglês revisado (scripts/en_dialogue.json): o mesmo texto que o jogo mostra, para a voz casar com a legenda
+    ENX = json.load(open(os.path.join(ROOT, "scripts", "en_dialogue.json"), encoding="utf-8"))
+    FIX, ADD = ENX["fix"], ENX["add"]
+
+    def en_of(ln):
+        e = ln.get("en")
+        if not e:                       # o inglês novo (o que o jogo mostra) vem antes das traduções antigas
+            t = ln["text"].strip()
+            q = t[1:-1] if t.startswith("“") and t.endswith("”") else None
+            e = ADD.get(t) or ADD.get(norm(t)) or (q is not None and ADD.get(q) and "“" + ADD[q] + "”") or ""
+        e = e or over.get(ln["text"]) or over.get(norm(ln["text"]))
+        return FIX.get(e, FIX.get(norm(e), e)) if e else ""
     M = MODEL.rstrip("/") + "/"
     tts = None if S is None else S.OfflineTts(S.OfflineTtsConfig(model=S.OfflineTtsModelConfig(supertonic=S.OfflineTtsSupertonicModelConfig(
         duration_predictor=M + "duration_predictor.onnx", text_encoder=M + "text_encoder.onnx", vector_estimator=M + "vector_estimator.onnx",
@@ -433,7 +445,7 @@ def main():
     for i, ln in enumerate(lines):
         pt = norm(ln["text"])
         hid = fnv(pt)
-        texts = {"pt": pt, "en": norm(ln.get("en") or over.get(ln["text"]) or over.get(pt) or ""), "es": norm(ln.get("es") or "")}
+        texts = {"pt": pt, "en": norm(en_of(ln)), "es": norm(ln.get("es") or "")}
         for t in texts.values():
             if t:
                 man["k"].setdefault(fnv(t), hid)
