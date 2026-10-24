@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.95.1-rio-livre-audio-abertura";
+const CACHE = "ded-web-v4.95.2-bestiario-inimigos-campanha";
 
 self.addEventListener("install", () => self.skipWaiting());
 

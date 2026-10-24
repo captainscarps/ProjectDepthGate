@@ -8671,12 +8671,16 @@ const __NF_MIX=[
  [/^(salao|ruinas|santuario|arena)$/,{SKELETON_WARRIOR:[.5,"SKELETON_LEGIONARY"],SKELETON_ARCHER:[.5,"SKELETON_SHARPSHOOTER"],DEMON_CASTER:[1,"PYRO_CULTIST"]}],
  [/^(salao-antigos|patio|templo)$/,{GOBLIN_ASSASSIN:[1,"PYRO_ASHBLADE"],ORC_BRUTE:[1,"PYRO_ZEALOT"],GOBLIN_ARCHER:[.5,"PYRO_CULTIST"]}],
  [/^(ashen|molten|dragon-shrine)/,{SKELETON_WARRIOR:[1,"SKELETON_LEGIONARY"],ORC_BRUTE:[.5,"PYRO_ZEALOT"],HARPY:[.5,"PYRO_ASHBLADE"]}]];
-function __nfMix(D){if(D.scene?.endlessRun?.())return;for(const rm of D.rooms||[]){const df=rm.def,id=String(rm.id??df?.id??"");if(!df?.enemies?.length)continue;const rule=__NF_MIX.find(([re])=>re.test(id));if(!rule)continue;
- df.enemies=df.enemies.map((e,i)=>{const r=rule[1][e.type];if(!r||e.boss)return e;const h=__nfH(id+"#"+i);if(h>=r[0])return e;const t=Array.isArray(r[1])?r[1][Math.floor(__nfH(id+"@"+i)*r[1].length)]:r[1];return{...e,type:t,nfFrom:e.type}})}}
+function __nfMixList(id,list){const rule=__NF_MIX.find(([re])=>re.test(id));if(!rule||!list?.length)return list;
+ return list.map((e,i)=>{const r=rule[1][e.type];if(!r||e.boss)return e;const h=__nfH(id+"#"+i);if(h>=r[0])return e;const t=Array.isArray(r[1])?r[1][Math.floor(__nfH(id+"@"+i)*r[1].length)]:r[1];return{...e,type:t,nfFrom:e.type}})}
+function __nfMix(D){if(D.scene?.endlessRun?.())return;for(const rm of D.rooms||[]){const df=rm.def,id=String(rm.id??df?.id??"");if(df?.enemies?.length)df.enemies=__nfMixList(id,df.enemies)}}
+/* a troca vale direto nos dados das fases: o bestiário (onde aparece) e a campanha enxergam o mesmo */
+try{for(const lv of Object.values(ki))for(const r of lv.rooms||[])r.enemies?.length&&(r.enemies=__nfMixList(String(r.id??""),r.enemies))}catch(e){}
 /* sombra e aura do tamanho do corpo (os quadros têm folga para os golpes) */
 {const U=lh.prototype.update;lh.prototype.update=function(i,t){if(!this.__nfS&&this.texture?.key?.startsWith?.("nf-")){this.__nfS=1;const m=__NF_META[this.texture.key.slice(3)];if(m){const w=m.visW*Math.abs(this.scaleX);this.isFlying||this.shadow?.setScale(w*1.1/34);this.eliteAura?.setScale(w*1.5/42)}}return U.call(this,i,t)}}
 /* ── espiões do Observador ── */
 const __BH_TYPES=["SPY_EYE_PALE","SPY_EYE_CRIMSON","SPY_EYE_VOID"];
+try{const W=()=>__L3("Qualquer fase da Campanha e do Modo Infinito — surge de surpresa e foge se não for abatido","Any Campaign or Endless stage — appears by surprise and flees if not slain","Cualquier fase de la Campaña y del Modo Infinito — aparece por sorpresa y huye si no es abatido");for(const k of __BH_TYPES)Object.defineProperty(__BK_EXTRA_WHERE,k,{get:W,enumerable:!0,configurable:!0})}catch(e){}
 function __bhInit(S){try{const lid=String(S.levelId??S.level?.id??"");if(S.isRift||/hub|refuge|tutorial|prolog/i.test(lid)||S.game.registry.get("mode")==="hub")return;
  S.__bh={t0:S.time.now,done:0,spy:null};const ev=S.time.addEvent({delay:15e3,loop:!0,callback:()=>__bhTick(S)});const up=()=>__bhUpdate(S);S.events.on("update",up);
  S.events.once("shutdown",()=>{ev.remove();S.events.off("update",up);__bhBar(S,null)})}catch(e){}}
