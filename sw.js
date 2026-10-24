@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.90.7-runas-claras";
+const CACHE = "ded-web-v4.90.8-dublagem-webaudio";
 
 self.addEventListener("install", () => self.skipWaiting());
 
