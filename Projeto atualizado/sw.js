@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.90.5-runas-sua-vez";
+const CACHE = "ded-web-v4.90.6-enigmas-sem-toque-perdido";
 
 self.addEventListener("install", () => self.skipWaiting());
 
