@@ -38,6 +38,7 @@ put(old, old[:-1] + "," + ",".join(json.dumps(x, separators=(",", ":")) for x in
 put("this.rooms=t.rooms.map(e=>new th(e)),this.byId=new Map(this.rooms.map(e=>[e.id,e]));",
     "this.rooms=t.rooms.map(e=>new th(e)),this.byId=new Map(this.rooms.map(e=>[e.id,e]));try{__nfMix(this)}catch(e){}")
 put('this.game.events.on("enemy:died",this.onEnemyDied,this),', '__bhInit(this),this.game.events.on("enemy:died",this.onEnemyDied,this),')
+put('function __stAdj(c){return c?.level?.id==="forest"?{hp:.85,dm:.9}:{hp:1.35,dm:1.35}}', 'function __stAdj(c){return c?.level?.id==="forest"?{hp:.7,dm:.55}:{hp:1.35,dm:1.35}}')
 SRC = open(os.path.join(ROOT, "scripts", "source", "new-foes.js"), encoding="utf-8").read()
 meta_js = json.dumps({k: {kk: v[kk] for kk in ("anims", "si", "visW", "visH")} for k, v in META.items()}, separators=(",", ":"))
 s = s + T + "\nconst __NF_META=" + meta_js + ";\n" + SRC + "\n/*§*/" + T

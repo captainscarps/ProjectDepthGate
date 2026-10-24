@@ -68,7 +68,7 @@ const __NF_MIX=[
  [/^(ashen|molten|dragon-shrine)/,{SKELETON_WARRIOR:[1,"SKELETON_LEGIONARY"],ORC_BRUTE:[.5,"PYRO_ZEALOT"],HARPY:[.5,"PYRO_ASHBLADE"]}]];
 function __nfMixList(id,list){const rule=__NF_MIX.find(([re])=>re.test(id));if(!rule||!list?.length)return list;
  return list.map((e,i)=>{const r=rule[1][e.type];if(!r||e.boss)return e;const h=__nfH(id+"#"+i);if(h>=r[0])return e;const t=Array.isArray(r[1])?r[1][Math.floor(__nfH(id+"@"+i)*r[1].length)]:r[1];return{...e,type:t,nfFrom:e.type}})}
-function __nfMix(D){if(D.scene?.endlessRun?.())return;for(const rm of D.rooms||[]){const df=rm.def,id=String(rm.id??df?.id??"");if(df?.enemies?.length)df.enemies=__nfMixList(id,df.enemies)}}
+function __nfMix(D){if(D.scene?.endlessRun?.())return;try{__forestEase(D)}catch(e){}for(const rm of D.rooms||[]){const df=rm.def,id=String(rm.id??df?.id??"");if(df?.enemies?.length)df.enemies=__nfMixList(id,df.enemies)}}
 /* a troca vale direto nos dados das fases: o bestiário (onde aparece) e a campanha enxergam o mesmo */
 try{for(const lv of Object.values(ki))for(const r of lv.rooms||[])r.enemies?.length&&(r.enemies=__nfMixList(String(r.id??""),r.enemies))}catch(e){}
 /* sombra e aura do tamanho do corpo (os quadros têm folga para os golpes) */
@@ -135,3 +135,20 @@ function __fsWarn(S){if(__stFlag(S,"spyWarn"))return;__stFlag(S,"spyWarn",!0);co
  met||L.push({name:hn,text:L3("De novo essa voz… quem é você, afinal?","That voice again… who are you, really?","Otra vez esa voz… ¿quién eres, en realidad?")});
  S.time.delayedCall(500,()=>S.scene.isActive()&&(met?__gSay(S,L):__dlg(S,L)))}
 window.__fsSightNow=()=>{const S=window.__DED_GAME?.scene?.getScene?.("Game");S&&__fsSight(S)};
+
+/* ── Floresta de Eldervale (primeira fase, herói nível 1): dificuldade nivelada ──────────────────────────
+   Antes: 3 Trolls de elite com 3 afixos cada (ex.: Resistente+Blindado+Enfurecido), golpes rápidos e investidas
+   seguidas — quase impossível com heróis de curta distância. Agora:
+   • elites da floresta ficam com no máximo 1 afixo, só os "justos" (Resistente/Veloz); os Trolls do Bosque e do
+     Ossário não são mais elite (só o da Caverna de Cristal, no fim) e o segundo Troll da Caverna de Cristal vira Orc Guerreiro
+   • vida ×0,7 e dano ×0,55 (antes ×0,85 e ×0,9), velocidade ×0,88
+   • golpes avisam 30% antes (mais tempo para desviar/encostar e bater), recarga 30% maior, investidas raras
+   • atiradores (Harpia, Goblin Fundeiro) quase não fogem do herói: dá para alcançá-los de perto; as Harpias (voam e fogem, ninguém de perto as alcança) viram Goblins Fundeiros, só 1 por sala; o Ossário
+     perde 1 Orc */
+const __FE_OK=["TOUGH","FAST"];
+function __forestEase(D){if(D.level?.id!=="forest")return;for(const rm of D.rooms||[]){const df=rm.def,id=String(rm.id??"");if(!df?.enemies?.length||df.__fe)continue;df.__fe=1;let trolls=0,harp=0,orcs=0;
+ df.enemies=df.enemies.map(e=>{let n={...e};if(n.type==="HARPY"){harp++;if(harp>1)return null;n={...n,type:"GOBLIN_ARCHER"}}if(n.type==="ORC_WARRIOR"&&id==="ossadas"){orcs++;if(orcs>1)return null}if(n.type==="TROLL"){trolls++;if(id==="bosque"||id==="ossadas")n.elite=!1;if(id==="caverna-cristal"&&trolls>1)n={...n,type:"ORC_WARRIOR",elite:!1}}
+  if(n.elite){const a=(n.affixes||[]).filter(x=>__FE_OK.includes(x)).slice(0,1);n.affixes=a.length?a:["TOUGH"]}return n}).filter(Boolean)}}
+{const SP=Sd.prototype.spawnEnemy;Sd.prototype.spawnEnemy=function(i,t,e,d={}){const n=SP.call(this,i,t,e,d);try{if(n&&this.level?.id==="forest"&&!this.endlessRun?.()&&!n.__fe){n.__fe=1;n.speed*=.88;
+ const c=n.ai?.cfg;if(c){const a=(c.attacks||[]).map(x=>({...x,telegraphMs:x.telegraphMs?Math.round(x.telegraphMs*1.3):x.telegraphMs,castMs:x.castMs?Math.round(x.castMs*1.2):x.castMs,cooldownMs:Math.round((x.cooldownMs||1500)*1.3)}));
+  n.ai.cfg={...c,attacks:a,...(c.retreatRange?{retreatRange:Math.min(c.retreatRange,40),preferredRange:Math.min(c.preferredRange??130,100)}:{}),dashBurst:c.dashBurst&&{...c.dashBurst,cooldownMs:Math.round(c.dashBurst.cooldownMs*1.6),mult:Math.min(c.dashBurst.mult,1.9)}};n.data_={...n.data_,ai:n.ai.cfg}}}}catch(err){}return n}}

@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.96.0-espiao-floresta-save-seguro";
+const CACHE = "ded-web-v4.96.1-floresta-nivelada";
 
 self.addEventListener("install", () => self.skipWaiting());
 
