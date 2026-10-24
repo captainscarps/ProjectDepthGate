@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.90.8-dublagem-webaudio";
+const CACHE = "ded-web-v4.91.0-voz-ptbr";
 
 self.addEventListener("install", () => self.skipWaiting());
 

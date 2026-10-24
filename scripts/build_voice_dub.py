@@ -1,5 +1,7 @@
 """
-Dublagem da história com voz neural (Supertonic 3, licença OpenRAIL-M, roda offline via sherpa-onnx), em português.
+Dublagem da história com voz neural, em português do Brasil e inglês.
+Português: Kokoro-82M com as vozes brasileiras (pf_dora, pm_alex, pm_santa) e pronúncia pt-br do espeak-ng.
+(Antes era Supertonic 3, que soava com sotaque de Portugal; continua disponível com --supertonic.)
   1. extrai as falas do bundle com quem fala (extract_story_lines.cjs)
   2. gera cada fala com a voz do personagem (narrador, Guardiã, Rei, heróis, ecos dos Antigos)
   3. aplica o "acabamento" de cada voz (eco de templo, voz demoníaca do Rei corrompido, fantasma dos ecos…)
@@ -72,6 +74,52 @@ KVOICE = {
     "echo-m": ({"bm_daniel": .6, "am_michael": .4}, "en-gb", .88),
     "echo-f": ({"bf_isabella": .6, "bf_emma": .4}, "en-gb", .88),
 }
+
+
+# português do Brasil com Kokoro: só as 3 vozes brasileiras dão o sotaque; uma pitada de outra voz muda o timbre por personagem
+PT_ENGINE = "supertonic" if "--supertonic" in sys.argv else "kokoro-ptbr"
+PVOICE = {
+    "narrator": ({"pm_santa": .8, "bm_george": .2}, .92),
+    "vision": ({"pm_santa": .8, "bm_george": .2}, .9),
+    "video": ({"pm_santa": .8, "bm_george": .2}, .96),
+    "guardia": ({"pf_dora": .85, "bf_emma": .15}, .92),
+    "guardia-corrupt": ({"pf_dora": .85, "bf_emma": .15}, .88),
+    "rei": ({"pm_santa": .7, "am_onyx": .3}, .88),
+    "rei-corrupt": ({"pm_santa": .7, "am_onyx": .3}, .86),
+    "hero-WARRIOR": ({"pm_alex": .85, "am_michael": .15}, .98),
+    "hero-BERSERKER": ({"pm_alex": .75, "am_fenrir": .25}, .96),
+    "hero-ARCHER": ({"pm_alex": .85, "am_puck": .15}, .98),
+    "hero-HUNTER": ({"pm_santa": .75, "am_fenrir": .25}, .95),
+    "hero-DRUID": ({"pm_santa": .8, "am_liam": .2}, .93),
+    "hero-NECROMANCER": ({"pm_santa": .75, "am_onyx": .25}, .9),
+    "hero-MAGE": ({"pf_dora": .85, "af_bella": .15}, .97),
+    "hero-ROGUE": ({"pf_dora": .8, "af_nicole": .2}, 1.0),
+    "hero-SHAMAN": ({"pf_dora": .8, "af_kore": .2}, .95),
+    "echo-m": ({"pm_alex": .8, "bm_daniel": .2}, .88),
+    "echo-f": ({"pf_dora": .8, "bf_isabella": .2}, .88),
+}
+
+
+def pvoice(v):
+    if v.startswith("cine-"):
+        return PVOICE["guardia"] if "GUARDI" in v.upper() else PVOICE["narrator"]
+    return PVOICE.get(v) or PVOICE["narrator"]
+
+
+def synth_ptbr_raw(text, voice, emo, mul=1.0):
+    from kokoro_onnx import Kokoro
+    if "k" not in _K:
+        prepare_kokoro(KOKORO)
+        _K["k"] = Kokoro(os.path.join(KOKORO, "kokoro-q8.onnx"), os.path.join(KOKORO, "voices.npz"))
+    k = _K["k"]
+    mixv, spd = pvoice(voice)
+    style = sum(k.get_voice_style(n) * w for n, w in mixv.items())
+    s, sr = k.create(prep_text(text), voice=style, speed=spd * EMO[emo][0] * mul, lang="pt-br")
+    x = np.array(s, dtype=np.float64)
+    nz = np.where(np.abs(x) > .01)[0]
+    if len(nz):
+        x = x[max(0, nz[0] - int(.03 * sr)):nz[-1] + int(.08 * sr)]
+    return x, sr
 
 
 def kvoice(v):
@@ -353,8 +401,10 @@ def save_mp3(x, sr, f):
 
 
 def main():
-    import sherpa_onnx as S
-    prepare_model(MODEL)
+    S = tts = None
+    if PT_ENGINE == "supertonic":
+        import sherpa_onnx as S
+        prepare_model(MODEL)
     with tempfile.TemporaryDirectory() as td:
         lj = os.path.join(td, "lines.json")
         env = dict(os.environ, NODE_PATH=NODE_MODULES)
@@ -362,7 +412,7 @@ def main():
         lines = json.load(open(lj))
     over = json.load(open(os.path.join(ROOT, "scripts", "story_en_overrides.json"), encoding="utf-8"))
     M = MODEL.rstrip("/") + "/"
-    tts = S.OfflineTts(S.OfflineTtsConfig(model=S.OfflineTtsModelConfig(supertonic=S.OfflineTtsSupertonicModelConfig(
+    tts = None if S is None else S.OfflineTts(S.OfflineTtsConfig(model=S.OfflineTtsModelConfig(supertonic=S.OfflineTtsSupertonicModelConfig(
         duration_predictor=M + "duration_predictor.onnx", text_encoder=M + "text_encoder.onnx", vector_estimator=M + "vector_estimator.onnx",
         vocoder=M + "vocoder.onnx", tts_json=M + "tts.json", unicode_indexer=M + "unicode_indexer.bin", voice_style=M + "voice.bin"), num_threads=2)))
     for L in LANGS:
@@ -392,13 +442,13 @@ def main():
             text = texts[L]
             if not text:
                 continue
-            sig = hashlib.md5(json.dumps([text, cfg, emo, EMO[emo], 3] + ([L, "kokoro", kvoice(ln["voice"])] if L == "en" else []), ensure_ascii=False).encode()).hexdigest()[:10]
+            sig = hashlib.md5(json.dumps([text, cfg, emo, EMO[emo], 3] + ([L, "kokoro", kvoice(ln["voice"])] if L == "en" else [] if PT_ENGINE == "supertonic" else [L, PT_ENGINE, pvoice(ln["voice"])]), ensure_ascii=False).encode()).hexdigest()[:10]
             f = os.path.join(OUT, L, hid + ".mp3")
             if old.get("s", {}).get(hid, {}).get(L) == sig and os.path.exists(f):
                 man["d"][hid][L], man["s"][hid][L] = old["d"][hid][L], sig
                 continue
             v = ln["voice"]
-            gen = (lambda p, m: synth_en_raw(p, v, emo, m)) if L == "en" else (lambda p, m: synth(tts, S, p, L, cfg, emo, m))
+            gen = (lambda p, m: synth_en_raw(p, v, emo, m)) if L == "en" else (lambda p, m: synth(tts, S, p, L, cfg, emo, m)) if PT_ENGINE == "supertonic" else (lambda p, m: synth_ptbr_raw(p, v, emo, m))
             breathy = MYSTERY.get("guardia" if v.startswith("cine-") else v, 0)
             x, sr = phrased(gen, text, v, emo)
             x = fx(x, cfg["fx"], sr, emo, breathy)
