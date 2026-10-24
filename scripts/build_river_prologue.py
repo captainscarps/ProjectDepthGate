@@ -29,13 +29,48 @@ OUT = os.path.join(ROOT, "assets", "pixel-art", "river-prologue")
 os.makedirs(OUT, exist_ok=True)
 random.seed(21)
 rng = np.random.default_rng(21)
-W, H = 2800, 2000
+W, H = 3800, 2000
+NEW = os.environ.get("RP_NEWPACK") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "rp-newpack")
 
 # ───────── fontes: chão e árvores do Bosque Amaldiçoado ─────────
 meta_rf = json.load(open(os.path.join(RF, "rfb-meta.json")))
 atlas = Image.open(os.path.join(RF, "rf-props.png")).convert("RGBA")
 frames = json.load(open(os.path.join(RF, "rf-props.json")))["frames"]
 FR = {k: atlas.crop((v["frame"]["x"], v["frame"]["y"], v["frame"]["x"] + v["frame"]["w"], v["frame"]["y"] + v["frame"]["h"])) for k, v in frames.items()}
+# objetos extras do pacote "Forest Top-Down Tileset" (mesma arte): atlas rp2-props (prefixo n-)
+NEWSEL = ["Tree10", "Tree14", "Bush5", "Bush7", "Bush10", "Bush6", "Ruin_orange1", "Ruin_orange2", "Ruin_orange4", "Ruin_orange5",
+          "Ruin_grass1", "Ruin_grass2", "Ruin_grass3", "Ruin_grass5", "reeds1", "reeds2", "reeds3", "Light_stone_grass1",
+          "Light_stone_grass2", "Light_stone_grass4", "Beige_stone_grass2", "Beige_stone_grass4", "Beige_stone_grass6",
+          "Brown_stone_grass2", "Red_mushroom1", "Red_mushroom2", "Red_mushroom3", "Brown_mushroom1", "Brown_mushroom2", "Layer7"]
+A2P, A2J = os.path.join(OUT, "rp2-props.png"), os.path.join(OUT, "rp2-props.json")
+FR2 = {}
+if os.path.isdir(NEW):
+    for n in NEWSEL:
+        im = Image.open(os.path.join(NEW, n + ".png")).convert("RGBA")
+        FR2["n-" + n] = im.crop(im.getbbox())
+    xx_, yy_, rowh, AW = 0, 0, 0, 1024
+    pos = {}
+    for k, im in sorted(FR2.items(), key=lambda kv: -kv[1].height):
+        if xx_ + im.width > AW:
+            xx_, yy_, rowh = 0, yy_ + rowh + 2, 0
+        pos[k] = (xx_, yy_)
+        xx_ += im.width + 2
+        rowh = max(rowh, im.height)
+    at2 = Image.new("RGBA", (AW, yy_ + rowh), (0, 0, 0, 0))
+    fr_ = {}
+    for k, (x0, y0) in pos.items():
+        im = FR2[k]
+        at2.paste(im, (x0, y0))
+        fr_[k] = {"frame": {"x": x0, "y": y0, "w": im.width, "h": im.height}, "rotated": False, "trimmed": False,
+                  "spriteSourceSize": {"x": 0, "y": 0, "w": im.width, "h": im.height}, "sourceSize": {"w": im.width, "h": im.height}}
+    at2.save(A2P, optimize=True)
+    json.dump({"frames": fr_, "meta": {"image": "rp2-props.png", "size": {"w": at2.width, "h": at2.height}, "scale": "1"}}, open(A2J, "w"))
+else:
+    at2 = Image.open(A2P).convert("RGBA")
+    for k, v in json.load(open(A2J))["frames"].items():
+        f_ = v["frame"]
+        FR2[k] = at2.crop((f_["x"], f_["y"], f_["x"] + f_["w"], f_["y"] + f_["h"]))
+FR.update(FR2)
 chunks = [np.array(Image.open(os.path.join(RF, k + ".png")).convert("RGB")).astype(float) for k, _, _ in meta_rf["chunks"]]
 
 # cor da grama: tom mais comum entre os pixels verdes claros
@@ -148,6 +183,9 @@ for (cx, cy), r in zip(cr, rr):
 blob(1650, 560, 400, 250)                     # segundo lago
 blob(1560, 640, 220, 130)
 blob(2480, 1400, 125, 88)                     # remanso do píer
+POND = (3060, 650)
+for dx_, dy_, rx_, ry_ in ((0, 0, 190, 120), (-110, 35, 150, 100), (95, -30, 140, 95), (40, 70, 120, 80), (-40, -55, 110, 70)):
+    blob(POND[0] + dx_, POND[1] + dy_, rx_, ry_)                     # lago da clareira: vários lobos = margem sinuosa
 wf = water + vnoise(70, .1) + vnoise(23, .05)
 W_M = wf > .5                                  # água
 # ilhota no segundo lago (mata, ninguém passa)
@@ -185,11 +223,21 @@ def lblob(cx, cy, rx, ry):
 lblob(2500, 1220, 230, 140)                   # clareira do desembarque
 lblob(2650, 1170, 140, 100)                   # estátua
 lblob(2350, 1225, 110, 60)                    # margem do naufrágio
-TRAIL = [(2490, 1335), (2450, 1220), (2500, 1100), (2600, 1010), (2690, 945), (2760, 905), (2840, 890)]
-for (ax, ay), (bx, by) in zip(TRAIL, TRAIL[1:]):
-    for t in np.linspace(0, 1, 16):
-        lblob(ax + (bx - ax) * t, ay + (by - ay) * t, 64, 64)
-lblob(2560, 1050, 100, 70)                    # alargamento no meio da trilha
+# área explorável depois do rio: campo dos coelhos, clareira das ruínas, lago, campo das aves e trilha de saída
+M1, G1, M2 = (2400, 640), (2130, 340), (3340, 1090)
+lblob(M1[0], M1[1], 330, 200)
+lblob(M1[0] + 150, M1[1] + 80, 200, 140)
+lblob(G1[0], G1[1], 190, 135)
+lblob(POND[0], POND[1] + 10, 420, 290)        # margens do lago
+lblob(M2[0], M2[1], 250, 170)
+lblob(M2[0] - 120, M2[1] + 60, 150, 110)
+TRAILS = [[(2490, 1335), (2450, 1220), (2445, 1085), (2415, 940), (2400, 790), (2425, 665), (2560, 615), (2740, 640),
+           (2890, 770), (3060, 850), (3210, 900), (3300, 1000), (3410, 1065), (3545, 1025), (3665, 972), (3860, 955)],
+          [(2410, 720), (2310, 575), (2220, 465), (2150, 385)]]
+for TR in TRAILS:
+    for (ax, ay), (bx, by) in zip(TR, TR[1:]):
+        for t in np.linspace(0, 1, 16):
+            lblob(ax + (bx - ax) * t, ay + (by - ay) * t, 64, 64)
 lf = land + vnoise(60, .1) + vnoise(19, .05)
 L_M = (lf > .5) & ~W_M
 
@@ -202,9 +250,11 @@ img = img * (inside[..., None] + (1 - inside[..., None]) * shade)
 # trilha de terra batida
 tr = Image.new("L", (W, H), 0)
 d = ImageDraw.Draw(tr)
-d.line(TRAIL, fill=255, width=26, joint="curve")
-for p in TRAIL:
-    d.ellipse((p[0] - 13, p[1] - 13, p[0] + 13, p[1] + 13), fill=255)
+for TR in TRAILS:
+    TRc = [tuple(q) for q in catmull(TR, 8)]
+    d.line(TRc, fill=255, width=24, joint="curve")
+    for p in TRc[::3]:
+        d.ellipse((p[0] - 12, p[1] - 12, p[0] + 12, p[1] + 12), fill=255)
 d.ellipse((2490 - 34, 1322 - 22, 2490 + 34, 1322 + 26), fill=255)          # chegada do píer
 pf = blur(np.array(tr) / 255., 7) + vnoise(20, .14) + vnoise(7, .06)
 trail = smooth(pf, .42, .62) * inside
@@ -283,7 +333,7 @@ def lily(x, y, r, c, flower):
 
 LILY_C = [(70, 120, 56), (82, 132, 60), (60, 108, 52)]
 calm = W_M & (fast < .05) & (deep > .35)
-for zx, zy, zr in ((430, 1640, 300), (1650, 560, 330), (950, 960, 120), (850, 660, 100), (1500, 600, 140)):
+for zx, zy, zr in ((430, 1640, 300), (1650, 560, 330), (950, 960, 120), (850, 660, 100), (1500, 600, 140), (POND[0], POND[1], 170)):
     for _ in range(int(zr * .6)):
         x, y = int(zx + rng.normal(0, zr * .55)), int(zy + rng.normal(0, zr * .4))
         if 0 < x < W and 0 < y < H and calm[y, x]:
@@ -292,8 +342,8 @@ for zx, zy, zr in ((430, 1640, 300), (1650, 560, 330), (950, 960, 120), (850, 66
             lily(x, y, int(rng.integers(4, 8)), LILY_C[int(rng.integers(3))], rng.random() < .18)
 
 # ───────── árvores ─────────
-TREES = ["rf-Tree1", "rf-Tree2", "rf-Tree3", "rf-Tree5", "rf-Tree6", "rf-Tree7", "rf-Tree8", "rf-Tree9", "rf-Tree11", "rf-Tree13"]
-BUSH = ["rf-Bush1", "rf-Bush3", "rf-Bush4", "rf-Bush9", "rf-Bush11", "rf-Bush12", "rf-Bush13", "rf-Tree4", "rf-Tree12"]
+TREES = ["rf-Tree1", "rf-Tree2", "rf-Tree3", "rf-Tree5", "rf-Tree6", "rf-Tree7", "rf-Tree8", "rf-Tree9", "rf-Tree11", "rf-Tree13", "n-Tree10", "n-Tree14"]
+BUSH = ["rf-Bush1", "rf-Bush3", "rf-Bush4", "rf-Bush9", "rf-Bush11", "rf-Bush12", "rf-Bush13", "rf-Tree4", "rf-Tree12", "n-Bush5", "n-Bush7"]
 
 
 def shadow(im, x, y, w, a=70):
@@ -387,7 +437,7 @@ for k, x, y in PROPS:
     if not openm[min(H - 1, cy + 4), cx]:
         keep.append([k, x, y])
 PROPS = keep
-STATUE, DOCK, LAND, EXIT = (2660, 1160), (2478, 1382), (2490, 1322), (2770, 900)
+STATUE, DOCK, LAND, EXIT = (2660, 1160), (2478, 1382), (2490, 1322), (3740, 958)
 BRIDGE = (1100, 1010)
 PROPS = [p for p in PROPS if all((p[1] - x) ** 2 + (p[2] - y) ** 2 > 70 ** 2 for x, y in (STATUE, DOCK, LAND))]
 
@@ -473,12 +523,39 @@ for _ in range(2600):
         if cover(x, y, FR[k].width, FR[k].height) < .2:
             DECO.append([k, x, y, 1.0, bool(rng.random() < .5)])
 DECO = [d_ for d_ in DECO if all((d_[1] - x) ** 2 + (d_[2] - y) ** 2 > 80 ** 2 for x, y in (STATUE, DOCK, LAND))]
+# área nova: ruínas na clareira, pedras e juncos no lago, cogumelos e pedrinhas nos campos
+for k, dx, dy, fl in (("n-Ruin_orange1", -70, 30, False), ("n-Ruin_grass2", 95, -5, True), ("n-Ruin_orange4", 15, -75, False),
+                      ("n-Ruin_grass5", -120, -50, True), ("n-Ruin_orange5", 60, 70, False)):
+    DECO.append([k, G1[0] + dx, G1[1] + dy, 1.0, fl])
+pond_sh = W_M & (blur(W_M.astype(float), 6) < .85)
+nd = 0
+for _ in range(4000):
+    x, y = int(rng.integers(POND[0] - 330, POND[0] + 330)), int(rng.integers(POND[1] - 220, POND[1] + 220))
+    if 0 < x < W and 0 < y < H and pond_sh[y, x] and nd < 16 and all((x - d_[1]) ** 2 + (y - d_[2]) ** 2 > 34 ** 2 for d_ in DECO):
+        DECO.append([random.choice(["n-reeds1", "n-reeds2", "n-reeds3"]), x, y + 4, 1.0, bool(rng.random() < .5)])
+        nd += 1
+for k, dx, dy in (("n-Light_stone_grass1", -250, -90), ("n-Light_stone_grass2", 230, 120), ("n-Beige_stone_grass4", -40, 210)):
+    x, y = POND[0] + dx, POND[1] + dy
+    if L_M[min(H - 1, y), min(W - 1, x)]:
+        DECO.append([k, x, y, 1.0, False])
+NEWAREA = (2000, 150, 3800, 1300)
+SMALL2 = [FR[k] for k in ("n-Red_mushroom1", "n-Brown_mushroom1", "n-Beige_stone_grass6", "n-Bush10", "n-Bush6", "n-Bush10",
+                          "n-Bush6", "n-Bush10", "n-Light_stone_grass4")]
+for _ in range(650):
+    x, y = int(rng.integers(NEWAREA[0], NEWAREA[2])), int(rng.integers(NEWAREA[1], NEWAREA[3]))
+    if L_M[y, x] and trail[y, x] < .2 and inside[y, x] > .6 and rng.random() < .35:
+        s_ = SMALL2[int(rng.integers(len(SMALL2)))]
+        if s_.height > 40 and inside[y, x] < .9:
+            continue
+        base.alpha_composite(s_, (int(x - s_.width // 2), int(y - s_.height)))
+ZONES = {"m1": [M1[0], M1[1], 300, 180], "g1": [G1[0], G1[1], 165, 115], "pond": [POND[0], POND[1], 230, 135],
+         "bank": [POND[0], POND[1] + 10, 380, 260], "m2": [M2[0], M2[1], 230, 150]}
 for k, x, y, sc, fl in DECO:
     if k == "rp-pillar":
         continue
     wd = FR[k].width if k in FR else 40
     shadow(base, x, y, int(wd * sc * .4), 60)
-PROPS = [p for p in PROPS if all((p[1] - d_[1]) ** 2 + (p[2] - d_[2]) ** 2 > 40 ** 2 for d_ in DECO)
+PROPS = [p for p in PROPS if all((p[1] - d_[1]) ** 2 + (p[2] - d_[2]) ** 2 > (70 if 'Ruin' in d_[0] else 40) ** 2 for d_ in DECO)
          and all((p[1] - x) ** 2 + (p[2] - 30 - y) ** 2 > 55 ** 2 for x, y in STUBS)]
 for k, x, y in PROPS:
     shadow(base, x, y, FR[k].width // 2, 70)
@@ -555,7 +632,8 @@ meta = {"w": W, "h": H, "cell": C, "gw": gw, "gh": gh, "grid": base64.b64encode(
         "start": [360, 1720], "dock": list(DOCK), "land": list(LAND), "exit": list(EXIT),
         "wreck": WRECK, "statue": list(STATUE), "bridge": list(BRIDGE),
         "path": path, "flow": flow, "len": int(TOT), "cues": cues,
-        "mist": [[430, 1640, 330, 230], [1650, 560, 330, 200]]}
+        "mist": [[430, 1640, 330, 230], [1650, 560, 330, 200], [POND[0], POND[1], 200, 120]],
+        "zones": ZONES, "rp2": sorted({k for k, *_ in PROPS + DECO if k.startswith("n-")})}
 json.dump(meta, open(os.path.join(OUT, "rp-meta.json"), "w"), separators=(",", ":"))
 # pilar partido da ponte (gerado a partir da coluna quebrada do jogo, com musgo e linha d'água)
 col = Image.open(os.path.join(ROOT, "assets", "pixel-art", "props", "broken-column.png")).convert("RGBA")

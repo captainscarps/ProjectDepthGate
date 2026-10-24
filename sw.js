@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.96.1-floresta-nivelada";
+const CACHE = "ded-web-v4.97.0-prologo-area-animais";
 
 self.addEventListener("install", () => self.skipWaiting());
 
