@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.94.0-prologo-rio-longo-sons";
+const CACHE = "ded-web-v4.95.0-inimigos-novos-espioes";
 
 self.addEventListener("install", () => self.skipWaiting());
 
