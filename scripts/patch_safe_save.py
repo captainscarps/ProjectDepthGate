@@ -33,7 +33,15 @@ put("gold:c.stats.gold,hp:c.player.hp,resource:c.resource.current,potions:c.poti
 SRC = r'''
 /* sala segura para o save: limpa, ou sem inimigos e sem chefe; lembra a última segura por onde o herói passou */
 function __roomSafe(r){if(!r)return!1;if(r.state==="cleared")return!0;if(r.state==="active")return!1;const d=r.def||{};return!(d.enemies?.length)&&!r.hasBoss&&!d.boss}
-function __safeRoomId(c){try{const r=c.roomManager?.activeRoom;if(__roomSafe(r)&&!__fightNear(c))c.__safeRoom=r.id;return c.__safeRoom??null}catch(e){return null}}
+function __safeRoomId(c){try{const r=c.roomManager?.activeRoom;if(__roomSafe(r)&&!__fightNear(c)&&!__hubLocked(c,r))c.__safeRoom=r.id;return c.__safeRoom??null}catch(e){return null}}
+/* o Coração da Floresta fica cercado de espinhos até juntar os 3 cristais: não serve de ponto de volta enquanto isso */
+function __hubLocked(c,r){return!!(r?.def?.hub&&c.levelId==="forest"&&__forestCount(c)<3)}
+/* save antigo que já aponta para o Coração cercado: tira o herói de dentro, para fora dos espinhos */
+{const HB=__hubBarrier;__hubBarrier=function(S,on){const v=HB(S,on);if(on){try{__hubUnstuck(S)}catch(e){}S.time?.delayedCall?.(0,()=>{try{__hubUnstuck(S)}catch(e){}})}return v}}
+function __hubUnstuck(S){const p=S.player,B=S.dungeon,q=B?.level?.rooms?.find(r=>r.hub)?.rect,o=S.__hubBar;if(!p?.body||!q||!o?.length)return;
+ const pc=Math.floor(p.x/dt),pr=Math.floor(p.y/dt);if(!(pc>=q.x&&pc<q.x+q.w&&pr>=q.y&&pr<q.y+q.h))return;
+ const L=o.map(t=>[Math.floor(t.x/dt),Math.floor(t.y/dt)]),mid=Math.floor(L.length/2),ord=[...L.slice(mid),...L.slice(0,mid)];
+ for(const[c,r]of ord){const dx=c<q.x?-1:c>=q.x+q.w?1:0,dy=r<q.y?-1:r>=q.y+q.h?1:0;for(const k of[1,2]){const tc=c+dx*k,tr=r+dy*k;if(B.isWallTile(tc,tr)||L.some(([a,b])=>a===tc&&b===tr))continue;p.body.reset(tc*dt+dt/2,tr*dt+dt/2);S.cameras?.main?.centerOn?.(p.x,p.y);return}}}
 function __fightNear(c){const p=c.player;if(!p)return!1;for(const e of c.enemies?.getChildren?.()||[])if(!e.dead&&e.active&&Math.hypot(e.x-p.x,e.y-p.y)<320&&(e.ai?.aggro||e.aggro))return!0;return!!(c.boss&&!c.boss.dead&&c.boss.active)}
 '''
 s = s + T + SRC + "/*§*/" + T
