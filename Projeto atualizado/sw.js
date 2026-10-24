@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.90.4-runas-alavancas-feedback";
+const CACHE = "ded-web-v4.90.5-runas-sua-vez";
 
 self.addEventListener("install", () => self.skipWaiting());
 
