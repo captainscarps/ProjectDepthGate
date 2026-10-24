@@ -1,6 +1,6 @@
 """
-Prólogo no Mar Gelado entre o vídeo de abertura da campanha e a Floresta de Eldervale.
-Código em scripts/source/arctic-prologue.js (cena ArcticPrologue), peças de scripts/build_arctic_prologue.py,
+Prólogo do Rio da Floresta entre o vídeo de abertura da campanha e a Floresta de Eldervale.
+Código em scripts/source/arctic-prologue.js (cena ArcticPrologue), mapa de scripts/build_river_prologue.py, barco de scripts/build_arctic_prologue.py,
 narração da Guardiã em scripts/voice_extra_lines.json. Re-executável.
 """
 import base64
@@ -32,4 +32,4 @@ put('this.scene.start("Cutscene",{script:"intro",classId:t,next:{key:"Game",data
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):
         open(p, "w", encoding="utf-8").write(s)
-print("prólogo do mar gelado aplicado")
+print("prólogo do rio da floresta aplicado")
