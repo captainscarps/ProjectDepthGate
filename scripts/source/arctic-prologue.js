@@ -111,6 +111,7 @@ create(){const S=this,M=S.cache.json.get("rp-meta"),R=Math.random,L3=__L3;S.M=M;
  /* folhas caindo (o vento empurra) e vaga-lumes */
  S.leaves=[];for(let k=0;k<48;k++){const f=w(S.add.rectangle(R()*S.W,R()*S.H,3,2,[0x9cc46a,0xc9b25a,0x6f9a4a][k%3],.85).setDepth(4e3));f.vx=10+R()*14;f.vy=14+R()*16;f.ph=R()*6;S.leaves.push(f)}
  for(let k=0;k<70;k++){const p=S.freeCell(R()<.5?1:2);if(!p)continue;const ff=w(S.add.image(p.x,p.y,"light").setScale(.05).setBlendMode(j.BlendModes.ADD).setTint(0xd8ff9a).setAlpha(0).setDepth(3e3));S.tweens.add({targets:ff,alpha:{from:0,to:.8},x:"+="+(R()*30-15),y:"-="+(R()*20),duration:1500+R()*1500,yoyo:!0,repeat:-1,delay:R()*3e3})}
+ try{window.__dubPrefetch?.(__arcLines())}catch(e){}
  S.buildUI();S.lineDone=new Set;S.queue=[];S.lineTok=0;S.heroDone=new Set;S.time.delayedCall(1600,()=>S.say(0));
  S.initAnimals();
  try{S.game.audioEngine?.music?.("forest")}catch(e){}
@@ -158,10 +159,12 @@ hsay(key,t){const S=this;if(!t||S.heroDone.has(key))return;S.heroDone.add(key);S
 nextLine(){const S=this,tok=++S.lineTok;S.typer?.remove();if(!S.queue.length){S.speaking=!1;S.skipBtn?.setVisible(!1);S.tweens.add({targets:S.nar,alpha:0,duration:600});return}S.speaking=!0;S.skipBtn?.setVisible(!0);const it=S.queue.shift();
  if(typeof it==="string"){const fadeMs=S.nar.alpha>.05?300:0;S.tweens.add({targets:S.nar,alpha:0,duration:Math.max(1,fadeMs-40)});const d=Math.max(2600,it.length*48);S.time.delayedCall(fadeMs,()=>tok===S.lineTok&&S.heroSay(it,d));S.time.delayedCall(fadeMs+d+500,()=>tok===S.lineTok&&S.sys.isActive()&&S.nextLine());return}
  const i=it,t=__arcLines()[i],ex=__ARC_EXPR[i]||"talk";
- S.textures.exists("guardia-p-"+ex)&&S.por.setTexture("guardia-p-"+ex);S.narTx.setText("");S.tweens.add({targets:S.nar,alpha:1,duration:300});let n=0;S.typer=S.time.addEvent({delay:26,repeat:t.length-1,callback:()=>S.narTx.setText(t.slice(0,++n))});
+ S.textures.exists("guardia-p-"+ex)&&S.por.setTexture("guardia-p-"+ex);S.narTx.setText("");S.tweens.add({targets:S.nar,alpha:1,duration:300});let n=0;
  i===8&&(S.gustBoost=1);
  let fin=!1;const done=ok=>{if(fin||tok!==S.lineTok)return;fin=!0;const hl=__arcHero(i);hl&&!S.heroDone.has("g"+i)&&(S.heroDone.add("g"+i),S.queue.unshift(hl));S.time.delayedCall(ok?900:Math.max(3e3,t.length*60),()=>tok===S.lineTok&&S.sys.isActive()&&S.nextLine())};
- try{window.__dub?window.__dub(t,done):done(!1)}catch(e){done(!1)}}
+ try{window.__dub?window.__dub(t,done):done(!1)}catch(e){done(!1)}
+ /* o texto acompanha a voz (começa quando ela começa e termina junto) */
+ S.typer=S.time.addEvent({delay:24,loop:!0,callback:()=>{if(tok!==S.lineTok){S.typer?.remove();return}n=window.__dubType?window.__dubType(t,n,1):Math.min(t.length,n+1);S.narTx.setText(t.slice(0,n));n>=t.length&&S.typer.remove()}})}
 skipLine(){const S=this;if(!S.speaking||S.pauseOn)return;try{window.__dubStop?.()}catch(e){}S.typer?.remove();if(S.hbox){S.hbox.destroy();S.hbox=null}
  const cur=S.narTx.text;S.lineTok++;/* a resposta do herói à fala pulada continua na fila */S.nextLine()}
 togglePause(on){const S=this;on=on??!S.pauseOn;if(on===!!S.pauseOn||S.leaving)return;S.pauseOn=on;S.pz.setVisible(on);const C=S.game.audioEngine?.ctx;
