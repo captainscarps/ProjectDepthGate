@@ -8152,16 +8152,20 @@ const x0=o.x-w*o.originX,y0=o.y-h*o.originY,x1=x0+w,y1=y0+h;for(let c=Math.floor
 for(const o of D.objects||[]){if(!o?.hazard)continue;const w=o.displayWidth||T,h=o.displayHeight||T;for(let c=Math.floor((o.x-w/2)/T)-1;c<=Math.floor((o.x+w/2)/T)+1;c++)for(let r=Math.floor((o.y-h/2)/T)-1;r<=Math.floor((o.y+h/2)/T)+1;r++)BAN.add(K(c,r))}
 for(const k of D.__water||[])BAN.add(k);
 const near=(c,r,d)=>{for(let dx=-d;dx<=d;dx++)for(let dy=-d;dy<=d;dy++)BAN.add(K(c+dx,r+dy))};
-LV.playerSpawn&&near(LV.playerSpawn.col,LV.playerSpawn.row,2);for(const d of LV.doors||[])near(d.col,d.row,2);
+LV.playerSpawn&&near(LV.playerSpawn.col,LV.playerSpawn.row,2);
+/* nada de enigma colado em objeto do cenário que se usa (baú, santuário, braseiro/totem de objetivo…): a tecla de interagir
+   pegaria o objeto errado e um totem/braseiro de objetivo poderia ficar cercado */
+for(const o of D.objects||[])if(o&&o.active!==!1&&(typeof o.interact==="function"||o.def?.cdPlaced||o.def?.type==="cd-obj"))near(Math.floor(o.x/T),Math.floor((o.y-4)/T),2);
+for(const rm of LV.rooms)for(const dc of rm.decor||[])(dc.cdPlaced||dc.type==="cd-obj"||dc.type==="chest"||dc.type==="shrine"||dc.type==="event-altar")&&near(dc.col,dc.row,2);for(const d of LV.doors||[])near(d.col,d.row,2);
 for(const rm of LV.rooms){for(const e of rm.enemies||[])near(e.col,e.row,1);rm.bossCol!=null&&near(rm.bossCol,rm.bossRow,3)}
 const inR=(q,c,r)=>c>=q.x&&c<q.x+q.w&&r>=q.y&&r<q.y+q.h;
 const free=(q,c,r)=>inR(q,c,r)&&!wall(c,r)&&!SOLC.has(K(c,r))&&!VIS.has(K(c,r))&&!BAN.has(K(c,r));
 /* alcance: o mapa continua todo ligado depois de colocar as peças sólidas */
 const reach=extra=>{const sp=LV.playerSpawn;if(!sp)return-1;const seen=new Set([K(sp.col,sp.row)]),q=[[sp.col,sp.row]];while(q.length){const[c,r]=q.pop();for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const n=c+dx,m=r+dy,k=K(n,m);if(seen.has(k)||wall(n,m)||SOLC.has(k)||extra.has(k))continue;seen.add(k);q.push([n,m])}}return seen.size};
 const base0=reach(new Set);
-const cand=LV.rooms.filter(r=>!r.boss&&!r.final&&!r.roomType&&!r.hub&&r.rect.w>=7&&r.rect.h>=6).map(r=>({r,n:0,k:RS()+(r.cdObj?1:0)})).sort((a,b)=>a.k-b.k);
+const ROOMOK=r=>!r.boss&&!r.final&&!r.roomType&&!r.hub&&r.rect.w>=7&&r.rect.h>=6,cand=LV.rooms.filter(r=>ROOMOK(r)&&r.cdObj!=="MECHANISM"&&r.cdObj!=="RITUAL").map(r=>({r,n:0,k:RS()+(r.cdObj?1:0)})).sort((a,b)=>a.k-b.k),EXTRA=LV.rooms.filter(r=>ROOMOK(r)&&(r.cdObj==="MECHANISM"||r.cdObj==="RITUAL")).map(r=>({r,n:3,k:9+RS()}));
 const BUSY=new Set;
-const ok=(q,c,r)=>free(q,c,r)&&!BUSY.has(K(c,r)),N4=[[1,0],[-1,0],[0,1],[0,-1]],rooms=()=>cand.slice().sort((a,b)=>a.n-b.n||a.k-b.k);
+const ok=(q,c,r)=>free(q,c,r)&&!BUSY.has(K(c,r)),N4=[[1,0],[-1,0],[0,1],[0,-1]],rooms=()=>cand.slice().sort((a,b)=>a.n+(a.r.cdObj?2:0)-(b.n+(b.r.cdObj?2:0))||a.k-b.k);
 const shuf=a=>{for(let k=a.length-1;k>0;k--){const m=Math.floor(RS()*(k+1));[a[k],a[m]]=[a[m],a[k]]}return a};
 const conn=sol=>{if(base0<=0)return!0;const ex=new Set(sol.map(([c,r])=>K(c,r)));return reach(ex)>=reach(new Set)-ex.size};
 const commit=(R0,sol,cells)=>{for(const[c,r]of cells)for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)BUSY.add(K(c+dx,r+dy));for(const[c,r]of sol)SOLC.add(K(c,r));R0.n++};
@@ -8171,9 +8175,11 @@ const fit=(cells,sol)=>{const w=Math.max(...cells.map(q=>q[0]))+1,h=Math.max(...
 for(let y=q.y;y+h<=q.y+q.h;y++)for(let x=q.x;x+w<=q.x+q.w;x++)cells.every(([a,b])=>ok(q,x+a,y+b))&&pos.push([Math.hypot(x+w/2-cx,y+h/2-cy)+RS()*.8,x,y]);
 pos.sort((a,b)=>a[0]-b[0]);for(const[,x,y]of pos.slice(0,16)){const S2=sol.map(([a,b])=>[x+a,y+b]);if(!conn(S2))continue;commit(R0,S2,cells.map(([a,b])=>[x+a,y+b]));return{x,y,room:R0.r,q}}}return null};
 /* peças soltas pela sala: n células livres, cada uma com chão livre ao lado, distância entre dmin e dmax */
-const pick=(n,dmin,dmax,solN)=>{for(const R0 of rooms()){const q=R0.r.rect,F=[];for(let y=q.y;y<q.y+q.h;y++)for(let x=q.x;x<q.x+q.w;x++)ok(q,x,y)&&N4.some(([dx,dy])=>ok(q,x+dx,y+dy))&&F.push([x,y]);if(F.length<n*2)continue;
+const pick=(n,dmin,dmax,solN,valid)=>{for(const R0 of rooms()){const q=R0.r.rect,F=[];for(let y=q.y;y<q.y+q.h;y++)for(let x=q.x;x<q.x+q.w;x++)ok(q,x,y)&&N4.some(([dx,dy])=>ok(q,x+dx,y+dy))&&F.push([x,y]);if(F.length<n*2)continue;
 for(let t=0;t<40;t++){const sel=[];for(const c of shuf(F.slice())){sel.every(s=>{const d=Math.max(Math.abs(s[0]-c[0]),Math.abs(s[1]-c[1]));return d>=dmin&&d<=dmax})&&sel.push(c);if(sel.length===n)break}
-if(sel.length<n)continue;const sol=sel.slice(0,solN);if(!conn(sol))continue;commit(R0,sol,sel);return{sel,room:R0.r,q}}}return null};
+if(sel.length<n||valid&&!valid(sel))continue;const sol=sel.slice(0,solN);if(!conn(sol))continue;commit(R0,sol,sel);return{sel,room:R0.r,q}}}return null};
+/* desfaz reservas de uma tentativa que não deu certo */
+const snap=()=>({b:new Set(BUSY),s:new Set(SOLC),n:cand.map(o=>o.n)}),undo=z=>{BUSY.clear();z.b.forEach(k=>BUSY.add(k));SOLC.clear();z.s.forEach(k=>SOLC.add(k));cand.forEach((o,i)=>o.n=z.n[i]??o.n)};
 const zone=(c,r,w=26,h=22)=>{const[x,y]=C(c,r),z=S.add.zone(x,y+4,w,h);S.physics.add.existing(z,!0);solids.add(z);SOL.add(K(c,r));return z};
 const label=(o,f)=>{Object.defineProperty(o,"interactLabel",{get:f,configurable:!0})};
 const glow=(x,y,s,c,a)=>S.add.image(x,y,"light").setScale(s).setBlendMode(ADD).setTint(c).setAlpha(a);
@@ -8199,7 +8205,7 @@ const ORD=[["primeira","first","primera"],["segunda","second","segunda"],["terce
 const plaque=(c,r,title,lines)=>{const[x,y]=C(c,r),pl=S.add.image(x,y+T/2,"pz-plaque").setOrigin(.5,1).setDepth(y+T/2);zone(c,r,20,16);label(pl,()=>L3("Ler a lápide","Read the tombstone","Leer la lápida"));pl.interact=()=>S.game.events.emit("story:show",{title,lines:lines()});OBJ.push(pl);return pl};
 
 /* ── alavancas: 3 a 5, dica pela posição (contando de um lado) ou pelos glifos ── */
-KITS.levers=()=>{const N=V.levers.n;let P=null;for(let t=0;t<6&&!P;t++){P=pick(N+2,t<3?3:2,10,N+1);if(P){const xs=P.sel.slice(0,N).map(q=>q[0]);if(new Set(xs).size<N){for(const[c,r]of P.sel.slice(0,N+1))SOLC.delete(K(c,r));P=null}}}if(!P)return null;
+KITS.levers=()=>{const N=V.levers.n,dx=sel=>new Set(sel.slice(0,N).map(q=>q[0])).size===N,P=pick(N+2,3,10,N+1,dx)||pick(N+2,2,10,N+1,dx);if(!P)return null;
 const id="levers",LP=P.sel.slice(0,N).sort((a,b)=>a[0]-b[0]),PL=P.sel[N],CH=P.sel[N+1],ch=chest(id,CH[0],CH[1],"RARE"),order=perm(N),gl=perm(6).slice(0,N),fromE=V.levers.fromEast;let seq=[];
 order.every((v,k)=>v===k)&&order.reverse();
 const lv=LP.map(([lc,lr],k)=>{const[x,y]=C(lc,lr),img=S.add.image(x,y,"cx-lever-off").setOrigin(.5,.75).setDepth(y);zone(lc,lr,18,14);V.levers.hint==="glyph"&&glyph(x,y-30,gl[k],y+1);done[id]&&img.setTexture("cx-lever-on");label(img,()=>done[id]||seq.includes(k)?null:L3("Puxar a alavanca","Pull the lever","Tirar de la palanca")+" ("+(V.levers.hint==="glyph"?gname(gl[k]):(fromE?N-k:k+1)+L3("ª","","ª"))+")");
@@ -8209,7 +8215,7 @@ plaque(PL[0],PL[1],L3("LÁPIDE ANTIGA","ANCIENT TOMBSTONE","LÁPIDA ANTIGUA"),()
 return{id,name:L3("Selo do Ferro","Seal of Iron","Sello del Hierro"),col:13161184,at:PL,room:P.room,dbg:{solve:()=>order.forEach(k=>lv[k].interact()),order,lv}}};
 
 /* ── braseiros: todos ao mesmo tempo (com tempo) · numa ordem (glifos) · só os marcados (glifos) ── */
-KITS.braziers=()=>{const M=V.braziers.mode,N=V.braziers.n,needPl=M!=="all",P=pick(N+1+(needPl?1:0),3,10,N+(needPl?1:0));if(!P)return null;const id="braziers",BP=P.sel.slice(0,N),PL=needPl?P.sel[N]:null,CH=P.sel[P.sel.length-1],ch=chest(id,CH[0],CH[1],"RARE");
+KITS.braziers=()=>{const M=V.braziers.mode,N=V.braziers.n,needPl=M!=="all",P=pick(N+1+(needPl?1:0),3,10,N+(needPl?1:0))||pick(N+1+(needPl?1:0),2,10,N+(needPl?1:0));if(!P)return null;const id="braziers",BP=P.sel.slice(0,N),PL=needPl?P.sel[N]:null,CH=P.sel[P.sel.length-1],ch=chest(id,CH[0],CH[1],"RARE");
 let tour=0;{const left=BP.slice(1);let cur=BP[0];while(left.length){left.sort((a,b)=>Math.hypot(a[0]-cur[0],a[1]-cur[1])-Math.hypot(b[0]-cur[0],b[1]-cur[1]));const nx=left.shift();tour+=Math.hypot(nx[0]-cur[0],nx[1]-cur[1]);cur=nx}}
 const BURN=M==="all"?Math.max(6,Math.min(14,3.5+tour*.42)):1e9,gl=perm(6).slice(0,N),order=perm(N),want=M==="some"?new Set(perm(N).slice(0,V.braziers.lit)):null;let seq=[];
 const br=BP.map(([c,r],k)=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2,"pz-brazier").setOrigin(.5,1).setDepth(y+T/2);zone(c,r,20,16);M!=="all"&&glyph(x,y+T/2-6,gl[k],y+T/2+.5).setScale(.8);const f=S.add.sprite(x,y+T/2-20,"torch-flame",0).setOrigin(.5,1).setScale(1.25).setDepth(y+T/2+1).setVisible(!1);S.anims.exists("torch-flame-burn")&&f.play("torch-flame-burn");const g=glow(x,y-6,.5,16750130,0).setDepth(9001),Lt=lit(x,y-10,16750130,120,0);
@@ -8225,7 +8231,7 @@ M==="all"&&on((t,ms)=>{for(const b of br){if(done[id]){b.t>0&&set(b,!0,1+.05*Mat
 return{id,name:L3("Selo do Fogo","Seal of Fire","Sello del Fuego"),col:16750154,at:BP[0],room:P.room,dbg:{solve:()=>{(M==="all"?br.map((b,k)=>k):M==="order"?order:[...want]).forEach(k=>br[k].img.interact())}}}};
 
 /* ── espelhos: caminho do feixe com 2 ou 3 curvas, espelhos-isca ── */
-KITS.mirror=()=>{const TURNS=V.mirror.turns,DEC=V.mirror.decoys;let P=null;
+KITS.mirror=()=>{const DEC=V.mirror.decoys;let P=null;for(const TURNS of[...new Set([V.mirror.turns,2])]){
 for(const R0 of rooms()){const q=R0.r.rect,starts=[];for(let y=q.y;y<q.y+q.h;y++)for(let x=q.x;x<q.x+q.w;x++)ok(q,x,y)&&starts.push([x,y]);
 for(const st of shuf(starts).slice(0,60)){/* caminho: segmentos retos alternando eixo, sem cruzar */
 for(let tr=0;tr<12&&!P;tr++){const pts=[st],used=new Set([K(...st)]);let dir=RS()<.5?[RS()<.5?1:-1,0]:[0,RS()<.5?1:-1],good=!0;const turns=[];
@@ -8235,7 +8241,7 @@ const tg=pts[pts.length-1],F=[];for(let yy=q.y;yy<q.y+q.h;yy++)for(let xx=q.x;xx
 const ex=shuf(F).filter(f=>N4.some(([dx,dy])=>ok(q,f[0]+dx,f[1]+dy)));if(ex.length<DEC+1)continue;const sol=[st,...turns.map(t=>[t[0],t[1]]),tg,...ex.slice(0,DEC)];if(!conn(sol))continue;
 commit(R0,sol,[...[...used].map(k=>k.split(",").map(Number)),...ex.slice(0,DEC+1)]);
 /* tipo de espelho que cada curva precisa: '/' leva (dx,dy) em (-dy,-dx); '\' em (dy,dx) */
-P={room:R0.r,q,SRC:st,TGT:tg,D0:turns.length?turns[0][2]:dir,TU:turns.map(([c,r,di,no])=>[c,r,(-di[1]===no[0]&&-di[0]===no[1])?"/":"\\"]),DC:ex.slice(0,DEC),CH:ex[DEC]};}if(P)break}if(P)break}
+P={room:R0.r,q,SRC:st,TGT:tg,D0:turns.length?turns[0][2]:dir,TU:turns.map(([c,r,di,no])=>[c,r,(-di[1]===no[0]&&-di[0]===no[1])?"/":"\\"]),DC:ex.slice(0,DEC),CH:ex[DEC]};}if(P)break}if(P)break}if(P)break}
 if(!P)return null;const id="mirror",ch=chest(id,P.CH[0],P.CH[1],"RARE"),SRC=P.SRC,TGT=P.TGT,flip=o=>o==="/"?"\\":"/";
 const MS=[...P.TU.map(([c,r,need],k)=>[c,r,k===0||RS()<.6?flip(need):need]),...P.DC.map(([c,r])=>[c,r,RS()<.5?"/":"\\"])];
 const[sx,sy]=C(...SRC),[tx,ty]=C(...TGT);S.add.image(sx,sy+T/2,"ice-crystal").setOrigin(.5,1).setDepth(sy+T/2).setTint(16775880);zone(...SRC,20,18);const sg=glow(sx,sy-8,.3,16769658,.55).setDepth(9001);S.tweens.add({targets:sg,alpha:.3,duration:900,yoyo:!0,repeat:-1});lit(sx,sy-8,16769658,110,1);
@@ -8253,10 +8259,10 @@ const sokoban=(W,H,pil,blk,pl,start)=>{const idx=(x,y)=>y*W+x,inn=(x,y)=>x>=0&&y
 const reachP=(p,bs)=>{const B=new Set(bs),seen=new Set([p]),q=[p];while(q.length){const c=q.pop(),x=c%W,y=(c-x)/W;for(const[dx,dy]of N4){const nx=x+dx,ny=y+dy,n=idx(nx,ny);if(!inn(nx,ny)||PIL.has(n)||B.has(n)||seen.has(n))continue;seen.add(n);q.push(n)}}return seen};
 const key=(p,bs)=>Math.min(...reachP(p,bs))+"|"+bs.slice().sort((a,b)=>a-b).join(",");let fr=[[idx(...start),blk.map(([x,y])=>idx(x,y)),0,[]]];const seen=new Set([key(fr[0][0],fr[0][1])]);
 while(fr.length){const nx=[];for(const[p,bs,d,path]of fr){if(bs.every(b=>PLs.has(b)))return path;const R=reachP(p,bs);for(let i=0;i<bs.length;i++){const b=bs[i],bx=b%W,by=(b-bx)/W;for(const[dx,dy]of N4){const px=bx-dx,py=by-dy,tx=bx+dx,ty=by+dy;if(!inn(px,py)||!R.has(idx(px,py))||!inn(tx,ty))continue;const t=idx(tx,ty);if(PIL.has(t)||bs.includes(t))continue;const nb=bs.slice();nb[i]=t;const k=key(b,nb);if(seen.has(k))continue;seen.add(k);nx.push([b,nb,d+1,[...path,[i,dx,dy]]])}}}fr=nx;if(seen.size>60000)return null}return null};
-KITS.blocks=()=>{const NB=V.blocks.blocks,NP=Math.max(1,V.blocks.pillars),MIN=NB===2?6:5;let P=null,lay=null;
-for(const[w,h]of[[6,5],[5,5],[6,4],[5,4]]){const R0=fit(rect(w,h),[]);if(!R0)continue;for(let t=0;t<160&&!lay;t++){const cells=shuf(rect(w,h).slice()),pil=cells.slice(0,NP),blk=cells.slice(NP,NP+NB),pl=cells.slice(NP+NB,NP+NB*2),st=cells[NP+NB*2];
+KITS.blocks=()=>{let P=null,lay=null;for(const[NB,NP,MIN,SZ]of[[V.blocks.blocks,Math.max(1,V.blocks.pillars),V.blocks.blocks===2?6:5,[[6,5],[5,5],[6,4],[5,4]]],[1,1,4,[[5,4],[4,4]]]]){if(P)break;
+for(const[w,h]of SZ){const z0=snap(),R0=fit(rect(w,h),[]);if(!R0)continue;for(let t=0;t<160&&!lay;t++){const cells=shuf(rect(w,h).slice()),pil=cells.slice(0,NP),blk=cells.slice(NP,NP+NB),pl=cells.slice(NP+NB,NP+NB*2),st=cells[NP+NB*2];
 if(blk.some(([x,y])=>(x===0||x===w-1)&&(y===0||y===h-1)))continue;const sol=sokoban(w,h,pil,blk,pl,st);if(sol&&sol.length>=MIN&&sol.length<=MIN+8&&conn([...pil,...blk].map(([a,b])=>[R0.x+a,R0.y+b])))lay={w,h,pil,blk,pl,sol}}
-if(lay){P=R0;const ex=new Set([...lay.pil,...lay.blk].map(([a,b])=>K(R0.x+a,R0.y+b)));for(const k of ex)SOLC.add(k);break}for(let dy=-1;dy<=h;dy++)for(let dx=-1;dx<=w;dx++)BUSY.delete(K(R0.x+dx,R0.y+dy));}
+if(lay){P=R0;const ex=new Set([...lay.pil,...lay.blk].map(([a,b])=>K(R0.x+a,R0.y+b)));for(const k of ex)SOLC.add(k);break}undo(z0)}}
 if(!P)return null;const id="blocks",X=P.x,Y=P.y,Q={x:X,y:Y,w:lay.w,h:lay.h},PLc=lay.pl.map(([a,b])=>[X+a,Y+b]),CHc=rect(lay.w,lay.h).map(([a,b])=>[X+a,Y+b]).find(([c,r])=>!lay.pil.some(([a,b])=>X+a===c&&Y+b===r)&&!PLc.some(([a,b])=>a===c&&b===r)&&!lay.blk.some(([a,b])=>X+a===c&&Y+b===r)),ch=chest(id,CHc[0],CHc[1],"RARE");
 lay.pil.forEach(([a,b],k)=>{const[x,y]=C(X+a,Y+b);if(k===0){const o=S.add.image(x,y+T/2,"pz-reset").setOrigin(.5,1).setDepth(y+T/2).setTint(cfg.stone);zone(X+a,Y+b,20,18);label(o,()=>done[id]?null:L3("Recomeçar os blocos","Reset the blocks","Reiniciar los bloques"));o.interact=()=>{if(blocks.some(b=>b.mv))return;for(const b of blocks){put(b,b.c0,b.r0);S.effectsRef?.burstTinted(b.img.x,b.img.y-12,13417386,10)}sfx("sfx-shrine-use");check()};OBJ.push(o)}else{S.add.image(x,y+T/2,"pz-post").setOrigin(.5,1).setDepth(y+T/2).setTint(cfg.stone);zone(X+a,Y+b,20,18)}});
 const plates=PLc.map(([c,r])=>{const[x,y]=C(c,r);return{c,r,img:S.add.image(x,y+2,"pz-plate").setDepth(.8),gl:glow(x,y,.16,16765514,0).setDepth(.81)}});
@@ -8277,18 +8283,18 @@ check();done[id]&&ch.show(!0);return{id,name:L3("Selo da Pedra","Seal of Stone",
 KITS.runes=()=>{const P=pick(5,3,8,4)||pick(5,2,7,4);if(!P)return null;const id="runes",RP=P.sel.slice(0,4),CH=P.sel[4],ch=chest(id,CH[0],CH[1],"RARE"),FR=[392,494,587,740],COL=[8384511,13146111,16765802,9105062],LEN=V.runes.len,REV=!!V.runes.rev;let st="idle",seq=[],inp=0,round=0;
 const RNM=[["azul","blue","azul"],["violeta","violet","violeta"],["dourada","golden","dorada"],["verde","green","verde"]];const pil=RP.map(([c,r],k)=>{const[x,y]=C(c,r),img=S.add.image(x,y+T/2,"pz-pillar-"+k).setOrigin(.5,1).setDepth(y+T/2);zone(c,r,18,14);const g=glow(x,y-20,.34,COL[k],done[id]?.35:0).setDepth(9001);
 const flash=()=>{g.setAlpha(.8);tone(FR[k]);S.tweens.add({targets:g,alpha:done[id]?.35:0,duration:520})};
-label(img,()=>done[id]||st==="show"?null:st==="idle"?L3("Tocar a runa (começar)","Touch the rune (start)","Tocar la runa (empezar)"):L3("Tocar a runa "+RNM[k][0],"Touch the "+RNM[k][1]+" rune","Tocar la runa "+RNM[k][2]));
-img.interact=()=>{if(done[id]||st==="show")return;if(st==="idle"){round=0;REV&&S.effectsRef?.floatText(x,y-46,L3("Repita de trás para frente","Repeat it backwards","Repítela al revés"),"#d8c8ff");play();return}flash();const want=REV?seq[seq.length-1-inp]:seq[inp];if(k!==want){st="show";S.time.delayedCall(300,()=>{sfx("sfx-event-refuse");S.cameraSys?.shake?.(.005,180);S.effectsRef?.floatText(x,y-40,L3("A sequência se desfez…","The sequence broke…","La secuencia se rompió…"),"#e08a7a");st="idle"});return}inp++;if(inp>=seq.length){st="show";round++;if(round>=LEN.length){S.time.delayedCall(450,()=>{st="done";solved(id,ch,L3("as runas da memória","the memory runes","las runas de la memoria"));pil.forEach(p=>p.flash())})}else S.time.delayedCall(900,play)}};OBJ.push(img);return{flash,img}});
+label(img,()=>done[id]||st==="show"?null:st==="idle"?L3("Tocar a runa (começar)","Touch the rune (start)","Tocar la runa (empezar)"):L3("Tocar a runa "+RNM[k][0],"Touch the "+RNM[k][1]+" rune","Tocar la runa "+RNM[k][2])+(REV?L3(" (ao contrário)"," (backwards)"," (al revés)"):""));
+img.interact=()=>{if(done[id]||st==="show")return;if(st==="idle"){round=0;REV&&(S.effectsRef?.floatText(x,y-46,L3("Repita de trás para frente","Repeat it backwards","Repítela al revés"),"#d8c8ff"),banner(L3("RUNAS: REPITA A SEQUÊNCIA DE TRÁS PARA FRENTE","RUNES: REPEAT THE SEQUENCE BACKWARDS","RUNAS: REPITE LA SECUENCIA AL REVÉS"),"#d8c8ff"));play();return}flash();const want=REV?seq[seq.length-1-inp]:seq[inp];if(k!==want){st="show";S.time.delayedCall(300,()=>{sfx("sfx-event-refuse");S.cameraSys?.shake?.(.005,180);S.effectsRef?.floatText(x,y-40,L3("A sequência se desfez…","The sequence broke…","La secuencia se rompió…"),"#e08a7a");st="idle"});return}inp++;if(inp>=seq.length){st="show";round++;if(round>=LEN.length){S.time.delayedCall(450,()=>{st="done";solved(id,ch,L3("as runas da memória","the memory runes","las runas de la memoria"));pil.forEach(p=>p.flash())})}else S.time.delayedCall(900,play)}};OBJ.push(img);return{flash,img}});
 const play=()=>{st="show";seq=Array.from({length:LEN[round]},()=>Math.floor(R()*4));inp=0;seq.forEach((k,q)=>S.time.delayedCall(450+q*620,()=>pil[k].flash()));S.time.delayedCall(450+seq.length*620,()=>{st="input"})};
 done[id]&&ch.show(!0);return{id,name:L3("Selo da Memória","Seal of Memory","Sello de la Memoria"),col:13146111,at:RP[0],room:P.room,dbg:{st:()=>st,seq:()=>REV?seq.slice().reverse():seq,pil}}};
 /* quatro enigmas por fase (ordem embaralhada pela fase; se um não couber, entra o próximo) */
 const order=["levers","braziers","mirror","blocks","runes"];for(let k=order.length-1;k>0;k--){const m=Math.floor(RS()*(k+1));[order[k],order[m]]=[order[m],order[k]]}
 /* o Relicário vai primeiro (precisa de espaço), longe do início */
 const sp=LV.playerSpawn;cand.forEach(o=>o.k=-(Math.hypot(o.r.rect.x+o.r.rect.w/2-(sp?.col??0),o.r.rect.y+o.r.rect.h/2-(sp?.row??0)))/100+(o.r.cdObj?1:0));
-const AP=fit(rect(3,5),[[0,3],[1,3],[2,3]]);cand.forEach(o=>o.k=RS()+(o.r.cdObj?1:0));
+let AP=null,APr=3;for(const xt of[0,1]){xt&&cand.push(...EXTRA);for(const[h,ar]of[[5,3],[4,2],[3,2]]){AP=fit(rect(3,h),[[0,ar],[1,ar],[2,ar]]);if(AP){APr=ar;break}}xt&&cand.splice(cand.length-EXTRA.length,EXTRA.length);if(AP)break}cand.forEach(o=>o.k=RS()+(o.r.cdObj?1:0));
 const SEALS=[];for(const k of order){if(SEALS.length>=4)break;const s=KITS[k]();s&&SEALS.push(s)}
 /* ── Relicário Selado ── */
-if(AP&&SEALS.length){const c0=AP.x+1,r0=AP.y+3,[x,yc]=C(c0,r0),y=yc+T/2,cnt=()=>SEALS.filter(q=>done[q.id]).length,N=SEALS.length;
+if(AP&&SEALS.length){const c0=AP.x+1,r0=AP.y+APr,[x,yc]=C(c0,r0),y=yc+T/2,cnt=()=>SEALS.filter(q=>done[q.id]).length,N=SEALS.length;
 const base=S.add.image(x,y,"pz-relic").setOrigin(.5,1).setDepth(y);{const z=S.add.zone(x,y-10,56,18);S.physics.add.existing(z,!0);solids.add(z)}
 const orb=S.add.image(x,y-66,"pz-orb").setDepth(y+.5).setTint(cfg.orb).setScale(1.1),og=glow(x,y-66,.34,cfg.orb,.4).setDepth(y+.45);S.tweens.add({targets:[orb,og],y:"-=5",duration:1300,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});
 const shell=S.add.image(x,y-38,"pz-relic-ice").setOrigin(.5,1).setDepth(y+1).setAlpha(.86).setScale(.78).setTint(cfg.shell);const Lt=lit(x,y-44,cfg.orb,120,.7);
@@ -8307,11 +8313,11 @@ S.tweens.add({targets:shell,x:{from:x-2,to:x+2},duration:45,yoyo:!0,repeat:8,onC
 for(let k=0;k<30;k++){const r=S.add.rectangle(x+(R()-.5)*54,y-40-R()*70,2+R()*5,5+R()*10,[cfg.shell,cfg.orb,16777215][k%3]).setDepth(y+2).setRotation(R()*6).setAlpha(.9);S.tweens.add({targets:r,x:r.x+(R()-.5)*190,y:r.y+40+R()*50,rotation:r.rotation+(R()-.5)*8,alpha:0,duration:700+R()*600,ease:"Quad.easeOut",onComplete:()=>r.destroy()})}
 S.tweens.add({targets:[orb,og],y:y-96,alpha:0,duration:700,delay:250,ease:"Quad.easeIn",onComplete:()=>{orb.setVisible(!1);og.setVisible(!1);drop()}});banner(L3("RELICÁRIO LIBERTADO","RELIQUARY FREED","RELICARIO LIBERADO"),"#bff4ff")}})};
 OBJ.push(base);SEALS.relic={x:c0,y:r0}}
-(S.__pzDbg={lid,mask:id=>{const q=LV.rooms.find(r=>r.id===id).rect,o=[];for(let y=q.y-1;y<=q.y+q.h;y++){let l="";for(let x=q.x-1;x<=q.x+q.w;x++)l+=wall(x,y)?"#":SOLC.has(K(x,y))?"S":BUSY.has(K(x,y))?"u":VIS.has(K(x,y))?"v":BAN.has(K(x,y))?"b":".";o.push(l)}return o.join("\n")},free:()=>cand.map(o=>{const q=o.r.rect;let n=0,w=0,v=0,so=0,bn=0;for(let y=q.y;y<q.y+q.h;y++)for(let x=q.x;x<q.x+q.w;x++){n++;wall(x,y)?w++:SOLC.has(K(x,y))?so++:VIS.has(K(x,y))?v++:BAN.has(K(x,y))&&bn++}return[o.r.id,n,"wall",w,"sol",so,"vis",v,"ban",bn]}),seals:SEALS,relic:AP&&{col:AP.x+1,row:AP.y+3,room:AP.room.id},done:()=>done,save});
+(S.__pzDbg={lid,mask:id=>{const q=LV.rooms.find(r=>r.id===id).rect,o=[];for(let y=q.y-1;y<=q.y+q.h;y++){let l="";for(let x=q.x-1;x<=q.x+q.w;x++)l+=wall(x,y)?"#":SOLC.has(K(x,y))?"S":BUSY.has(K(x,y))?"u":VIS.has(K(x,y))?"v":BAN.has(K(x,y))?"b":".";o.push(l)}return o.join("\n")},free:()=>cand.map(o=>{const q=o.r.rect;let n=0,w=0,v=0,so=0,bn=0;for(let y=q.y;y<q.y+q.h;y++)for(let x=q.x;x<q.x+q.w;x++){n++;wall(x,y)?w++:SOLC.has(K(x,y))?so++:VIS.has(K(x,y))?v++:BAN.has(K(x,y))&&bn++}return[o.r.id,n,"wall",w,"sol",so,"vis",v,"ban",bn]}),seals:SEALS,relic:AP&&{col:AP.x+1,row:AP.y+APr,room:AP.room.id},done:()=>done,save});
 /* objetos interativos entram na lista do calabouço */
 const Lo=D.objects||S.dungeon?.objects;if(Lo)for(const o of OBJ)Lo.includes(o)||Lo.push(o);
 /* fala do herói ao chegar perto de um enigma ainda não resolvido */
-const BK=SEALS.map(q=>[q.id,q.at]);AP&&BK.push(["relic",[AP.x+1,AP.y+3]]);const said=new Set,LN=[["Algum tipo de segredo existe aqui…","Some kind of secret lies here…","Algún tipo de secreto existe aquí…"],["Parece um novo quebra-cabeça.","Looks like a new puzzle.","Parece un nuevo rompecabezas."],["Hm… isso não está aqui por acaso.","Hm… this isn't here by chance.","Hm… esto no está aquí por casualidad."],["Tem algo escondido por aqui.","Something is hidden around here.","Hay algo escondido por aquí."],["Um enigma… vamos ver o que ele guarda.","A riddle… let's see what it guards.","Un enigma… veamos qué guarda."]];
+const BK=SEALS.map(q=>[q.id,q.at]);AP&&BK.push(["relic",[AP.x+1,AP.y+APr]]);const said=new Set,LN=[["Algum tipo de segredo existe aqui…","Some kind of secret lies here…","Algún tipo de secreto existe aquí…"],["Parece um novo quebra-cabeça.","Looks like a new puzzle.","Parece un nuevo rompecabezas."],["Hm… isso não está aqui por acaso.","Hm… this isn't here by chance.","Hm… esto no está aquí por casualidad."],["Tem algo escondido por aqui.","Something is hidden around here.","Hay algo escondido por aquí."],["Um enigma… vamos ver o que ele guarda.","A riddle… let's see what it guards.","Un enigma… veamos qué guarda."]];
 let busy=0,last=-1;const say=t=>{const p=S.player;if(!p)return;const tx=S.add.text(0,0,t,{fontFamily:"Georgia, 'Times New Roman', serif",fontStyle:"italic",fontSize:"13px",color:"#1d2433",align:"center",wordWrap:{width:190}}).setOrigin(.5),w=tx.width+18,h=tx.height+10,bg=S.add.graphics();
 bg.fillStyle(15660798,.94).lineStyle(1.5,4877680,.9).fillRoundedRect(-w/2,-h/2,w,h,7).strokeRoundedRect(-w/2,-h/2,w,h,7).fillStyle(15660798,.94).fillTriangle(-6,h/2-1,6,h/2-1,0,h/2+7).lineStyle(1.5,4877680,.9).lineBetween(-6,h/2,0,h/2+7).lineBetween(6,h/2,0,h/2+7);
 const box=S.add.container(p.x,p.y-74-h/2,[bg,tx]).setDepth(9600).setAlpha(0).setScale(.85),fol=()=>{const q=S.player;q&&box.active&&box.setPosition(q.x,q.y-74-h/2)};S.events.on("update",fol);busy=1;
