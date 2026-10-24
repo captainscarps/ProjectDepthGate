@@ -6,7 +6,7 @@ Sons do Prólogo do Rio, gerados por síntese (sem samples de terceiros).
   river-wind   laço de 48 s: brisa na mata (rumor grave, folhas farfalhando nas rajadas, assobio leve no pico)
                + river-wind.json com o envelope das rajadas (4 valores/s) para as folhas e as árvores acompanharem
   boat-glide   laço de 12 s: água correndo no casco do barco (o volume segue a velocidade)
-  boat-sfx     remadas, rangidos da madeira, batida do casco na margem e passos no píer, num arquivo só
+  boat-sfx     remadas, rangidos da madeira, batida do casco na margem, passos no píer e passos na água rasa, num arquivo só
                + boat-sfx.json com [início, duração] de cada som
 
 Saída: assets/audio/ambient/<nome>.ogg e .mp3 (e o espelho em "Projeto atualizado").
@@ -276,6 +276,19 @@ for k in range(4):                                       # passos na madeira do 
     t_ = np.arange(N_) / SR
     knock = bp(r.standard_normal(N_), 180, 900) * env_ad(N_, .002, .03) + np.sin(2 * np.pi * r.uniform(110, 150) * t_) * env_ad(N_, .002, .04) * .5
     add("step", norm(knock, .5))
+for k in range(4):                                       # passos na água rasa (herói e animais)
+    r = np.random.default_rng(600 + k)
+    N_ = int(.32 * SR)
+    t_ = np.arange(N_) / SR
+    slap = bp(r.standard_normal(N_), 700, 4200) * env_ad(N_, .006, .045)
+    swish = bp(pink(N_, r), 250, 1600) * env_ad(N_, .03, .09) * .8
+    drops = np.zeros(N_)
+    for _ in range(r.integers(2, 5)):
+        s0 = int(r.uniform(.05, .22) * SR)
+        b_ = bubble(r.uniform(900, 2200), r.uniform(.015, .035)) * r.uniform(.2, .5)
+        e_ = min(N_, s0 + len(b_))
+        drops[s0:e_] += b_[:e_ - s0]
+    add("wade", norm(slap + swish + drops, .55))
 for k in range(1):                                       # desembarque: barco balança e a água espirra
     r = np.random.default_rng(500)
     N_ = int(1.4 * SR)

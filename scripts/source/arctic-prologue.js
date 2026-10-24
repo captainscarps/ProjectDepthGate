@@ -176,7 +176,7 @@ heroSay(t,dur=2800){const S=this,tgt=()=>S.mode==="boat"?S.boat:S.hero;if(!tgt()
 zonePt(z,kind,near,avoid,minD=0){const S=this,Z=S.M.zones?.[z];if(!Z)return null;const wat=kind==="duck"||kind==="fish";
  for(let k=0;k<60;k++){let x,y;if(near){const a=Math.random()*6.283,r=Math.random()*(near.r||45);x=near.x+Math.cos(a)*r;y=near.y+Math.sin(a)*r}else{const a=Math.random()*6.283,r=Math.sqrt(Math.random());x=Z[0]+Math.cos(a)*Z[2]*r;y=Z[1]+Math.sin(a)*Z[3]*r}
   if(((x-Z[0])/Z[2])**2+((y-Z[1])/Z[3])**2>1)continue;if(wat?!S.okArea(x,y,2,wat&&kind==="duck"?10:6):!S.okArea(x,y,1,5))continue;
-  if(avoid&&Math.hypot(x-avoid.x,y-avoid.y)<minD)continue;return{x,y}}return null}
+  if(avoid&&Math.hypot(x-avoid.x,y-avoid.y)<minD)continue;if(!wat&&S.lobs.some(q=>Math.hypot(x-q.x,y-q.y)<q.r+10))continue;return{x,y}}return null}
 initAnimals(){const S=this,M=S.M,AM=S.cache.json.get("rp-animals-meta"),R=Math.random;S.animals=[];S.heroSeenFlee=!1;if(!AM||!S.textures.exists("rp-animals")||!M.zones)return;S.AM=AM;
  const rate={Idle:4,Walk:8,Fly:12,Swim:6};for(const[sp,P]of Object.entries(AM))for(const[pose,fr]of Object.entries(P)){const k=`rpa-${sp}-${pose}`;S.anims.exists(k)||S.anims.create({key:k,frames:fr.map(f=>({key:"rp-animals",frame:f})),frameRate:(rate[pose.split("_")[1]]??6)*(.85+R()*.3),repeat:-1})}
  for(const[sp,C]of Object.entries(__RPAN)){const groups={};for(let i=0;i<C.n;i++){const z=C.zones[i%C.zones.length];let p;
@@ -196,6 +196,12 @@ anFlee(a,h,chain=!0){const S=this,C=a.C,R=Math.random;if(a.st==="flee"||a.st==="
  else{a.st="flee";/* corre para a mata mais próxima longe do herói */let best=null,bs=-1e9;for(let k=0;k<20;k++){const an=Math.atan2(dy,dx)+(k/19-.5)*2.2;for(let r=30;r<=260;r+=20){const x=a.x+Math.cos(an)*r,y=a.y+Math.sin(an)*r;if(S.cell(x,y)===0){const sc=-r+Math.hypot(x-h.x,y-h.y)*.6;sc>bs&&(bs=sc,best={x,y});break}}}
   const g=best||{x:a.x+dx*200,y:a.y+dy*200},gm=Math.hypot(g.x-a.x,g.y-a.y)||1;a.vx=(g.x-a.x)/gm*C.flee;a.vy=(g.y-a.y)/gm*C.flee;S.heroSeenFlee=!0;S.hsay("flee",__arcHeroEv("flee"))}
  if(chain)for(const b of S.animals)b!==a&&b.sp===a.sp&&Math.hypot(b.x-a.x,b.y-a.y)<95&&S.time.delayedCall(80+Math.random()*260,()=>S.anFlee(b,h,!1))}
+anSplash(a,dt){const S=this;a.spT=(a.spT||0)-dt;if(a.spT>0)return;a.spT=.32;S.ring(a.x,a.y+1,6);S.drops(a.x,a.y,3);const d=Math.hypot(a.x-(S.hx??0),a.y-(S.hy??0));d<260&&S.sfx("wade",.18*(1-d/260)+.05,0)}
+drops(x,y,n){const S=this;for(let k=0;k<n;k++){const c=S.w(S.add.circle(x,y-2,1.1,0xe8fff8,.9).setDepth(y+2));S.tweens.add({targets:c,x:x+(Math.random()-.5)*12,y:y-5-Math.random()*7,alpha:0,duration:380,ease:"Quad.easeOut",onComplete:()=>c.destroy()})}}
+/* herói pode entrar na água rasa da beira (mais devagar, com respingos e som de passos na água) */
+shallow(x,y){const S=this,c=S.cell(x,y);const near=(v,r)=>{for(const[ox,oy]of[[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[-.7,.7],[.7,-.7],[-.7,-.7]])for(let k=8;k<=r;k+=8)if(S.cell(x+ox*k,y+oy*k)===v)return!0;return!1};
+ return c===1?near(2,12):c===2?near(1,26):near(1,16)&&near(2,16)}
+walkOk(x,y){const S=this;return S.okArea(x,y,1,5)||Math.abs(x-S.dock.x)<14&&y>S.M.land[1]-10&&y<S.M.land[1]+20||S.shallow(x,y)}
 ring(x,y,r){const S=this,e=S.w(S.add.ellipse(x,y,r,r*.45,0,0).setStrokeStyle(1,0xe6fff4,.8).setDepth(.9));S.tweens.add({targets:e,scaleX:2.4,scaleY:2.4,alpha:0,duration:800,onComplete:()=>e.destroy()})}
 anGone(a){const S=this;a.st="gone";a.t=0;a.ret=(a.C.kind==="worm"?5:9)+Math.random()*8;a.s.setVisible(!1);a.sh&&a.sh.setVisible(!1)}
 anReturn(a,h){const S=this,C=a.C,R=Math.random,z=C.zones[Math.floor(R()*C.zones.length)];let p=null;
@@ -204,8 +210,8 @@ anReturn(a,h){const S=this,C=a.C,R=Math.random,z=C.zones[Math.floor(R()*C.zones.
  a.s.setVisible(!0).setScale(C.sc).setAlpha(0);a.sh&&a.sh.setVisible(!0);a.t=0;
  if(C.kind==="bird"||C.kind==="duck"){const an=R()*6.283;a.x=p.x+Math.cos(an)*140;a.y=p.y+Math.sin(an)*90;a.alt=70;a.tx=p.x;a.ty=p.y;a.st="land";a.s.setDepth(4500);S.tweens.add({targets:a.s,alpha:a.base,duration:500})}
  else if(C.kind==="fish"||C.kind==="worm"){a.x=p.x;a.y=p.y;a.st="idle";a.t=1+R()*2;S.tweens.add({targets:a.s,alpha:a.base,scaleY:C.sc,duration:900})}
- else{/* sai da mata andando até o ponto */let e=null;for(let k=0;k<16&&!e;k++){const an=k/16*6.283;for(let r=20;r<=160;r+=20){const x=p.x+Math.cos(an)*r,y=p.y+Math.sin(an)*r;if(S.cell(x,y)===0){e={x,y};break}}}e=e||{x:p.x+40,y:p.y};
-  a.x=e.x;a.y=e.y;a.tx=p.x;a.ty=p.y;a.st="walk";a.spd=a.C.walk*1.6;S.tweens.add({targets:a.s,alpha:1,duration:700})}
+ else{/* sai da beira da mata andando até o ponto (nunca por cima das árvores) */let e=null,best=1e9;for(let k=0;k<16;k++){const an=k/16*6.283;let last=null;for(let r=8;r<=200;r+=6){const x=p.x+Math.cos(an)*r,y=p.y+Math.sin(an)*r;if(S.cell(x,y)!==1)break;last={x,y,r}}if(last&&last.r>24&&last.r<best&&S.cell(p.x+Math.cos(an)*(last.r+8),p.y+Math.sin(an)*(last.r+8))===0&&!S.lobs.some(q=>Math.hypot(last.x-q.x,last.y-q.y)<q.r+6)){best=last.r;e={x:p.x+Math.cos(an)*(last.r-6),y:p.y+Math.sin(an)*(last.r-6)}}}e=e||{x:p.x,y:p.y};
+  a.x=e.x;a.y=e.y;a.tx=p.x;a.ty=p.y;a.st="walk";a.spd=a.C.walk*1.6;S.tweens.add({targets:a.s,alpha:1,duration:900});a.sh&&(a.sh.setAlpha(0),S.tweens.add({targets:a.sh,alpha:.22,duration:900}))}
  const v=S.cameras.main.worldView;S.heroSeenFlee&&v.contains(a.x,a.y)&&S.time.delayedCall(900,()=>S.hsay("back",__arcHeroEv("back")))}
 updateAnimals(dt){const S=this;if(!S.animals?.length)return;const R=Math.random,h=S.mode==="land"&&S.hero?{x:S.hx,y:S.hy}:{x:S.boat.x,y:S.boat.y};
  const hv=Math.hypot(h.x-(S.lhx??h.x),h.y-(S.lhy??h.y))/Math.max(dt,1e-3);S.lhx=h.x;S.lhy=h.y;const moving=hv>20;const v=S.cameras.main.worldView;
@@ -216,12 +222,12 @@ updateAnimals(dt){const S=this;if(!S.animals?.length)return;const R=Math.random,
   case"idle":a.t-=dt;if(a.t<=0){const p=S.zonePt(a.zone,C.kind,{x:a.x,y:a.y,r:C.kind==="worm"?14:C.kind==="bird"?30:80});if(p){a.tx=p.x;a.ty=p.y;a.spd=C.walk*(.7+R()*.5);a.st="walk";a.t=6}else a.t=1}
    C.kind==="bird"&&R()<dt*.8&&(a.s.y-=0);break;
   case"walk":{const dx=a.tx-a.x,dy=a.ty-a.y,m=Math.hypot(dx,dy);a.t-=dt;if(m<2||a.t<=0){a.st="idle";a.t=(C.kind==="bird"?.6:1.5)+R()*(C.kind==="bird"?2:4.5);S.anPose(a,a.vx*.01,a.vy*.01,C.idle);break}
-   const sp=Math.min(a.spd,m/dt);a.vx=dx/m*sp;a.vy=dy/m*sp;a.x+=a.vx*dt;a.y+=a.vy*dt;S.anPose(a,a.vx,a.vy,C.move);
+   const sp=Math.min(a.spd,m/dt);a.vx=dx/m*sp;a.vy=dy/m*sp;if(C.kind!=="bird"&&C.kind!=="duck"&&C.kind!=="fish"&&S.cell(a.x+a.vx*dt*4,a.y+a.vy*dt*4)===0&&a.s.alpha>.9){a.st="idle";a.t=.8+R()*2;S.anPose(a,a.vx*.01,a.vy*.01,C.idle);break}a.x+=a.vx*dt;a.y+=a.vy*dt;S.anPose(a,a.vx,a.vy,C.move);(C.kind=="ground"||C.kind=="frog")&&S.cell(a.x,a.y)===2&&S.anSplash(a,dt);
    C.kind==="bird"&&(a.s.y=a.y-Math.abs(Math.sin(S.time.now/90))*2);break}
   case"flee":a.t+=dt;a.x+=a.vx*dt;a.y+=a.vy*dt;S.anPose(a,a.vx,a.vy,C.move);
    if(C.kind==="frog"&&S.cell(a.x,a.y)===2){S.ring(a.x,a.y,8);a.lx=a.x;a.ly=a.y;S.anGone(a);break}
    if(C.kind==="fish"&&a.t>.7){a.lx=a.x;a.ly=a.y;S.anGone(a);break}
-   if(S.cell(a.x,a.y)===0)a.inB=(a.inB||0)+dt;if(a.inB>.3||a.t>3){a.inB=0;a.lx=a.x;a.ly=a.y;S.tweens.add({targets:a.s,alpha:0,duration:300,onComplete:()=>S.anGone(a)});a.st="hide"}break;
+   if(S.cell(a.x,a.y)===2)S.anSplash(a,dt);const ed=S.cell(a.x+a.vx*.2,a.y+a.vy*.2)===0;if(ed||a.t>3){a.lx=a.x;a.ly=a.y;S.tweens.add({targets:a.s,alpha:0,duration:ed?160:300,onComplete:()=>S.anGone(a)});a.sh&&S.tweens.add({targets:a.sh,alpha:0,duration:160});a.st="hide"}break;
   case"fly":a.t+=dt;a.alt=Math.min(90,a.alt+dt*70);a.vy-=dt*10;a.x+=a.vx*dt;a.y+=a.vy*dt*.6;S.anPose(a,a.vx,a.vy,C.fly);if(a.t>2.6&&a.s.alpha>=a.base*.99){a.lx=a.x;a.ly=a.y;S.tweens.add({targets:a.s,alpha:0,duration:400,onComplete:()=>S.anGone(a)});a.st="hide"}break;
   case"land":{const dx=a.tx-a.x,dy=a.ty-a.y,m=Math.hypot(dx,dy);const sp=Math.min(C.flee*.55,m/dt);a.alt=Math.max(0,Math.min(a.alt,m*.5));if(m<3){a.x=a.tx;a.y=a.ty;a.alt=0;a.st="idle";a.t=2+R()*3;a.s.setDepth(a.y);C.kind==="duck"&&S.ring(a.x,a.y,14);S.anPose(a,a.vx*.01,a.vy*.01,C.idle);break}
    a.vx=dx/m*sp;a.vy=dy/m*sp;a.x+=a.vx*dt;a.y+=a.vy*dt;S.anPose(a,a.vx,a.vy,C.fly);break}
@@ -269,10 +275,13 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
   /* roteiro da narração pelo quanto já desceu o rio */
   if(S.pi>=0)S.prog=Math.max(S.prog,S.P[S.pi][2]);for(const[li,sv]of S.cues)S.prog>=sv&&S.say(li);
   if(Math.hypot(B.x-S.dock.x,B.y-S.dock.y)<70)act={kind:"land",label:L3("⚓ Desembarcar","⚓ Disembark","⚓ Desembarcar")}}
- else if(S.hero){const spd=105;let[nx,ny]=S.step(S.hx,S.hy,S.hx+a.x*spd*dt,S.hy+a.y*spd*dt,(x,y)=>S.okArea(x,y,1,5)||Math.abs(x-S.dock.x)<14&&y>M.land[1]-10&&y<M.land[1]+20);const o={x:nx,y:ny};S.push(o,S.lobs,8);if(!(S.okArea(o.x,o.y,1,5)||Math.abs(o.x-S.dock.x)<14)){o.x=nx;o.y=ny}
+ else if(S.hero){const inW=S.cell(S.hx,S.hy)!==1&&S.shallow(S.hx,S.hy)&&!(Math.abs(S.hx-S.dock.x)<14&&S.hy<M.land[1]+20),spd=inW?66:105;let[nx,ny]=S.step(S.hx,S.hy,S.hx+a.x*spd*dt,S.hy+a.y*spd*dt,(x,y)=>S.walkOk(x,y));const o={x:nx,y:ny};S.push(o,S.lobs,8);if(!S.walkOk(o.x,o.y)){o.x=nx;o.y=ny}
   const moved=Math.hypot(o.x-S.hx,o.y-S.hy);S.hx=o.x;S.hy=o.y;
-  S.hero.setPosition(o.x,o.y).setDepth(o.y+1);S.hsh.setPosition(o.x,o.y+1);a.x&&S.hero.setFlipX(a.x<0);const moving=Math.hypot(a.x,a.y)>.1,an=S.hkey+(moving?"-walk":"-idle");S.anims.exists(an)&&S.hero.anims.currentAnim?.key!==an&&S.hero.play(an);
-  if(moved>.5&&Math.abs(o.x-S.dock.x)<16&&o.y>M.land[1]+4){S.stepT=(S.stepT||0)-dt;if(S.stepT<=0){S.stepT=.34;S.sfx("step",.5)}}
+  S.hero.setPosition(o.x,o.y).setDepth(o.y+1);{const fh=S.hero.frame?.height||128,cut=inW?Math.round(fh*(1-(S.hero.originY))+ 7/Math.max(.1,S.hero.scaleY)):0;inW?S.hero.setCrop(0,0,S.hero.frame.width,fh-cut):S.hero.isCropped&&S.hero.setCrop()}S.hsh.setPosition(o.x,o.y+1);a.x&&S.hero.setFlipX(a.x<0);const moving=Math.hypot(a.x,a.y)>.1,an=S.hkey+(moving?"-walk":"-idle");S.anims.exists(an)&&S.hero.anims.currentAnim?.key!==an&&S.hero.play(an);
+  if(moved>.5&&Math.abs(o.x-S.dock.x)<16&&o.y>M.land[1]+4&&!inW){S.stepT=(S.stepT||0)-dt;if(S.stepT<=0){S.stepT=.34;S.sfx("step",.5)}}
+  /* água: anel em volta dos pés, gotas e som de passos na água; parado, só uma marola de vez em quando */
+  S.hsh.setAlpha(inW?0:.3);S.wadeT=(S.wadeT||0)-dt;if(inW&&S.wadeT<=0){if(moved>.4){S.wadeT=.3;S.ring(o.x,o.y+1,10);S.drops(o.x,o.y,5);S.sfx("wade",.5,(Math.random()-.5)*.3)}else{S.wadeT=1.3;S.ring(o.x,o.y+1,9)}}
+  if(inW&&!S.wadeSaid){S.wadeSaid=1;S.hsay("wade",__L3("Água fria… mas dá pé.","Cold water… but I can touch the bottom.","Agua fría… pero hago pie."))}
   for(const p of S.poi)if(!p.done&&Math.hypot(p.x-o.x,p.y-o.y)<48){act={kind:"poi",p,label:"✦ "+p.label};break}
   for(const[z,li]of Object.entries(__RPZL)){const Z=M.zones?.[z];if(Z&&!S.lineDone.has(li)&&((o.x-Z[0])/Z[2])**2+((o.y-Z[1])/Z[3])**2<1)S.say(li)}
   if(Math.hypot(o.x-M.exit[0],o.y-M.exit[1])<80){S.say(7);S.finish(!1)}}

@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.97.0-prologo-area-animais";
+const CACHE = "ded-web-v4.97.1-animais-agua";
 
 self.addEventListener("install", () => self.skipWaiting());
 
