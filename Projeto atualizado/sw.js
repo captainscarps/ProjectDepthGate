@@ -1,24 +1,56 @@
-const CACHE = "ded-web-v4.98.0-ingles-natural";
+const CACHE = "ded-web-v4.99.0-carregamento-rapido";
+/* Imagens, sons e dados ficam num cache que NÃO é apagado a cada versão. Ao ativar uma versão nova,
+   o asset-versions.json (gerado por scripts/build_asset_versions.py antes de publicar) é comparado com o
+   anterior e só os arquivos que mudaram são apagados (e baixados de novo quando o jogo pedir).
+   A página e os scripts continuam vindo sempre da rede (cópia só para jogar offline). */
+const ASSETS = "ded-assets-v1";
+const VKEY = "__asset-versions__";
 
 self.addEventListener("install", () => self.skipWaiting());
 
+const scopePath = () => new URL(self.registration.scope).pathname;
+const relOf = (url) => decodeURIComponent(new URL(url).pathname).slice(scopePath().length);
+
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches
-      .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter((k) => k !== CACHE && k !== ASSETS).map((k) => caches.delete(k)));
+      try {
+        const r = await fetch("asset-versions.json", { cache: "no-store" });
+        if (r.ok) {
+          const nv = await r.json();
+          const ac = await caches.open(ASSETS);
+          const vk = new URL(VKEY, self.registration.scope).href;
+          const prev = await ac.match(vk);
+          const pv = prev ? await prev.json() : null;
+          const reqs = await ac.keys();
+          await Promise.all(
+            reqs.map((q) => {
+              if (q.url === vk) return null;
+              const p = relOf(q.url);
+              // sem lista anterior: guarda só o que bate com a lista nova; com lista: apaga o que mudou/sumiu
+              if (pv ? nv[p] !== pv[p] : !(p in nv)) return ac.delete(q);
+              return null;
+            })
+          );
+          await ac.put(vk, new Response(JSON.stringify(nv), { headers: { "content-type": "application/json" } }));
+        }
+      } catch (err) {}
+      await self.clients.claim();
+    })()
   );
 });
 
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET" || !req.url.startsWith(self.location.origin)) return;
+  const path = new URL(req.url).pathname;
   // vídeos (e pedidos parciais/range) vão direto à rede: o cache não guarda respostas 206
-  if (new URL(req.url).pathname.match(/\.(mp4|webm)$/) || req.headers.has("range")) return;
-  // sinalização de rede e ranking online sempre direto da rede
-  if (new URL(req.url).pathname.includes("/api/") || new URL(req.url).pathname.endsWith("online-config.json")) return;
-  const isDynamic = req.mode === "navigate" || new URL(req.url).pathname.endsWith("/index.html") || new URL(req.url).pathname.includes("index-") || new URL(req.url).pathname.includes("network-coop") || new URL(req.url).pathname.includes("user-auth");
+  if (path.match(/\.(mp4|webm)$/) || req.headers.has("range")) return;
+  // sinalização de rede, ranking online e a lista de versões sempre direto da rede
+  if (path.includes("/api/") || path.endsWith("online-config.json") || path.endsWith("asset-versions.json")) return;
+  const isDynamic = req.mode === "navigate" || path.endsWith("/index.html") || path.endsWith("/sw.js") || path.includes("index-") || path.includes("network-coop") || path.includes("user-auth");
   if (isDynamic) {
     // Página principal e scripts: sempre da rede (cópia guardada só se estiver offline).
     // Atenção: um pedido de navegação não pode ser repassado com opções extras —
@@ -34,17 +66,17 @@ self.addEventListener("fetch", (e) => {
     );
     return;
   }
+  // imagens, sons, dados: do cache permanente; se não tiver, baixa e guarda
   e.respondWith(
-    caches.match(req).then(
-      (hit) =>
-        hit ||
-        fetch(req, { cache: "no-cache" }).then((res) => {
-          if (res.ok) {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
-          }
-          return res;
-        })
+    caches.open(ASSETS).then((ac) =>
+      ac.match(req).then(
+        (hit) =>
+          hit ||
+          fetch(req, { cache: "no-cache" }).then((res) => {
+            if (res.ok && res.status === 200) ac.put(req, res.clone());
+            return res;
+          })
+      )
     )
   );
 });
