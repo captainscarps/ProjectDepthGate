@@ -25,6 +25,12 @@ function __arcLines(){const L=__L3;return[
  L("Esta ponte uniu dois reinos, até a escuridão rachar suas pedras.","This bridge once joined two kingdoms, until the darkness cracked its stones.","Este puente unió dos reinos, hasta que la oscuridad agrietó sus piedras."),
  L("Os vaga-lumes guiam quem ainda tem esperança. Deixe que te levem até a margem.","The fireflies guide those who still have hope. Let them lead you to the shore.","Las luciérnagas guían a quien aún tiene esperanza. Deja que te lleven a la orilla.")]}
 const __ARC_EXPR=["calm","talk","sadness","talk","special","sadness","calm","smile","calm","sadness","smile"];
+/* o herói ainda não sabe quem é a voz: responde depois de algumas falas */
+function __arcHero(i){const L=__L3;return({0:L("Quem… quem está falando comigo?","Who… who is speaking to me?","¿Quién… quién me está hablando?"),
+ 1:L("Essa voz… parece vir de todos os lados.","That voice… it seems to come from everywhere.","Esa voz… parece venir de todas partes."),
+ 9:L("Como você sabe tudo isso? Quem é você?","How do you know all this? Who are you?","¿Cómo sabes todo eso? ¿Quién eres?"),
+ 4:L("Mostre-se! Por que não aparece?","Show yourself! Why won't you appear?","¡Muéstrate! ¿Por qué no apareces?"),
+ 7:L("Coração da Floresta… então é lá que vou descobrir quem é essa voz.","The Heart of the Forest… so that's where I'll find out whose voice this is.","El Corazón del Bosque… entonces allí descubriré de quién es esta voz.")})[i]??null}
 const __RPA=["river-flow","river-rapids","river-wind","boat-glide","boat-sfx"];
 
 class __ArcticPrologue extends j.Scene{constructor(){super("ArcticPrologue")}
@@ -116,8 +122,12 @@ say(i){const S=this;if(S.lineDone.has(i))return;S.lineDone.add(i);S.queue.push(i
 nextLine(){const S=this;if(!S.queue.length){S.speaking=!1;S.tweens.add({targets:S.nar,alpha:0,duration:600});return}S.speaking=!0;const i=S.queue.shift(),t=__arcLines()[i],ex=__ARC_EXPR[i]||"talk";
  S.textures.exists("guardia-p-"+ex)&&S.por.setTexture("guardia-p-"+ex);S.narTx.setText("");S.tweens.add({targets:S.nar,alpha:1,duration:300});let n=0;S.typer?.remove();S.typer=S.time.addEvent({delay:26,repeat:t.length-1,callback:()=>S.narTx.setText(t.slice(0,++n))});
  i===8&&(S.gustBoost=1);
- let fin=!1;const done=ok=>{if(fin)return;fin=!0;S.time.delayedCall(ok?1100:Math.max(3e3,t.length*60),()=>S.sys.isActive()&&S.nextLine())};
+ let fin=!1;const done=ok=>{if(fin)return;fin=!0;const hl=__arcHero(i);if(hl)S.time.delayedCall(ok?450:Math.max(2600,t.length*55),()=>{S.sys.isActive()&&S.heroSay(hl)});S.time.delayedCall((ok?1100:Math.max(3e3,t.length*60))+(hl?3e3:0),()=>S.sys.isActive()&&S.nextLine())};
  try{window.__dub?window.__dub(t,done):done(!1)}catch(e){done(!1)}}
+heroSay(t){const S=this,tgt=()=>S.mode==="boat"?S.boat:S.hero;if(!tgt())return;S.hbox?.destroy?.();const tx=S.add.text(0,0,t,{fontFamily:"Georgia, 'Times New Roman', serif",fontStyle:"italic",fontSize:"12px",color:"#1d2433",align:"center",wordWrap:{width:190}}).setOrigin(.5),w=tx.width+18,h=tx.height+10,bg=S.add.graphics();
+ bg.fillStyle(15660798,.94).lineStyle(1.5,4877680,.9).fillRoundedRect(-w/2,-h/2,w,h,7).strokeRoundedRect(-w/2,-h/2,w,h,7).fillStyle(15660798,.94).fillTriangle(-6,h/2-1,6,h/2-1,0,h/2+7);
+ const box=S.w(S.add.container(0,0,[bg,tx]).setDepth(4600).setAlpha(0).setScale(.85));S.hbox=box;const fol=()=>{const o=tgt();o&&box.active&&box.setPosition(o.x,o.y-(S.mode==="boat"?48:70)-h/2)};fol();S.events.on("update",fol);
+ S.tweens.add({targets:box,alpha:1,scale:1,duration:220,ease:"Back.easeOut"});S.time.delayedCall(2800,()=>box.active&&S.tweens.add({targets:box,alpha:0,duration:300,onComplete:()=>{S.events.off("update",fol);box.destroy()}}))}
 doAct(){const S=this,a=S.curAct;if(!a)return;if(a.kind==="land"){S.disembark();return}if(a.kind==="poi"){a.p.done=!0;S.say(a.p.line);S.game.audioEngine?.sfx?.("sfx-ui-tab");S.burst(a.p.x,a.p.y-20)}}
 burst(x,y){const S=this;for(let k=0;k<10;k++){const c=S.w(S.add.circle(x,y,1.5,0xd8ff9a,.9).setDepth(5e3));S.tweens.add({targets:c,x:x+(Math.random()-.5)*50,y:y-20-Math.random()*30,alpha:0,duration:700,onComplete:()=>c.destroy()})}}
 disembark(){const S=this;if(S.mode!=="boat")return;S.mode="land";S.bv={x:0,y:0};S.tweens.add({targets:S.boat,x:S.dock.x+34,y:S.dock.y+6,rotation:.25,duration:500});

@@ -76,7 +76,7 @@ try{for(const lv of Object.values(ki))for(const r of lv.rooms||[])r.enemies?.len
 /* ── espiões do Observador ── */
 const __BH_TYPES=["SPY_EYE_PALE","SPY_EYE_CRIMSON","SPY_EYE_VOID"];
 try{const W=()=>__L3("Qualquer fase da Campanha e do Modo Infinito — surge de surpresa e foge se não for abatido","Any Campaign or Endless stage — appears by surprise and flees if not slain","Cualquier fase de la Campaña y del Modo Infinito — aparece por sorpresa y huye si no es abatido");for(const k of __BH_TYPES)Object.defineProperty(__BK_EXTRA_WHERE,k,{get:W,enumerable:!0,configurable:!0})}catch(e){}
-function __bhInit(S){try{const lid=String(S.levelId??S.level?.id??"");if(S.isRift||/hub|refuge|tutorial|prolog/i.test(lid)||S.game.registry.get("mode")==="hub")return;
+function __bhInit(S){try{const lid=String(S.levelId??S.level?.id??"");if(S.isRift||/hub|refuge|tutorial|prolog/i.test(lid)||S.game.registry.get("mode")==="hub")return;if(lid==="forest"&&!S.endlessRun?.()){__fsInit(S);return}
  S.__bh={t0:S.time.now,done:0,spy:null};const ev=S.time.addEvent({delay:15e3,loop:!0,callback:()=>__bhTick(S)});const up=()=>__bhUpdate(S);S.events.on("update",up);
  S.events.once("shutdown",()=>{ev.remove();S.events.off("update",up);__bhBar(S,null)})}catch(e){}}
 function __bhTick(S,force){const B=S.__bh;if(!B||B.spy||S.state!=="playing"||!S.player||S.player.dead)return;if(S.boss&&!S.boss.dead&&S.boss.active)return;
@@ -101,3 +101,37 @@ function __bhEscape(S,e){const B=S.__bh;B.spy=null;e.__bhGone=!0;e.dead=!0;try{e
  S.effects?.burstTinted?.(e.x,e.y,11561727,26);S.game.events.emit("ui:banner",__L3("O espião fugiu para contar ao Observador...","The spy fled to report to the Observer...","El espía huyó para avisar al Observador..."),"#a89468");__bhBar(S,null);
  S.tweens.add({targets:e,alpha:0,y:e.y-30,scale:e.scale*.4,duration:700,onComplete:()=>{for(const k of["shadow","hpBar","eliteAura","eliteLabel","eliteEyes"])try{e[k]?.destroy()}catch(err){}try{e.destroy()}catch(err){}}})}
 window.__bhSpawnNow=t=>{const S=window.__DED_GAME?.scene?.getScene?.("Game");S?.__bh&&__bhSpawn(S,t)};
+
+/* ── Floresta de Eldervale: os espiões ainda não atacam aqui. Um olho só aparece espiando de longe (parte do
+   cenário) e some; a Guardiã avisa que o Observador tem espiões por toda parte. Antes de encontrá-la, o herói
+   se pergunta de quem é a voz que falou com ele no rio. ── */
+function __heroBubble(S,t,ms=3400){const p=S.player;if(!p||!S.sys.isActive())return;const tx=S.add.text(0,0,t,{fontFamily:"Georgia, 'Times New Roman', serif",fontStyle:"italic",fontSize:"13px",color:"#1d2433",align:"center",wordWrap:{width:200}}).setOrigin(.5),w=tx.width+18,h=tx.height+10,bg=S.add.graphics();
+ bg.fillStyle(15660798,.94).lineStyle(1.5,4877680,.9).fillRoundedRect(-w/2,-h/2,w,h,7).strokeRoundedRect(-w/2,-h/2,w,h,7).fillStyle(15660798,.94).fillTriangle(-6,h/2-1,6,h/2-1,0,h/2+7).lineStyle(1.5,4877680,.9).lineBetween(-6,h/2,0,h/2+7).lineBetween(6,h/2,0,h/2+7);
+ S.__hbBox?.destroy?.();const box=S.add.container(p.x,p.y-74-h/2,[bg,tx]).setDepth(9600).setAlpha(0).setScale(.85);S.__hbBox=box;const fol=()=>{const q=S.player;q&&box.active&&box.setPosition(q.x,q.y-74-h/2)};S.events.on("update",fol);
+ S.tweens.add({targets:box,alpha:1,scale:1,duration:220,ease:"Back.easeOut"});S.time.delayedCall(ms,()=>box.active&&S.tweens.add({targets:box,alpha:0,duration:350,onComplete:()=>{S.events.off("update",fol);box.destroy()}}))}
+function __calmNow(S){if(S.state!=="playing"||S.uiOpen||!S.player||S.player.dead)return!1;for(const e of S.enemies?.getChildren?.()||[])if(!e.dead&&e.active&&Math.hypot(e.x-S.player.x,e.y-S.player.y)<300&&(e.ai?.aggro||e.aggro))return!1;return!0}
+function __fsInit(S){const L3=__L3,reg=S.game.registry,met=()=>!!reg.get("story:gIntro");
+ /* falas do herói antes de conhecer a Guardiã */
+ const Q=[L3("Aquela voz no rio… disse que estaria me esperando. Mas quem é ela?","That voice on the river… it said it would be waiting for me. But who is she?","Esa voz en el río… dijo que me estaría esperando. ¿Pero quién es?"),
+  L3("Sinto que alguém está me guiando… ou me observando.","I feel like someone is guiding me… or watching me.","Siento que alguien me guía… o me observa."),
+  L3("Voz… se você está aí, mostre-se!","Voice… if you're out there, show yourself!","Voz… si estás ahí, ¡muéstrate!")];
+ let qi=0;const qt=S.time.addEvent({delay:5200,loop:!0,callback:()=>{if(met()||qi>=Q.length){qt.remove();return}if(!__calmNow(S))return;__heroBubble(S,Q[qi++]);qt.delay=28e3}});
+ /* um olho do Observador espiando de longe, uma vez por visita */
+ const at=S.time.now+(40+Math.random()*40)*1e3;let seen=!1;
+ const ck=S.time.addEvent({delay:2e3,loop:!0,callback:()=>{if(seen||S.time.now<at||!__calmNow(S))return;seen=!0;ck.remove();__fsSight(S)}});
+ S.events.once("shutdown",()=>{qt.remove();ck.remove()})}
+function __fsSight(S){const p=S.player,L3=__L3;let x=null,y=null;for(let k=0;k<40;k++){const a=Math.random()*Math.PI*2,d=170+Math.random()*60,tx=p.x+Math.cos(a)*d,ty=p.y+Math.sin(a)*d;if(!S.dungeon.isWallAtWorld(tx,ty)&&!S.dungeon.isWallAtWorld(tx,ty+16)){x=tx;y=ty;break}}if(x==null)return;
+ const tex="nf-eye-pale";if(!S.textures.exists(tex))return;const m=__NF_META["eye-pale"],e=S.add.sprite(x,y,tex,0).setScale(m.si*2*.85).setAlpha(0).setDepth(y+40);S.anims.exists(tex+"-idle")&&e.play(tex+"-idle");e.setFlipX(p.x<x);
+ const gl=S.add.image(x,y,"light").setTint(11561727).setBlendMode(j.BlendModes.ADD).setAlpha(0).setScale(.9).setDepth(y+39);
+ S.tweens.add({targets:[e],alpha:.9,duration:900});S.tweens.add({targets:gl,alpha:.35,duration:900});S.tweens.add({targets:[e,gl],y:"-=6",duration:1100,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});
+ S.audio?.play?.("sfx-elite-spawn");S.time.delayedCall(700,()=>__heroBubble(S,L3("…O que é aquilo?!","…What is that?!","…¿¡Qué es eso!?"),2400));
+ const gone=()=>{if(!e.active)return;S.effects?.burstTinted?.(e.x,e.y,11561727,18);S.tweens.killTweensOf([e,gl]);S.tweens.add({targets:[e,gl],alpha:0,scale:.1,duration:380,onComplete:()=>{e.destroy();gl.destroy()}});__fsWarn(S)};
+ const nearT=S.time.addEvent({delay:120,loop:!0,callback:()=>{if(!e.active){nearT.remove();return}if(Math.hypot(S.player.x-e.x,S.player.y-e.y)<90){nearT.remove();gone()}}});
+ S.time.delayedCall(3600,()=>{nearT.remove();gone()})}
+function __fsWarn(S){if(__stFlag(S,"spyWarn"))return;__stFlag(S,"spyWarn",!0);const L3=__L3,met=!!S.game.registry.get("story:gIntro"),nm=met?__GN:L3("A VOZ","THE VOICE","LA VOZ"),hn=(__HN[S.classDef?.id]||"").toUpperCase();
+ const L=[{who:met?"guardia":null,expr:"aggression",name:nm,text:L3("Não se aproxime. Aquilo era um olho do Observador.","Don't go near it. That was an eye of the Observer.","No te acerques. Eso era un ojo del Observador.")},
+  {who:met?"guardia":null,expr:"sadness",name:nm,text:L3("Ele espalha espiões por todas as terras. Mesmo agora, alguém pode estar nos observando.","He spreads spies across every land. Even now, someone may be watching us.","Él esparce espías por todas las tierras. Incluso ahora, alguien podría estar observándonos.")},
+  {who:met?"guardia":null,expr:"talk",name:nm,text:L3("Lá fora, nas terras além dos portais, eles vão atacar. Derrube-os antes que fujam.","Out there, in the lands beyond the gates, they will attack. Strike them down before they flee.","Allá afuera, en las tierras más allá de los portales, atacarán. Derríbalos antes de que huyan.")}];
+ met||L.push({name:hn,text:L3("De novo essa voz… quem é você, afinal?","That voice again… who are you, really?","Otra vez esa voz… ¿quién eres, en realidad?")});
+ S.time.delayedCall(500,()=>S.scene.isActive()&&(met?__gSay(S,L):__dlg(S,L)))}
+window.__fsSightNow=()=>{const S=window.__DED_GAME?.scene?.getScene?.("Game");S&&__fsSight(S)};

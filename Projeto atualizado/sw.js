@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.95.2-bestiario-inimigos-campanha";
+const CACHE = "ded-web-v4.96.0-espiao-floresta-save-seguro";
 
 self.addEventListener("install", () => self.skipWaiting());
 
