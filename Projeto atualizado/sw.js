@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.92.2-prologo-voz-es";
+const CACHE = "ded-web-v4.93.0-campanha-3-saves";
 
 self.addEventListener("install", () => self.skipWaiting());
 
