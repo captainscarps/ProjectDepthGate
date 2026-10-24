@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.92.1-prologo-rio-floresta";
+const CACHE = "ded-web-v4.92.2-prologo-voz-es";
 
 self.addEventListener("install", () => self.skipWaiting());
 
