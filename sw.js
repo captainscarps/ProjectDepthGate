@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.90.1-controles-tela-dividida";
+const CACHE = "ded-web-v4.90.2-interacao-mais-proxima";
 
 self.addEventListener("install", () => self.skipWaiting());
 
