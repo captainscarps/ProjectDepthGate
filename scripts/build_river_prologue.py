@@ -416,10 +416,9 @@ def span(sgn):
 
 
 lo_, hi_ = -span(-1), span(1)
-for off in (lo_ + (hi_ - lo_) * .3, lo_ + (hi_ - lo_) * .7):
+for off in (lo_ + 14, hi_ - 14):                                      # pilares colados nas margens: o rio fica livre
     x, y = c0 + nrm * off
     DECO.append(["rp-pillar", int(x), int(y) + 6, .74, bool(off > 0)])
-    WOBS.append([int(x), int(y), 13])
 STUBS = []
 for edge_, sgn in ((lo_, -1), (hi_, 1)):                             # tabuleiro partido saindo de cada margem
     q0 = c0 + nrm * (edge_ + sgn * 22)
@@ -455,9 +454,8 @@ for k_, (p_, r_) in enumerate(zip(RPATH, _rw)):
     if r_ < 56 and k_ % 7 == 0:
         tg, c = nearest_tan(*p_)
         side = 1 if (k_ // 9) % 2 else -1
-        x, y = c + np.array([-tg[1], tg[0]]) * side * (r_ * .78)
+        x, y = c + np.array([-tg[1], tg[0]]) * side * (r_ * .9)
         DECO.append([["dx-rock1-1", "dx-rock2-1", "dx-rock3-1"][k_ % 3], int(x), int(y) + 12, .55, bool(k_ % 2)])
-        WOBS.append([int(x), int(y), 8])
         for _ in range(5):                                          # espuma batendo na pedra
             ox_, oy_ = rng.integers(-16, 17), rng.integers(4, 12)
             bd.arc((int(x + ox_ - 8), int(y + oy_ - 2), int(x + ox_ + 8), int(y + oy_ + 3)), 180, 360, fill=(235, 246, 240, 200), width=1)

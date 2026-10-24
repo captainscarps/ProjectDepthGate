@@ -46,7 +46,15 @@ def put(old, new):
 # ajudante global: desce/para o fundo cinematográfico
 HELP = ('function __cinFade(to,ms,stop){const a=window.__cinAu;if(!a)return;clearInterval(a.__fi);const f=a.volume,t0=performance.now();'
         'a.__fi=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/ms);a.volume=Math.max(0,Math.min(1,f+(to-f)*k));'
-        'if(k>=1){clearInterval(a.__fi);if(stop){try{a.pause()}catch(e){}window.__cinAu===a&&(window.__cinAu=null)}}},40)}')
+        'if(k>=1){clearInterval(a.__fi);if(stop){try{a.pause()}catch(e){}window.__cinAu===a&&(window.__cinAu=null)}}},40)}'
+        # iPhone/iPad: o <audio> do vídeo de abertura só toca se já tiver sido liberado por um toque. Em qualquer toque
+        # antes do vídeo prepara (sem som) o elemento da trilha; o vídeo usa esse elemento já liberado.
+        # E o áudio do jogo (Web Audio) passa a tocar mesmo com o iPhone no modo silencioso, como um vídeo.
+        '(function(){try{navigator.audioSession&&(navigator.audioSession.type="playback")}catch(e){}'
+        'const prime=()=>{try{if(window.__cinPrimed)return;const G=window.__DED_GAME;if(G&&G.scene.isActive("Cutscene"))return;'
+        'const au=new Audio("assets/audio/cinematic_intro.mp3");au.preload="auto";au.muted=!0;au.volume=0;window.__cinPrimed=au;'
+        'const p=au.play();const stop=()=>{try{au.pause();au.currentTime=0}catch(e){}};p&&p.then?p.then(stop,()=>{window.__cinPrimed===au&&(window.__cinPrimed=null)}):stop()}catch(e){}};'
+        '["touchend","pointerup","keydown","click"].forEach(t=>document.addEventListener(t,prime,!0))})();')
 put("function __prologue(S){", HELP + "function __prologue(S){")
 
 # prólogo: cruzamento lento com a música do menu; no fim fica a trilha como fundo (não volta a música do menu)
@@ -99,7 +107,7 @@ put("  endCard: [W(\"intro.chapter\"), W(\"intro.chapterSub\"), 3200],", "  endC
 # vídeo: continua a mesma trilha (sem recomeçar) se ela já estiver tocando como fundo
 put('au=new Audio();au.src=o.music.endsWith(".mp3")?o.music:(o.music+(au.canPlayType("audio/ogg; codecs=vorbis")&&!o.preferMp3?".ogg":".mp3"));au.preload="auto",au.volume=0;',
     'const reuse=!!(window.__cinAu&&!window.__cinAu.paused&&decodeURI(window.__cinAu.src||"").endsWith(o.music));reuse&&clearInterval(window.__cinAu.__fi);'
-    'au=reuse?window.__cinAu:new Audio();reuse||(au.src=o.music.endsWith(".mp3")?o.music:(o.music+(au.canPlayType("audio/ogg; codecs=vorbis")&&!o.preferMp3?".ogg":".mp3")),au.preload="auto",au.volume=0,window.__cinAu=au);')
+    'au=reuse?window.__cinAu:(window.__cinPrimed?(()=>{const q=window.__cinPrimed;window.__cinPrimed=null;return q})():new Audio());au.muted=!1;reuse||(au.src=o.music.endsWith(".mp3")?o.music:(o.music+(au.canPlayType("audio/ogg; codecs=vorbis")&&!o.preferMp3?".ogg":".mp3")),au.preload="auto",au.volume=0,window.__cinAu=au);')
 put("au&&(au.play()?.catch?.(()=>{}),fadeAu(au.__tv,1400))", "au&&(au.play()?.catch?.(()=>{}),fadeAu(au.__tv,2e3))")
 put("fadeAu(0,700,()=>{try{au.pause()}catch(e){}})", "fadeAu(0,o.fadeOut??700,()=>{try{au.pause()}catch(e){}au===window.__cinAu&&(window.__cinAu=null)})")
 
