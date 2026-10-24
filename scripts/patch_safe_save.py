@@ -38,6 +38,11 @@ function __safeRoomId(c){try{const r=c.roomManager?.activeRoom;if(__roomSafe(r)&
 function __hubLocked(c,r){return!!(r?.def?.hub&&c.levelId==="forest"&&__forestCount(c)<3)}
 /* save antigo que já aponta para o Coração cercado: tira o herói de dentro, para fora dos espinhos */
 {const HB=__hubBarrier;__hubBarrier=function(S,on){const v=HB(S,on);if(on){try{__hubUnstuck(S)}catch(e){}S.time?.delayedCall?.(0,()=>{try{__hubUnstuck(S)}catch(e){}})}return v}}
+/* progresso da floresta que já tinha sido feito mas os cristais sumiram da bolsa: se há prova guardada
+   (selo da floresta marcado na história, portal de masmorra concluído ou cristal de masmorra na bolsa), devolve os 3 */
+function __forestEvidence(S){try{if(__stFlag(S,"forest_done"))return!0;if(S.completedDungeons?.length)return!0;if(__HUBD.some(id=>__CRY[id]&&__hasItem(S,__CRY[id])))return!0;
+ const sl=S.game.registry.get("save:slot")??1;for(const k of Object.keys(localStorage))if((k==="depthgate:portals:slot_"+sl||k.startsWith("depthgate:portals:"+sl+":"))&&JSON.parse(localStorage.getItem(k)||"[]").length)return!0}catch(e){}return!1}
+{const HS=__hubSetup;__hubSetup=function(S){try{if(S.levelId==="forest"&&!S.level?.endless&&S.game.registry.get("mode")!=="endless"&&S.inventory&&__forestCount(S)<3&&__forestEvidence(S)){for(let i=1;i<=3;i++){const cid="forest_crystal_"+i;if(!__hasItem(S,cid)){const it=S.lootSystem?.makeItem?.(cid,"LEGENDARY");it&&S.inventory.items.push(it)}}S.requestSave?.(800)}}catch(e){}return HS.apply(this,arguments)}}
 function __hubUnstuck(S){const p=S.player,B=S.dungeon,q=B?.level?.rooms?.find(r=>r.hub)?.rect,o=S.__hubBar;if(!p?.body||!q||!o?.length)return;
  const pc=Math.floor(p.x/dt),pr=Math.floor(p.y/dt);if(!(pc>=q.x&&pc<q.x+q.w&&pr>=q.y&&pr<q.y+q.h))return;
  const L=o.map(t=>[Math.floor(t.x/dt),Math.floor(t.y/dt)]),mid=Math.floor(L.length/2),ord=[...L.slice(mid),...L.slice(0,mid)];
