@@ -410,6 +410,10 @@ def main():
         env = dict(os.environ, NODE_PATH=NODE_MODULES)
         subprocess.run(["node", os.path.join(ROOT, "scripts", "extract_story_lines.cjs"), BUNDLE, lj], check=True, env=env)
         lines = json.load(open(lj))
+    # falas que não estão no bundle como diálogo comum (prólogo no mar gelado etc.)
+    xf = os.path.join(ROOT, "scripts", "voice_extra_lines.json")
+    if os.path.exists(xf):
+        lines += json.load(open(xf, encoding="utf-8"))
     over = json.load(open(os.path.join(ROOT, "scripts", "story_en_overrides.json"), encoding="utf-8"))
     M = MODEL.rstrip("/") + "/"
     tts = None if S is None else S.OfflineTts(S.OfflineTtsConfig(model=S.OfflineTtsModelConfig(supertonic=S.OfflineTtsSupertonicModelConfig(

@@ -15,6 +15,8 @@ while T in s:
     b = s.index(T, a + 1)
     s = s[:a] + s[b + len(T):]
 SRC = open(os.path.join(ROOT, "scripts", "source", "voice-webaudio.js"), encoding="utf-8").read()
+# por enquanto só voz em inglês: some a opção de português nas configurações
+s = s.replace('options:[["en","English"],["pt","Português"]]', 'options:[["en","English"]]')
 s = s + T + "\n" + SRC + "\n" + T
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):

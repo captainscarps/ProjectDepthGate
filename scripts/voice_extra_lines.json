@@ -1,0 +1,10 @@
+[
+ {"voice": "guardia", "expr": "calm", "text": "Desperte, viajante. O mar gelado te trouxe mais longe do que qualquer barco deveria ir.", "en": "Wake, traveler. The frozen sea carried you farther than any boat should go."},
+ {"voice": "guardia", "expr": "talk", "text": "O gelo se lembra de quem cruzou antes de você. Siga pelas águas abertas.", "en": "The ice remembers those who crossed before you. Follow the open water."},
+ {"voice": "guardia", "expr": "sadness", "text": "Estes pilares já sustentaram um portão. Os Antigos o afundaram para que ninguém voltasse.", "en": "These pillars once held a gate. The Ancients sank it so no one could return."},
+ {"voice": "guardia", "expr": "talk", "text": "Ali, a margem. Daqui em diante, você caminha.", "en": "There, the shore. From here on, you walk."},
+ {"voice": "guardia", "expr": "special", "text": "Sinta o frio. É a última coisa sincera antes das Profundezas.", "en": "Feel the cold. It is the last honest thing before the Depths."},
+ {"voice": "guardia", "expr": "sadness", "text": "Outro barco, outro viajante. Nem todos chegaram até mim.", "en": "Another boat, another traveler. Not all of them reached me."},
+ {"voice": "guardia", "expr": "calm", "text": "As runas falam de nove selos. Logo você vai entender o que eles guardam.", "en": "The runes speak of nine seals. Soon you will understand what they guard."},
+ {"voice": "guardia", "expr": "smile", "text": "Além dos pinheiros fica o Coração da Floresta. Estou esperando por você lá.", "en": "Beyond the pines lies the Heart of the Forest. I am waiting for you there."}
+]

@@ -27,3 +27,5 @@ __dub=function(text,onEnd){__dubInit();if(__DUB.a){try{__DUB.a.onended=null;__DU
 __dubHas=function(t){const id=__DUB.m?.k?.[__dubH(t)];return!!(id&&__DUB.m.d[id])};
 window.__dub=__dub;window.__dubHas=__dubHas;
 })();
+/* por enquanto a dublagem é só em inglês (o português volta quando as vozes brasileiras estiverem aprovadas) */
+__dubLang=function(){return"en"};
