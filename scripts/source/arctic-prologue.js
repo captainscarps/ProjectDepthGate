@@ -75,11 +75,46 @@ const __RPREG={lagoA:["Lago das Brumas","Lake of Mists","Lago de las Brumas"],go
  bridge:["Ponte dos Dois Reinos","Bridge of Two Kingdoms","Puente de los Dos Reinos"],lakeB:["Lago Espelhado","Mirror Lake","Lago Espejo"],
  dock:["Clareira do Desembarque","Landing Glade","Claro del Desembarco"],m1:["Prado das Flores","Flower Meadow","Prado de las Flores"],
  g1:["Clareira dos Cervos","Glade of the Deer","Claro de los Ciervos"],pond:["Lagoa dos Juncos","Reed Pond","Laguna de los Juncos"],
- m2:["Recanto dos Vaga-lumes","Firefly Hollow","Rincón de las Luciérnagas"]};
+ m2:["Recanto dos Vaga-lumes","Firefly Hollow","Rincón de las Luciérnagas"],ret:["O Caminho de Volta","The Way Back","El Camino de Vuelta"]};
 const __RPLAKEB=[1650,560,330];
 
-class __ArcticPrologue extends j.Scene{constructor(){super("ArcticPrologue")}
-init(d){this.next=d?.next??{key:"Game",data:{levelId:"forest"}};this.classId=d?.classId??this.next.data?.classId??"WARRIOR";this.leaving=!1}
+/* ── O CAMINHO DE VOLTA (fim do jogo, antes do vídeo final do herói) ─────────────────────────────────────
+   O mesmo rio, visto do outro lado (mapa espelhado) e ao entardecer. O herói sai da trilha da floresta,
+   passa pelas clareiras, embarca no píer e sobe o rio de volta até o Lago das Brumas. Quem narra é o próprio
+   herói, na língua dele (legenda no idioma do jogo), fazendo o fechamento da jornada. */
+const __RET={r0:["Quando cheguei, eu nem sabia de quem era aquela voz. Agora vou embora sabendo demais.","When I arrived, I didn't even know whose voice that was. Now I'm leaving knowing too much.","Cuando llegué, ni siquiera sabía de quién era aquella voz. Ahora me voy sabiendo demasiado."],
+ m1:["As flores continuam aqui, como se nada tivesse acontecido. Talvez seja isso que a gente protege.","The flowers are still here, as if nothing ever happened. Maybe that's what we were really protecting.","Las flores siguen aquí, como si nada hubiera pasado. Quizá eso es lo que protegemos."],
+ g1:["Os cervos já não fogem de mim. Ou talvez eu tenha aprendido a andar mais leve.","The deer don't run from me anymore. Or maybe I finally learned to step lighter.","Los ciervos ya no huyen de mí. O quizá por fin aprendí a pisar más suave."],
+ wreck:["O barco de outro viajante. Eu cheguei até o fim… ele não. Vou lembrar dele por nós dois.","Another traveler's boat. I made it to the end… he didn't. I'll remember him for both of us.","El barco de otro viajero. Yo llegué hasta el final… él no. Lo recordaré por los dos."],
+ statue:["Esta estátua viu a primeira selagem. Agora viu a última. Assim espero.","This statue saw the first sealing. Now it has seen the last. I hope.","Esta estatua vio el primer sellado. Ahora ha visto el último. Eso espero."],
+ dock:["O mesmo píer, o mesmo barco. Mas eu já não sou quem desembarcou aqui.","The same pier, the same boat. But I'm not the one who stepped off here anymore.","El mismo muelle, el mismo barco. Pero ya no soy quien desembarcó aquí."],
+ river:["Desta vez o rio me leva de volta. Até a correnteza parece mais calma.","This time the river carries me back. Even the current seems calmer.","Esta vez el río me lleva de vuelta. Hasta la corriente parece más tranquila."],
+ lakeB:["Lago Espelhado… aquela criatura ainda está aí embaixo. Até logo, velha amiga.","Mirror Lake… that creature is still down there. Farewell, old friend.","Lago Espejo… aquella criatura sigue ahí abajo. Hasta pronto, vieja amiga."],
+ bridge:["A Ponte dos Dois Reinos. Um dia alguém vai reconstruí-la. Talvez eu volte para ver.","The Bridge of Two Kingdoms. Someday someone will rebuild it. Maybe I'll come back to see it.","El Puente de los Dos Reinos. Algún día alguien lo reconstruirá. Quizá vuelva para verlo."],
+ gorge:["Cada portal deixou uma marca em mim. Algumas não vão sarar tão cedo.","Every gate left a mark on me. Some of them won't heal anytime soon.","Cada portal dejó una marca en mí. Algunas no sanarán pronto."],
+ lakeA:["O Lago das Brumas. Foi aqui que tudo começou.","The Lake of Mists. This is where it all began.","El Lago de las Brumas. Aquí fue donde todo empezó."],
+ fight:["Elyndra implorou pela vida, e eu baixei a arma. Ninguém vai saber dessa escolha… só eu e a floresta.","Elyndra begged for her life, and I lowered my weapon. No one will ever know that choice… only me and the forest.","Elyndra suplicó por su vida, y bajé el arma. Nadie sabrá de esa elección… solo yo y el bosque."],
+ seal:["Os portais dormem de novo. Agora a vigília é minha. Que a floresta me ensine a esperar.","The gates sleep again. Now the watch is mine. May the forest teach me how to wait.","Los portales vuelven a dormir. Ahora la vigilia es mía. Que el bosque me enseñe a esperar."],
+ break:["O Rei está livre. Se salvei um reino ou só mudei o Observador de prisão… o tempo vai dizer.","The King is free. Whether I saved a kingdom or just moved the Observer to a new prison… time will tell.","El Rey es libre. Si salvé un reino o solo cambié al Observador de prisión… el tiempo lo dirá."]};
+const __RETH={WARRIOR:["Pai… encontrei o que restava de você. Agora posso voltar para casa.","Father… I found what was left of you. Now I can go home.","Padre… encontré lo que quedaba de ti. Ahora puedo volver a casa."],
+ BERSERKER:["Hayato, meu irmão… vou te contar tudo quando a cinza de Sakurajima nos receber de novo.","Hayato, my brother… I'll tell you everything when the ash of Sakurajima welcomes us home again.","Hayato, hermano… te lo contaré todo cuando la ceniza de Sakurajima nos reciba de nuevo."],
+ ARCHER:["Akihiro, meu irmão… guarde um lugar para mim no alto de Sakurajima. Estou voltando.","Akihiro, my brother… save me a place atop Sakurajima. I'm coming home.","Akihiro, hermano… guárdame un lugar en lo alto de Sakurajima. Estoy volviendo."],
+ HUNTER:["O norte me espera. Os lobos vão voltar a uivar, eu sei.","The north is waiting for me. The wolves will howl again, I know it.","El norte me espera. Los lobos volverán a aullar, lo sé."],
+ DRUID:["As raízes respiram outra vez. Vou aos bosques sagrados contar que eles ainda vivem.","The roots breathe again. I'll go to the sacred groves and tell them they still live.","Las raíces respiran otra vez. Iré a los bosques sagrados a contarles que aún viven."],
+ NECROMANCER:["Os mortos finalmente descansam. Talvez agora eu também possa.","The dead finally rest. Maybe now I can too.","Los muertos por fin descansan. Quizá ahora yo también pueda."],
+ MAGE:["Os espelhos de Ra-Khem podem voltar a apontar para o céu. Estou indo para casa.","The mirrors of Ra-Khem can point to the sky again. I'm going home.","Los espejos de Ra-Khem pueden volver a apuntar al cielo. Me voy a casa."],
+ ROGUE:["As ilhas me esperam. Desta vez, volto sem precisar me esconder.","The islands are waiting for me. This time, I'm going back without having to hide.","Las islas me esperan. Esta vez vuelvo sin tener que esconderme."],
+ SHAMAN:["Avós, a mata está curada. Estou voltando para casa.","Grandparents, the forest is healed. I'm coming home.","Abuelos, el bosque está sanado. Estoy volviendo a casa."]};
+/* o mapa visto do outro lado: espelha tudo que tem coordenada (o mapa assado é desenhado invertido) */
+function __arcMirror(S,M){const W=M.w,X=x=>W-x,P2=a=>a&&[X(a[0]),a[1],...a.slice(2)],g=atob(M.grid),gw=M.gw,gh=M.gh;let ng="";
+ for(let r=0;r<gh;r++){const row=g.slice(r*gw,(r+1)*gw);ng+=row.split("").reverse().join("")}
+ const cw=k=>{try{return S.textures.get(k).getSourceImage().width}catch(e){return 512}};
+ const zones={};for(const[k,z]of Object.entries(M.zones||{}))zones[k]=[X(z[0]),z[1],z[2],z[3]];
+ return{...M,grid:btoa(ng),chunks:M.chunks.map(([k,x,y])=>[k,W-x-cw(k),y,1]),props:M.props.map(([k,x,y])=>[k,X(x),y]),deco:(M.deco||[]).map(([k,x,y,sc,fl])=>[k,X(x),y,sc,!fl]),
+  wobs:(M.wobs||[]).map(([x,y,r])=>[X(x),y,r]),start:P2(M.start),dock:P2(M.dock),land:P2(M.land),exit:P2(M.exit),wreck:P2(M.wreck),statue:P2(M.statue),bridge:P2(M.bridge),
+  path:(M.path||[]).map(p=>[X(p[0]),p[1],p[2]]),mist:(M.mist||[]).map(([x,y,rx,ry])=>[X(x),y,rx,ry]),zones,mirrored:1}}
+class __ArcticPrologue extends j.Scene{constructor(k){super(k||"ArcticPrologue")}
+init(d){this.ret=!!d?.ret;this.onDone=d?.onDone||null;this.choice=d?.choice||null;this.next=d?.next??{key:"Game",data:{levelId:"forest"}};this.classId=d?.classId??this.next.data?.classId??"WARRIOR";this.leaving=!1}
 preload(){this.textures.exists("arc-boat-red")||this.load.image("arc-boat-red","assets/pixel-art/arctic/arc-boat-red.png");this.textures.exists("arc-boat-teal")||this.load.image("arc-boat-teal","assets/pixel-art/arctic/arc-boat-teal.png");
  this.textures.exists("rf-props")||this.load.atlas("rf-props","assets/pixel-art/ruins-forest/rf-props.png","assets/pixel-art/ruins-forest/rf-props.json");
  this.textures.exists("fr-bridge")||this.load.image("fr-bridge","assets/pixel-art/forest-open/fr-bridge.png");
@@ -93,11 +128,11 @@ preload(){this.textures.exists("arc-boat-red")||this.load.image("arc-boat-red","
  this.cache.json.exists("rp-meta")||this.load.json("rp-meta","assets/pixel-art/river-prologue/rp-meta.json");
  this.load.once("filecomplete-json-rp-meta",()=>more(this.cache.json.get("rp-meta")));
  if(this.cache.json.exists("rp-meta"))more(this.cache.json.get("rp-meta"))}
-create(){const S=this,M=S.cache.json.get("rp-meta"),R=Math.random,L3=__L3;window.__heroCls=String(S.classId||"WARRIOR").toUpperCase();S.M=M;S.W=M.w;S.H=M.h;le(S);const cam=S.cameras.main;cam.setBounds(0,0,S.W,S.H).setBackgroundColor(0x0d1a12);
+create(){const S=this,M0=S.cache.json.get("rp-meta"),M=S.ret?__arcMirror(S,M0):M0,R=Math.random,L3=__L3;S.mir=!!S.ret;S.lakeB=S.ret?[M.w-__RPLAKEB[0],__RPLAKEB[1],__RPLAKEB[2]]:__RPLAKEB;window.__heroCls=String(S.classId||"WARRIOR").toUpperCase();S.M=M;S.W=M.w;S.H=M.h;le(S);const cam=S.cameras.main;cam.setBounds(0,0,S.W,S.H).setBackgroundColor(0x0d1a12);
  S.uiCam=S.cameras.add(0,0,cam.width,cam.height);S.uiCam.setZoom(cam.zoom).centerOn(_/2,st/2);S.ui=S.add.container(0,0).setDepth(5e3);cam.ignore(S.ui);
  const w=o=>(S.uiCam.ignore(o),o);S.w=w;
  const raw=atob(M.grid);S.grid=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)S.grid[i]=raw.charCodeAt(i);
- for(const[k,x,y]of M.chunks)w(S.add.image(x,y,k).setOrigin(0).setDepth(0));
+ for(const[k,x,y,fl]of M.chunks)w(S.add.image(x,y,k).setOrigin(0).setDepth(0).setFlipX(!!fl));
  /* trajeto do rio: correnteza e roteiro da narração */
  S.P=M.path||[];S.flow=M.flow||[];S.pi=0;S.prog=0;S.cues=Object.entries(M.cues||{}).map(([k,v])=>[+k,v]).sort((a,b)=>a[1]-b[1]);
  S.gorge=S.P.filter((p,i)=>(S.flow[i]||0)>50);
@@ -137,7 +172,7 @@ create(){const S=this,M=S.cache.json.get("rp-meta"),R=Math.random,L3=__L3;window
  S.leaves=[];for(let k=0;k<48;k++){const f=w(S.add.rectangle(R()*S.W,R()*S.H,3,2,[0x9cc46a,0xc9b25a,0x6f9a4a][k%3],.85).setDepth(4e3));f.vx=10+R()*14;f.vy=14+R()*16;f.ph=R()*6;S.leaves.push(f)}
  for(let k=0;k<70;k++){const p=S.freeCell(R()<.5?1:2);if(!p)continue;const ff=w(S.add.image(p.x,p.y,"light").setScale(.05).setBlendMode(j.BlendModes.ADD).setTint(0xd8ff9a).setAlpha(0).setDepth(3e3));S.tweens.add({targets:ff,alpha:{from:0,to:.8},x:"+="+(R()*30-15),y:"-="+(R()*20),duration:1500+R()*1500,yoyo:!0,repeat:-1,delay:R()*3e3})}
  try{window.__dubPrefetch?.(__arcLines())}catch(e){}
- S.buildUI();S.lineDone=new Set;S.queue=[];S.lineTok=0;S.heroDone=new Set;S.time.delayedCall(1600,()=>S.say(0));
+ S.buildUI();S.lineDone=new Set;S.queue=[];S.lineTok=0;S.heroDone=new Set;S.ret?S.retStart():S.time.delayedCall(1600,()=>S.say(0));
  S.initAnimals();S.initLife();
  try{S.game.audioEngine?.music?.("forest")}catch(e){}
  S.gust=.4;S.windEnv=null;fetch("assets/audio/ambient/river-wind.json").then(r=>r.json()).then(j_=>{S.windEnv=j_}).catch(()=>{});
@@ -162,6 +197,8 @@ buildUI(){const S=this,L3=__L3,U=S.ui,F="Georgia, 'Times New Roman', serif";
  const px=_/2,py=st-48;S.nar=S.add.container(px,py).setAlpha(0);const bg=S.add.graphics();bg.fillStyle(0x0b0f16,.82).fillRoundedRect(-250,-30,500,60,8).lineStyle(1,0xc9a24a,.7).strokeRoundedRect(-250,-30,500,60,8);
  S.por=S.add.image(-222,28,"guardia-p-talk").setOrigin(.5,1).setScale(.5);S.narName=S.add.text(-182,-24,typeof __GN!=="undefined"?__GN:"A GUARDIÃ",{fontFamily:F,fontStyle:"bold",fontSize:"10px",color:"#f2d9a0"});
  S.narTx=S.add.text(-182,-10,"",{fontFamily:F,fontSize:"10px",color:"#ece2cc",wordWrap:{width:420},lineSpacing:2});S.nar.add([bg,S.por,S.narName,S.narTx]);U.add(S.nar);
+ S.heroName=((typeof __HN!=="undefined"&&__HN[String(S.classId).toUpperCase()])||"").toUpperCase();
+ if(S.hkey){S.porH=S.add.sprite(-216,30,S.hkey,0).setOrigin(.5,(S.lay?.footY??120)/(S.lay?.frameH??128)).setScale((S.lay?.scale??.67)*.82).setVisible(!1);S.anims.exists(S.hkey+"-idle")&&S.porH.play(S.hkey+"-idle");S.nar.addAt(S.porH,2)}
  S.act=S.add.container(_-92,st-118).setVisible(!1);const ab=S.add.graphics();ab.fillStyle(0x1d2a20,.9).fillRoundedRect(-80,-15,160,30,8).lineStyle(1.5,0x8ae08a,.9).strokeRoundedRect(-80,-15,160,30,8);S.actTx=S.add.text(0,0,"",{fontFamily:F,fontStyle:"bold",fontSize:"10px",color:"#e8ffe0"}).setOrigin(.5);S.act.add([ab,S.actTx]);
  const az=S.add.zone(0,0,160,30).setInteractive({useHandCursor:!0});az.on("pointerdown",()=>{S.uiTap=!0;S.doAct()});S.act.add(az);U.add(S.act);
  const btn=(x,y,t,ox,fn)=>{const b=S.add.text(x,y,t,{fontFamily:"'Courier New', monospace",fontStyle:"bold",fontSize:"9px",color:"#e8dcb0",backgroundColor:"#1a120cdd",padding:{x:7,y:5}}).setOrigin(ox,0).setInteractive({useHandCursor:!0});b.on("pointerdown",()=>{S.uiTap=!0;fn()});U.add(b);return b};
@@ -171,7 +208,7 @@ buildUI(){const S=this,L3=__L3,U=S.ui,F="Georgia, 'Times New Roman', serif";
  const PZ=S.add.container(0,0).setVisible(!1);const dim=S.add.rectangle(_/2,st/2,_*1.4,st*1.4,0x05070a,.72).setInteractive();const pb=S.add.graphics();pb.fillStyle(0x0f141c,.95).fillRoundedRect(_/2-120,st/2-78,240,156,10).lineStyle(1.5,0xc9a24a,.85).strokeRoundedRect(_/2-120,st/2-78,240,156,10);
  PZ.add([dim,pb,S.add.text(_/2,st/2-56,L3("PAUSA","PAUSED","PAUSA"),{fontFamily:F,fontStyle:"bold",fontSize:"16px",color:"#f2d9a0",letterSpacing:4}).setOrigin(.5)]);
  const pbtn=(y,t,fn)=>{const b=S.add.text(_/2,y,t,{fontFamily:F,fontStyle:"bold",fontSize:"12px",color:"#ece2cc",backgroundColor:"#2a2116",padding:{x:14,y:6}}).setOrigin(.5).setInteractive({useHandCursor:!0});b.on("pointerover",()=>b.setColor("#ffd24a"));b.on("pointerout",()=>b.setColor("#ece2cc"));b.on("pointerdown",()=>{S.uiTap=!0;fn()});PZ.add(b);return b};
- pbtn(st/2-14,L3("CONTINUAR","RESUME","CONTINUAR"),()=>S.togglePause(!1));pbtn(st/2+26,L3("VOLTAR AO MENU","BACK TO MENU","VOLVER AL MENÚ"),()=>{S.togglePause(!1);S.leaving=!0;try{window.__dubStop?.()}catch(e){}S.audioStop();S.scene.start("MainMenu")});
+ pbtn(st/2-14,L3("CONTINUAR","RESUME","CONTINUAR"),()=>S.togglePause(!1));S.ret?pbtn(st/2+26,L3("PULAR CAMINHO ▸","SKIP JOURNEY ▸","SALTAR CAMINO ▸"),()=>{S.togglePause(!1);S.finish(!0)}):pbtn(st/2+26,L3("VOLTAR AO MENU","BACK TO MENU","VOLVER AL MENÚ"),()=>{S.togglePause(!1);S.leaving=!0;try{window.__dubStop?.()}catch(e){}S.audioStop();S.scene.start("MainMenu")});
  PZ.setDepth(9e3);U.add(PZ);S.pz=PZ;
  S.joy={on:!1,ox:0,oy:0,x:0,y:0,id:null};const jb=S.add.circle(0,0,26,0xffffff,.12).setStrokeStyle(2,0xffffff,.35).setVisible(!1),jt=S.add.circle(0,0,11,0xffffff,.35).setVisible(!1);U.add([jb,jt]);
  const toUI=p=>({x:(p.x-S.uiCam.width/2)/S.uiCam.zoom+_/2,y:(p.y-S.uiCam.height/2)/S.uiCam.zoom+st/2});
@@ -180,15 +217,17 @@ buildUI(){const S=this,L3=__L3,U=S.ui,F="Georgia, 'Times New Roman', serif";
  const up=p=>{if(p.id!==S.joy.id)return;S.joy.on=!1;S.joy.x=S.joy.y=0;jb.setVisible(!1);jt.setVisible(!1)};S.input.on("pointerup",up);S.input.on("pointerupoutside",up)}
 /* narração: UMA fila para a Guardiã (número da fala) e o herói (texto) — nada fala por cima de nada */
 say(i){const S=this;if(S.lineDone.has(i))return;S.lineDone.add(i);S.queue.push(i);S.speaking||S.nextLine()}
-hsay(key,t){const S=this;if(!t||S.heroDone.has(key))return;S.heroDone.add(key);S.queue.push(t);S.speaking||S.nextLine()}
+mono(key,t){const S=this;if(!t||S.heroDone.has("m:"+key))return!1;S.heroDone.add("m:"+key);S.queue.push({mono:t});S.speaking||S.nextLine();return!0}
+hsay(key,t){const S=this;if(S.ret||!t||S.heroDone.has(key))return;S.heroDone.add(key);S.queue.push(t);S.speaking||S.nextLine()}
 nextLine(){const S=this,tok=++S.lineTok;S.typer?.remove();if(!S.queue.length){S.speaking=!1;S.skipBtn?.setVisible(!1);S.tweens.add({targets:S.nar,alpha:0,duration:600});return}S.speaking=!0;S.skipBtn?.setVisible(!0);const it=S.queue.shift();
  if(typeof it==="string"){const fadeMs=S.nar.alpha>.05?300:0;S.tweens.add({targets:S.nar,alpha:0,duration:Math.max(1,fadeMs-40)});const vd=(window.__dubDur?.(it)||0)*1e3,d=Math.max(2600,it.length*48,vd+500);
   S.time.delayedCall(fadeMs,()=>{if(tok!==S.lineTok)return;S.heroSay(it,d);let fin=!1;const nx=()=>{if(fin||tok!==S.lineTok||!S.sys.isActive())return;fin=!0;S.nextLine()};
    try{vd&&window.__dub?.(it,ok=>ok&&S.time.delayedCall(450,nx))}catch(e){}S.time.delayedCall(d+700,nx)});return}
- const i=it,t=__arcLines()[i],ex=__ARC_EXPR[i]||"talk";
- S.textures.exists("guardia-p-"+ex)&&S.por.setTexture("guardia-p-"+ex);S.narTx.setText("");S.tweens.add({targets:S.nar,alpha:1,duration:300});let n=0;
+ const i=it,isM=typeof it==="object",t=isM?it.mono:__arcLines()[i],ex=isM?"talk":__ARC_EXPR[i]||"talk";
+ S.por.setVisible(!isM);S.porH?.setVisible(isM);S.narName.setText(isM?S.heroName:(typeof __GN!=="undefined"?__GN:"A GUARDIÃ"));
+ !isM&&S.textures.exists("guardia-p-"+ex)&&S.por.setTexture("guardia-p-"+ex);S.narTx.setText("");S.tweens.add({targets:S.nar,alpha:1,duration:300});let n=0;
  i===8&&(S.gustBoost=1);
- let fin=!1;const done=ok=>{if(fin||tok!==S.lineTok)return;fin=!0;const hl=__arcHero(i);hl&&!S.heroDone.has("g"+i)&&(S.heroDone.add("g"+i),S.queue.unshift(hl));i===0&&!S.lineDone.has(15)&&(S.lineDone.add(15),S.queue.splice(hl?1:0,0,15));S.time.delayedCall(ok?900:Math.max(3e3,t.length*60),()=>tok===S.lineTok&&S.sys.isActive()&&S.nextLine())};
+ let fin=!1;const done=ok=>{if(fin||tok!==S.lineTok)return;fin=!0;const hl=isM?null:__arcHero(i);hl&&!S.heroDone.has("g"+i)&&(S.heroDone.add("g"+i),S.queue.unshift(hl));i===0&&!S.lineDone.has(15)&&(S.lineDone.add(15),S.queue.splice(hl?1:0,0,15));S.time.delayedCall(ok?900:Math.max(3e3,t.length*60),()=>tok===S.lineTok&&S.sys.isActive()&&S.nextLine())};
  try{window.__dub?window.__dub(t,done):done(!1)}catch(e){done(!1)}
  /* o texto acompanha a voz (começa quando ela começa e termina junto) */
  S.typer=S.time.addEvent({delay:24,loop:!0,callback:()=>{if(tok!==S.lineTok){S.typer?.remove();return}n=window.__dubType?window.__dubType(t,n,1):Math.min(t.length,n+1);S.narTx.setText(t.slice(0,n));n>=t.length&&S.typer.remove()}})}
@@ -265,7 +304,7 @@ updateAnimals(dt){const S=this;if(!S.animals?.length)return;const R=Math.random,
   case"hide":break}
   if(a.st!=="gone"){a.s.x=a.x;a.st!=="walk"||C.kind!=="bird"?a.s.y=a.y-a.alt:0;(a.st==="idle"||a.st==="walk")&&C.kind!=="fish"&&a.s.setDepth(a.y);a.sh&&a.sh.setPosition(a.x,a.y+2).setAlpha((a.alt>2?.08:C.kind==="duck"?.12:.22))}
   if(C.kind==="duck"&&a.st==="idle"&&R()<dt*.15)S.ring(a.x,a.y,10);if(C.kind==="fish"&&a.st==="idle"&&R()<dt*.1&&v.contains(a.x,a.y))S.ring(a.x,a.y,5)}}
-doAct(){const S=this,a=S.curAct;if(!a)return;if(a.kind==="land"){S.disembark();return}if(a.kind==="poi"){a.p.done=!0;S.say(a.p.line);S.game.audioEngine?.sfx?.("sfx-ui-tab");S.burst(a.p.x,a.p.y-20)}}
+doAct(){const S=this,a=S.curAct;if(!a)return;if(a.kind==="land"){S.disembark();return}if(a.kind==="embark"){S.embark();return}if(a.kind==="poi"){a.p.done=!0;S.ret?S.mono(a.p.line===5?"wreck":"statue",__L3(...__RET[a.p.line===5?"wreck":"statue"])):S.say(a.p.line);S.game.audioEngine?.sfx?.("sfx-ui-tab");S.burst(a.p.x,a.p.y-20)}}
 burst(x,y){const S=this;for(let k=0;k<10;k++){const c=S.w(S.add.circle(x,y,1.5,0xd8ff9a,.9).setDepth(5e3));S.tweens.add({targets:c,x:x+(Math.random()-.5)*50,y:y-20-Math.random()*30,alpha:0,duration:700,onComplete:()=>c.destroy()})}}
 disembark(){const S=this;if(S.mode!=="boat")return;S.mode="land";S.bv={x:0,y:0};S.tweens.add({targets:S.boat,x:S.dock.x+34,y:S.dock.y+6,rotation:.25,duration:500});
  S.sfx("splash",.8);S.sfx("bump",.6);S.time.delayedCall(250,()=>S.sfx("step",.7));S.time.delayedCall(480,()=>S.sfx("step",.7));
@@ -288,8 +327,8 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
  if(S.mode==="boat"){const B=S.boat,acc=170,max=100;S.pi=S.near(B.x,B.y,S.pi);const tn=S.pi>=0?S.tan(S.pi):{x:0,y:0},fl=S.pi>=0?(S.flow[S.pi]||28):0;flowNear=fl;
   S.bv.x+=a.x*acc*dt;S.bv.y+=a.y*acc*dt;const sp=Math.hypot(S.bv.x,S.bv.y);if(sp>max){S.bv.x*=max/sp;S.bv.y*=max/sp}const dr=Math.pow(.4,dt);S.bv.x*=dr;S.bv.y*=dr;
   /* correnteza: empurra rio abaixo e puxa de leve para o meio do canal */
-  let cx=tn.x*fl*.85,cy=tn.y*fl*.85;if(S.pi>=0){const p=S.P[S.pi],ox=p[0]-B.x,oy=p[1]-B.y,lat=ox*-tn.y+oy*tn.x;cx+=-tn.y*lat*.35;cy+=tn.x*lat*.35}
-  if(S.pi>=S.P.length-4){cx*=.2;cy*=.2}
+  const cf=S.ret?-.42:.85;let cx=tn.x*fl*cf,cy=tn.y*fl*cf;if(S.pi>=0){const p=S.P[S.pi],ox=p[0]-B.x,oy=p[1]-B.y,lat=ox*-tn.y+oy*tn.x;cx+=-tn.y*lat*.35;cy+=tn.x*lat*.35}
+  if(S.ret?S.pi<=3:S.pi>=S.P.length-4){cx*=.2;cy*=.2}
   const vx=S.bv.x+cx,vy=S.bv.y+cy;const tx=B.x+vx*dt,ty=B.y+vy*dt;let[nx,ny]=S.step(B.x,B.y,tx,ty,(x,y)=>S.okArea(x,y,2,14));
   const o={x:nx,y:ny};S.push(o,S.wobs,12);S.okArea(o.x,o.y,2,12)&&(nx=o.x,ny=o.y);
   const hit=Math.abs(nx-tx)+Math.abs(ny-ty)>.3;if(hit){S.bv.x*=.7;S.bv.y*=.7;if(sp>45&&(S.bumpT||0)<t){S.bumpT=t+900;S.sfx("bump",Math.min(.8,sp/120));S.cameras.main.shake(120,.0015)}}
@@ -303,8 +342,8 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
   /* câmera olha um pouco à frente do barco */
   const lk=.75;S.look.x+=(-vx*lk-S.look.x)*Math.min(1,dt*1.2);S.look.y+=(-vy*lk-S.look.y)*Math.min(1,dt*1.2);cam.setFollowOffset(S.look.x,S.look.y);
   /* roteiro da narração pelo quanto já desceu o rio */
-  if(S.pi>=0)S.prog=Math.max(S.prog,S.P[S.pi][2]);for(const[li,sv]of S.cues)S.prog>=sv&&S.say(li);
-  if(Math.hypot(B.x-S.dock.x,B.y-S.dock.y)<70)act={kind:"land",label:L3("⚓ Desembarcar","⚓ Disembark","⚓ Desembarcar")}}
+  if(S.ret)S.retRiver(B);else{if(S.pi>=0)S.prog=Math.max(S.prog,S.P[S.pi][2]);for(const[li,sv]of S.cues)S.prog>=sv&&S.say(li);
+  if(Math.hypot(B.x-S.dock.x,B.y-S.dock.y)<70)act={kind:"land",label:L3("⚓ Desembarcar","⚓ Disembark","⚓ Desembarcar")}}}
  else if(S.hero){const inW=S.cell(S.hx,S.hy)!==1&&S.shallow(S.hx,S.hy)&&!(Math.abs(S.hx-S.dock.x)<14&&S.hy<M.land[1]+20),spd=inW?66:105;let[nx,ny]=S.step(S.hx,S.hy,S.hx+a.x*spd*dt,S.hy+a.y*spd*dt,(x,y)=>S.walkOk(x,y));const o={x:nx,y:ny};S.push(o,S.lobs,8);if(!S.walkOk(o.x,o.y)){o.x=nx;o.y=ny}
   const moved=Math.hypot(o.x-S.hx,o.y-S.hy);S.hx=o.x;S.hy=o.y;
   S.hero.setPosition(o.x,o.y).setDepth(o.y+1);{const fh=S.hero.frame?.height||128,cut=inW?Math.round(fh*(1-(S.hero.originY))+ 7/Math.max(.1,S.hero.scaleY)):0;inW?S.hero.setCrop(0,0,S.hero.frame.width,fh-cut):S.hero.isCropped&&S.hero.setCrop()}S.hsh.setPosition(o.x,o.y+1);a.x&&S.hero.setFlipX(a.x<0);const moving=Math.hypot(a.x,a.y)>.1,an=S.hkey+(moving?"-walk":"-idle");S.anims.exists(an)&&S.hero.anims.currentAnim?.key!==an&&S.hero.play(an);
@@ -313,8 +352,9 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
   S.hsh.setAlpha(inW?0:.3);S.wadeT=(S.wadeT||0)-dt;if(inW&&S.wadeT<=0){if(moved>.4){S.wadeT=.3;S.ring(o.x,o.y+1,10);S.drops(o.x,o.y,5);S.sfx("wade",.5,(Math.random()-.5)*.3)}else{S.wadeT=1.3;S.ring(o.x,o.y+1,9)}}
   if(inW&&!S.wadeSaid){S.wadeSaid=1;S.hsay("wade",__L3("Água fria… mas dá pé.","Cold water… but I can touch the bottom.","Agua fría… pero hago pie."))}
   for(const p of S.poi)if(!p.done&&Math.hypot(p.x-o.x,p.y-o.y)<48){act={kind:"poi",p,label:"✦ "+p.label};break}
-  for(const[z,li]of Object.entries(__RPZL)){const Z=M.zones?.[z];if(Z&&!S.lineDone.has(li)&&((o.x-Z[0])/Z[2])**2+((o.y-Z[1])/Z[3])**2<1)S.say(li)}
-  if(Math.hypot(o.x-M.exit[0],o.y-M.exit[1])<80){S.say(7);S.finish(!1)}}
+  if(S.ret&&Math.hypot(o.x-M.land[0],o.y-M.land[1])<46)act={kind:"embark",label:L3("⚓ Embarcar","⚓ Board the boat","⚓ Embarcar")};
+  if(!S.ret)for(const[z,li]of Object.entries(__RPZL)){const Z=M.zones?.[z];if(Z&&!S.lineDone.has(li)&&((o.x-Z[0])/Z[2])**2+((o.y-Z[1])/Z[3])**2<1)S.say(li)}
+  if(!S.ret&&Math.hypot(o.x-M.exit[0],o.y-M.exit[1])<80){S.say(7);S.finish(!1)}}
  S.updateAnimals(dt);S.updateLife(dt,t,G);
  /* mixagem: rio perto, corredeira perto da garganta, casco pela velocidade, vento pelas rajadas */
  const fx=S.mode==="boat"?S.boat.x:S.hx,fy=S.mode==="boat"?S.boat.y:S.hy;let dg=1e9;for(const p of S.gorge){const d=Math.hypot(p[0]-fx,p[1]-fy);d<dg&&(dg=d)}
@@ -357,8 +397,8 @@ initLife(){const S=this,M=S.M,R=Math.random;S.flowers=[];S.petals=0;
    const dx=10+R()*22,dy=6+R()*14,du=2600+R()*2600;S.tweens.add({targets:[o,c],x:"+="+dx,duration:du,yoyo:!0,repeat:-1,ease:"Sine.easeInOut",delay:R()*2e3});S.tweens.add({targets:[o,c],y:"-="+dy,duration:du*.73,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});
    S.tweens.add({targets:o,alpha:{from:.1,to:.42},duration:1400+R()*1600,yoyo:!0,repeat:-1,delay:R()*1500});S.tweens.add({targets:c,alpha:{from:.3,to:.95},duration:1400+R()*1600,yoyo:!0,repeat:-1,delay:R()*1500})}
   for(let k=0;k<6;k++){const m=S.w(S.add.ellipse(mx+(R()-.5)*rx,my+(R()-.5)*ry*.8,rx*(.5+R()*.4),ry*(.25+R()*.2),0xcfe8ff,0).setDepth(3800));S.tweens.add({targets:m,alpha:{from:.02,to:.08},x:"+="+(20+R()*40),duration:7e3+R()*4e3,yoyo:!0,repeat:-1,delay:R()*3e3})}}
- S.fjT=3;S.bbT=1.5;S.time.delayedCall(2600,()=>S.title("lagoA"))}
-soil(x,y){const S=this;try{const i=Math.floor(x/512),k=Math.floor(y/512),c=S.textures.getPixel(Math.floor(x-i*512),Math.floor(y-k*512),`rpb-${i}-${k}`);return!!c&&c.red>c.green+4}catch(e){return!1}}
+ S.fjT=3;S.bbT=1.5;S.ret||S.time.delayedCall(2600,()=>S.title("lagoA"))}
+soil(x,y){const S=this;S.mir&&(x=S.W-x);try{const i=Math.floor(x/512),k=Math.floor(y/512),c=S.textures.getPixel(Math.floor(x-i*512),Math.floor(y-k*512),`rpb-${i}-${k}`);return!!c&&c.red>c.green+4}catch(e){return!1}}
 plant(cx,cy,rx,ry,clusters,per,pal,glow){const S=this,R=Math.random;
  for(let c=0;c<clusters;c++){let o=null;for(let t=0;t<40&&!o;t++){const a=R()*6.283,r=Math.sqrt(R()),x=cx+Math.cos(a)*rx*r,y=cy+Math.sin(a)*ry*r;if(S.okArea(x,y,1,9)&&!S.soil(x,y)&&!S.lobs.some(q=>Math.hypot(x-q.x,y-q.y)<q.r+12))o={x,y}}if(!o)continue;
   const col=pal[Math.floor(R()*pal.length)],cr=16+R()*28,n=Math.round(per*(.6+R()*.8));
@@ -368,8 +408,8 @@ plant(cx,cy,rx,ry,clusters,per,pal,glow){const S=this,R=Math.random;
 petal(x,y,ci,G){const S=this,R=Math.random,cols=[0xf08a3c,0x6f90ea,0xf6f3ff,0xee8fbd,0xffd34a,0xe2dcff],p=S.w(S.add.rectangle(x,y,2,1,cols[ci]??0xf6f3ff,.95).setDepth(4100).setRotation(R()*3));S.petals++;
  S.tweens.add({targets:p,x:x+18+G*60+R()*24,y:y-10-R()*18,rotation:p.rotation+(R()-.5)*9,alpha:0,duration:1300+R()*900,ease:"Sine.easeOut",onComplete:()=>{p.destroy();S.petals--}})}
 /* título de região: um de cada vez, nunca por cima de outro */
-title(id){const S=this;S.titleDone=S.titleDone||new Set;if(S.titleDone.has(id)||!__RPREG[id])return!1;S.titleDone.add(id);(S.titleQ=S.titleQ||[]).push(id);S.titleOn||S.nextTitle();return!0}
-nextTitle(){const S=this,id=(S.titleQ||[]).shift();if(!id||S.leaving){S.titleOn=!1;return}S.titleOn=!0;const L=__L3,F="Georgia, 'Times New Roman', serif",[a,b,c]=__RPREG[id],name=L(a,b,c),sub=L("Floresta de Eldervale","Eldervale Forest","Bosque de Eldervale").toUpperCase();
+title(id){const S=this;S.titleDone=S.titleDone||new Set;if(S.ret&&!/^(ret|lagoA)$/.test(id))return!1;if(S.titleDone.has(id)||!__RPREG[id])return!1;S.titleDone.add(id);(S.titleQ=S.titleQ||[]).push(id);S.titleOn||S.nextTitle();return!0}
+nextTitle(){const S=this,id=(S.titleQ||[]).shift();if(!id||S.leaving){S.titleOn=!1;return}S.titleOn=!0;const L=__L3,F="Georgia, 'Times New Roman', serif",[a,b,c]=__RPREG[id],name=L(a,b,c),sub=(S.ret?L("Floresta de Eldervale · Entardecer","Eldervale Forest · Dusk","Bosque de Eldervale · Atardecer"):L("Floresta de Eldervale","Eldervale Forest","Bosque de Eldervale")).toUpperCase();
  const C=S.add.container(_/2,st*.23).setAlpha(0),sh=S.add.image(0,3,"light").setTint(0).setAlpha(.5).setScale(2.8,.6);
  const tx=S.add.text(0,-3,name,{fontFamily:F,fontStyle:"bold",fontSize:"22px",color:"#fbf1d4",stroke:"#2a1808",strokeThickness:3}).setOrigin(.5).setShadow(0,2,"#000000",6,!0,!0).setScale(.94);
  const sb=S.add.text(0,17,sub,{fontFamily:F,fontStyle:"italic",fontSize:"8px",color:"#ecdcac",letterSpacing:3}).setOrigin(.5).setAlpha(0);
@@ -390,7 +430,7 @@ levShadow(){const S=this,B=S.boat,R=Math.random;
  /* escolhe a travessia com mais água por baixo (a sombra só aparece sobre a água) */
  let ang=0,best=-1;for(let k=0;k<24;k++){const a=k/24*6.283;let n=0;for(let r=-300;r<=300;r+=20)S.cell(B.x+Math.cos(a)*r,B.y+Math.sin(a)*r)===2&&n++;const sc=n+Math.abs(Math.sin(a-S.bang))*4+R();sc>best&&(best=sc,ang=a)}
  const dx=Math.cos(ang),dy=Math.sin(ang),x0=B.x-dx*300,y0=B.y-dy*300,x1=B.x+dx*320,y1=B.y+dy*320;
- const sh=S.w(S.add.image(x0,y0,"rp-lev").setDepth(.55).setAlpha(0).setScale(1.35).setRotation(ang+Math.PI));S.rumble(.12,3.2);S.time.delayedCall(1200,()=>S.hsay("shadow",__L3("Tem alguma coisa enorme passando embaixo do barco…","Something huge is passing under the boat…","Algo enorme está pasando bajo el barco…")));
+ const sh=S.w(S.add.image(x0,y0,"rp-lev").setDepth(.55).setAlpha(0).setScale(1.35).setRotation(ang+Math.PI));S.rumble(.12,3.2);S.ret||S.time.delayedCall(1200,()=>S.hsay("shadow",__L3("Tem alguma coisa enorme passando embaixo do barco…","Something huge is passing under the boat…","Algo enorme está pasando bajo el barco…")));
  let bt=0;S.tweens.addCounter({from:0,to:1,duration:6200,ease:"Sine.easeInOut",onUpdate:tw=>{const q=tw.getValue(),x=x0+(x1-x0)*q,y=y0+(y1-y0)*q;sh.setPosition(x,y).setScale(1.35,1.35*(1+Math.sin(q*30)*.05));const wet=S.cell(x,y)===2&&(S.cell(x+dx*50,y+dy*50)===2||S.cell(x-dx*50,y-dy*50)===2);sh.setAlpha(sh.alpha+((wet?.34:0)-sh.alpha)*.12);
    bt+=1;bt%9===0&&S.cell(x,y)===2&&S.bubbles(x-dx*60+(Math.random()-.5)*30,y-dy*60+(Math.random()-.5)*30);const dB=Math.hypot(x-B.x,y-B.y);if(dB<60&&!S.levRock){S.levRock=1;S.cameras.main.shake(700,.0022);S.sfx("creak",.6);S.sfx("bump",.35);S.bv.x+=dx*30;S.bv.y+=dy*30}},onComplete:()=>sh.destroy()})}
 levBreach(){const S=this,B=S.boat,R=Math.random,v=S.cameras.main.worldView,fw={x:Math.cos(S.bang),y:Math.sin(S.bang)};let p=null;
@@ -414,14 +454,47 @@ updateLife(dt,t,G){const S=this,R=Math.random,v=S.cameras.main.worldView,tw=t/1e
  S.fjT-=dt;if(S.fjT<=0){S.fjT=2.6+R()*4.4;const p=S.waterPt(v,12,S.mode==="boat"?S.boat:{x:hx,y:hy},70);p&&S.jumpFish(p.x,p.y)}
  S.bbT-=dt;if(S.bbT<=0){S.bbT=.9+R()*1.8;const p=S.waterPt(v,8);p&&S.bubbles(p.x,p.y)}
  /* títulos de região e o que acontece em cada uma */
- if(S.mode==="boat"){const B=S.boat;S.gorge?.length&&S.gorge.some(p=>Math.hypot(p[0]-B.x,p[1]-B.y)<150)&&S.title("gorge");S.M.bridge&&Math.hypot(S.M.bridge[0]-B.x,S.M.bridge[1]-B.y)<250&&S.title("bridge");
-  const dL=Math.hypot(__RPLAKEB[0]-B.x,__RPLAKEB[1]-B.y);if(dL<__RPLAKEB[2]){S.title("lakeB");if(!S.levOn){S.levOn=1;S.time.delayedCall(3800,()=>S.mode==="boat"&&!S.leaving&&S.levShadow());S.time.delayedCall(12500,()=>S.mode==="boat"&&!S.leaving&&S.levBreach())}}}
+ if(S.ret){}else if(S.mode==="boat"){const B=S.boat;S.gorge?.length&&S.gorge.some(p=>Math.hypot(p[0]-B.x,p[1]-B.y)<150)&&S.title("gorge");S.M.bridge&&Math.hypot(S.M.bridge[0]-B.x,S.M.bridge[1]-B.y)<250&&S.title("bridge");
+  const dL=Math.hypot(S.lakeB[0]-B.x,S.lakeB[1]-B.y);if(!S.ret&&dL<S.lakeB[2]){S.title("lakeB");if(!S.levOn){S.levOn=1;S.time.delayedCall(3800,()=>S.mode==="boat"&&!S.leaving&&S.levShadow());S.time.delayedCall(12500,()=>S.mode==="boat"&&!S.leaving&&S.levBreach())}}}
  else if(land){const Z=S.M.zones||{},inZ=(q,k=1)=>q&&((hx-q[0])/(q[2]*k))**2+((hy-q[1])/(q[3]*k))**2<1;
+  S.ret&&(inZ(Z.m1)&&S.mono("m1",__L3(...__RET.m1)),inZ(Z.g1,1.15)&&S.mono("g1",__L3(...__RET.g1)));
   inZ(Z.m1)&&S.title("m1")&&(S.time.delayedCall(2500,()=>S.hsay("flowers",__L3("Quanta cor… nem parece que as Profundezas estão tão perto.","So much color… you'd never guess the Depths are this close.","Cuánto color… nadie diría que las Profundidades están tan cerca."))));
   inZ(Z.g1,1.15)&&S.title("g1");inZ(Z.pond,1.3)&&S.title("pond");
   inZ(Z.m2)&&S.title("m2")&&(S.time.delayedCall(2500,()=>S.hsay("glow",__L3("Essas flores brilham sozinhas… este lugar é encantado.","These flowers glow on their own… this place is enchanted.","Estas flores brillan solas… este lugar está encantado."))));
-  if(!S.heroDone.has("deer"))for(const a of S.animals||[])if(a.C.grp==="deer"&&a.st==="idle"&&a.s.visible&&Math.hypot(a.x-hx,a.y-hy)<240){S.hsay("deer",__L3("Cervos… e um filhote. Melhor não assustá-los.","Deer… and a fawn. Better not scare them.","Ciervos… y una cría. Mejor no asustarlos."));break}}}
-finish(skip){const S=this;if(S.leaving)return;S.leaving=!0;const go=()=>{try{window.__dubStop?.()}catch(e){}S.audioStop();S.scene.start(S.next.key,S.next.data)};
+  if(!S.ret&&!S.heroDone.has("deer"))for(const a of S.animals||[])if(a.C.grp==="deer"&&a.st==="idle"&&a.s.visible&&Math.hypot(a.x-hx,a.y-hy)<240){S.hsay("deer",__L3("Cervos… e um filhote. Melhor não assustá-los.","Deer… and a fawn. Better not scare them.","Ciervos… y una cría. Mejor no asustarlos."));break}}}
+/* ── caminho de volta ── */
+retStart(){const S=this,M=S.M,L3=__L3,cam=S.cameras.main,R=Math.random;S.mode="land";S.bv={x:0,y:0};
+ /* barco amarrado no píer; herói chega pela trilha da floresta */
+ S.boat.setPosition(S.dock.x+30,S.dock.y+8).setRotation(.25).setDepth(S.dock.y+8);
+ let hx=M.exit[0],hy=M.exit[1];for(let k=0;k<60;k++){const t=k/60,x=M.exit[0]+(M.land[0]-M.exit[0])*t*.5,y=M.exit[1]+(M.land[1]-M.exit[1])*t*.5;if(S.walkOk(x,y)){hx=x;hy=y;if(k>6)break}}
+ S.hx=hx;S.hy=hy;S.hero&&(S.hero.setPosition(hx,hy).setVisible(!0).setDepth(hy+1),S.anims.exists(S.hkey+"-idle")&&S.hero.play(S.hkey+"-idle"));S.hsh.setPosition(hx,hy).setVisible(!0);
+ cam.startFollow(S.hero||S.boat,!0,.08,.08);cam.setFollowOffset(0,0);cam.centerOn(hx,hy);
+ /* entardecer: luz quente sobre tudo, sombra nas bordas, raios dourados mais fortes */
+ const tint=S.add.rectangle(_/2,st/2,_*1.6,st*1.6,0xffc0a0,1).setBlendMode(j.BlendModes.MULTIPLY),warm=S.add.rectangle(_/2,st/2,_*1.6,st*1.6,0x5a1c10,.2).setBlendMode(j.BlendModes.ADD);
+ const vig=S.add.image(_/2,st/2,"light").setTint(0).setAlpha(0).setScale(6,4);S.ui.addAt([tint,warm],0);S.tweens.add({targets:tint,alpha:{from:0,to:1},duration:1800});
+ for(let k=0;k<10;k++){const x=R()*S.W,y=R()*S.H,ray=S.w(S.add.image(x,y,"light").setScale(1.1,6).setRotation(-.6).setBlendMode(j.BlendModes.ADD).setTint(0xffb860).setAlpha(0).setDepth(3950));S.tweens.add({targets:ray,alpha:{from:0,to:.1},duration:5e3+R()*3e3,yoyo:!0,repeat:-1,delay:R()*4e3})}
+ try{window.__dubPrefetch?.(Object.values(__RET).map(a=>__L3(...a)))}catch(e){}
+ S.time.delayedCall(1800,()=>S.title("ret"));S.time.delayedCall(3600,()=>S.mono("r0",L3(...__RET.r0)))}
+embark(){const S=this;if(S.mode!=="land")return;S.mono("dock",__L3(...__RET.dock));S.mode="boat";S.sfx("step",.7);S.time.delayedCall(220,()=>S.sfx("step",.7));S.time.delayedCall(420,()=>{S.sfx("splash",.6);S.sfx("bump",.4)});
+ S.tweens.add({targets:S.hero,alpha:0,duration:400,onComplete:()=>S.hero.setVisible(!1)});S.hsh.setVisible(!1);S.tweens.add({targets:S.boat,x:S.dock.x,y:S.dock.y,rotation:0,duration:600});
+ S.pi=S.near(S.dock.x,S.dock.y);const tn=S.tan(Math.max(0,S.pi));S.bang=Math.atan2(-tn.y,-tn.x);S.bv={x:-tn.x*20,y:-tn.y*20};
+ S.cameras.main.startFollow(S.boat,!0,.05,.05);S.time.delayedCall(4200,()=>S.mono("river",__L3(...__RET.river)))}
+retRiver(B){const S=this,M=S.M,L3=__L3;
+ Math.hypot(S.lakeB[0]-B.x,S.lakeB[1]-B.y)<S.lakeB[2]&&S.mono("lakeB",L3(...__RET.lakeB))&&S.time.delayedCall(2500,()=>!S.leaving&&S.levShadow());
+ M.bridge&&Math.hypot(M.bridge[0]-B.x,M.bridge[1]-B.y)<240&&S.mono("bridge",L3(...__RET.bridge));
+ S.gorge?.length&&S.gorge.some(p=>Math.hypot(p[0]-B.x,p[1]-B.y)<150)&&S.mono("gorge",L3(...__RET.gorge));
+ const d0=Math.hypot(M.start[0]-B.x,M.start[1]-B.y);if(d0<420&&!S.heroDone.has("m:lakeA")){S.mono("lakeA",L3(...__RET.lakeA));S.title("lagoA")}
+ if(d0<170&&!S.retEnd){S.retEnd=1;const c=__RET[S.choice];c&&S.mono("choice",L3(...c));const h=__RETH[String(S.classId).toUpperCase()];h&&S.mono("own",L3(...h));S.finish(!1)}}
+finish(skip){const S=this;if(S.leaving)return;S.leaving=!0;const go=()=>{try{window.__dubStop?.()}catch(e){}S.audioStop();if(S.ret){const f=S.onDone;S.scene.stop();f&&f();return}S.scene.start(S.next.key,S.next.data)};
  S.hero&&S.anims.exists(S.hkey+"-idle")&&S.hero.play(S.hkey+"-idle");const fade=()=>{for(const n in S.au||{})S.gain(n,0,.3)};
  if(skip){fade();S.cameras.main.fadeOut(500,0,0,0);S.uiCam.fadeOut(500,0,0,0);S.time.delayedCall(520,go);return}
- let n=0;const wait=()=>{if((S.speaking||S.queue.length)&&n++<20){S.time.delayedCall(500,wait);return}fade();S.cameras.main.fadeOut(900,0,0,0);S.uiCam.fadeOut(900,0,0,0);S.time.delayedCall(920,go)};S.time.delayedCall(400,wait)}}
+ let n=0;const wait=()=>{if((S.speaking||S.queue.length)&&n++<(S.ret?80:20)){S.time.delayedCall(500,wait);return}fade();S.cameras.main.fadeOut(900,0,0,0);S.uiCam.fadeOut(900,0,0,0);S.time.delayedCall(920,go)};S.time.delayedCall(400,wait)}}
+class __ReturnJourney extends __ArcticPrologue{constructor(){super("ReturnJourney")}}
+/* chamado no fim do epílogo, antes do vídeo do herói: pausa o jogo, faz o caminho de volta e devolve */
+function __retJourney(G,choice,done){try{const game=G?.game||window.__DED_GAME;if(!game){done();return}
+ game.scene.getScene("ReturnJourney")||game.scene.add("ReturnJourney",__ReturnJourney,!1);
+ const cls=String(G.classDef?.id||G.classId||"WARRIOR").toUpperCase(),hadUI=game.scene.isActive("UI");
+ try{game.scene.pause("Game");hadUI&&game.scene.sleep("UI")}catch(e){}__holdM(!1);
+ game.scene.run("ReturnJourney",{ret:!0,classId:cls,choice,onDone:()=>{try{game.scene.resume("Game");hadUI&&game.scene.wake("UI")}catch(e){}done()}});
+ game.scene.bringToTop("ReturnJourney")}catch(e){done()}}
+window.__retJourneyNow=(cls="WARRIOR",choice="seal")=>__retJourney({game:window.__DED_GAME,classDef:{id:cls}},choice,()=>{window.__retDone=1});
