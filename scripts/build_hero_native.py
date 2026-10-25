@@ -39,10 +39,18 @@ async def tts_phrased(text, v, path):
     """frase a frase, cada pedaço com tom próprio: sobe no começo, desce no fim, pergunta sobe, reticências alongam
     (a voz não conhece a língua; assim a entonação deixa de soar robótica)"""
     import re
-    parts = [x.strip() for x in re.split(r"(?<=[…,.!?—،؟؛])\s+", text) if x.strip()]
+    raw = [x.strip() for x in re.split(r"(?<=[…,.!?—،؟؛;])\s+|(?<=[。！？…])(?=[^！？…」』])", text) if x.strip()]
+    parts = []
+    for x in raw:   # pedaço só de pontuação ("…") gruda no seguinte; pedaço curtinho gruda no anterior
+        if parts and not re.search(r"\w", parts[-1]):
+            parts[-1] += x
+        elif parts and len(re.sub(r"\W", "", x)) < 2:
+            parts[-1] += x
+        else:
+            parts.append(x)
     fs = []
     for j, pt in enumerate(parts):
-        q, ex, first, last = pt.rstrip("»”").endswith(("?", "؟")), pt.rstrip("»”").endswith("!"), j == 0, j == len(parts) - 1
+        q, ex, first, last = pt.rstrip("»”」").endswith(("?", "؟", "？", ";")), pt.rstrip("»”」").endswith(("!", "！")) and not pt.rstrip("»”」").endswith(("？！", "?!")), j == 0, j == len(parts) - 1
         pitch = "+6Hz" if q else "+4Hz" if ex else "+3Hz" if first else "-2Hz" if last else "+1Hz"
         rate = "-6%" if pt.endswith("…") else "+4%" if ex else "+0%"
         f = f"{path}.{j}.mp3"
@@ -98,7 +106,7 @@ def main():
         if pt not in bundle:
             print("aviso: texto não encontrado no jogo:", pt[:60])
         for cls, v in V.items():
-            nat = g.get(v["lang"] + "_tts") or (g.get(v["lang"]) if v["lang"] != "en" else g.get("en"))
+            nat = (v.get("natkey") and g.get(v["natkey"])) or g.get(v["lang"] + "_tts") or (g.get(v["lang"]) if v["lang"] != "en" else g.get("en"))
             nat and jobs.append((hid, cls, nat, shown))
     for cls, rows in cfg["own"].items():
         for row in rows:
@@ -144,7 +152,10 @@ def main():
             async with sem:
                 with tempfile.TemporaryDirectory() as td:
                     raw = os.path.join(td, "r.mp3")
-                    await (tts_phrased if v.get("phrased") else tts)(nat, v, raw)
+                    try:
+                        await (tts_phrased if v.get("phrased") else tts)(nat, v, raw)
+                    except Exception:   # se o corte por frases falhar, gera a fala inteira de uma vez
+                        await tts(nat, dict(v, phrased=False), raw)
                     man["d"][hid][cls] = finish(raw, f)
                     man["s"][hid][cls] = sig
                     print(f"  {cls:12s} {man['d'][hid][cls]:4.1f}s  {nat[:50]}")

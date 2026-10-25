@@ -5,37 +5,44 @@
    "lang": "en",
    "voice": "en-GB-RyanNeural",
    "rate": "-4%",
-   "pitch": "-2Hz"
+   "pitch": "-2Hz",
+   "phrased": true
   },
   "BERSERKER": {
    "lang": "ja",
    "voice": "ja-JP-KeitaNeural",
-   "rate": "-6%",
-   "pitch": "-10Hz"
+   "rate": "-8%",
+   "pitch": "-12Hz",
+   "natkey": "ja_b",
+   "phrased": true
   },
   "ARCHER": {
    "lang": "ja",
    "voice": "ja-JP-KeitaNeural",
-   "rate": "+3%",
-   "pitch": "+7Hz"
+   "rate": "+2%",
+   "pitch": "+6Hz",
+   "phrased": true
   },
   "HUNTER": {
    "lang": "en",
    "voice": "en-US-ChristopherNeural",
    "rate": "-6%",
-   "pitch": "-4Hz"
+   "pitch": "-4Hz",
+   "phrased": true
   },
   "DRUID": {
    "lang": "el",
    "voice": "el-GR-NestorasNeural",
    "rate": "-6%",
-   "pitch": "-2Hz"
+   "pitch": "-2Hz",
+   "phrased": true
   },
   "NECROMANCER": {
    "lang": "pl",
    "voice": "pl-PL-MarekNeural",
    "rate": "-8%",
-   "pitch": "-8Hz"
+   "pitch": "-8Hz",
+   "phrased": true
   },
   "MAGE": {
    "lang": "ar",
@@ -48,7 +55,8 @@
    "lang": "fr",
    "voice": "fr-FR-DeniseNeural",
    "rate": "+2%",
-   "pitch": "+0Hz"
+   "pitch": "+0Hz",
+   "phrased": true
   },
   "SHAMAN": {
    "lang": "yrl",
@@ -69,7 +77,8 @@
    "ar": "مَن… مَن الذي يُكلِّمُني؟",
    "fr": "Qui… qui me parle ?",
    "yrl": "Awá taá… awá taá unheẽ ixé irũmu?",
-   "yrl_tts": "Auá taá… auá taá unhên ixé irúmu?"
+   "yrl_tts": "Auá taá… auá taá unhên ixé irúmu?",
+   "ja_b": "何者だ…我に語りかけるのは、何者だ？"
   },
   {
    "pt": "Essa voz… parece vir de todos os lados.",
@@ -81,7 +90,8 @@
    "ar": "هذا الصوت… كأنّه يأتي من كلِّ مكان.",
    "fr": "Cette voix… on dirait qu'elle vient de partout.",
    "yrl": "Kuá nheẽnga… usika paá panhẽ rendá suí.",
-   "yrl_tts": "Cuá nhênga… ussíca paá, panhên rendá suí."
+   "yrl_tts": "Cuá nhênga… ussíca paá, panhên rendá suí.",
+   "ja_b": "この声…四方から響いてくる。"
   },
   {
    "pt": "Como você sabe tudo isso? Quem é você?",
@@ -93,7 +103,8 @@
    "ar": "كيف تعرفين كلَّ هذا؟ مَن أنتِ؟",
    "fr": "Comment tu sais tout ça ? Qui es-tu ?",
    "yrl": "Mayé taá rekuáu panhẽ kuá? Awá taá indé?",
-   "yrl_tts": "Maiê taá recuáu panhên cuá? Auá taá indé?"
+   "yrl_tts": "Maiê taá recuáu panhên cuá? Auá taá indé?",
+   "ja_b": "なぜそこまで知っている？そなたは何者だ？"
   },
   {
    "pt": "Mostre-se! Por que não aparece?",
@@ -105,7 +116,8 @@
    "ar": "أظهِري نفسَكِ! لماذا لا تَظهرين؟",
    "fr": "Montre-toi ! Pourquoi tu n'apparais pas ?",
    "yrl": "Resendú! Maresé taá ti resendú?",
-   "yrl_tts": "Ressendú! Maressê taá ti ressendú?"
+   "yrl_tts": "Ressendú! Maressê taá ti ressendú?",
+   "ja_b": "姿を現せ！なぜ隠れている？"
   },
   {
    "pt": "Coração da Floresta… então é lá que vou descobrir quem é essa voz.",
@@ -117,7 +129,8 @@
    "ar": "قلبُ الغابة… إذن هناك سأعرفُ صاحبةَ هذا الصوت.",
    "fr": "Le Cœur de la Forêt… c'est donc là que je saurai à qui appartient cette voix.",
    "yrl": "Kaá Pyá… ape taá ixé asikuáu awá nheẽnga kuá.",
-   "yrl_tts": "Caá Piá… apê taá ixé assicuáu, auá nhênga cuá."
+   "yrl_tts": "Caá Piá… apê taá ixé assicuáu, auá nhênga cuá.",
+   "ja_b": "森の心臓…そこで、この声の主に会えるというのか。"
   },
   {
    "pt": "Faz tanto tempo que não vejo uma água tão limpa…",
@@ -129,7 +142,8 @@
    "ar": "لم أرَ ماءً بهذا الصفاء منذ زمنٍ بعيد…",
    "fr": "Ça fait si longtemps que je n'ai pas vu une eau aussi claire…",
    "yrl": "Ariré retana ti amaã ií pukaturu kuá yawé…",
-   "yrl_tts": "Ariré retana, ti amaã ií pucatúru cuá iauê…"
+   "yrl_tts": "Ariré retana, ti amaã ií pucatúru cuá iauê…",
+   "ja_b": "これほど澄んだ水を見るのは、久方ぶりだ…"
   },
   {
    "pt": "Guardiões do selo… e você era um deles? Quem é você, afinal?",
@@ -141,7 +155,8 @@
    "ar": "حُرّاسُ الختم… وكنتِ واحدةً منهم؟ مَن أنتِ حقًّا؟",
    "fr": "Les gardiens du sceau… et tu étais l'une d'eux ? Qui es-tu, au fond ?",
    "yrl": "Mukameẽsara-itá… indé yuíri yepé aintá suí? Awá taá indé, supí?",
-   "yrl_tts": "Mucamenssára-itá… indé iuíri iepé aintá suí? Auá taá indé, supí?"
+   "yrl_tts": "Mucamenssára-itá… indé iuíri iepé aintá suí? Auá taá indé, supí?",
+   "ja_b": "封印の守り手…そなたもその一人であったのか？そなたは、いったい何者だ？"
   },
   {
    "pt": "Eu também sinto… como se algo me vigiasse entre as árvores.",
@@ -153,7 +168,8 @@
    "ar": "أنا أيضًا أشعرُ بذلك… كأنّ شيئًا يراقبُني من بين الأشجار.",
    "fr": "Je le sens aussi… comme si quelque chose me guettait entre les arbres.",
    "yrl": "Ixé yuíri asendú… yawé mbaá umaã ixé mirá-itá pitera suí.",
-   "yrl_tts": "Ixé iuíri assendú… iauê mbaá umaã ixé, mirá-itá pitéra suí."
+   "yrl_tts": "Ixé iuíri assendú… iauê mbaá umaã ixé, mirá-itá pitéra suí.",
+   "ja_b": "我も感じる…木々の間から、何者かが我を見ている。"
   },
   {
    "pt": "Calma, pequeno… não vou te machucar.",
@@ -165,7 +181,8 @@
    "ar": "اهدأ أيّها الصغير… لن أؤذيَك.",
    "fr": "Doucement, petit… je ne te ferai pas de mal.",
    "yrl": "Remurari, mirĩ… ti asaã indé.",
-   "yrl_tts": "Remurári, mirín… ti assaã indé."
+   "yrl_tts": "Remurári, mirín… ti assaã indé.",
+   "ja_b": "案ずるな、小さき者よ…危害は加えぬ。"
   },
   {
    "pt": "Voltaram… só que em outro canto. Espertos.",
@@ -177,7 +194,8 @@
    "ar": "عادوا… لكن إلى مكانٍ آخر. يا لَذكائهم.",
    "fr": "Ils sont revenus… mais ailleurs. Malins.",
    "yrl": "Usika yuíri… amú rendá upé. Kuaá-sara aintá.",
-   "yrl_tts": "Ussíca iuíri… amú rendá upé. Cuaá-sára aintá."
+   "yrl_tts": "Ussíca iuíri… amú rendá upé. Cuaá-sára aintá.",
+   "ja_b": "戻ってきたか…だが、別の場所に。賢い者たちだ。"
   },
   {
    "pt": "Até os pássaros fogem… preciso aprender a andar mais leve.",
@@ -189,7 +207,8 @@
    "ar": "حتى الطيور تفرُّ منّي… عليَّ أن أتعلّمَ المشيَ بخفّةٍ أكبر.",
    "fr": "Même les oiseaux s'envolent… je dois apprendre à marcher plus légèrement.",
    "yrl": "Wirá-itá yuíri udiwá… ixé apuraku aiwatá mewé.",
-   "yrl_tts": "Uirá-itá iuíri udiuá… ixé apurácu aiuatá meuê."
+   "yrl_tts": "Uirá-itá iuíri udiuá… ixé apurácu aiuatá meuê.",
+   "ja_b": "鳥までもが逃げてゆく…もっと静かに歩むことを覚えねば。"
   },
   {
    "pt": "Patos! Faz tempo que não vejo um lago cheio de vida.",
@@ -201,7 +220,8 @@
    "ar": "بطّ! منذ زمنٍ لم أرَ بحيرةً تفيضُ بالحياة هكذا.",
    "fr": "Des canards ! Ça fait une éternité que je n'ai pas vu un lac aussi plein de vie.",
    "yrl": "Ipeka-itá! Ariré ti amaã ipawa sikué-sara yawé kuá.",
-   "yrl_tts": "Ipéca-itá! Ariré, ti amaã ipáua sicuê-sára iauê cuá."
+   "yrl_tts": "Ipéca-itá! Ariré, ti amaã ipáua sicuê-sára iauê cuá.",
+   "ja_b": "鴨か！これほど命に満ちた湖は、久しく見ておらぬ。"
   },
   {
    "pt": "Água fria… mas dá pé.",
@@ -213,7 +233,8 @@
    "ar": "الماءُ بارد… لكنّ قدميَّ تلمسان القاع.",
    "fr": "L'eau est froide… mais j'ai pied.",
    "yrl": "Ií irusanga… ma ixé apisika ií kupé.",
-   "yrl_tts": "Ií irussánga… ma ixé apissíca ií cupé."
+   "yrl_tts": "Ií irussánga… ma ixé apissíca ií cupé.",
+   "ja_b": "冷たい水だ…だが、足は届く。"
   },
   {
    "pt": "Tem alguma coisa enorme passando embaixo do barco…",
@@ -225,7 +246,8 @@
    "ar": "شيءٌ هائلٌ يمرُّ تحت القارب…",
    "fr": "Quelque chose d'énorme passe sous la barque…",
    "yrl": "Mbaá turusú usasá igara wyrpe…",
-   "yrl_tts": "Mbaá turussú ussassá igára uírpe…"
+   "yrl_tts": "Mbaá turussú ussassá igára uírpe…",
+   "ja_b": "何か巨大なものが、舟の下を通ってゆく…"
   },
   {
    "pt": "O que foi aquilo?! Algo enorme vive neste lago…",
@@ -237,7 +259,8 @@
    "ar": "ما كان ذلك؟! شيءٌ هائلٌ يعيشُ في هذه البحيرة…",
    "fr": "C'était quoi, ça ?! Quelque chose d'énorme vit dans ce lac…",
    "yrl": "Mayé taá kuá?! Mbaá turusú usikué kuá ipawa upé…",
-   "yrl_tts": "Maiê taá cuá?! Mbaá turussú ussicuê cuá ipáua upé…"
+   "yrl_tts": "Maiê taá cuá?! Mbaá turussú ussicuê cuá ipáua upé…",
+   "ja_b": "今のは何だ！？この湖には、巨大な何かが棲んでいる…"
   },
   {
    "pt": "Quanta cor… nem parece que as Profundezas estão tão perto.",
@@ -249,7 +272,8 @@
    "ar": "كلُّ هذه الألوان… لا يبدو أنّ الأعماقَ قريبةٌ إلى هذا الحدّ.",
    "fr": "Que de couleurs… on ne dirait jamais que les Profondeurs sont si proches.",
    "yrl": "Iyakuá retana… ti paá Ipupé-wasú kuíri kuá suí.",
-   "yrl_tts": "Iacuá retana… ti paá Ipupê-uassú cuíri cuá suí."
+   "yrl_tts": "Iacuá retana… ti paá Ipupê-uassú cuíri cuá suí.",
+   "ja_b": "なんという色だ…深淵がこれほど近いとは、とても思えぬ。"
   },
   {
    "pt": "Essas flores brilham sozinhas… este lugar é encantado.",
@@ -261,7 +285,8 @@
    "ar": "هذه الأزهارُ تتوهّجُ وحدَها… هذا المكانُ مسحور.",
    "fr": "Ces fleurs brillent toutes seules… cet endroit est enchanté.",
    "yrl": "Kuá putira-itá uberabá aintá sesé… kuá rendá paié-wara.",
-   "yrl_tts": "Cuá putíra-itá uberabá aintá sessê… cuá rendá paié-uára."
+   "yrl_tts": "Cuá putíra-itá uberabá aintá sessê… cuá rendá paié-uára.",
+   "ja_b": "この花、自ら光を放っている…ここは魔性の地だ。"
   },
   {
    "pt": "Cervos… e um filhote. Melhor não assustá-los.",
@@ -273,7 +298,8 @@
    "ar": "غِزلان… ومعها صغير. من الأفضل ألّا أُخيفَها.",
    "fr": "Des cerfs… et un faon. Mieux vaut ne pas les effrayer.",
    "yrl": "Suasú-itá… asui yepé taíra. Puranga ti asaimbé aintá.",
-   "yrl_tts": "Suassú-itá… assuí iepé taíra. Purânga ti assaimbé aintá."
+   "yrl_tts": "Suassú-itá… assuí iepé taíra. Purânga ti assaimbé aintá.",
+   "ja_b": "鹿だ…子鹿もいる。驚かせぬほうがよい。"
   },
   {
    "pt": "Aquela voz no rio… disse que estaria me esperando. Mas quem é ela?",
@@ -285,7 +311,8 @@
    "ar": "ذلك الصوتُ على النهر… قال إنّه سينتظرُني. لكن مَن تكون؟",
    "fr": "Cette voix sur la rivière… elle disait qu'elle m'attendrait. Mais qui est-elle ?",
    "yrl": "Nheẽnga paranã upé… unheẽ usarú-putári ixé. Ma awá taá aé?",
-   "yrl_tts": "Nhênga paranã upé… unhên ussarú-putári ixé. Ma auá taá aê?"
+   "yrl_tts": "Nhênga paranã upé… unhên ussarú-putári ixé. Ma auá taá aê?",
+   "ja_b": "川で聞いたあの声…我を待つと言った。だが、あの者は何者なのだ？"
   },
   {
    "pt": "Sinto que alguém está me guiando… ou me observando.",
@@ -297,7 +324,8 @@
    "ar": "أشعرُ أنّ أحدًا يُرشدُني… أو يراقبُني.",
    "fr": "J'ai l'impression que quelqu'un me guide… ou m'observe.",
    "yrl": "Asendú awá urasú ixé… ou umaã ixé.",
-   "yrl_tts": "Assendú auá urassú ixé… ou umaã ixé."
+   "yrl_tts": "Assendú auá urassú ixé… ou umaã ixé.",
+   "ja_b": "何者かに導かれている気がする…あるいは、見張られているのか。"
   },
   {
    "pt": "Voz… se você está aí, mostre-se!",
@@ -309,7 +337,8 @@
    "ar": "أيّها الصوت… إن كنتِ هنا، فأظهِري نفسَكِ!",
    "fr": "Voix… si tu es là, montre-toi !",
    "yrl": "Nheẽnga… se resikué ape, resendú!",
-   "yrl_tts": "Nhênga… se ressicuê apê, ressendú!"
+   "yrl_tts": "Nhênga… se ressicuê apê, ressendú!",
+   "ja_b": "声よ…そこにいるのなら、姿を現せ！"
   },
   {
    "pt": "…O que é aquilo?!",
@@ -321,7 +350,8 @@
    "ar": "…ما هذا؟!",
    "fr": "…Qu'est-ce que c'est ?!",
    "yrl": "…Mayé taá kuá?!",
-   "yrl_tts": "…Maiê taá cuá?!"
+   "yrl_tts": "…Maiê taá cuá?!",
+   "ja_b": "…あれは何だ！？"
   },
   {
    "pt": "De novo essa voz… quem é você, afinal?",
@@ -333,7 +363,8 @@
    "ar": "هذا الصوتُ مرّةً أخرى… مَن أنتِ حقًّا؟",
    "fr": "Encore cette voix… qui es-tu, au fond ?",
    "yrl": "Kuá nheẽnga yuíri… awá taá indé, supí?",
-   "yrl_tts": "Cuá nhênga iuíri… auá taá indé, supí?"
+   "yrl_tts": "Cuá nhênga iuíri… auá taá indé, supí?",
+   "ja_b": "またこの声か…そなたは、いったい何者だ？"
   },
   {
    "pt": "Algum tipo de segredo existe aqui…",
@@ -345,7 +376,8 @@
    "ar": "ثمّةَ سرٌّ ما هنا…",
    "fr": "Il y a une sorte de secret ici…",
    "yrl": "Mbaá iyumimi usikué iké…",
-   "yrl_tts": "Mbaá iumími ussicuê iquê…"
+   "yrl_tts": "Mbaá iumími ussicuê iquê…",
+   "ja_b": "ここには何か秘密がある…"
   },
   {
    "pt": "Parece um novo quebra-cabeça.",
@@ -357,7 +389,8 @@
    "ar": "يبدو أنّه لغزٌ جديد.",
    "fr": "On dirait une nouvelle énigme.",
    "yrl": "Yawé yepé purandusá pisasú.",
-   "yrl_tts": "Iauê iepé purandussá pissassú."
+   "yrl_tts": "Iauê iepé purandussá pissassú.",
+   "ja_b": "新たな謎のようだ。"
   },
   {
    "pt": "Hm… isso não está aqui por acaso.",
@@ -369,7 +402,8 @@
    "ar": "همم… هذا ليس هنا صدفةً.",
    "fr": "Hm… ce n'est pas là par hasard.",
    "yrl": "Hm… kuá ti usikué iké panhé-panhé.",
-   "yrl_tts": "Hum… cuá ti ussicuê iquê panhê-panhê."
+   "yrl_tts": "Hum… cuá ti ussicuê iquê panhê-panhê.",
+   "ja_b": "ふむ…これは偶然ここにあるのではない。"
   },
   {
    "pt": "Tem algo escondido por aqui.",
@@ -381,7 +415,8 @@
    "ar": "هناك شيءٌ مخبّأٌ في هذا المكان.",
    "fr": "Quelque chose est caché par ici.",
    "yrl": "Mbaá iyumimi usikué iké rupí.",
-   "yrl_tts": "Mbaá iumími ussicuê iquê rupí."
+   "yrl_tts": "Mbaá iumími ussicuê iquê rupí.",
+   "ja_b": "このあたりに、何かが隠されている。"
   },
   {
    "pt": "Um enigma… vamos ver o que ele guarda.",
@@ -393,7 +428,8 @@
    "ar": "لغز… لنرَ ماذا يحرس.",
    "fr": "Une énigme… voyons ce qu'elle garde.",
    "yrl": "Yepé purandusá… yamaã mayé taá umukameẽ.",
-   "yrl_tts": "Iepé purandussá… iamaã maiê taá umucamên."
+   "yrl_tts": "Iepé purandussá… iamaã maiê taá umucamên.",
+   "ja_b": "謎か…何を守っているのか、見せてもらおう。"
   },
   {
    "pt": "Quando cheguei, eu nem sabia de quem era aquela voz. Agora vou embora sabendo demais.",
@@ -405,7 +441,8 @@
    "ar": "حين وصلتُ، لم أكن أعرفُ حتى صاحبةَ ذلك الصوت. والآن أرحلُ وأنا أعرفُ أكثرَ ممّا ينبغي.",
    "fr": "Quand je suis arrivée, je ne savais même pas à qui appartenait cette voix. Maintenant, je repars en sachant trop de choses.",
    "yrl": "Ixé asika ramé, ti akuáu awá nheẽnga kuá. Kuíri asó, akuáu retana.",
-   "yrl_tts": "Ixé assíca ramê, ti acuáu auá nhênga cuá. Cuíri assó, acuáu retana."
+   "yrl_tts": "Ixé assíca ramê, ti acuáu auá nhênga cuá. Cuíri assó, acuáu retana.",
+   "ja_b": "ここへ来た時、あの声の主すら知らなかった。今は、知りすぎたまま去ってゆく。"
   },
   {
    "pt": "As flores continuam aqui, como se nada tivesse acontecido. Talvez seja isso que a gente protege.",
@@ -417,7 +454,8 @@
    "ar": "ما زالت الأزهارُ هنا، كأنّ شيئًا لم يحدث. ربّما هذا ما كنّا نحميه حقًّا.",
    "fr": "Les fleurs sont toujours là, comme si rien ne s'était passé. C'est peut-être ça qu'on protège.",
    "yrl": "Putira-itá usikué iké yuíri, yawé ti mbaá usasá. Kuá taá yandé yamukameẽ.",
-   "yrl_tts": "Putíra-itá ussicuê iquê iuíri, iauê ti mbaá ussassá. Cuá taá iandé iamucamên."
+   "yrl_tts": "Putíra-itá ussicuê iquê iuíri, iauê ti mbaá ussassá. Cuá taá iandé iamucamên.",
+   "ja_b": "花はまだ咲いている。何事もなかったかのように。我らが守っていたのは、きっとこれなのだ。"
   },
   {
    "pt": "Os cervos já não fogem de mim. Ou talvez eu tenha aprendido a andar mais leve.",
@@ -429,7 +467,8 @@
    "ar": "لم تعد الغِزلانُ تفرُّ منّي. أو ربّما تعلّمتُ أخيرًا أن أمشيَ بخفّة.",
    "fr": "Les cerfs ne me fuient plus. Ou peut-être que j'ai enfin appris à marcher plus légèrement.",
    "yrl": "Suasú-itá ti udiwá ixé suí kuíri. Ou ixé akuáu aiwatá mewé.",
-   "yrl_tts": "Suassú-itá ti udiuá ixé suí cuíri. Ou ixé acuáu aiuatá meuê."
+   "yrl_tts": "Suassú-itá ti udiuá ixé suí cuíri. Ou ixé acuáu aiuatá meuê.",
+   "ja_b": "鹿たちはもう我から逃げぬ。それとも、我がようやく静かに歩めるようになったのか。"
   },
   {
    "pt": "O barco de outro viajante. Eu cheguei até o fim… ele não. Vou lembrar dele por nós dois.",
@@ -441,7 +480,8 @@
    "ar": "قاربُ مسافرٍ آخر. أنا بلغتُ النهاية… أمّا هو فلا. سأتذكّرُه عن كلينا.",
    "fr": "La barque d'un autre voyageur. Moi, je suis allée jusqu'au bout… lui, non. Je me souviendrai de lui pour nous deux.",
    "yrl": "Amú wataresara igara. Ixé asika paawa upé… aé ti. Amaité-ana aé yandé mukũi resé.",
-   "yrl_tts": "Amú uataressára igára. Ixé assíca paáua upé… aê ti. Amaitê-ana aê, iandé mucúin ressê."
+   "yrl_tts": "Amú uataressára igára. Ixé assíca paáua upé… aê ti. Amaitê-ana aê, iandé mucúin ressê.",
+   "ja_b": "別の旅人の舟だ。我は最後までたどり着いた…あの者は叶わなかった。二人分、心に刻もう。"
   },
   {
    "pt": "Esta estátua viu a primeira selagem. Agora viu a última. Assim espero.",
@@ -453,7 +493,8 @@
    "ar": "شهِدَ هذا التمثالُ الختمَ الأوّل. والآن شهِدَ الأخير. هكذا أرجو.",
    "fr": "Cette statue a vu le premier scellement. Maintenant, elle a vu le dernier. Je l'espère.",
    "yrl": "Kuá ta'anga umaã yepesá mukameẽsá. Kuíri umaã paawa-wara. Aputári yawé.",
-   "yrl_tts": "Cuá taánga umaã iepessá mucamenssá. Cuíri umaã paáua-uára. Aputári iauê."
+   "yrl_tts": "Cuá taánga umaã iepessá mucamenssá. Cuíri umaã paáua-uára. Aputári iauê.",
+   "ja_b": "この像は最初の封印を見届けた。そして今、最後の封印も。そう願う。"
   },
   {
    "pt": "O mesmo píer, o mesmo barco. Mas eu já não sou quem desembarcou aqui.",
@@ -465,7 +506,8 @@
    "ar": "الرصيفُ نفسُه، والقاربُ نفسُه. لكنّني لم أعد تلك التي نزلت هنا.",
    "fr": "Le même ponton, la même barque. Mais je ne suis plus celle qui a débarqué ici.",
    "yrl": "Kuá igara-rendá, kuá igara. Ma ixé ti kuíri awá usem iké.",
-   "yrl_tts": "Cuá igára-rendá, cuá igára. Ma ixé ti cuíri auá ussêm iquê."
+   "yrl_tts": "Cuá igára-rendá, cuá igára. Ma ixé ti cuíri auá ussêm iquê.",
+   "ja_b": "同じ桟橋、同じ舟。だが、ここに降り立った頃の我ではない。"
   },
   {
    "pt": "Desta vez o rio me leva de volta. Até a correnteza parece mais calma.",
@@ -477,7 +519,8 @@
    "ar": "هذه المرّة يحملُني النهرُ إلى الوراء. حتى التيّارُ يبدو أهدأ.",
    "fr": "Cette fois, la rivière me ramène. Même le courant semble plus calme.",
    "yrl": "Kuíri paranã urasú ixé ruaana. Ií usú yuíri mewé-mewé.",
-   "yrl_tts": "Cuíri paranã urassú ixé ruaána. Ií ussú iuíri, meuê-meuê."
+   "yrl_tts": "Cuíri paranã urassú ixé ruaána. Ií ussú iuíri, meuê-meuê.",
+   "ja_b": "此度は、川が我を連れ帰ってくれる。流れさえ穏やかに見える。"
   },
   {
    "pt": "Lago Espelhado… aquela criatura ainda está aí embaixo. Até logo, velha amiga.",
@@ -489,7 +532,8 @@
    "ar": "بحيرةُ المرآة… ما زال ذلك المخلوقُ هناك في الأعماق. إلى اللقاء يا صديقي القديم.",
    "fr": "Le Lac Miroir… cette créature est toujours là, en dessous. À bientôt, vieille amie.",
    "yrl": "Ipawa Sesá… suú turusú usikué yuíri ií wirpe. Ayupé-ana, se irũ.",
-   "yrl_tts": "Ipáua Sessá… suú turussú ussicuê iuíri ií uírpe. Aiupê-ana, se irún."
+   "yrl_tts": "Ipáua Sessá… suú turussú ussicuê iuíri ií uírpe. Aiupê-ana, se irún.",
+   "ja_b": "鏡の湖…あの生き物は、まだこの水の底にいる。さらばだ、古き友よ。"
   },
   {
    "pt": "A Ponte dos Dois Reinos. Um dia alguém vai reconstruí-la. Talvez eu volte para ver.",
@@ -501,7 +545,8 @@
    "ar": "جسرُ المملكتين. يومًا ما سيُعيدُ أحدٌ بناءَه. ربّما أعودُ لأراه.",
    "fr": "Le Pont des Deux Royaumes. Un jour, quelqu'un le reconstruira. Peut-être que je reviendrai le voir.",
    "yrl": "Mukũi tetama ponte… yepé ara awá umunhã yuíri. Kuxiima ixé asika amaã arama.",
-   "yrl_tts": "Mucúin tetáma ponte… iepé ára auá umunhã iuíri. Cuxiíma ixé assíca, amaã arama."
+   "yrl_tts": "Mucúin tetáma ponte… iepé ára auá umunhã iuíri. Cuxiíma ixé assíca, amaã arama.",
+   "ja_b": "二つの王国を結ぶ橋。いつの日か、誰かが架け直すだろう。その時は、見に戻るとしよう。"
   },
   {
    "pt": "Cada portal deixou uma marca em mim. Algumas não vão sarar tão cedo.",
@@ -513,7 +558,8 @@
    "ar": "كلُّ بوابةٍ تركت فيّ أثرًا. وبعضُها لن يندملَ قريبًا.",
    "fr": "Chaque portail a laissé une marque en moi. Certaines ne guériront pas de sitôt.",
    "yrl": "Panhẽ okena umunhã yepé kuatiara ixé resé. Amú-itá ti ukuera kuíri.",
-   "yrl_tts": "Panhên ocêna umunhã iepé cuatiára ixé ressê. Amú-itá ti ucuéra cuíri."
+   "yrl_tts": "Panhên ocêna umunhã iepé cuatiára ixé ressê. Amú-itá ti ucuéra cuíri.",
+   "ja_b": "どの門も、我に傷を残した。すぐには癒えぬものもある。"
   },
   {
    "pt": "O Lago das Brumas. Foi aqui que tudo começou.",
@@ -525,7 +571,8 @@
    "ar": "بحيرةُ الضباب. هنا بدأ كلُّ شيء.",
    "fr": "Le Lac des Brumes. C'est ici que tout a commencé.",
    "yrl": "Ipawa Ybytinga. Iké panhẽ uyupirũ.",
-   "yrl_tts": "Ipáua Ibitínga. Iquê panhên uiupirún."
+   "yrl_tts": "Ipáua Ibitínga. Iquê panhên uiupirún.",
+   "ja_b": "霧の湖。すべては、ここから始まった。"
   },
   {
    "pt": "Elyndra implorou pela vida, e eu baixei a arma. Ninguém vai saber dessa escolha… só eu e a floresta.",
@@ -537,7 +584,8 @@
    "ar": "توسّلت إليندرا من أجل حياتها، فأنزلتُ سلاحي. لن يعرفَ أحدٌ بهذا الاختيار… سواي أنا والغابة.",
    "fr": "Elyndra a supplié pour sa vie, et j'ai baissé mon arme. Personne ne connaîtra ce choix… seulement moi et la forêt.",
    "yrl": "Elyndra upurandu sikué arama, asui ixé amuyapí se marã-pukú. Ninhũ ukuáu-ana kuá… ixé asui kaá nhũ.",
-   "yrl_tts": "Elíndra upurandú sicuê arama, assuí ixé amuiapí se marã-pucú. Ninhún ucuáu-ana cuá… ixé assuí caá, nhún."
+   "yrl_tts": "Elíndra upurandú sicuê arama, assuí ixé amuiapí se marã-pucú. Ninhún ucuáu-ana cuá… ixé assuí caá, nhún.",
+   "ja_b": "エリンドラは命を乞い、我は刀を下ろした。この選択を知る者はおらぬ…我と、森のほかには。"
   },
   {
    "pt": "Os portais dormem de novo. Agora a vigília é minha. Que a floresta me ensine a esperar.",
@@ -549,7 +597,8 @@
    "ar": "عادت البواباتُ إلى النوم. والآن صارت الحراسةُ لي. لعلّ الغابةَ تعلّمُني الصبر.",
    "fr": "Les portails dorment à nouveau. Désormais, la garde m'appartient. Que la forêt m'apprenne à attendre.",
    "yrl": "Okena-itá uké yuíri. Kuíri ixé amaã aintá resé. Kaá umbué ixé asarú arama.",
-   "yrl_tts": "Ocêna-itá uquê iuíri. Cuíri ixé amaã aintá ressê. Caá umbuê ixé assarú arama."
+   "yrl_tts": "Ocêna-itá uquê iuíri. Cuíri ixé amaã aintá ressê. Caá umbuê ixé assarú arama.",
+   "ja_b": "門は再び眠りについた。これより見張るのは我の務め。待つことを、森が教えてくれよう。"
   },
   {
    "pt": "O Rei está livre. Se salvei um reino ou só mudei o Observador de prisão… o tempo vai dizer.",
@@ -561,7 +610,8 @@
    "ar": "الملكُ حرٌّ الآن. هل أنقذتُ مملكة، أم نقلتُ المراقِبَ إلى سجنٍ آخر فحسب… الزمنُ سيُخبرُنا.",
    "fr": "Le Roi est libre. Ai-je sauvé un royaume, ou seulement changé la prison de l'Observateur… le temps le dira.",
    "yrl": "Muruxawa usikué piraí kuíri. Ixé apisirũ yepé tetama, ou amuyereu nhũ Umaãsara rendá… ara umbeú-ana.",
-   "yrl_tts": "Muruxáua ussicuê piraí cuíri. Ixé apissirún iepé tetáma, ou amuierêu nhún Umaãssára rendá… ára umbeú-ana."
+   "yrl_tts": "Muruxáua ussicuê piraí cuíri. Ixé apissirún iepé tetáma, ou amuierêu nhún Umaãssára rendá… ára umbeú-ana.",
+   "ja_b": "王は解き放たれた。王国を救ったのか、それとも観察者の牢を移しただけなのか…それは時が語るだろう。"
   }
  ],
  "own": {
