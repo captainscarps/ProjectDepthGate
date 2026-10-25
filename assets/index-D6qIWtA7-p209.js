@@ -8590,7 +8590,44 @@ window.__dub=__dub;window.__dubHas=__dubHas;
 /* por enquanto a dublagem é só em inglês (o português volta quando as vozes brasileiras estiverem aprovadas) */
 __dubLang=function(){return"en"};
 
-/*__VWA__*//*__ARC__*/
+/*__VWA__*//*__LAZYMAP__*/
+const __LZ_RE=/^(vcb|dsb|bqb|rib|mtb|gsb|frb|frt|rfb|cab)-\d+-\d+$|^gsb-ext$/;window.__LAZY=window.__LAZY||[];
+{const P0=bo.prototype.preload;bo.prototype.preload=function(){const ld=this.load,orig=ld.image;ld.image=function(k,u,...r){if(typeof k==="string"&&typeof u==="string"&&__LZ_RE.test(k)){window.__LAZY.push([k,u]);return ld}return orig.call(ld,k,u,...r)};try{return P0.apply(this,arguments)}finally{ld.image=orig}};
+ const C0=bo.prototype.create;bo.prototype.create=function(){const r=C0?.apply(this,arguments);try{const G=this.game;if(window.__LAZY.length&&!G.scene.getScene("LazyMaps")){G.scene.add("LazyMaps",__LazyMaps,!0);G.scene.sendToBack("LazyMaps")}}catch(e){}return r}}
+class __LazyMaps extends j.Scene{constructor(){super("LazyMaps")}
+ create(){const S=this;S.load.maxParallelDownloads=3;let n=0;for(const[k,u]of window.__LAZY)if(!S.textures.exists(k)){S.load.image(k,u);n++}
+  if(!n){window.__lazyDone=!0;return}S.load.once("complete",()=>{window.__lazyDone=!0});S.time.delayedCall(1200,()=>S.load.start())}}
+/* a fase espera os mapas que ainda não chegaram */
+/* só os mapas DESTA fase (antes esperava todos os mapas do jogo: no celular, com a rede lenta, a tela ficava preta
+   por muito tempo ao continuar um jogo salvo). Mostra "Carregando…" com barra e nunca fica presa num download travado. */
+const __LZ_LV={forest:["frb","frt"],castle:["cab"],fortress:["cab"],bosque:["bqb"],rio:["rib"],morta:["mtb"],temple:["dsb"],vulcao:["vcb"],glacial:["gsb"],ruins:["rfb"]};
+Sd.prototype.preload=function(){const S=this,D=S.scene.settings.data||{},lv=D.levelId??D.restore?.campaign?.levelId,need=!D.endless&&__LZ_LV[lv],L=[];
+ for(const[k,u]of window.__LAZY||[]){if(S.textures.exists(k))continue;if(need&&!need.includes(k.split("-")[0]))continue;L.push([k,u])}
+ if(!L.length)return;try{S.load.xhr.timeout=25e3}catch(e){}S.load.maxParallelDownloads=6;for(const[k,u]of L)S.load.image(k,u);
+ try{const w=S.scale.width,h=S.scale.height,c=S.cameras.main;c.setZoom(1);c.setScroll(0,0);
+  const tx=S.add.text(w/2,h/2-18,Be()==="pt"?"Carregando…":Be()==="es"?"Cargando…":"Loading…",{fontFamily:"Georgia, serif",fontSize:"22px",color:"#e8d6a8"}).setOrigin(.5).setScrollFactor(0),
+   bg=S.add.rectangle(w/2,h/2+14,Math.min(320,w*.6),6,0x3a2e22).setOrigin(.5).setScrollFactor(0),
+   bar=S.add.rectangle(w/2-bg.width/2,h/2+14,1,6,0xd8b46a).setOrigin(0,.5).setScrollFactor(0);
+  S.load.on("progress",v=>bar.width=Math.max(1,bg.width*v));S.load.once("complete",()=>{tx.destroy();bg.destroy();bar.destroy()})}catch(e){}};
+/*__LAZYMAP__*//*__SAFESV__*/
+/* sala segura para o save: limpa, ou sem inimigos e sem chefe; lembra a última segura por onde o herói passou */
+function __roomSafe(r){if(!r)return!1;if(r.state==="cleared")return!0;if(r.state==="active")return!1;const d=r.def||{};return!(d.enemies?.length)&&!r.hasBoss&&!d.boss}
+function __safeRoomId(c){try{const r=c.roomManager?.activeRoom;if(__roomSafe(r)&&!__fightNear(c)&&!__hubLocked(c,r))c.__safeRoom=r.id;return c.__safeRoom??null}catch(e){return null}}
+/* o Coração da Floresta fica cercado de espinhos até juntar os 3 cristais: não serve de ponto de volta enquanto isso */
+function __hubLocked(c,r){return!!(r?.def?.hub&&c.levelId==="forest"&&__forestCount(c)<3)}
+/* save antigo que já aponta para o Coração cercado: tira o herói de dentro, para fora dos espinhos */
+{const HB=__hubBarrier;__hubBarrier=function(S,on){const v=HB(S,on);if(on){try{__hubUnstuck(S)}catch(e){}S.time?.delayedCall?.(0,()=>{try{__hubUnstuck(S)}catch(e){}})}return v}}
+/* progresso da floresta que já tinha sido feito mas os cristais sumiram da bolsa: se há prova guardada
+   (selo da floresta marcado na história, portal de masmorra concluído ou cristal de masmorra na bolsa), devolve os 3 */
+function __forestEvidence(S){try{if(__stFlag(S,"forest_done"))return!0;if(S.completedDungeons?.length)return!0;if(__HUBD.some(id=>__CRY[id]&&__hasItem(S,__CRY[id])))return!0;
+ const sl=S.game.registry.get("save:slot")??1;for(const k of Object.keys(localStorage))if((k==="depthgate:portals:slot_"+sl||k.startsWith("depthgate:portals:"+sl+":"))&&JSON.parse(localStorage.getItem(k)||"[]").length)return!0}catch(e){}return!1}
+{const HS=__hubSetup;__hubSetup=function(S){try{if(S.levelId==="forest"&&!S.level?.endless&&S.game.registry.get("mode")!=="endless"&&S.inventory&&__forestCount(S)<3&&__forestEvidence(S)){for(let i=1;i<=3;i++){const cid="forest_crystal_"+i;if(!__hasItem(S,cid)){const it=S.lootSystem?.makeItem?.(cid,"LEGENDARY");it&&S.inventory.items.push(it)}}S.requestSave?.(800)}}catch(e){}return HS.apply(this,arguments)}}
+function __hubUnstuck(S){const p=S.player,B=S.dungeon,q=B?.level?.rooms?.find(r=>r.hub)?.rect,o=S.__hubBar;if(!p?.body||!q||!o?.length)return;
+ const pc=Math.floor(p.x/dt),pr=Math.floor(p.y/dt);if(!(pc>=q.x&&pc<q.x+q.w&&pr>=q.y&&pr<q.y+q.h))return;
+ const L=o.map(t=>[Math.floor(t.x/dt),Math.floor(t.y/dt)]),mid=Math.floor(L.length/2),ord=[...L.slice(mid),...L.slice(0,mid)];
+ for(const[c,r]of ord){const dx=c<q.x?-1:c>=q.x+q.w?1:0,dy=r<q.y?-1:r>=q.y+q.h?1:0;for(const k of[1,2]){const tc=c+dx*k,tr=r+dy*k;if(B.isWallTile(tc,tr)||L.some(([a,b])=>a===tc&&b===tr))continue;p.body.reset(tc*dt+dt/2,tr*dt+dt/2);S.cameras?.main?.centerOn?.(p.x,p.y);return}}}
+function __fightNear(c){const p=c.player;if(!p)return!1;for(const e of c.enemies?.getChildren?.()||[])if(!e.dead&&e.active&&Math.hypot(e.x-p.x,e.y-p.y)<320&&(e.ai?.aggro||e.aggro))return!0;return!!(c.boss&&!c.boss.dead&&c.boss.active)}
+/*§*//*__SAFESV__*//*__ARC__*/
 /* ── Prólogo do Rio da Floresta (antes da Floresta de Eldervale) ─────────────────────────────────────
    Depois do vídeo de abertura da campanha o herói chega de barco e desce um rio longo no meio da mata:
      1. remando (o herói não aparece, só o barco): lago enevoado → garganta com corredeira → ruínas da ponte
@@ -8644,9 +8681,20 @@ const __RPAN={sheep:{n:4,zones:["m1"],walk:16,flee:62,fleeR:115,kind:"ground",sc
  sparrow:{n:7,zones:["m1","m2"],walk:14,flee:150,fleeR:105,kind:"bird",sc:.9,idle:"Idle",move:"Idle",fly:"Fly",flock:1},
  crow:{n:3,zones:["g1","m2"],walk:12,flee:140,fleeR:135,kind:"bird",sc:1,idle:"Idle",move:"Idle",fly:"Fly",flock:1},
  duck:{n:3,zones:["pond"],walk:9,flee:120,fleeR:105,kind:"duck",sc:1,idle:"Idle",move:"Idle",fly:"Fly"},
- fish:{n:4,zones:["pond"],walk:14,flee:80,fleeR:60,kind:"fish",sc:.9,idle:"Swim",move:"Swim"}};
+ fish:{n:4,zones:["pond"],walk:14,flee:80,fleeR:60,kind:"fish",sc:.9,idle:"Swim",move:"Swim"},
+ /* família de cervos da Clareira dos Cervos (folha própria: scripts/build_rp_deer.py) */
+ deer:{n:1,zones:["g1"],walk:13,flee:150,fleeR:150,kind:"ground",sc:1,idle:"Idle",move:"Walk",run:"Run",herd:1,grp:"deer",tex:"rp-deer",oy:.667,pad:30,shw:18},
+ doe:{n:2,zones:["g1"],walk:13,flee:150,fleeR:150,kind:"ground",sc:.96,idle:"Idle",move:"Walk",run:"Run",herd:1,grp:"deer",tex:"rp-deer",oy:.667,pad:30,shw:17},
+ fawn:{n:1,zones:["g1"],walk:15,flee:160,fleeR:150,kind:"ground",sc:1,idle:"Idle",move:"Walk",run:"Run",herd:1,grp:"deer",tex:"rp-deer",oy:.667,pad:30,shw:13}};
 const __RPA=["river-flow","river-rapids","river-wind","boat-glide","boat-sfx"];
 const __RPZL={m1:11,bank:12,g1:13,m2:14};
+/* títulos de região (aparecem grandes no alto da tela ao chegar em cada lugar) */
+const __RPREG={lagoA:["Lago das Brumas","Lake of Mists","Lago de las Brumas"],gorge:["Garganta dos Sussurros","Gorge of Whispers","Garganta de los Susurros"],
+ bridge:["Ponte dos Dois Reinos","Bridge of Two Kingdoms","Puente de los Dos Reinos"],lakeB:["Lago Espelhado","Mirror Lake","Lago Espejo"],
+ dock:["Clareira do Desembarque","Landing Glade","Claro del Desembarco"],m1:["Prado das Flores","Flower Meadow","Prado de las Flores"],
+ g1:["Clareira dos Cervos","Glade of the Deer","Claro de los Ciervos"],pond:["Lagoa dos Juncos","Reed Pond","Laguna de los Juncos"],
+ m2:["Recanto dos Vaga-lumes","Firefly Hollow","Rincón de las Luciérnagas"]};
+const __RPLAKEB=[1650,560,330];
 
 class __ArcticPrologue extends j.Scene{constructor(){super("ArcticPrologue")}
 init(d){this.next=d?.next??{key:"Game",data:{levelId:"forest"}};this.classId=d?.classId??this.next.data?.classId??"WARRIOR";this.leaving=!1}
@@ -8656,6 +8704,8 @@ preload(){this.textures.exists("arc-boat-red")||this.load.image("arc-boat-red","
  this.textures.exists("rp2-props")||this.load.atlas("rp2-props","assets/pixel-art/river-prologue/rp2-props.png","assets/pixel-art/river-prologue/rp2-props.json");
  this.textures.exists("rp-animals")||this.load.spritesheet("rp-animals","assets/pixel-art/river-prologue/rp-animals.png",{frameWidth:48,frameHeight:48});
  this.cache.json.exists("rp-animals-meta")||this.load.json("rp-animals-meta","assets/pixel-art/river-prologue/rp-animals.json");
+ this.textures.exists("rp-deer")||this.load.spritesheet("rp-deer","assets/pixel-art/river-prologue/rp-deer.png",{frameWidth:48,frameHeight:48});
+ this.cache.json.exists("rp-deer-meta")||this.load.json("rp-deer-meta","assets/pixel-art/river-prologue/rp-deer.json");
  const more=M=>{for(const[k]of M.chunks)this.textures.exists(k)||this.load.image(k,`assets/pixel-art/river-prologue/${k}.png`);
   for(const[k]of M.deco||[])if(!/^(rf|n)-/.test(k)&&!this.textures.exists("rpx-"+k))this.load.image("rpx-"+k,k==="rp-pillar"?"assets/pixel-art/river-prologue/rp-pillar.png":`assets/pixel-art/props-extra/${k}.png`)};
  this.cache.json.exists("rp-meta")||this.load.json("rp-meta","assets/pixel-art/river-prologue/rp-meta.json");
@@ -8706,7 +8756,7 @@ create(){const S=this,M=S.cache.json.get("rp-meta"),R=Math.random,L3=__L3;S.M=M;
  for(let k=0;k<70;k++){const p=S.freeCell(R()<.5?1:2);if(!p)continue;const ff=w(S.add.image(p.x,p.y,"light").setScale(.05).setBlendMode(j.BlendModes.ADD).setTint(0xd8ff9a).setAlpha(0).setDepth(3e3));S.tweens.add({targets:ff,alpha:{from:0,to:.8},x:"+="+(R()*30-15),y:"-="+(R()*20),duration:1500+R()*1500,yoyo:!0,repeat:-1,delay:R()*3e3})}
  try{window.__dubPrefetch?.(__arcLines())}catch(e){}
  S.buildUI();S.lineDone=new Set;S.queue=[];S.lineTok=0;S.heroDone=new Set;S.time.delayedCall(1600,()=>S.say(0));
- S.initAnimals();
+ S.initAnimals();S.initLife();
  try{S.game.audioEngine?.music?.("forest")}catch(e){}
  S.gust=.4;S.windEnv=null;fetch("assets/audio/ambient/river-wind.json").then(r=>r.json()).then(j_=>{S.windEnv=j_}).catch(()=>{});
  S.audioInit();S.events.once("shutdown",()=>S.audioStop());
@@ -8769,16 +8819,16 @@ heroSay(t,dur=2800){const S=this,tgt=()=>S.mode==="boat"?S.boat:S.hero;if(!tgt()
  S.tweens.add({targets:box,alpha:1,scale:1,duration:220,ease:"Back.easeOut"});S.time.delayedCall(dur,()=>box.active&&S.tweens.add({targets:box,alpha:0,duration:300,onComplete:()=>{box.destroy();S.hbox===box&&(S.hbox=null)}}))}
 /* ── animais: vivem nas clareiras e no lago; fogem quando o herói chega perto e, quando tudo fica quieto,
    voltam — mas em outro lugar (o coelho sai da mata, o pardal pousa em outro canto, o pato volta voando) ── */
-zonePt(z,kind,near,avoid,minD=0){const S=this,Z=S.M.zones?.[z];if(!Z)return null;const wat=kind==="duck"||kind==="fish";
+zonePt(z,kind,near,avoid,minD=0,pad=10){const S=this,Z=S.M.zones?.[z];if(!Z)return null;const wat=kind==="duck"||kind==="fish";
  for(let k=0;k<60;k++){let x,y;if(near){const a=Math.random()*6.283,r=Math.random()*(near.r||45);x=near.x+Math.cos(a)*r;y=near.y+Math.sin(a)*r}else{const a=Math.random()*6.283,r=Math.sqrt(Math.random());x=Z[0]+Math.cos(a)*Z[2]*r;y=Z[1]+Math.sin(a)*Z[3]*r}
   if(((x-Z[0])/Z[2])**2+((y-Z[1])/Z[3])**2>1)continue;if(wat?!S.okArea(x,y,2,wat&&kind==="duck"?10:6):!S.okArea(x,y,1,5))continue;
-  if(avoid&&Math.hypot(x-avoid.x,y-avoid.y)<minD)continue;if(!wat&&S.lobs.some(q=>Math.hypot(x-q.x,y-q.y)<q.r+10))continue;return{x,y}}return null}
-initAnimals(){const S=this,M=S.M,AM=S.cache.json.get("rp-animals-meta"),R=Math.random;S.animals=[];S.heroSeenFlee=!1;if(!AM||!S.textures.exists("rp-animals")||!M.zones)return;S.AM=AM;
- const rate={Idle:4,Walk:8,Fly:12,Swim:6};for(const[sp,P]of Object.entries(AM))for(const[pose,fr]of Object.entries(P)){const k=`rpa-${sp}-${pose}`;S.anims.exists(k)||S.anims.create({key:k,frames:fr.map(f=>({key:"rp-animals",frame:f})),frameRate:(rate[pose.split("_")[1]]??6)*(.85+R()*.3),repeat:-1})}
- for(const[sp,C]of Object.entries(__RPAN)){const groups={};for(let i=0;i<C.n;i++){const z=C.zones[i%C.zones.length];let p;
-   if(C.herd||C.flock){groups[z]=groups[z]||S.zonePt(z,C.kind);p=groups[z]&&S.zonePt(z,C.kind,{x:groups[z].x,y:groups[z].y,r:C.herd?55:40})}else p=S.zonePt(z,C.kind);if(!p)continue;
-   const fish=C.kind==="fish",spr=S.w(S.add.sprite(p.x,p.y,"rp-animals",0).setOrigin(.5,.62).setScale(C.sc).setDepth(fish?.65:p.y));fish&&spr.setAlpha(.5).setTint(0x9ad0e8);
-   const sh=fish||C.kind==="worm"?null:S.w(S.add.ellipse(p.x,p.y+2,C.kind==="duck"?12:sp==="sheep"?16:9,3,0,C.kind==="duck"?.12:.22).setDepth(1.8));
+  if(avoid&&Math.hypot(x-avoid.x,y-avoid.y)<minD)continue;if(!wat&&S.lobs.some(q=>Math.hypot(x-q.x,y-q.y)<q.r+pad))continue;return{x,y}}return null}
+initAnimals(){const S=this,M=S.M,AM=Object.assign({},S.cache.json.get("rp-animals-meta")||{},S.textures.exists("rp-deer")&&S.cache.json.get("rp-deer-meta")||{}),R=Math.random;S.animals=[];S.heroSeenFlee=!1;if(!AM.sheep||!S.textures.exists("rp-animals")||!M.zones)return;S.AM=AM;
+ const rate={Idle:4,Walk:8,Fly:12,Swim:6,Run:11};for(const[sp,P]of Object.entries(AM))for(const[pose,fr]of Object.entries(P)){const k=`rpa-${sp}-${pose}`,tx=__RPAN[sp]?.tex||"rp-animals";S.anims.exists(k)||S.anims.create({key:k,frames:fr.map(f=>({key:tx,frame:f})),frameRate:(rate[pose.split("_")[1]]??6)*(.85+R()*.3),repeat:-1})}
+ const groups={};for(const[sp,C]of Object.entries(__RPAN)){if(!AM[sp])continue;for(let i=0;i<C.n;i++){const z=C.zones[i%C.zones.length],gk=(C.grp||sp)+":"+z;let p;
+   if(C.herd||C.flock){const Zc=S.M.zones[z];groups[gk]=groups[gk]||C.pad&&Zc&&S.zonePt(z,C.kind,{x:Zc[0],y:Zc[1]+15,r:50},null,0,C.pad)||S.zonePt(z,C.kind,null,null,0,C.pad||10);p=groups[gk]&&(S.zonePt(z,C.kind,{x:groups[gk].x,y:groups[gk].y,r:C.herd?55:40},null,0,C.pad||10)||S.zonePt(z,C.kind,{x:groups[gk].x,y:groups[gk].y,r:C.herd?55:40}))}else p=S.zonePt(z,C.kind);if(!p)continue;
+   const fish=C.kind==="fish",spr=S.w(S.add.sprite(p.x,p.y,C.tex||"rp-animals",0).setOrigin(.5,C.oy||.62).setScale(C.sc).setDepth(fish?.65:p.y));fish&&spr.setAlpha(.5).setTint(0x9ad0e8);
+   const sh=fish||C.kind==="worm"?null:S.w(S.add.ellipse(p.x,p.y+2,C.shw||(C.kind==="duck"?12:sp==="sheep"?16:9),3,0,C.kind==="duck"?.12:.22).setDepth(1.8));
    const a={sp,C,s:spr,sh,x:p.x,y:p.y,st:"idle",t:R()*4,zone:z,alt:0,vx:0,vy:R()<.5?1:-1,base:fish?.5:1};S.animals.push(a);S.anPose(a,0,1)}}}
 anPose(a,vx,vy,pose){const S=this,C=a.C;pose=pose||(Math.hypot(vx,vy)>2?C.move:C.idle);const P=S.AM?.[a.sp]||{};let d="S";
  if(Math.abs(vx)>Math.abs(vy)*.8){d="S";a.s.setFlipX(vx>0)}else if(vy>0)d="D";else d="U";let k=`${d}_${pose}`;if(!P[k])k=P[`S_${pose}`]?`S_${pose}`:Object.keys(P).find(q=>q.endsWith(pose))||Object.keys(P)[0];
@@ -8791,7 +8841,7 @@ anFlee(a,h,chain=!0){const S=this,C=a.C,R=Math.random;if(a.st==="flee"||a.st==="
  else if(C.kind==="frog"){a.st="flee";let best=null,bd=1e9;for(let k=0;k<24;k++){const an=k/24*6.283,x=a.x+Math.cos(an)*70,y=a.y+Math.sin(an)*70;if(S.cell(x,y)===2){const d=Math.hypot(x-h.x,y-h.y);if(-d<bd){bd=-d;best={x,y}}}}const g=best||{x:a.x+dx*60,y:a.y+dy*60};const gm=Math.hypot(g.x-a.x,g.y-a.y)||1;a.vx=(g.x-a.x)/gm*C.flee;a.vy=(g.y-a.y)/gm*C.flee}
  else{a.st="flee";/* corre para a mata mais próxima longe do herói */let best=null,bs=-1e9;for(let k=0;k<20;k++){const an=Math.atan2(dy,dx)+(k/19-.5)*2.2;for(let r=30;r<=260;r+=20){const x=a.x+Math.cos(an)*r,y=a.y+Math.sin(an)*r;if(S.cell(x,y)===0){const sc=-r+Math.hypot(x-h.x,y-h.y)*.6;sc>bs&&(bs=sc,best={x,y});break}}}
   const g=best||{x:a.x+dx*200,y:a.y+dy*200},gm=Math.hypot(g.x-a.x,g.y-a.y)||1;a.vx=(g.x-a.x)/gm*C.flee;a.vy=(g.y-a.y)/gm*C.flee;S.heroSeenFlee=!0;S.hsay("flee",__arcHeroEv("flee"))}
- if(chain)for(const b of S.animals)b!==a&&b.sp===a.sp&&Math.hypot(b.x-a.x,b.y-a.y)<95&&S.time.delayedCall(80+Math.random()*260,()=>S.anFlee(b,h,!1))}
+ if(chain)for(const b of S.animals)b!==a&&(b.C.grp||b.sp)===(a.C.grp||a.sp)&&Math.hypot(b.x-a.x,b.y-a.y)<(C.grp?150:95)&&S.time.delayedCall(80+Math.random()*260,()=>S.anFlee(b,h,!1))}
 anSplash(a,dt){const S=this;a.spT=(a.spT||0)-dt;if(a.spT>0)return;a.spT=.32;S.ring(a.x,a.y+1,6);S.drops(a.x,a.y,3);const d=Math.hypot(a.x-(S.hx??0),a.y-(S.hy??0));d<260&&S.sfx("wade",.18*(1-d/260)+.05,0)}
 drops(x,y,n){const S=this;for(let k=0;k<n;k++){const c=S.w(S.add.circle(x,y-2,1.1,0xe8fff8,.9).setDepth(y+2));S.tweens.add({targets:c,x:x+(Math.random()-.5)*12,y:y-5-Math.random()*7,alpha:0,duration:380,ease:"Quad.easeOut",onComplete:()=>c.destroy()})}}
 /* herói pode entrar na água rasa da beira (mais devagar, com respingos e som de passos na água) */
@@ -8801,8 +8851,8 @@ walkOk(x,y){const S=this;return S.okArea(x,y,1,5)||Math.abs(x-S.dock.x)<14&&y>S.
 ring(x,y,r){const S=this,e=S.w(S.add.ellipse(x,y,r,r*.45,0,0).setStrokeStyle(1,0xe6fff4,.8).setDepth(.9));S.tweens.add({targets:e,scaleX:2.4,scaleY:2.4,alpha:0,duration:800,onComplete:()=>e.destroy()})}
 anGone(a){const S=this;a.st="gone";a.t=0;a.ret=(a.C.kind==="worm"?5:9)+Math.random()*8;a.s.setVisible(!1);a.sh&&a.sh.setVisible(!1)}
 anReturn(a,h){const S=this,C=a.C,R=Math.random,z=C.zones[Math.floor(R()*C.zones.length)];let p=null;
- const fk=(C.flock||C.herd)&&S.animals.find(b=>b!==a&&b.sp===a.sp&&b.zone===z&&b.st!=="gone"&&b.st!=="fly"&&b.st!=="flee"&&b.s.visible);
- p=fk?S.zonePt(z,C.kind,{x:fk.x,y:fk.y,r:45},h,240):S.zonePt(z,C.kind,null,h,260);if(!p||Math.hypot(p.x-a.lx,p.y-a.ly)<120&&!fk)return;a.zone=z;
+ const fk=(C.flock||C.herd)&&S.animals.find(b=>b!==a&&(b.C.grp||b.sp)===(C.grp||a.sp)&&b.zone===z&&b.st!=="gone"&&b.st!=="fly"&&b.st!=="flee"&&b.s.visible);
+ p=fk?S.zonePt(z,C.kind,{x:fk.x,y:fk.y,r:45},h,240,C.pad||10):S.zonePt(z,C.kind,null,h,260,C.pad||10);if(!p||Math.hypot(p.x-a.lx,p.y-a.ly)<120&&!fk)return;a.zone=z;
  a.s.setVisible(!0).setScale(C.sc).setAlpha(0);a.sh&&a.sh.setVisible(!0);a.t=0;
  if(C.kind==="bird"||C.kind==="duck"){const an=R()*6.283;a.x=p.x+Math.cos(an)*140;a.y=p.y+Math.sin(an)*90;a.alt=70;a.tx=p.x;a.ty=p.y;a.st="land";a.s.setDepth(4500);S.tweens.add({targets:a.s,alpha:a.base,duration:500})}
  else if(C.kind==="fish"||C.kind==="worm"){a.x=p.x;a.y=p.y;a.st="idle";a.t=1+R()*2;S.tweens.add({targets:a.s,alpha:a.base,scaleY:C.sc,duration:900})}
@@ -8815,12 +8865,12 @@ updateAnimals(dt){const S=this;if(!S.animals?.length)return;const R=Math.random,
   if((a.st==="idle"||a.st==="walk")&&S.mode==="land"&&d<C.fleeR*(moving?1:.55))S.anFlee(a,h);
   if(a.sp==="duck"&&a.st==="idle"&&S.mode==="land"&&d<240&&d>C.fleeR)S.hsay("duck",__arcHeroEv("duck"));
   switch(a.st){
-  case"idle":a.t-=dt;if(a.t<=0){const p=S.zonePt(a.zone,C.kind,{x:a.x,y:a.y,r:C.kind==="worm"?14:C.kind==="bird"?30:80});if(p){a.tx=p.x;a.ty=p.y;a.spd=C.walk*(.7+R()*.5);a.st="walk";a.t=6}else a.t=1}
+  case"idle":a.t-=dt;if(a.t<=0){const p=S.zonePt(a.zone,C.kind,{x:a.x,y:a.y,r:C.kind==="worm"?14:C.kind==="bird"?30:80},null,0,C.pad||10);if(p){a.tx=p.x;a.ty=p.y;a.spd=C.walk*(.7+R()*.5);a.st="walk";a.t=6}else a.t=1}
    C.kind==="bird"&&R()<dt*.8&&(a.s.y-=0);break;
   case"walk":{const dx=a.tx-a.x,dy=a.ty-a.y,m=Math.hypot(dx,dy);a.t-=dt;if(m<2||a.t<=0){a.st="idle";a.t=(C.kind==="bird"?.6:1.5)+R()*(C.kind==="bird"?2:4.5);S.anPose(a,a.vx*.01,a.vy*.01,C.idle);break}
    const sp=Math.min(a.spd,m/dt);a.vx=dx/m*sp;a.vy=dy/m*sp;if(C.kind!=="bird"&&C.kind!=="duck"&&C.kind!=="fish"&&S.cell(a.x+a.vx*dt*4,a.y+a.vy*dt*4)===0&&a.s.alpha>.9){a.st="idle";a.t=.8+R()*2;S.anPose(a,a.vx*.01,a.vy*.01,C.idle);break}a.x+=a.vx*dt;a.y+=a.vy*dt;S.anPose(a,a.vx,a.vy,C.move);(C.kind=="ground"||C.kind=="frog")&&S.cell(a.x,a.y)===2&&S.anSplash(a,dt);
    C.kind==="bird"&&(a.s.y=a.y-Math.abs(Math.sin(S.time.now/90))*2);break}
-  case"flee":a.t+=dt;a.x+=a.vx*dt;a.y+=a.vy*dt;S.anPose(a,a.vx,a.vy,C.move);
+  case"flee":a.t+=dt;a.x+=a.vx*dt;a.y+=a.vy*dt;S.anPose(a,a.vx,a.vy,C.run||C.move);
    if(C.kind==="frog"&&S.cell(a.x,a.y)===2){S.ring(a.x,a.y,8);a.lx=a.x;a.ly=a.y;S.anGone(a);break}
    if(C.kind==="fish"&&a.t>.7){a.lx=a.x;a.ly=a.y;S.anGone(a);break}
    if(S.cell(a.x,a.y)===2)S.anSplash(a,dt);const ed=S.cell(a.x+a.vx*.2,a.y+a.vy*.2)===0;if(ed||a.t>3){a.lx=a.x;a.ly=a.y;S.tweens.add({targets:a.s,alpha:0,duration:ed?160:300,onComplete:()=>S.anGone(a)});a.sh&&S.tweens.add({targets:a.sh,alpha:0,duration:160});a.st="hide"}break;
@@ -8836,7 +8886,7 @@ burst(x,y){const S=this;for(let k=0;k<10;k++){const c=S.w(S.add.circle(x,y,1.5,0
 disembark(){const S=this;if(S.mode!=="boat")return;S.mode="land";S.bv={x:0,y:0};S.tweens.add({targets:S.boat,x:S.dock.x+34,y:S.dock.y+6,rotation:.25,duration:500});
  S.sfx("splash",.8);S.sfx("bump",.6);S.time.delayedCall(250,()=>S.sfx("step",.7));S.time.delayedCall(480,()=>S.sfx("step",.7));
  const Lp=S.M.land,hx=Lp[0],hy=Lp[1];S.hx=hx;S.hy=hy;S.hero&&S.hero.setPosition(hx,hy).setVisible(!0).setAlpha(0).setDepth(hy+1);S.hero&&S.tweens.add({targets:S.hero,alpha:1,duration:400});S.hsh.setPosition(hx,hy).setVisible(!0);
- S.hero&&S.anims.exists(S.hkey+"-idle")&&S.hero.play(S.hkey+"-idle");S.cameras.main.startFollow(S.hero||S.boat,!0,.08,.08);S.cameras.main.setFollowOffset(0,0);S.time.delayedCall(700,()=>S.say(4))}
+ S.hero&&S.anims.exists(S.hkey+"-idle")&&S.hero.play(S.hkey+"-idle");S.cameras.main.startFollow(S.hero||S.boat,!0,.08,.08);S.cameras.main.setFollowOffset(0,0);S.time.delayedCall(700,()=>S.say(4));S.time.delayedCall(900,()=>S.title("dock"))}
 axis(){const S=this,im=S.game.inputManager;try{im?.update?.()}catch(e){}let a=im?.axis?.()||{x:0,y:0};const k=im?.keyboardAxis?.()||{x:0,y:0};Math.hypot(k.x,k.y)>Math.hypot(a.x,a.y)&&(a=k);if(S.joy.on&&Math.hypot(S.joy.x,S.joy.y)>Math.hypot(a.x,a.y))a={x:S.joy.x,y:S.joy.y};const m=Math.hypot(a.x,a.y);return m<.15?{x:0,y:0}:{x:a.x/Math.max(1,m),y:a.y/Math.max(1,m)}}
 push(o,list,rad){for(const q of list){const dx=o.x-q.x,dy=o.y-q.y,d=Math.hypot(dx,dy),m=rad+q.r;if(d<m&&d>.01){o.x=q.x+dx/d*m;o.y=q.y+dy/d*m}}}
 /* anda deslizando pela borda: tenta o passo inteiro, depois só x, depois só y */
@@ -8881,53 +8931,166 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
   for(const p of S.poi)if(!p.done&&Math.hypot(p.x-o.x,p.y-o.y)<48){act={kind:"poi",p,label:"✦ "+p.label};break}
   for(const[z,li]of Object.entries(__RPZL)){const Z=M.zones?.[z];if(Z&&!S.lineDone.has(li)&&((o.x-Z[0])/Z[2])**2+((o.y-Z[1])/Z[3])**2<1)S.say(li)}
   if(Math.hypot(o.x-M.exit[0],o.y-M.exit[1])<80){S.say(7);S.finish(!1)}}
- S.updateAnimals(dt);
+ S.updateAnimals(dt);S.updateLife(dt,t,G);
  /* mixagem: rio perto, corredeira perto da garganta, casco pela velocidade, vento pelas rajadas */
  const fx=S.mode==="boat"?S.boat.x:S.hx,fy=S.mode==="boat"?S.boat.y:S.hy;let dg=1e9;for(const p of S.gorge){const d=Math.hypot(p[0]-fx,p[1]-fy);d<dg&&(dg=d)}
  if(S.au){S.gain("river-flow",S.mode==="boat"?.55:.3,.6);S.gain("river-rapids",Math.max(0,1-dg/420)**1.5*.95,.5);S.gain("boat-glide",S.mode==="boat"?Math.min(1,(S.bspd||0)/90)*.6:0,.25);S.gain("river-wind",.18+G*.5,.4)}
  S.curAct=act;S.act.setVisible(!!act);act&&S.actTx.text!==act.label&&S.actTx.setText(act.label);
  if(act&&(im?.justDown?.("INTERACT")||S.keyE&&j.Input.Keyboard.JustDown(S.keyE)))S.doAct()}
+/* ── beleza e vida da abertura ─────────────────────────────────────────────────────────────────────────
+   • título grande de cada região ao chegar (Lago das Brumas, Garganta dos Sussurros, Ponte dos Dois Reinos,
+     Lago Espelhado, Clareira do Desembarque, Prado das Flores, Clareira dos Cervos, Lagoa dos Juncos,
+     Recanto dos Vaga-lumes), com um sino suave
+   • campos de flores em manchas de cor que ondulam com o vento (a onda corre pelo campo), se abrem quando o
+     herói passa e soltam pétalas; nas rajadas, pétalas voam sozinhas
+   • Recanto dos Vaga-lumes: flores que brilham, luzes espirituais flutuando e névoa baixa
+   • lagos vivos: peixes que saltam, bolhas que sobem, e no Lago Espelhado uma criatura enorme que passa por
+     baixo do barco e depois salta ao longe (uma vez só) */
+initLife(){const S=this,M=S.M,R=Math.random;S.flowers=[];S.petals=0;
+ const px=(key,w,h,pts)=>{if(S.textures.exists(key))return;const g=S.make.graphics({add:!1});for(const[x,y,c,a]of pts)g.fillStyle(c,a??1).fillRect(x,y,1,1);g.generateTexture(key,w,h);g.destroy()};
+ /* flores 5x7 (pétalas, miolo, caule e folha) e tufos de capim */
+ const FL=[[0xf08a3c,0xffd36a,0xc8652a],[0x5f86e8,0xe2ecff,0x3f5fb8],[0xf6f3ff,0xffdf7a,0xc9c4e0],[0xee8fbd,0xfff0f6,0xc06690],[0xffd34a,0xb8602a,0xd8a030],[0xd9d2ff,0xffffff,0xa89ee8]],G1=0x3f7a3a,G2=0x5a9a48;
+ FL.forEach(([p,c,d],i)=>px("rpf-"+i,5,7,[[1,0,p],[3,0,p],[0,1,d],[1,1,p],[2,1,c],[3,1,p],[4,1,d],[1,2,d],[3,2,d],[2,3,G1],[2,4,G1],[1,4,G2],[2,5,G1],[3,5,G2],[2,6,G1]]));
+ px("rpg-0",5,6,[[0,2,G2],[0,3,G1],[1,4,G1],[2,0,G2],[2,1,G2],[2,2,G1],[2,3,G1],[2,4,G1],[2,5,G1],[4,1,G2],[3,3,G1],[4,2,G2],[1,5,G1],[3,5,G1]]);
+ /* a criatura do lago: sombra, dorso que sai da água e a cauda */
+ if(!S.textures.exists("rp-lev")){const g=S.make.graphics({add:!1});g.fillStyle(0x06121a,1).fillEllipse(100,35,150,44).fillCircle(34,35,21).fillTriangle(165,35,203,10,193,35).fillTriangle(165,35,203,60,193,35).fillTriangle(72,28,96,2,104,27).fillTriangle(72,42,96,68,104,43);g.generateTexture("rp-lev",206,70);g.destroy()}
+ if(!S.textures.exists("rp-back2")){const g=S.make.graphics({add:!1});g.fillStyle(0x16232a,1).fillEllipse(48,44,84,52);g.fillStyle(0x283d48,1).fillEllipse(45,42,72,44);g.fillStyle(0x36505c,1).fillEllipse(42,36,52,26);
+  g.fillStyle(0x131e24,1).fillTriangle(54,22,68,2,76,24);g.fillStyle(0x3d5865,1).fillTriangle(60,20,67,6,66,20);g.fillStyle(0x6a8e9a,1).fillEllipse(38,23,38,5);g.fillStyle(0xb6d6dc,1).fillEllipse(34,21,14,2);
+  g.fillStyle(0x7d979d,1);for(const[x,y]of[[24,32],[28,28],[58,30],[63,34],[33,36]])g.fillRect(x,y,2,1);g.generateTexture("rp-back2",96,44);g.destroy()}
+ if(!S.textures.exists("rp-fluke")){const g=S.make.graphics({add:!1});g.fillStyle(0x1b2a33,1).fillTriangle(27,34,1,4,24,16).fillTriangle(27,34,53,4,30,16).fillEllipse(8,7,15,7).fillEllipse(46,7,15,7).fillRect(23,14,8,20);g.fillStyle(0x5d7f8c,1).fillEllipse(9,5,10,2).fillEllipse(45,5,10,2);g.generateTexture("rp-fluke",54,34);g.destroy()}
+ /* campos de flores (manchas de uma cor só, como no campo de verdade) */
+ const Z=M.zones||{};
+ Z.m1&&S.plant(Z.m1[0],Z.m1[1],Z.m1[2]*.95,Z.m1[3]*.95,30,30,[0,0,0,1,1,2,4]);
+ Z.g1&&S.plant(Z.g1[0],Z.g1[1],Z.g1[2],Z.g1[3],9,16,[2,4,3,2]);
+ Z.bank&&S.plant(Z.bank[0],Z.bank[1],Z.bank[2],Z.bank[3],9,14,[3,2,1]);
+ S.plant(M.land[0]+20,M.land[1]-40,190,110,8,14,[2,4,0,3]);
+ Z.m2&&S.plant(Z.m2[0],Z.m2[1],Z.m2[2]*.95,Z.m2[3]*.95,16,28,[5,5,5,2,1],!0);
+ /* tufos de capim pelas clareiras (dão profundidade e também balançam) */
+ for(const z of["m1","g1","m2"]){const q=Z[z];if(!q)continue;for(let k=0;k<70;k++){const a=R()*6.283,r=Math.sqrt(R()),x=q[0]+Math.cos(a)*q[2]*r,y=q[1]+Math.sin(a)*q[3]*r;if(!S.okArea(x,y,1,4)||S.soil(x,y)||S.lobs.some(o=>Math.hypot(x-o.x,y-o.y)<o.r+4))continue;const im=S.w(S.add.image(Math.round(x),Math.round(y),"rpg-0").setOrigin(.5,1).setDepth(y-2).setAlpha(.9));R()<.5&&im.setFlipX(!0);im.ph=x*.035;im.bend=0;im.grass=1;S.flowers.push(im)}}
+ /* Recanto dos Vaga-lumes: luzes espirituais e névoa baixa */
+ if(Z.m2){const[mx,my,rx,ry]=Z.m2;for(let k=0;k<28;k++){let x=0,y=0,ok=!1;for(let t=0;t<30&&!ok;t++){const a=R()*6.283,r=Math.sqrt(R());x=mx+Math.cos(a)*rx*r;y=my+Math.sin(a)*ry*r;ok=S.cell(x,y)===1}if(!ok)continue;
+   const col=R()<.7?0xb8ffcf:0xd8d0ff,o=S.w(S.add.image(x,y,"light").setScale(.035+R()*.03).setBlendMode(j.BlendModes.ADD).setTint(col).setAlpha(0).setDepth(4050)),c=S.w(S.add.image(x,y,"light").setScale(.016).setBlendMode(j.BlendModes.ADD).setTint(0xffffff).setAlpha(0).setDepth(4051));
+   const dx=10+R()*22,dy=6+R()*14,du=2600+R()*2600;S.tweens.add({targets:[o,c],x:"+="+dx,duration:du,yoyo:!0,repeat:-1,ease:"Sine.easeInOut",delay:R()*2e3});S.tweens.add({targets:[o,c],y:"-="+dy,duration:du*.73,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});
+   S.tweens.add({targets:o,alpha:{from:.1,to:.42},duration:1400+R()*1600,yoyo:!0,repeat:-1,delay:R()*1500});S.tweens.add({targets:c,alpha:{from:.3,to:.95},duration:1400+R()*1600,yoyo:!0,repeat:-1,delay:R()*1500})}
+  for(let k=0;k<6;k++){const m=S.w(S.add.ellipse(mx+(R()-.5)*rx,my+(R()-.5)*ry*.8,rx*(.5+R()*.4),ry*(.25+R()*.2),0xcfe8ff,0).setDepth(3800));S.tweens.add({targets:m,alpha:{from:.02,to:.08},x:"+="+(20+R()*40),duration:7e3+R()*4e3,yoyo:!0,repeat:-1,delay:R()*3e3})}}
+ S.fjT=3;S.bbT=1.5;S.time.delayedCall(2600,()=>S.title("lagoA"))}
+soil(x,y){const S=this;try{const i=Math.floor(x/512),k=Math.floor(y/512),c=S.textures.getPixel(Math.floor(x-i*512),Math.floor(y-k*512),`rpb-${i}-${k}`);return!!c&&c.red>c.green+4}catch(e){return!1}}
+plant(cx,cy,rx,ry,clusters,per,pal,glow){const S=this,R=Math.random;
+ for(let c=0;c<clusters;c++){let o=null;for(let t=0;t<40&&!o;t++){const a=R()*6.283,r=Math.sqrt(R()),x=cx+Math.cos(a)*rx*r,y=cy+Math.sin(a)*ry*r;if(S.okArea(x,y,1,9)&&!S.soil(x,y)&&!S.lobs.some(q=>Math.hypot(x-q.x,y-q.y)<q.r+12))o={x,y}}if(!o)continue;
+  const col=pal[Math.floor(R()*pal.length)],cr=16+R()*28,n=Math.round(per*(.6+R()*.8));
+  for(let k=0;k<n;k++){const a=R()*6.283,r=Math.pow(R(),.7)*cr,x=o.x+Math.cos(a)*r,y=o.y+Math.sin(a)*r*.7;if(S.cell(x,y)!==1||S.soil(x,y)||S.lobs.some(q=>Math.hypot(x-q.x,y-q.y)<q.r+4))continue;
+   const ci=R()<.86?col:pal[Math.floor(R()*pal.length)],im=S.w(S.add.image(Math.round(x),Math.round(y),"rpf-"+ci).setOrigin(.5,1).setDepth(y-2));R()<.5&&im.setFlipX(!0);R()<.25&&im.setScale(.8);im.ph=x*.035;im.ci=ci;im.bend=0;S.flowers.push(im);
+   if(glow&&R()<.22){const gl=S.w(S.add.image(x,y-4,"light").setScale(.025+R()*.025).setBlendMode(j.BlendModes.ADD).setTint(ci===5?0xc8c0ff:0xa8ffe0).setAlpha(0).setDepth(y-1));S.tweens.add({targets:gl,alpha:{from:.04,to:.26},duration:1400+R()*1800,yoyo:!0,repeat:-1,delay:R()*2e3})}}}}
+petal(x,y,ci,G){const S=this,R=Math.random,cols=[0xf08a3c,0x6f90ea,0xf6f3ff,0xee8fbd,0xffd34a,0xe2dcff],p=S.w(S.add.rectangle(x,y,2,1,cols[ci]??0xf6f3ff,.95).setDepth(4100).setRotation(R()*3));S.petals++;
+ S.tweens.add({targets:p,x:x+18+G*60+R()*24,y:y-10-R()*18,rotation:p.rotation+(R()-.5)*9,alpha:0,duration:1300+R()*900,ease:"Sine.easeOut",onComplete:()=>{p.destroy();S.petals--}})}
+/* título de região: um de cada vez, nunca por cima de outro */
+title(id){const S=this;S.titleDone=S.titleDone||new Set;if(S.titleDone.has(id)||!__RPREG[id])return!1;S.titleDone.add(id);(S.titleQ=S.titleQ||[]).push(id);S.titleOn||S.nextTitle();return!0}
+nextTitle(){const S=this,id=(S.titleQ||[]).shift();if(!id||S.leaving){S.titleOn=!1;return}S.titleOn=!0;const L=__L3,F="Georgia, 'Times New Roman', serif",[a,b,c]=__RPREG[id],name=L(a,b,c),sub=L("Floresta de Eldervale","Eldervale Forest","Bosque de Eldervale").toUpperCase();
+ const C=S.add.container(_/2,st*.23).setAlpha(0),sh=S.add.image(0,3,"light").setTint(0).setAlpha(.5).setScale(2.8,.6);
+ const tx=S.add.text(0,-3,name,{fontFamily:F,fontStyle:"bold",fontSize:"22px",color:"#fbf1d4",stroke:"#2a1808",strokeThickness:3}).setOrigin(.5).setShadow(0,2,"#000000",6,!0,!0).setScale(.94);
+ const sb=S.add.text(0,17,sub,{fontFamily:F,fontStyle:"italic",fontSize:"8px",color:"#ecdcac",letterSpacing:3}).setOrigin(.5).setAlpha(0);
+ const wl=tx.width/2+12,gl=S.add.graphics();gl.lineStyle(1,0xd9b86a,.95).lineBetween(-wl-58,-3,-wl-4,-3).lineBetween(wl+4,-3,wl+58,-3);gl.fillStyle(0xf2d78f,1);for(const sx of[-1,1]){const dx=sx*wl;gl.fillTriangle(dx-3,-3,dx,-6,dx+3,-3).fillTriangle(dx-3,-3,dx,0,dx+3,-3);gl.fillCircle(sx*(wl+60),-3,1.2)}gl.setScale(0,1);
+ C.add([sh,gl,tx,sb]);S.ui.add(C);S.chime();
+ S.tweens.add({targets:C,alpha:1,duration:900,ease:"Sine.easeOut"});S.tweens.add({targets:tx,scale:1,duration:1400,ease:"Sine.easeOut"});S.tweens.add({targets:gl,scaleX:1,duration:1100,delay:150,ease:"Cubic.easeOut"});S.tweens.add({targets:sb,alpha:.92,duration:900,delay:450});
+ S.time.delayedCall(4300,()=>S.tweens.add({targets:C,alpha:0,y:C.y-6,duration:1100,ease:"Sine.easeIn",onComplete:()=>{C.destroy();S.time.delayedCall(500,()=>S.nextTitle())}}))}
+/* sino suave (três notas que somem devagar) e o ronco grave da criatura — sintetizados, sem arquivo */
+chime(){const E=this.game.audioEngine,C=E?.ctx;if(!C||C.state!=="running")return;try{const t=C.currentTime,out=E.sfxBus||E.ambientBus||C.destination;[[1046.5,.05,0],[1568,.03,.06],[2093,.016,.12]].forEach(([f,v,d])=>{const o=C.createOscillator(),g=C.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.02);g.gain.exponentialRampToValueAtTime(.0003,t+d+2.6);o.connect(g);g.connect(out);o.start(t+d);o.stop(t+d+2.7)})}catch(e){}}
+rumble(v=.14,dur=2.4){const E=this.game.audioEngine,C=E?.ctx;if(!C||C.state!=="running")return;try{const t=C.currentTime,o=C.createOscillator(),g=C.createGain();o.type="sine";o.frequency.setValueAtTime(56,t);o.frequency.exponentialRampToValueAtTime(29,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.3);g.gain.exponentialRampToValueAtTime(.0004,t+dur);o.connect(g);g.connect(E.sfxBus||E.ambientBus||C.destination);o.start(t);o.stop(t+dur+.1)}catch(e){}}
+waterPt(v,minR=10,away,minD=0){const S=this;for(let k=0;k<30;k++){const x=v.x+20+Math.random()*(v.width-40),y=v.y+20+Math.random()*(v.height-40);if(S.okArea(x,y,2,minR)&&(!away||Math.hypot(x-away.x,y-away.y)>minD))return{x,y}}return null}
+jumpFish(x,y){const S=this,R=Math.random,fr=S.AM?.fish?.S_Swim;if(!fr)return;const dir=R()<.5?-1:1,len=22+R()*16,hgt=16+R()*12,f=S.w(S.add.sprite(x,y,"rp-animals",fr[0]).setDepth(y+30).setScale(1.05).setFlipX(dir>0));
+ S.ring(x,y,9);S.drops(x,y,5);const d=Math.hypot(x-(S.mode==="boat"?S.boat.x:S.hx),y-(S.mode==="boat"?S.boat.y:S.hy));d<320&&S.sfx("splash",.22*(1-d/320)+.04,(x-S.cameras.main.midPoint.x)/300);
+ S.tweens.addCounter({from:0,to:1,duration:620+R()*200,onUpdate:tw=>{const q=tw.getValue();f.setPosition(x+dir*len*q,y-Math.sin(q*Math.PI)*hgt).setRotation(dir*(-1.1+2.2*q)*.6);f.setFrame(fr[Math.floor(q*8)%fr.length])},onComplete:()=>{const ex=x+dir*len;S.ring(ex,y,11);S.drops(ex,y,6);f.destroy()}})}
+bubbles(x,y){const S=this,R=Math.random,n=3+Math.floor(R()*4);for(let k=0;k<n;k++){const bx=x+(R()-.5)*10,by=y+(R()-.5)*6,b=S.w(S.add.circle(bx,by,.9+R()*1.3,0,0).setStrokeStyle(.8,0xeafffa,.85).setDepth(.95).setScale(.4));S.tweens.add({targets:b,scale:1.3,alpha:0,duration:700+R()*600,delay:k*170+R()*120,onComplete:()=>b.destroy()})}S.time.delayedCall(n*170+300,()=>S.ring(x,y,6))}
+/* a criatura do Lago Espelhado: primeiro a sombra passa por baixo do barco, depois ela salta ao longe */
+levShadow(){const S=this,B=S.boat,R=Math.random;
+ /* escolhe a travessia com mais água por baixo (a sombra só aparece sobre a água) */
+ let ang=0,best=-1;for(let k=0;k<24;k++){const a=k/24*6.283;let n=0;for(let r=-300;r<=300;r+=20)S.cell(B.x+Math.cos(a)*r,B.y+Math.sin(a)*r)===2&&n++;const sc=n+Math.abs(Math.sin(a-S.bang))*4+R();sc>best&&(best=sc,ang=a)}
+ const dx=Math.cos(ang),dy=Math.sin(ang),x0=B.x-dx*300,y0=B.y-dy*300,x1=B.x+dx*320,y1=B.y+dy*320;
+ const sh=S.w(S.add.image(x0,y0,"rp-lev").setDepth(.55).setAlpha(0).setScale(1.35).setRotation(ang+Math.PI));S.rumble(.12,3.2);S.time.delayedCall(1200,()=>S.hsay("shadow",__L3("Tem alguma coisa enorme passando embaixo do barco…","Something huge is passing under the boat…","Algo enorme está pasando bajo el barco…")));
+ let bt=0;S.tweens.addCounter({from:0,to:1,duration:6200,ease:"Sine.easeInOut",onUpdate:tw=>{const q=tw.getValue(),x=x0+(x1-x0)*q,y=y0+(y1-y0)*q;sh.setPosition(x,y).setScale(1.35,1.35*(1+Math.sin(q*30)*.05));const wet=S.cell(x,y)===2&&(S.cell(x+dx*50,y+dy*50)===2||S.cell(x-dx*50,y-dy*50)===2);sh.setAlpha(sh.alpha+((wet?.34:0)-sh.alpha)*.12);
+   bt+=1;bt%9===0&&S.cell(x,y)===2&&S.bubbles(x-dx*60+(Math.random()-.5)*30,y-dy*60+(Math.random()-.5)*30);const dB=Math.hypot(x-B.x,y-B.y);if(dB<60&&!S.levRock){S.levRock=1;S.cameras.main.shake(700,.0022);S.sfx("creak",.6);S.sfx("bump",.35);S.bv.x+=dx*30;S.bv.y+=dy*30}},onComplete:()=>sh.destroy()})}
+levBreach(){const S=this,B=S.boat,R=Math.random,v=S.cameras.main.worldView,fw={x:Math.cos(S.bang),y:Math.sin(S.bang)};let p=null;
+ for(const rr of[24,18,13])for(let k=0;k<60&&!p;k++){const d=90+R()*90,a=S.bang+(R()-.5)*2.4,x=B.x+Math.cos(a)*d,y=B.y+Math.sin(a)*d;if(S.okArea(x,y,2,rr)&&v.contains(x,y-36)&&v.contains(x,y+10))p={x,y}}if(!p)p=S.waterPt(v,12,B,70);if(!p)return;
+ const{x,y}=p,dir=R()<.5?-1:1;for(let k=0;k<3;k++)S.time.delayedCall(k*200,()=>S.ring(x,y,16+k*6));S.bubbles(x,y);S.bubbles(x+12,y+4);
+ S.time.delayedCall(700,()=>{const bk=S.w(S.add.image(x,y,"rp-back2").setOrigin(.5,1).setDepth(y+1).setScale(1.3,0).setFlipX(dir>0)),wl=S.w(S.add.ellipse(x,y,118,9,0x24484c,.92).setDepth(y+1.4).setStrokeStyle(1.5,0xeafffa,.7));S.tweens.add({targets:wl,x:x+dir*46,duration:1700,ease:"Sine.easeInOut"});S.time.delayedCall(1700,()=>S.tweens.add({targets:wl,alpha:0,scaleX:1.6,duration:600,onComplete:()=>wl.destroy()}));S.rumble(.16,2.6);S.sfx("splash",.95);S.time.delayedCall(140,()=>S.sfx("splash",.7));S.cameras.main.shake(420,.0035);
+  const foam=S.w(S.add.ellipse(x,y,40,12,0xeafffa,.55).setDepth(y+.5));S.tweens.add({targets:foam,scaleX:3.2,scaleY:2.6,alpha:0,duration:2600,onComplete:()=>foam.destroy()});
+  for(let k=0;k<46;k++){const sx=x+(R()-.5)*60,c=S.w(S.add.circle(sx,y,.9+R()*1.6,0xf2fffc,.95).setDepth(y+2)),up=18+R()*46,tx=sx+(R()-.5)*50;S.tweens.add({targets:c,x:tx,y:y-up,duration:420+R()*240,ease:"Quad.easeOut",onComplete:()=>S.tweens.add({targets:c,y:y-2+R()*6,alpha:0,duration:420+R()*260,ease:"Quad.easeIn",onComplete:()=>c.destroy()})})}
+  for(let k=0;k<4;k++)S.time.delayedCall(k*260,()=>S.ring(x,y,28+k*10));
+  S.tweens.add({targets:bk,scaleY:1.3,duration:480,ease:"Sine.easeOut"});S.tweens.add({targets:bk,x:x+dir*46,duration:1700,ease:"Sine.easeInOut"});
+  S.time.delayedCall(1150,()=>S.tweens.add({targets:bk,scaleY:0,duration:520,ease:"Sine.easeIn",onComplete:()=>bk.destroy()}));
+  S.time.delayedCall(1450,()=>{const fx=x+dir*58,fl=S.w(S.add.image(fx,y,"rp-fluke").setOrigin(.5,1).setDepth(y+1).setScale(1.3,0).setRotation(dir*.12));S.tweens.add({targets:fl,scaleY:1.35,duration:420,ease:"Back.easeOut",yoyo:!0,hold:260,onComplete:()=>{fl.destroy();S.sfx("splash",.8);S.ring(fx,y,22);S.ring(fx,y,34);S.drops(fx,y,14);S.bubbles(fx,y)}})});
+  S.time.delayedCall(1300,()=>S.hsay("breach",__L3("O que foi aquilo?! Algo enorme vive neste lago…","What was that?! Something huge lives in this lake…","¡¿Qué fue eso?! Algo enorme vive en este lago…")))})}
+updateLife(dt,t,G){const S=this,R=Math.random,v=S.cameras.main.worldView,tw=t/1e3,land=S.mode==="land",hx=land?S.hx:-999,hy=land?S.hy:-999;
+ /* flores e capim: a onda do vento corre pelo campo; o herói abre caminho e solta pétalas */
+ let nearF=null;for(const f of S.flowers){if(f.x<v.x-10||f.x>v.right+10||f.y<v.y-4||f.y>v.bottom+12)continue;const wv=Math.sin(tw*2.1-f.ph+Math.sin(f.y*.02))*(.07+G*.24)+Math.sin(tw*5.3+f.ph*3)*.025;
+  let tb=0;if(land){const dx=f.x-hx,dy=(f.y-hy)*1.6,d=Math.hypot(dx,dy);if(d<15){tb=(dx>=0?1:-1)*.75*(1-d/15);if(!f.grass&&d<10)nearF=f}}f.bend+=(tb-f.bend)*Math.min(1,dt*10);f.rotation=wv+f.bend}
+ const hm=land&&Math.hypot(hx-(S.lfx??hx),hy-(S.lfy??hy))>.4;S.lfx=hx;S.lfy=hy;S.ptT=(S.ptT||0)-dt;if(nearF&&hm&&S.ptT<=0&&S.petals<70){S.ptT=.07;S.petal(nearF.x+(R()-.5)*6,nearF.y-4,nearF.ci,G)}
+ if(G>.55&&S.petals<50&&R()<dt*G*7){const f=S.flowers[Math.floor(R()*S.flowers.length)];f&&!f.grass&&v.contains(f.x,f.y)&&S.petal(f.x,f.y-4,f.ci,G)}
+ /* lagos vivos */
+ S.fjT-=dt;if(S.fjT<=0){S.fjT=2.6+R()*4.4;const p=S.waterPt(v,12,S.mode==="boat"?S.boat:{x:hx,y:hy},70);p&&S.jumpFish(p.x,p.y)}
+ S.bbT-=dt;if(S.bbT<=0){S.bbT=.9+R()*1.8;const p=S.waterPt(v,8);p&&S.bubbles(p.x,p.y)}
+ /* títulos de região e o que acontece em cada uma */
+ if(S.mode==="boat"){const B=S.boat;S.gorge?.length&&S.gorge.some(p=>Math.hypot(p[0]-B.x,p[1]-B.y)<150)&&S.title("gorge");S.M.bridge&&Math.hypot(S.M.bridge[0]-B.x,S.M.bridge[1]-B.y)<250&&S.title("bridge");
+  const dL=Math.hypot(__RPLAKEB[0]-B.x,__RPLAKEB[1]-B.y);if(dL<__RPLAKEB[2]){S.title("lakeB");if(!S.levOn){S.levOn=1;S.time.delayedCall(3800,()=>S.mode==="boat"&&!S.leaving&&S.levShadow());S.time.delayedCall(12500,()=>S.mode==="boat"&&!S.leaving&&S.levBreach())}}}
+ else if(land){const Z=S.M.zones||{},inZ=(q,k=1)=>q&&((hx-q[0])/(q[2]*k))**2+((hy-q[1])/(q[3]*k))**2<1;
+  inZ(Z.m1)&&S.title("m1")&&(S.time.delayedCall(2500,()=>S.hsay("flowers",__L3("Quanta cor… nem parece que as Profundezas estão tão perto.","So much color… you'd never guess the Depths are this close.","Cuánto color… nadie diría que las Profundidades están tan cerca."))));
+  inZ(Z.g1,1.15)&&S.title("g1");inZ(Z.pond,1.3)&&S.title("pond");
+  inZ(Z.m2)&&S.title("m2")&&(S.time.delayedCall(2500,()=>S.hsay("glow",__L3("Essas flores brilham sozinhas… este lugar é encantado.","These flowers glow on their own… this place is enchanted.","Estas flores brillan solas… este lugar está encantado."))));
+  if(!S.heroDone.has("deer"))for(const a of S.animals||[])if(a.C.grp==="deer"&&a.st==="idle"&&a.s.visible&&Math.hypot(a.x-hx,a.y-hy)<240){S.hsay("deer",__L3("Cervos… e um filhote. Melhor não assustá-los.","Deer… and a fawn. Better not scare them.","Ciervos… y una cría. Mejor no asustarlos."));break}}}
 finish(skip){const S=this;if(S.leaving)return;S.leaving=!0;const go=()=>{try{window.__dubStop?.()}catch(e){}S.audioStop();S.scene.start(S.next.key,S.next.data)};
  S.hero&&S.anims.exists(S.hkey+"-idle")&&S.hero.play(S.hkey+"-idle");const fade=()=>{for(const n in S.au||{})S.gain(n,0,.3)};
  if(skip){fade();S.cameras.main.fadeOut(500,0,0,0);S.uiCam.fadeOut(500,0,0,0);S.time.delayedCall(520,go);return}
  let n=0;const wait=()=>{if((S.speaking||S.queue.length)&&n++<20){S.time.delayedCall(500,wait);return}fade();S.cameras.main.fadeOut(900,0,0,0);S.uiCam.fadeOut(900,0,0,0);S.time.delayedCall(920,go)};S.time.delayedCall(400,wait)}}
 
 try{wt.scene.add("ArcticPrologue",__ArcticPrologue,!1)}catch(e){}
-/*§*//*__ARC__*//*__LAZYMAP__*/
-const __LZ_RE=/^(vcb|dsb|bqb|rib|mtb|gsb|frb|frt|rfb|cab)-\d+-\d+$|^gsb-ext$/;window.__LAZY=window.__LAZY||[];
-{const P0=bo.prototype.preload;bo.prototype.preload=function(){const ld=this.load,orig=ld.image;ld.image=function(k,u,...r){if(typeof k==="string"&&typeof u==="string"&&__LZ_RE.test(k)){window.__LAZY.push([k,u]);return ld}return orig.call(ld,k,u,...r)};try{return P0.apply(this,arguments)}finally{ld.image=orig}};
- const C0=bo.prototype.create;bo.prototype.create=function(){const r=C0?.apply(this,arguments);try{const G=this.game;if(window.__LAZY.length&&!G.scene.getScene("LazyMaps")){G.scene.add("LazyMaps",__LazyMaps,!0);G.scene.sendToBack("LazyMaps")}}catch(e){}return r}}
-class __LazyMaps extends j.Scene{constructor(){super("LazyMaps")}
- create(){const S=this;S.load.maxParallelDownloads=3;let n=0;for(const[k,u]of window.__LAZY)if(!S.textures.exists(k)){S.load.image(k,u);n++}
-  if(!n){window.__lazyDone=!0;return}S.load.once("complete",()=>{window.__lazyDone=!0});S.time.delayedCall(1200,()=>S.load.start())}}
-/* a fase espera os mapas que ainda não chegaram */
-/* só os mapas DESTA fase (antes esperava todos os mapas do jogo: no celular, com a rede lenta, a tela ficava preta
-   por muito tempo ao continuar um jogo salvo). Mostra "Carregando…" com barra e nunca fica presa num download travado. */
-const __LZ_LV={forest:["frb","frt"],castle:["cab"],fortress:["cab"],bosque:["bqb"],rio:["rib"],morta:["mtb"],temple:["dsb"],vulcao:["vcb"],glacial:["gsb"],ruins:["rfb"]};
-Sd.prototype.preload=function(){const S=this,D=S.scene.settings.data||{},lv=D.levelId??D.restore?.campaign?.levelId,need=!D.endless&&__LZ_LV[lv],L=[];
- for(const[k,u]of window.__LAZY||[]){if(S.textures.exists(k))continue;if(need&&!need.includes(k.split("-")[0]))continue;L.push([k,u])}
- if(!L.length)return;try{S.load.xhr.timeout=25e3}catch(e){}S.load.maxParallelDownloads=6;for(const[k,u]of L)S.load.image(k,u);
- try{const w=S.scale.width,h=S.scale.height,c=S.cameras.main;c.setZoom(1);c.setScroll(0,0);
-  const tx=S.add.text(w/2,h/2-18,Be()==="pt"?"Carregando…":Be()==="es"?"Cargando…":"Loading…",{fontFamily:"Georgia, serif",fontSize:"22px",color:"#e8d6a8"}).setOrigin(.5).setScrollFactor(0),
-   bg=S.add.rectangle(w/2,h/2+14,Math.min(320,w*.6),6,0x3a2e22).setOrigin(.5).setScrollFactor(0),
-   bar=S.add.rectangle(w/2-bg.width/2,h/2+14,1,6,0xd8b46a).setOrigin(0,.5).setScrollFactor(0);
-  S.load.on("progress",v=>bar.width=Math.max(1,bg.width*v));S.load.once("complete",()=>{tx.destroy();bg.destroy();bar.destroy()})}catch(e){}};
-/*__LAZYMAP__*//*__SAFESV__*/
-/* sala segura para o save: limpa, ou sem inimigos e sem chefe; lembra a última segura por onde o herói passou */
-function __roomSafe(r){if(!r)return!1;if(r.state==="cleared")return!0;if(r.state==="active")return!1;const d=r.def||{};return!(d.enemies?.length)&&!r.hasBoss&&!d.boss}
-function __safeRoomId(c){try{const r=c.roomManager?.activeRoom;if(__roomSafe(r)&&!__fightNear(c)&&!__hubLocked(c,r))c.__safeRoom=r.id;return c.__safeRoom??null}catch(e){return null}}
-/* o Coração da Floresta fica cercado de espinhos até juntar os 3 cristais: não serve de ponto de volta enquanto isso */
-function __hubLocked(c,r){return!!(r?.def?.hub&&c.levelId==="forest"&&__forestCount(c)<3)}
-/* save antigo que já aponta para o Coração cercado: tira o herói de dentro, para fora dos espinhos */
-{const HB=__hubBarrier;__hubBarrier=function(S,on){const v=HB(S,on);if(on){try{__hubUnstuck(S)}catch(e){}S.time?.delayedCall?.(0,()=>{try{__hubUnstuck(S)}catch(e){}})}return v}}
-/* progresso da floresta que já tinha sido feito mas os cristais sumiram da bolsa: se há prova guardada
-   (selo da floresta marcado na história, portal de masmorra concluído ou cristal de masmorra na bolsa), devolve os 3 */
-function __forestEvidence(S){try{if(__stFlag(S,"forest_done"))return!0;if(S.completedDungeons?.length)return!0;if(__HUBD.some(id=>__CRY[id]&&__hasItem(S,__CRY[id])))return!0;
- const sl=S.game.registry.get("save:slot")??1;for(const k of Object.keys(localStorage))if((k==="depthgate:portals:slot_"+sl||k.startsWith("depthgate:portals:"+sl+":"))&&JSON.parse(localStorage.getItem(k)||"[]").length)return!0}catch(e){}return!1}
-{const HS=__hubSetup;__hubSetup=function(S){try{if(S.levelId==="forest"&&!S.level?.endless&&S.game.registry.get("mode")!=="endless"&&S.inventory&&__forestCount(S)<3&&__forestEvidence(S)){for(let i=1;i<=3;i++){const cid="forest_crystal_"+i;if(!__hasItem(S,cid)){const it=S.lootSystem?.makeItem?.(cid,"LEGENDARY");it&&S.inventory.items.push(it)}}S.requestSave?.(800)}}catch(e){}return HS.apply(this,arguments)}}
-function __hubUnstuck(S){const p=S.player,B=S.dungeon,q=B?.level?.rooms?.find(r=>r.hub)?.rect,o=S.__hubBar;if(!p?.body||!q||!o?.length)return;
- const pc=Math.floor(p.x/dt),pr=Math.floor(p.y/dt);if(!(pc>=q.x&&pc<q.x+q.w&&pr>=q.y&&pr<q.y+q.h))return;
- const L=o.map(t=>[Math.floor(t.x/dt),Math.floor(t.y/dt)]),mid=Math.floor(L.length/2),ord=[...L.slice(mid),...L.slice(0,mid)];
- for(const[c,r]of ord){const dx=c<q.x?-1:c>=q.x+q.w?1:0,dy=r<q.y?-1:r>=q.y+q.h?1:0;for(const k of[1,2]){const tc=c+dx*k,tr=r+dy*k;if(B.isWallTile(tc,tr)||L.some(([a,b])=>a===tc&&b===tr))continue;p.body.reset(tc*dt+dt/2,tr*dt+dt/2);S.cameras?.main?.centerOn?.(p.x,p.y);return}}}
-function __fightNear(c){const p=c.player;if(!p)return!1;for(const e of c.enemies?.getChildren?.()||[])if(!e.dead&&e.active&&Math.hypot(e.x-p.x,e.y-p.y)<320&&(e.ai?.aggro||e.aggro))return!0;return!!(c.boss&&!c.boss.dead&&c.boss.active)}
-/*§*//*__SAFESV__*/
+/*§*//*__ARC__*//*__RTITLE__*/
+/* ── Títulos de região e prévia dos portais ────────────────────────────────────────────────────────────
+   • ao entrar numa fase da campanha aparece o nome dela grande no alto da tela, com um subtítulo e um sino
+     suave (como nos títulos do prólogo do rio)
+   • na floresta, o mesmo ao chegar pela primeira vez no Coração da Floresta e no Jardim Escondido
+   • no Coração da Floresta, cada portal ganha uma placa com a situação da região (aberto, concluído
+     ou trancado), que aparece quando o herói chega perto — dá para ver de longe o que ainda falta abrir    */
+const __RT_SUB={forest:["Onde a jornada começa","Where the journey begins","Donde comienza el viaje"],
+ temple:["As areias guardam segredos","The sands keep their secrets","Las arenas guardan secretos"],
+ catacombs:["Onde os mortos não descansam","Where the dead do not rest","Donde los muertos no descansan"],
+ ruins:["Ecos de um reino caído","Echoes of a fallen kingdom","Ecos de un reino caído"],
+ glacial:["O frio que nunca derrete","A cold that never thaws","Un frío que nunca se derrite"],
+ fortress:["O ninho dos dragões","The dragons' nest","El nido de los dragones"],
+ bosque:["A mata que respira","The jungle that breathes","La selva que respira"],
+ rio:["Ilhas à deriva no nevoeiro","Islands adrift in the fog","Islas a la deriva en la niebla"],
+ morta:["Onde a vida esqueceu de voltar","Where life forgot to return","Donde la vida olvidó volver"],
+ vulcao:["O coração em brasa da terra","The burning heart of the earth","El corazón ardiente de la tierra"],
+ castle:["O trono de Valdrak","Valdrak's throne","El trono de Valdrak"]};
+function __rtChime(S){const E=S.game.audioEngine,C=E?.ctx;if(!C||C.state!=="running")return;try{const t=C.currentTime,out=E.sfxBus||E.ambientBus||C.destination;[[1046.5,.045,0],[1568,.028,.06],[2093,.014,.12]].forEach(([f,v,d])=>{const o=C.createOscillator(),g=C.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.02);g.gain.exponentialRampToValueAtTime(.0003,t+d+2.6);o.connect(g);g.connect(out);o.start(t+d);o.stop(t+d+2.7)})}catch(e){}}
+/* desenha o título na tela de interface (fila: um de cada vez) */
+function __rtTitle(G,name,sub){const U=G.scene.get("UI");if(!U||!U.sys?.isActive?.())return;(G.__rtQ=G.__rtQ||[]).push([name,sub]);G.__rtOn||__rtNext(G)}
+function __rtNext(G){const U=G.scene.get("UI"),it=(G.__rtQ||[]).shift();if(!it||!U||!U.sys?.isActive?.()||!G.sys?.isActive?.()){G.__rtOn=!1;return}
+ /* espera painéis grandes fecharem (história, bênção, resultado) */
+ if(U.storyPanel?.visible||U.blessingPanel?.visible||U.result?.isVisible?.()){G.__rtQ.unshift(it);G.__rtOn=!0;U.time.delayedCall(700,()=>__rtNext(G));return}
+ G.__rtOn=!0;const[name,sub]=it,F="Georgia, 'Times New Roman', serif",C=U.add.container(_/2,st*.2).setDepth(940).setAlpha(0),sh=U.add.image(0,3,"light").setTint(0).setAlpha(.5).setScale(3,.62);
+ const tx=U.add.text(0,-3,name,{fontFamily:F,fontStyle:"bold",fontSize:"24px",color:"#fbf1d4",stroke:"#2a1808",strokeThickness:3}).setOrigin(.5).setShadow(0,2,"#000000",6,!0,!0).setScale(.94);
+ const sb=U.add.text(0,19,(sub||"").toUpperCase(),{fontFamily:F,fontStyle:"italic",fontSize:"9px",color:"#ecdcac",letterSpacing:3}).setOrigin(.5).setAlpha(0);
+ const wl=tx.width/2+12,gl=U.add.graphics();gl.lineStyle(1,0xd9b86a,.95).lineBetween(-wl-62,-3,-wl-4,-3).lineBetween(wl+4,-3,wl+62,-3);gl.fillStyle(0xf2d78f,1);for(const s of[-1,1]){const dx=s*wl;gl.fillTriangle(dx-3,-3,dx,-6,dx+3,-3).fillTriangle(dx-3,-3,dx,0,dx+3,-3);gl.fillCircle(s*(wl+64),-3,1.2)}gl.setScale(0,1);
+ C.add([sh,gl,tx,sb]);__rtChime(G);
+ U.tweens.add({targets:C,alpha:1,duration:900,ease:"Sine.easeOut"});U.tweens.add({targets:tx,scale:1,duration:1400,ease:"Sine.easeOut"});U.tweens.add({targets:gl,scaleX:1,duration:1100,delay:150,ease:"Cubic.easeOut"});U.tweens.add({targets:sb,alpha:.92,duration:900,delay:450});
+ U.time.delayedCall(4200,()=>U.tweens.add({targets:C,alpha:0,y:C.y-6,duration:1100,ease:"Sine.easeIn",onComplete:()=>{C.destroy();U.time.delayedCall(500,()=>__rtNext(G))}}))}
+/* entrada na fase */
+{const C0=Sd.prototype.create;Sd.prototype.create=function(){const r=C0.apply(this,arguments);const S=this;try{
+ const mode=S.game.registry.get("mode");if(mode!=="campaign"||S.level?.endless||S.isRift)return r;S.__rtOn=!1;S.__rtQ=[];
+ const id=S.levelId,name=St(`lvl.${id}`,S.level?.name??id),sb=__RT_SUB[id];S.time.delayedCall(1300,()=>S.sys.isActive()&&__rtTitle(S,name,sb?__L3(...sb):""));
+ /* salas especiais da floresta */
+ if(id==="forest"){const seen=new Set,t0=S.time.now;S.events.on("update",()=>{const R=S.roomManager?.activeRoom,d=R?.def;if(!d||seen.has(d.id)||S.state!=="playing")return;if(d.hub||d.secret){seen.add(d.id);d.hub&&seen.size===1&&S.time.now-t0<4e3||__rtTitle(S,d.name??"",__L3("Floresta de Eldervale","Eldervale Forest","Bosque de Eldervale"))}})}}catch(e){}return r}}
+/* placas dos portais no Coração da Floresta */
+{const HP=__hubPortals;__hubPortals=function(S){const had=!!S.__hubPortals,v=HP.apply(this,arguments);try{if(!had&&S.__hubPortals?.length)__rtPlates(S)}catch(e){}return v}}
+function __rtPlates(S){const F="Georgia, 'Times New Roman', serif",P=[];
+ for(const hp of S.__hubPortals){const id=hp.__level;if(!id)continue;const name=id==="__refugio"?__L3("Refúgio","Refuge","Refugio"):St(`lvl.${id}`,ki[id]?.name??id);
+  const st_=()=>hp.__sealed?["✓ "+__L3("Concluído","Completed","Completado"),"#9fe0a8"]:hp.__locked?["🔒 "+__L3("Trancado","Locked","Cerrado"),"#e0a0a0"]:["✦ "+__L3("Aberto","Open","Abierto"),"#f2d78f"];
+  /* o nome já aparece embaixo do portal: a placa mostra a situação */
+  const[sl,sc]=st_(),y=hp.y-(hp.displayHeight||60)*(hp.originY??.5)-10,c=S.add.container(hp.x,y).setDepth(9e3).setAlpha(0);
+  const t2=S.add.text(0,0,sl,{fontFamily:F,fontStyle:"bold",fontSize:"8px",color:sc,stroke:"#120a04",strokeThickness:3}).setOrigin(.5);
+  const w=t2.width+14,bg=S.add.graphics();bg.fillStyle(0x0b0f16,.6).fillRoundedRect(-w/2,-8,w,16,5).lineStyle(1,0xc9a24a,.55).strokeRoundedRect(-w/2,-8,w,16,5);
+  c.add([bg,t2]);P.push({hp,c,t2,st_,last:sl,name})}
+ const upd=()=>{const p=S.player;if(!p)return;for(const o of P){const d=Math.hypot(o.hp.x-p.x,o.hp.y-p.y),a=Math.max(0,Math.min(1,1-(d-70)/130));o.c.setAlpha(o.c.alpha+(a-o.c.alpha)*.15);if(a>0){const[sl,sc]=o.st_();sl!==o.last&&(o.last=sl,o.t2.setText(sl).setColor(sc))}}};
+ S.events.on("update",upd);S.events.once("shutdown",()=>S.events.off("update",upd))}
+
+/*__RTITLE__*/
