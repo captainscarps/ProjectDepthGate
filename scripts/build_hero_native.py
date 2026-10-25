@@ -35,6 +35,24 @@ def fnv(text):
     return f"{h:08x}"
 
 
+async def tts_phrased(text, v, path):
+    """frase a frase, cada pedaço com tom próprio: sobe no começo, desce no fim, pergunta sobe, reticências alongam
+    (a voz não conhece a língua; assim a entonação deixa de soar robótica)"""
+    import re
+    parts = [x.strip() for x in re.split(r"(?<=[…,.!?—])\s+", text) if x.strip()]
+    fs = []
+    for j, pt in enumerate(parts):
+        q, ex, first, last = pt.endswith("?"), pt.endswith("!"), j == 0, j == len(parts) - 1
+        pitch = "+6Hz" if q else "+4Hz" if ex else "+3Hz" if first else "-2Hz" if last else "+1Hz"
+        rate = "-6%" if pt.endswith("…") else "+4%" if ex else "+0%"
+        f = f"{path}.{j}.mp3"
+        await tts(pt, dict(v, rate=rate, pitch=pitch, phrased=False), f)
+        fs.append(f)
+    lst = path + ".txt"
+    open(lst, "w").write("\n".join(f"file '{x}'" for x in fs))
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-c:a", "libmp3lame", "-b:a", "64k", path], check=True)
+
+
 async def tts(text, v, path):
     import edge_tts
     proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy") or None
@@ -122,7 +140,7 @@ def main():
             async with sem:
                 with tempfile.TemporaryDirectory() as td:
                     raw = os.path.join(td, "r.mp3")
-                    await tts(nat, v, raw)
+                    await (tts_phrased if v.get("phrased") else tts)(nat, v, raw)
                     man["d"][hid][cls] = finish(raw, f)
                     man["s"][hid][cls] = sig
                     print(f"  {cls:12s} {man['d'][hid][cls]:4.1f}s  {nat[:50]}")

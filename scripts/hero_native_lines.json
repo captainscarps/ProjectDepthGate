@@ -51,9 +51,10 @@
   },
   "SHAMAN": {
    "lang": "yrl",
-   "voice": "pt-BR-FranciscaNeural",
-   "rate": "-2%",
-   "pitch": "+1Hz"
+   "voice": "pt-BR-ThalitaMultilingualNeural",
+   "rate": "+0%",
+   "pitch": "+0Hz",
+   "phrased": true
   }
  },
  "generic": [
