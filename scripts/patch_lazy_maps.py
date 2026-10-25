@@ -32,6 +32,9 @@ class __LazyMaps extends j.Scene{constructor(){super("LazyMaps")}
 const __LZ_LV={forest:["frb","frt"],castle:["cab"],fortress:["cab"],bosque:["bqb"],rio:["rib"],morta:["mtb"],temple:["dsb"],vulcao:["vcb"],glacial:["gsb"],ruins:["rfb"]};
 Sd.prototype.preload=function(){const S=this,D=S.scene.settings.data||{},lv=D.levelId??D.restore?.campaign?.levelId,need=!D.endless&&__LZ_LV[lv],L=[];
  for(const[k,u]of window.__LAZY||[]){if(S.textures.exists(k))continue;if(need&&!need.includes(k.split("-")[0]))continue;L.push([k,u])}
+ /* o carregador de fundo (LazyMaps) pode estar com estes mesmos mapas na fila: tira de lá para não baixar duas vezes
+    ("Texture key already in use"); os que já estão baixando lá não dá para tirar */
+ try{const LM=S.scene.get("LazyMaps")?.load,want=new Set(L.map(x=>x[0]));if(LM?.list)for(const f of[...LM.list])want.has(f.key)&&LM.list.delete(f)}catch(e){}
  if(!L.length)return;try{S.load.xhr.timeout=25e3}catch(e){}S.load.maxParallelDownloads=6;for(const[k,u]of L)S.load.image(k,u);
  try{const w=S.scale.width,h=S.scale.height,c=S.cameras.main;c.setZoom(1);c.setScroll(0,0);
   const tx=S.add.text(w/2,h/2-18,Be()==="pt"?"Carregando…":Be()==="es"?"Cargando…":"Loading…",{fontFamily:"Georgia, serif",fontSize:"22px",color:"#e8d6a8"}).setOrigin(.5).setScrollFactor(0),

@@ -33,7 +33,9 @@ function __rtNext(G){const U=G.scene.get("UI"),it=(G.__rtQ||[]).shift();if(!it||
  const mode=S.game.registry.get("mode");if(mode!=="campaign"||S.level?.endless||S.isRift)return r;S.__rtOn=!1;S.__rtQ=[];
  const id=S.levelId,name=St(`lvl.${id}`,S.level?.name??id),sb=__RT_SUB[id];S.time.delayedCall(1300,()=>S.sys.isActive()&&__rtTitle(S,name,sb?__L3(...sb):""));
  /* salas especiais da floresta */
- if(id==="forest"){const seen=new Set,t0=S.time.now;S.events.on("update",()=>{const R=S.roomManager?.activeRoom,d=R?.def;if(!d||seen.has(d.id)||S.state!=="playing")return;if(d.hub||d.secret){seen.add(d.id);d.hub&&seen.size===1&&S.time.now-t0<4e3||__rtTitle(S,d.name??"",__L3("Floresta de Eldervale","Eldervale Forest","Bosque de Eldervale"))}})}}catch(e){}return r}}
+ if(id==="forest"){const seen=new Set,t0=S.time.now,up=()=>{const R=S.roomManager?.activeRoom,d=R?.def;if(!d||seen.has(d.id)||S.state!=="playing")return;if(d.hub||d.secret){seen.add(d.id);d.hub&&seen.size===1&&S.time.now-t0<4e3||__rtTitle(S,d.name??"",__L3("Floresta de Eldervale","Eldervale Forest","Bosque de Eldervale"))}};
+  /* sai junto com a fase (antes ficava preso e, ao voltar à floresta, o título das salas especiais podia aparecer duas vezes) */
+  S.events.on("update",up);S.events.once("shutdown",()=>S.events.off("update",up))}}catch(e){}return r}}
 /* placas dos portais no Coração da Floresta */
 {const HP=__hubPortals;__hubPortals=function(S){const had=!!S.__hubPortals,v=HP.apply(this,arguments);try{if(!had&&S.__hubPortals?.length)__rtPlates(S)}catch(e){}return v}}
 function __rtPlates(S){const F="Georgia, 'Times New Roman', serif",P=[];

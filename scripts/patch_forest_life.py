@@ -14,6 +14,8 @@ while T in s:
     a = s.index(T)
     b = s.index(T, a + 1)
     s = s[:a] + s[b + len(T):]
+# ao voltar à floresta o jogo pedia de novo as imagens do mapa que já estavam carregadas ("Texture key already in use")
+s = s.replace("])this.load.image(f,`assets/pixel-art/forest-open/${f}.png`)", "])this.textures.exists(f)||this.load.image(f,`assets/pixel-art/forest-open/${f}.png`)")
 s = s + T + "\n" + SRC + "\n" + T
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):
