@@ -694,26 +694,26 @@
   ],
   "WARRIOR": [
    [
-    "Eu cresci nestes corredores. Meu pai, o Rei Valdrak, abriu estes portões para salvar o nosso povo.",
-    "I grew up in these halls. My father, King Valdrak, opened these gates to save our people."
+    "Minha família guardou a memória destes corredores por séculos. Meu ancestral, o Rei de Valdrak, abriu estes portões para salvar o nosso povo.",
+    "My family kept the memory of these halls alive for centuries. My ancestor, the King of Valdrak, opened these gates to save our people."
    ],
    [
     "Se ainda restar alguma coisa dele aqui dentro… quem vai encontrá-lo sou eu.",
     "If anything of him is still left in here… I will be the one to find it."
    ],
    [
-    "Este trono era do meu pai. As Profundezas não vão usá-lo como coroa.",
-    "This throne was my father's. The Depths will not wear it as a crown."
+    "Este trono pertenceu ao meu sangue. As Profundezas não vão usá-lo como coroa.",
+    "This throne belonged to my bloodline. The Depths won't wear it as a crown."
    ],
    [
     "“Você fala como quem já esteve lá dentro.”",
     "“You talk like someone who has been in there.”"
    ],
    {
-    "pt": "Pai… encontrei o que restava de você. Agora posso voltar para casa.",
-    "en": "Father… I found what was left of you. Now I can go home.",
-    "es": "Padre… encontré lo que quedaba de ti. Ahora puedo volver a casa.",
-    "nat": "Father… I found what was left of you. Now I can go home."
+    "pt": "Aelric… meu ancestral. Encontrei o que restava de você. Agora a nossa linhagem pode descansar.",
+    "en": "Aelric… my ancestor. I found what was left of you. Now our bloodline can rest.",
+    "es": "Aelric… mi antepasado. Encontré lo que quedaba de ti. Ahora nuestro linaje puede descansar.",
+    "nat": "Aelric… my ancestor. I found what was left of you. Now our bloodline can rest."
    }
   ],
   "ARCHER": [

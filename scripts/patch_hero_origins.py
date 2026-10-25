@@ -1,6 +1,6 @@
 """
 Origens dos heróis (falas ao entrar na terra natal + crônica + Códex):
-  Guerreiro (Draven)  -> Castelo de Valdrak  (príncipe, filho do Rei Valdrak)
+  Guerreiro (Draven)  -> Castelo de Valdrak  (descendente do Rei de Valdrak, séculos depois)
   Samurai (Akihiro)   -> Vulcão de Cinzas    (Sakurajima)
   Arqueiro (Hayato)   -> Vulcão de Cinzas    (Sakurajima, arqueiro samurai)
   Ladina (Seris)      -> Ilhas (rio)
@@ -42,15 +42,15 @@ H = {
                    "My ancestors forged the locks in this lava. And swore never to say why.",
                    "Mis antepasados forjaron las cerraduras en esta lava. Y juraron no contar nunca por qué.")),
     "WARRIOR": ("castle",
-                [("Eu cresci nestes corredores. Meu pai, o Rei Valdrak, abriu estes portões para salvar o nosso povo.",
-                  "I grew up in these halls. My father, King Valdrak, opened these gates to save our people.",
-                  "Crecí en estos pasillos. Mi padre, el Rey Valdrak, abrió estas puertas para salvar a nuestro pueblo."),
+                [("Minha família guardou a memória destes corredores por séculos. Meu ancestral, o Rei de Valdrak, abriu estes portões para salvar o nosso povo.",
+                  "My family kept the memory of these halls alive for centuries. My ancestor, the King of Valdrak, opened these gates to save our people.",
+                  "Mi familia guardó la memoria de estos pasillos durante siglos. Mi antepasado, el Rey de Valdrak, abrió estas puertas para salvar a nuestro pueblo."),
                  ("Se ainda restar alguma coisa dele aqui dentro… quem vai encontrá-lo sou eu.",
                   "If anything of him is still left in here… I will be the one to find it.",
                   "Si todavía queda algo de él aquí dentro… seré yo quien lo encuentre.")],
-                ("Este trono era do meu pai. As Profundezas não vão usá-lo como coroa.",
-                 "This throne was my father's. The Depths will not wear it as a crown.",
-                 "Este trono era de mi padre. Las Profundidades no lo usarán como corona.")),
+                ("Este trono pertenceu ao meu sangue. As Profundezas não vão usá-lo como coroa.",
+                 "This throne belonged to my bloodline. The Depths won't wear it as a crown.",
+                 "Este trono perteneció a mi linaje. Las Profundidades no lo usarán como corona.")),
     "ARCHER": ("vulcao",
                [("Eu treinava o arco no alto de Sakurajima, contra o vento de cinzas.",
                  "I trained with the bow atop Sakurajima, against the wind of ash.",
@@ -132,10 +132,10 @@ s = s.replace(EN_A, EN_A + en_add).replace(ES_A, ES_A + es_add)
 # ── Códex dos heróis ──
 CODEX = {
     "WARRIOR": {
-        "subtitle": "Príncipe de Valdrak & Guarda Inabalável",
+        "subtitle": "Herdeiro de Valdrak & Guarda Inabalável",
         "dimension": "Castelo de Valdrak, coração do antigo império",
-        "lore": "Draven é filho do Rei Valdrak e foi criado nos corredores do castelo como herdeiro e comandante da guarda real. Quando o pai quebrou os selos ancestrais para salvar o povo, foi Draven quem segurou a retaguarda contra a maré do Abismo, até ser engolido pelo vórtice junto com o castelo.",
-        "motivation": "Retomar o castelo da família, descobrir o que restou do pai e fechar para sempre as portas que ele abriu.",
+        "lore": "Draven é descendente do Rei de Valdrak, nascido séculos depois da queda do castelo, numa linhagem que guardou em segredo a memória do rei que abriu os portões para salvar o povo. Cresceu ouvindo que o portal do castelo foi selado com o próprio rei lá dentro, e foi esse sangue que as Profundezas reconheceram quando os selos começaram a ceder. Treinado como cavaleiro e escudo da família, atravessou a fenda para terminar o que o seu ancestral começou.",
+        "motivation": "Retomar o castelo dos seus ancestrais, descobrir o que restou do rei e fechar para sempre as portas que ele abriu.",
     },
     "BERSERKER": {
         "dimension": "Sakurajima, a ilha do vulcão",
