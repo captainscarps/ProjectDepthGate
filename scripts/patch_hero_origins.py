@@ -31,7 +31,8 @@ H = {
                     "Esta ceniza… es la misma que caía sobre Sakurajima. El volcán de mi tierra."),
                    ("Meu clã guardava as forjas da cratera. O que atravessou o fogo até aqui?",
                     "My clan guarded the forges of the crater. What crossed the fire to get here?",
-                    "Mi clan guardaba las forjas del cráter. ¿Qué cruzó el fuego hasta aquí?")],
+                    "Mi clan guardaba las forjas del cráter. ¿Qué cruzó el fuego hasta aquí?"),
+                   ('Hayato… se você me seguiu até aqui, perdoe o seu irmão teimoso. Eu precisava descer sozinho.', 'Hayato… if you followed me this far, forgive your stubborn brother. I had to come down alone.', 'Hayato… si me seguiste hasta aquí, perdona a tu hermano testarudo. Tenía que bajar solo.')],
                   ("Meus ancestrais forjaram as fechaduras nesta lava. E juraram nunca contar por quê.",
                    "My ancestors forged the locks in this lava. And swore never to say why.",
                    "Mis antepasados forjaron las cerraduras en esta lava. Y juraron no contar nunca por qué.")),
@@ -51,7 +52,8 @@ H = {
                  "Entrenaba con el arco en lo alto de Sakurajima, contra el viento de ceniza."),
                 ("Este não é o meu vulcão… mas a cinza tem o mesmo cheiro de casa.",
                  "This is not my volcano… but the ash smells just like home.",
-                 "Este no es mi volcán… pero la ceniza huele igual que mi hogar.")],
+                 "Este no es mi volcán… pero la ceniza huele igual que mi hogar."),
+                ('Estas marcas na rocha… são do corte do Akihiro. Meu irmão passou por aqui.', "These marks in the rock… they're Akihiro's cut. My brother came through here.", 'Estas marcas en la roca… son del corte de Akihiro. Mi hermano pasó por aquí.')],
                ("O Dragão Pálido guardava a cratera como quem guarda um portão. Sakurajima precisa saber disso.",
                 "The Pale Dragon guarded the crater like one guards a gate. Sakurajima must know of this.",
                 "El Dragón Pálido guardaba el cráter como quien guarda un portón. Sakurajima debe saberlo.")),
@@ -132,17 +134,18 @@ CODEX = {
         "motivation": "Retomar o castelo dos seus ancestrais, descobrir o que restou do rei e fechar para sempre as portas que ele abriu.",
     },
     "BERSERKER": {
+        "era": "Fim da Era dos Estados em Guerra (por volta de 1600), domínio de Satsuma",
         "dimension": "Sakurajima, a ilha do vulcão",
-        "lore": "Nascido aos pés de Sakurajima, Akihiro vem de um clã de samurais e ferreiros que guardava as forjas da cratera há gerações. Dedicou a vida ao domínio de um único corte perfeito. Quando uma fenda se abriu no coração do vulcão e engoliu o templo do clã, ele embainhou a katana e atravessou o fogo atrás das respostas que os seus ancestrais esconderam.",
-        "motivation": "Descobrir o segredo que o seu clã jurou guardar, cortar a corrupção abissal na raiz e honrar os ancestrais de Sakurajima.",
+        "lore": "Akihiro é o irmão mais velho de Hayato e herdeiro de um clã de samurais e ferreiros de Satsuma que guardava as forjas da cratera de Sakurajima havia gerações. Criado para liderar o clã, fala com a formalidade solene dos antigos e dedicou a vida ao domínio de um único corte perfeito. Quando uma fenda se abriu no coração do vulcão e engoliu o templo do clã, ele embainhou a katana e desceu sozinho ao fogo atrás do segredo que os ancestrais juraram guardar, sem saber que o irmão mais novo viria logo atrás.",
+        "motivation": "Descobrir o segredo das fechaduras forjadas na lava, cortar a corrupção abissal na raiz e levar Hayato de volta vivo para Sakurajima."
     },
     "ARCHER": {
         "subtitle": "Arqueiro Samurai & Vento de Cinzas",
-        "era": "Período Shogunal do Lótus Carmesim",
+        "era": "Fim da Era dos Estados em Guerra (por volta de 1600), domínio de Satsuma",
         "dimension": "Sakurajima, a ilha do vulcão",
         "weapon": "Yumi (arco longo samurai) & Flechas de Ponta Perfurante",
-        "lore": "Hayato é um arqueiro samurai de Sakurajima, treinado no alto da cratera, onde o vento carregado de cinzas desvia qualquer flecha mal disparada. Quando a fenda se abriu no vulcão e criaturas das trevas desceram as encostas, ele seguiu o rastro de fogo para caçar as abominações na sua própria origem.",
-        "motivation": "Impedir que a podridão do Abismo alcance Sakurajima e garantir que nenhuma flecha seja disparada em vão.",
+        "lore": "Hayato é o irmão mais novo de Akihiro. Enquanto o irmão aprendia a forja e a katana como herdeiro do clã, ele treinava o arco no alto da cratera de Sakurajima, onde o vento carregado de cinzas desvia qualquer flecha mal disparada. Quando a fenda engoliu o templo do clã e Akihiro desceu ao fogo, criaturas das trevas subiram as encostas atrás dele. Hayato seguiu o rastro de fogo para caçá-las na origem e para trazer o irmão de volta.",
+        "motivation": "Encontrar Akihiro, impedir que a podridão do Abismo alcance Sakurajima e garantir que nenhuma flecha seja disparada em vão."
     },
     "MAGE": {
         "era": "Século Dourado da Academia Arcana de Dal-Vor",
