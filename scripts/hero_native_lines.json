@@ -40,8 +40,9 @@
   "MAGE": {
    "lang": "ar",
    "voice": "ar-EG-SalmaNeural",
-   "rate": "-3%",
-   "pitch": "+0Hz"
+   "rate": "-2%",
+   "pitch": "+0Hz",
+   "phrased": true
   },
   "ROGUE": {
    "lang": "fr",
@@ -65,7 +66,7 @@
    "ja": "誰だ…誰が俺に話しかけている？",
    "el": "Ποιος… ποιος μου μιλάει;",
    "pl": "Kto… kto do mnie mówi?",
-   "ar": "مين… مين اللي بيكلمني؟",
+   "ar": "مَن… مَن الذي يُكلِّمُني؟",
    "fr": "Qui… qui me parle ?",
    "yrl": "Awá taá… awá taá unheẽ ixé irũmu?",
    "yrl_tts": "Auá taá… auá taá unhên ixé irúmu?"
@@ -77,7 +78,7 @@
    "ja": "この声…あらゆる方向から聞こえる。",
    "el": "Αυτή η φωνή… μοιάζει να έρχεται από παντού.",
    "pl": "Ten głos… jakby dochodził zewsząd.",
-   "ar": "الصوت ده… كأنه جاي من كل حتة.",
+   "ar": "هذا الصوت… كأنّه يأتي من كلِّ مكان.",
    "fr": "Cette voix… on dirait qu'elle vient de partout.",
    "yrl": "Kuá nheẽnga… usika paá panhẽ rendá suí.",
    "yrl_tts": "Cuá nhênga… ussíca paá, panhên rendá suí."
@@ -89,7 +90,7 @@
    "ja": "なぜそんなことまで知っている？お前は誰だ？",
    "el": "Πώς τα ξέρεις όλα αυτά; Ποια είσαι;",
    "pl": "Skąd to wszystko wiesz? Kim jesteś?",
-   "ar": "إنتي عارفة كل ده إزاي؟ إنتي مين؟",
+   "ar": "كيف تعرفين كلَّ هذا؟ مَن أنتِ؟",
    "fr": "Comment tu sais tout ça ? Qui es-tu ?",
    "yrl": "Mayé taá rekuáu panhẽ kuá? Awá taá indé?",
    "yrl_tts": "Maiê taá recuáu panhên cuá? Auá taá indé?"
@@ -101,7 +102,7 @@
    "ja": "姿を見せろ！なぜ出てこない？",
    "el": "Φανερώσου! Γιατί δεν εμφανίζεσαι;",
    "pl": "Pokaż się! Dlaczego się nie ukazujesz?",
-   "ar": "اظهري! ليه مش بتبيني نفسك؟",
+   "ar": "أظهِري نفسَكِ! لماذا لا تَظهرين؟",
    "fr": "Montre-toi ! Pourquoi tu n'apparais pas ?",
    "yrl": "Resendú! Maresé taá ti resendú?",
    "yrl_tts": "Ressendú! Maressê taá ti ressendú?"
@@ -113,7 +114,7 @@
    "ja": "森の心臓…そこで、この声の正体がわかるのか。",
    "el": "Η Καρδιά του Δάσους… εκεί λοιπόν θα μάθω σε ποιον ανήκει αυτή η φωνή.",
    "pl": "Serce Lasu… więc tam się dowiem, czyj to głos.",
-   "ar": "قلب الغابة… يبقى هناك هعرف الصوت ده بتاع مين.",
+   "ar": "قلبُ الغابة… إذن هناك سأعرفُ صاحبةَ هذا الصوت.",
    "fr": "Le Cœur de la Forêt… c'est donc là que je saurai à qui appartient cette voix.",
    "yrl": "Kaá Pyá… ape taá ixé asikuáu awá nheẽnga kuá.",
    "yrl_tts": "Caá Piá… apê taá ixé assicuáu, auá nhênga cuá."
@@ -125,7 +126,7 @@
    "ja": "こんなに澄んだ水を見るのは久しぶりだ…",
    "el": "Πόσος καιρός πέρασε από τότε που είδα τόσο καθαρό νερό…",
    "pl": "Tak dawno nie widziałem tak czystej wody…",
-   "ar": "بقالي كتير أوي ما شفتش ميّه صافية كده…",
+   "ar": "لم أرَ ماءً بهذا الصفاء منذ زمنٍ بعيد…",
    "fr": "Ça fait si longtemps que je n'ai pas vu une eau aussi claire…",
    "yrl": "Ariré retana ti amaã ií pukaturu kuá yawé…",
    "yrl_tts": "Ariré retana, ti amaã ií pucatúru cuá iauê…"
@@ -137,7 +138,7 @@
    "ja": "封印の守護者…お前もその一人だったのか？いったい何者なんだ？",
    "el": "Φύλακες της σφραγίδας… κι εσύ ήσουν μία από αυτούς; Ποια είσαι, τελικά;",
    "pl": "Strażnicy pieczęci… i ty byłaś jedną z nich? Kim ty właściwie jesteś?",
-   "ar": "حراس الختم… وإنتي كنتي واحدة منهم؟ إنتي مين بجد؟",
+   "ar": "حُرّاسُ الختم… وكنتِ واحدةً منهم؟ مَن أنتِ حقًّا؟",
    "fr": "Les gardiens du sceau… et tu étais l'une d'eux ? Qui es-tu, au fond ?",
    "yrl": "Mukameẽsara-itá… indé yuíri yepé aintá suí? Awá taá indé, supí?",
    "yrl_tts": "Mucamenssára-itá… indé iuíri iepé aintá suí? Auá taá indé, supí?"
@@ -149,7 +150,7 @@
    "ja": "俺も感じる…木々の間から何かに見張られているような。",
    "el": "Το νιώθω κι εγώ… σαν κάτι να με παρακολουθεί μέσα από τα δέντρα.",
    "pl": "Też to czuję… jakby coś obserwowało mnie spomiędzy drzew.",
-   "ar": "أنا كمان حاسة… كأن في حاجة بتراقبني من بين الشجر.",
+   "ar": "أنا أيضًا أشعرُ بذلك… كأنّ شيئًا يراقبُني من بين الأشجار.",
    "fr": "Je le sens aussi… comme si quelque chose me guettait entre les arbres.",
    "yrl": "Ixé yuíri asendú… yawé mbaá umaã ixé mirá-itá pitera suí.",
    "yrl_tts": "Ixé iuíri assendú… iauê mbaá umaã ixé, mirá-itá pitéra suí."
@@ -161,7 +162,7 @@
    "ja": "落ち着け、ちびすけ…傷つけたりしない。",
    "el": "Ήρεμα, μικρέ… δεν θα σε πειράξω.",
    "pl": "Spokojnie, maluchu… nie zrobię ci krzywdy.",
-   "ar": "اهدى يا صغير… مش هأذيك.",
+   "ar": "اهدأ أيّها الصغير… لن أؤذيَك.",
    "fr": "Doucement, petit… je ne te ferai pas de mal.",
    "yrl": "Remurari, mirĩ… ti asaã indé.",
    "yrl_tts": "Remurári, mirín… ti assaã indé."
@@ -173,7 +174,7 @@
    "ja": "戻ってきた…でも別の場所に。賢いな。",
    "el": "Γύρισαν… μόνο που σε άλλη γωνιά. Έξυπνα.",
    "pl": "Wróciły… tylko w innym miejscu. Sprytne.",
-   "ar": "رجعوا… بس في حتة تانية. أذكيا.",
+   "ar": "عادوا… لكن إلى مكانٍ آخر. يا لَذكائهم.",
    "fr": "Ils sont revenus… mais ailleurs. Malins.",
    "yrl": "Usika yuíri… amú rendá upé. Kuaá-sara aintá.",
    "yrl_tts": "Ussíca iuíri… amú rendá upé. Cuaá-sára aintá."
@@ -185,7 +186,7 @@
    "ja": "鳥まで逃げていく…もっと静かに歩くことを覚えないと。",
    "el": "Ακόμα και τα πουλιά φεύγουν… πρέπει να μάθω να πατάω πιο απαλά.",
    "pl": "Nawet ptaki uciekają… muszę nauczyć się stąpać lżej.",
-   "ar": "حتى العصافير بتهرب… لازم أتعلم أمشي بخفة أكتر.",
+   "ar": "حتى الطيور تفرُّ منّي… عليَّ أن أتعلّمَ المشيَ بخفّةٍ أكبر.",
    "fr": "Même les oiseaux s'envolent… je dois apprendre à marcher plus légèrement.",
    "yrl": "Wirá-itá yuíri udiwá… ixé apuraku aiwatá mewé.",
    "yrl_tts": "Uirá-itá iuíri udiuá… ixé apurácu aiuatá meuê."
@@ -197,7 +198,7 @@
    "ja": "カモだ！こんなに生き物でいっぱいの湖は久しぶりだ。",
    "el": "Πάπιες! Είχα καιρό να δω λίμνη τόσο γεμάτη ζωή.",
    "pl": "Kaczki! Dawno nie widziałem jeziora tak pełnego życia.",
-   "ar": "بط! بقالي زمان ما شفتش بحيرة مليانة حياة كده.",
+   "ar": "بطّ! منذ زمنٍ لم أرَ بحيرةً تفيضُ بالحياة هكذا.",
    "fr": "Des canards ! Ça fait une éternité que je n'ai pas vu un lac aussi plein de vie.",
    "yrl": "Ipeka-itá! Ariré ti amaã ipawa sikué-sara yawé kuá.",
    "yrl_tts": "Ipéca-itá! Ariré, ti amaã ipáua sicuê-sára iauê cuá."
@@ -209,7 +210,7 @@
    "ja": "冷たい水だ…でも足は着く。",
    "el": "Κρύο νερό… αλλά πατώνω.",
    "pl": "Zimna woda… ale dosięgam dna.",
-   "ar": "الميّه ساقعة… بس رجلي لامسة القاع.",
+   "ar": "الماءُ بارد… لكنّ قدميَّ تلمسان القاع.",
    "fr": "L'eau est froide… mais j'ai pied.",
    "yrl": "Ií irusanga… ma ixé apisika ií kupé.",
    "yrl_tts": "Ií irussánga… ma ixé apissíca ií cupé."
@@ -221,7 +222,7 @@
    "ja": "何か巨大なものが船の下を通っている…",
    "el": "Κάτι τεράστιο περνάει κάτω από τη βάρκα…",
    "pl": "Coś ogromnego przepływa pod łodzią…",
-   "ar": "في حاجة ضخمة بتعدي تحت المركب…",
+   "ar": "شيءٌ هائلٌ يمرُّ تحت القارب…",
    "fr": "Quelque chose d'énorme passe sous la barque…",
    "yrl": "Mbaá turusú usasá igara wyrpe…",
    "yrl_tts": "Mbaá turussú ussassá igára uírpe…"
@@ -233,7 +234,7 @@
    "ja": "今のは何だ！？この湖には何か巨大なものが棲んでいる…",
    "el": "Τι ήταν αυτό;! Κάτι τεράστιο ζει σε αυτή τη λίμνη…",
    "pl": "Co to było?! W tym jeziorze żyje coś ogromnego…",
-   "ar": "إيه ده؟! في حاجة ضخمة عايشة في البحيرة دي…",
+   "ar": "ما كان ذلك؟! شيءٌ هائلٌ يعيشُ في هذه البحيرة…",
    "fr": "C'était quoi, ça ?! Quelque chose d'énorme vit dans ce lac…",
    "yrl": "Mayé taá kuá?! Mbaá turusú usikué kuá ipawa upé…",
    "yrl_tts": "Maiê taá cuá?! Mbaá turussú ussicuê cuá ipáua upé…"
@@ -245,7 +246,7 @@
    "ja": "なんて色だ…深淵がこんなに近いなんて信じられない。",
    "el": "Πόσα χρώματα… ποιος θα το έλεγε ότι τα Βάθη είναι τόσο κοντά.",
    "pl": "Tyle kolorów… nikt by nie zgadł, że Otchłań jest tak blisko.",
-   "ar": "ألوان كتير أوي… محدش يصدق إن الأعماق قريبة كده.",
+   "ar": "كلُّ هذه الألوان… لا يبدو أنّ الأعماقَ قريبةٌ إلى هذا الحدّ.",
    "fr": "Que de couleurs… on ne dirait jamais que les Profondeurs sont si proches.",
    "yrl": "Iyakuá retana… ti paá Ipupé-wasú kuíri kuá suí.",
    "yrl_tts": "Iacuá retana… ti paá Ipupê-uassú cuíri cuá suí."
@@ -257,7 +258,7 @@
    "ja": "この花、ひとりでに光っている…ここは魔法の場所だ。",
    "el": "Αυτά τα λουλούδια λάμπουν μόνα τους… αυτό το μέρος είναι μαγεμένο.",
    "pl": "Te kwiaty świecą same z siebie… to miejsce jest zaczarowane.",
-   "ar": "الورد ده بينوّر لوحده… المكان ده مسحور.",
+   "ar": "هذه الأزهارُ تتوهّجُ وحدَها… هذا المكانُ مسحور.",
    "fr": "Ces fleurs brillent toutes seules… cet endroit est enchanté.",
    "yrl": "Kuá putira-itá uberabá aintá sesé… kuá rendá paié-wara.",
    "yrl_tts": "Cuá putíra-itá uberabá aintá sessê… cuá rendá paié-uára."
@@ -269,7 +270,7 @@
    "ja": "鹿だ…子鹿もいる。驚かさないほうがいい。",
    "el": "Ελάφια… κι ένα μικρό. Καλύτερα να μην τα τρομάξω.",
    "pl": "Jelenie… i młode. Lepiej ich nie płoszyć.",
-   "ar": "غزلان… ومعاهم صغير. الأحسن ما أخوفهمش.",
+   "ar": "غِزلان… ومعها صغير. من الأفضل ألّا أُخيفَها.",
    "fr": "Des cerfs… et un faon. Mieux vaut ne pas les effrayer.",
    "yrl": "Suasú-itá… asui yepé taíra. Puranga ti asaimbé aintá.",
    "yrl_tts": "Suassú-itá… assuí iepé taíra. Purânga ti assaimbé aintá."
@@ -281,7 +282,7 @@
    "ja": "川で聞いたあの声…俺を待っていると言った。だが、彼女は誰なんだ？",
    "el": "Εκείνη η φωνή στο ποτάμι… είπε πως θα με περιμένει. Αλλά ποια είναι;",
    "pl": "Ten głos na rzece… mówił, że będzie na mnie czekać. Ale kim ona jest?",
-   "ar": "الصوت اللي في النهر… قال إنه هيستناني. بس هي مين؟",
+   "ar": "ذلك الصوتُ على النهر… قال إنّه سينتظرُني. لكن مَن تكون؟",
    "fr": "Cette voix sur la rivière… elle disait qu'elle m'attendrait. Mais qui est-elle ?",
    "yrl": "Nheẽnga paranã upé… unheẽ usarú-putári ixé. Ma awá taá aé?",
    "yrl_tts": "Nhênga paranã upé… unhên ussarú-putári ixé. Ma auá taá aê?"
@@ -293,7 +294,7 @@
    "ja": "誰かに導かれている気がする…それとも見張られているのか。",
    "el": "Νιώθω πως κάποιος με οδηγεί… ή με παρακολουθεί.",
    "pl": "Czuję, że ktoś mnie prowadzi… albo obserwuje.",
-   "ar": "حاسة إن في حد بيوجهني… أو بيراقبني.",
+   "ar": "أشعرُ أنّ أحدًا يُرشدُني… أو يراقبُني.",
    "fr": "J'ai l'impression que quelqu'un me guide… ou m'observe.",
    "yrl": "Asendú awá urasú ixé… ou umaã ixé.",
    "yrl_tts": "Assendú auá urassú ixé… ou umaã ixé."
@@ -305,7 +306,7 @@
    "ja": "声よ…そこにいるなら、姿を見せろ！",
    "el": "Φωνή… αν είσαι εκεί, φανερώσου!",
    "pl": "Głosie… jeśli tam jesteś, pokaż się!",
-   "ar": "يا صوت… لو إنتي هنا، اظهري!",
+   "ar": "أيّها الصوت… إن كنتِ هنا، فأظهِري نفسَكِ!",
    "fr": "Voix… si tu es là, montre-toi !",
    "yrl": "Nheẽnga… se resikué ape, resendú!",
    "yrl_tts": "Nhênga… se ressicuê apê, ressendú!"
@@ -317,7 +318,7 @@
    "ja": "…あれは何だ！？",
    "el": "…Τι είναι αυτό;!",
    "pl": "…Co to jest?!",
-   "ar": "…إيه ده؟!",
+   "ar": "…ما هذا؟!",
    "fr": "…Qu'est-ce que c'est ?!",
    "yrl": "…Mayé taá kuá?!",
    "yrl_tts": "…Maiê taá cuá?!"
@@ -329,7 +330,7 @@
    "ja": "またこの声か…いったい誰なんだ？",
    "el": "Πάλι αυτή η φωνή… ποια είσαι, τελικά;",
    "pl": "Znowu ten głos… kim ty właściwie jesteś?",
-   "ar": "تاني الصوت ده… إنتي مين بجد؟",
+   "ar": "هذا الصوتُ مرّةً أخرى… مَن أنتِ حقًّا؟",
    "fr": "Encore cette voix… qui es-tu, au fond ?",
    "yrl": "Kuá nheẽnga yuíri… awá taá indé, supí?",
    "yrl_tts": "Cuá nhênga iuíri… auá taá indé, supí?"
@@ -341,7 +342,7 @@
    "ja": "ここには何か秘密がある…",
    "el": "Κάποιο μυστικό κρύβεται εδώ…",
    "pl": "Kryje się tu jakiś sekret…",
-   "ar": "في سر ما هنا…",
+   "ar": "ثمّةَ سرٌّ ما هنا…",
    "fr": "Il y a une sorte de secret ici…",
    "yrl": "Mbaá iyumimi usikué iké…",
    "yrl_tts": "Mbaá iumími ussicuê iquê…"
@@ -353,7 +354,7 @@
    "ja": "新しい謎のようだ。",
    "el": "Μοιάζει με νέο γρίφο.",
    "pl": "Wygląda na nową zagadkę.",
-   "ar": "شكله لغز جديد.",
+   "ar": "يبدو أنّه لغزٌ جديد.",
    "fr": "On dirait une nouvelle énigme.",
    "yrl": "Yawé yepé purandusá pisasú.",
    "yrl_tts": "Iauê iepé purandussá pissassú."
@@ -365,7 +366,7 @@
    "ja": "ふむ…これは偶然ここにあるわけじゃない。",
    "el": "Χμ… αυτό δεν βρίσκεται εδώ τυχαία.",
    "pl": "Hm… to nie jest tu przypadkiem.",
-   "ar": "همم… ده مش موجود هنا صدفة.",
+   "ar": "همم… هذا ليس هنا صدفةً.",
    "fr": "Hm… ce n'est pas là par hasard.",
    "yrl": "Hm… kuá ti usikué iké panhé-panhé.",
    "yrl_tts": "Hum… cuá ti ussicuê iquê panhê-panhê."
@@ -377,7 +378,7 @@
    "ja": "この辺りに何か隠されている。",
    "el": "Κάτι είναι κρυμμένο εδώ γύρω.",
    "pl": "Coś jest tu ukryte.",
-   "ar": "في حاجة متخبية هنا.",
+   "ar": "هناك شيءٌ مخبّأٌ في هذا المكان.",
    "fr": "Quelque chose est caché par ici.",
    "yrl": "Mbaá iyumimi usikué iké rupí.",
    "yrl_tts": "Mbaá iumími ussicuê iquê rupí."
@@ -389,7 +390,7 @@
    "ja": "謎か…何を守っているのか見てみよう。",
    "el": "Ένα αίνιγμα… ας δούμε τι φυλάει.",
    "pl": "Zagadka… zobaczmy, czego strzeże.",
-   "ar": "لغز… يلا نشوف بيحرس إيه.",
+   "ar": "لغز… لنرَ ماذا يحرس.",
    "fr": "Une énigme… voyons ce qu'elle garde.",
    "yrl": "Yepé purandusá… yamaã mayé taá umukameẽ.",
    "yrl_tts": "Iepé purandussá… iamaã maiê taá umucamên."
@@ -401,7 +402,7 @@
    "ja": "ここに来た時は、あの声が誰のものかも知らなかった。今は、知りすぎたまま去っていく。",
    "el": "Όταν έφτασα, δεν ήξερα καν ποιανού ήταν εκείνη η φωνή. Τώρα φεύγω ξέροντας πάρα πολλά.",
    "pl": "Kiedy tu przybyłem, nie wiedziałem nawet, czyj to głos. Teraz odchodzę, wiedząc za dużo.",
-   "ar": "لما وصلت، ما كنتش عارفة الصوت ده بتاع مين. دلوقتي ماشية وأنا عارفة أكتر من اللازم.",
+   "ar": "حين وصلتُ، لم أكن أعرفُ حتى صاحبةَ ذلك الصوت. والآن أرحلُ وأنا أعرفُ أكثرَ ممّا ينبغي.",
    "fr": "Quand je suis arrivée, je ne savais même pas à qui appartenait cette voix. Maintenant, je repars en sachant trop de choses.",
    "yrl": "Ixé asika ramé, ti akuáu awá nheẽnga kuá. Kuíri asó, akuáu retana.",
    "yrl_tts": "Ixé assíca ramê, ti acuáu auá nhênga cuá. Cuíri assó, acuáu retana."
@@ -413,7 +414,7 @@
    "ja": "花はまだ咲いている。何事もなかったかのように。俺たちが守っていたのは、きっとこれなんだ。",
    "el": "Τα λουλούδια είναι ακόμα εδώ, σαν να μη συνέβη τίποτα. Ίσως αυτό είναι που προστατεύουμε.",
    "pl": "Kwiaty wciąż tu są, jakby nic się nie stało. Może właśnie to chronimy.",
-   "ar": "الورد لسه هنا، كأن مفيش حاجة حصلت. يمكن ده اللي إحنا بنحميه.",
+   "ar": "ما زالت الأزهارُ هنا، كأنّ شيئًا لم يحدث. ربّما هذا ما كنّا نحميه حقًّا.",
    "fr": "Les fleurs sont toujours là, comme si rien ne s'était passé. C'est peut-être ça qu'on protège.",
    "yrl": "Putira-itá usikué iké yuíri, yawé ti mbaá usasá. Kuá taá yandé yamukameẽ.",
    "yrl_tts": "Putíra-itá ussicuê iquê iuíri, iauê ti mbaá ussassá. Cuá taá iandé iamucamên."
@@ -425,7 +426,7 @@
    "ja": "鹿たちはもう俺から逃げない。それとも、俺がようやく静かに歩けるようになったのか。",
    "el": "Τα ελάφια δεν με φοβούνται πια. Ή ίσως έμαθα επιτέλους να πατάω πιο απαλά.",
    "pl": "Jelenie już przede mną nie uciekają. A może w końcu nauczyłem się stąpać lżej.",
-   "ar": "الغزلان ما بقتش تهرب مني. أو يمكن أنا اتعلمت أخيرًا أمشي بخفة.",
+   "ar": "لم تعد الغِزلانُ تفرُّ منّي. أو ربّما تعلّمتُ أخيرًا أن أمشيَ بخفّة.",
    "fr": "Les cerfs ne me fuient plus. Ou peut-être que j'ai enfin appris à marcher plus légèrement.",
    "yrl": "Suasú-itá ti udiwá ixé suí kuíri. Ou ixé akuáu aiwatá mewé.",
    "yrl_tts": "Suassú-itá ti udiuá ixé suí cuíri. Ou ixé acuáu aiuatá meuê."
@@ -437,7 +438,7 @@
    "ja": "別の旅人の舟だ。俺は最後までたどり着いた…彼はできなかった。二人分、覚えておこう。",
    "el": "Η βάρκα ενός άλλου ταξιδιώτη. Εγώ έφτασα ως το τέλος… εκείνος όχι. Θα τον θυμάμαι και για τους δυο μας.",
    "pl": "Łódź innego podróżnika. Ja dotarłem do końca… on nie. Będę go pamiętał za nas obu.",
-   "ar": "مركب رحّال تاني. أنا وصلت للآخر… هو لأ. هفتكره عشان إحنا الاتنين.",
+   "ar": "قاربُ مسافرٍ آخر. أنا بلغتُ النهاية… أمّا هو فلا. سأتذكّرُه عن كلينا.",
    "fr": "La barque d'un autre voyageur. Moi, je suis allée jusqu'au bout… lui, non. Je me souviendrai de lui pour nous deux.",
    "yrl": "Amú wataresara igara. Ixé asika paawa upé… aé ti. Amaité-ana aé yandé mukũi resé.",
    "yrl_tts": "Amú uataressára igára. Ixé assíca paáua upé… aê ti. Amaitê-ana aê, iandé mucúin ressê."
@@ -449,7 +450,7 @@
    "ja": "この像は最初の封印を見届けた。そして今、最後の封印も。そう願いたい。",
    "el": "Αυτό το άγαλμα είδε την πρώτη σφράγιση. Τώρα είδε και την τελευταία. Έτσι ελπίζω.",
    "pl": "Ten posąg widział pierwsze zapieczętowanie. Teraz widział ostatnie. Mam nadzieję.",
-   "ar": "التمثال ده شاف أول ختم. ودلوقتي شاف آخر ختم. أتمنى كده.",
+   "ar": "شهِدَ هذا التمثالُ الختمَ الأوّل. والآن شهِدَ الأخير. هكذا أرجو.",
    "fr": "Cette statue a vu le premier scellement. Maintenant, elle a vu le dernier. Je l'espère.",
    "yrl": "Kuá ta'anga umaã yepesá mukameẽsá. Kuíri umaã paawa-wara. Aputári yawé.",
    "yrl_tts": "Cuá taánga umaã iepessá mucamenssá. Cuíri umaã paáua-uára. Aputári iauê."
@@ -461,7 +462,7 @@
    "ja": "同じ桟橋、同じ舟。でも、ここに降り立った頃の俺じゃない。",
    "el": "Η ίδια προβλήτα, η ίδια βάρκα. Αλλά δεν είμαι πια αυτός που αποβιβάστηκε εδώ.",
    "pl": "Ten sam pomost, ta sama łódź. Ale nie jestem już tym, kto tu wysiadł.",
-   "ar": "نفس المرسى، ونفس المركب. بس أنا مش نفس اللي نزلت هنا.",
+   "ar": "الرصيفُ نفسُه، والقاربُ نفسُه. لكنّني لم أعد تلك التي نزلت هنا.",
    "fr": "Le même ponton, la même barque. Mais je ne suis plus celle qui a débarqué ici.",
    "yrl": "Kuá igara-rendá, kuá igara. Ma ixé ti kuíri awá usem iké.",
    "yrl_tts": "Cuá igára-rendá, cuá igára. Ma ixé ti cuíri auá ussêm iquê."
@@ -473,7 +474,7 @@
    "ja": "今度は川が俺を連れ帰ってくれる。流れさえ穏やかに見える。",
    "el": "Αυτή τη φορά το ποτάμι με φέρνει πίσω. Ακόμα και το ρεύμα μοιάζει πιο ήρεμο.",
    "pl": "Tym razem rzeka niesie mnie z powrotem. Nawet nurt wydaje się spokojniejszy.",
-   "ar": "المرة دي النهر هو اللي بيرجّعني. حتى التيار شكله أهدى.",
+   "ar": "هذه المرّة يحملُني النهرُ إلى الوراء. حتى التيّارُ يبدو أهدأ.",
    "fr": "Cette fois, la rivière me ramène. Même le courant semble plus calme.",
    "yrl": "Kuíri paranã urasú ixé ruaana. Ií usú yuíri mewé-mewé.",
    "yrl_tts": "Cuíri paranã urassú ixé ruaána. Ií ussú iuíri, meuê-meuê."
@@ -485,7 +486,7 @@
    "ja": "鏡の湖…あの生き物はまだこの下にいる。またな、古い友よ。",
    "el": "Λίμνη-Καθρέφτης… εκείνο το πλάσμα είναι ακόμα εκεί κάτω. Αντίο, παλιέ μου φίλε.",
    "pl": "Lustrzane Jezioro… to stworzenie wciąż tam jest. Do zobaczenia, stary przyjacielu.",
-   "ar": "بحيرة المراية… الكائن ده لسه تحت. مع السلامة يا صاحبي القديم.",
+   "ar": "بحيرةُ المرآة… ما زال ذلك المخلوقُ هناك في الأعماق. إلى اللقاء يا صديقي القديم.",
    "fr": "Le Lac Miroir… cette créature est toujours là, en dessous. À bientôt, vieille amie.",
    "yrl": "Ipawa Sesá… suú turusú usikué yuíri ií wirpe. Ayupé-ana, se irũ.",
    "yrl_tts": "Ipáua Sessá… suú turussú ussicuê iuíri ií uírpe. Aiupê-ana, se irún."
@@ -497,7 +498,7 @@
    "ja": "二つの王国の橋。いつか誰かが架け直すだろう。その時は見に戻ってこようか。",
    "el": "Η Γέφυρα των Δύο Βασιλείων. Κάποια μέρα κάποιος θα την ξαναχτίσει. Ίσως γυρίσω να τη δω.",
    "pl": "Most Dwóch Królestw. Kiedyś ktoś go odbuduje. Może wrócę, żeby to zobaczyć.",
-   "ar": "كوبري المملكتين. في يوم حد هيبنيه من جديد. يمكن أرجع أشوفه.",
+   "ar": "جسرُ المملكتين. يومًا ما سيُعيدُ أحدٌ بناءَه. ربّما أعودُ لأراه.",
    "fr": "Le Pont des Deux Royaumes. Un jour, quelqu'un le reconstruira. Peut-être que je reviendrai le voir.",
    "yrl": "Mukũi tetama ponte… yepé ara awá umunhã yuíri. Kuxiima ixé asika amaã arama.",
    "yrl_tts": "Mucúin tetáma ponte… iepé ára auá umunhã iuíri. Cuxiíma ixé assíca, amaã arama."
@@ -509,7 +510,7 @@
    "ja": "どの門も、俺に傷跡を残した。すぐには癒えないものもある。",
    "el": "Κάθε πύλη άφησε ένα σημάδι πάνω μου. Μερικά δεν θα κλείσουν σύντομα.",
    "pl": "Każda brama zostawiła na mnie ślad. Niektóre szybko się nie zagoją.",
-   "ar": "كل بوابة سابت علامة فيا. في علامات مش هتطيب قريب.",
+   "ar": "كلُّ بوابةٍ تركت فيّ أثرًا. وبعضُها لن يندملَ قريبًا.",
    "fr": "Chaque portail a laissé une marque en moi. Certaines ne guériront pas de sitôt.",
    "yrl": "Panhẽ okena umunhã yepé kuatiara ixé resé. Amú-itá ti ukuera kuíri.",
    "yrl_tts": "Panhên ocêna umunhã iepé cuatiára ixé ressê. Amú-itá ti ucuéra cuíri."
@@ -521,7 +522,7 @@
    "ja": "霧の湖。すべてはここから始まった。",
    "el": "Η Λίμνη της Ομίχλης. Εδώ ξεκίνησαν όλα.",
    "pl": "Jezioro Mgieł. To tutaj wszystko się zaczęło.",
-   "ar": "بحيرة الضباب. هنا كانت البداية.",
+   "ar": "بحيرةُ الضباب. هنا بدأ كلُّ شيء.",
    "fr": "Le Lac des Brumes. C'est ici que tout a commencé.",
    "yrl": "Ipawa Ybytinga. Iké panhẽ uyupirũ.",
    "yrl_tts": "Ipáua Ibitínga. Iquê panhên uiupirún."
@@ -533,7 +534,7 @@
    "ja": "エリンドラは命乞いをし、俺は武器を下ろした。この選択は誰も知らない…俺と森だけだ。",
    "el": "Η Ελίντρα ικέτεψε για τη ζωή της, κι εγώ κατέβασα το όπλο. Κανείς δεν θα μάθει αυτή την επιλογή… μόνο εγώ και το δάσος.",
    "pl": "Elyndra błagała o życie, a ja opuściłem broń. Nikt się nie dowie o tym wyborze… tylko ja i las.",
-   "ar": "إليندرا اتوسلت عشان حياتها، وأنا نزلت سلاحي. محدش هيعرف الاختيار ده… غيري أنا والغابة.",
+   "ar": "توسّلت إليندرا من أجل حياتها، فأنزلتُ سلاحي. لن يعرفَ أحدٌ بهذا الاختيار… سواي أنا والغابة.",
    "fr": "Elyndra a supplié pour sa vie, et j'ai baissé mon arme. Personne ne connaîtra ce choix… seulement moi et la forêt.",
    "yrl": "Elyndra upurandu sikué arama, asui ixé amuyapí se marã-pukú. Ninhũ ukuáu-ana kuá… ixé asui kaá nhũ.",
    "yrl_tts": "Elíndra upurandú sicuê arama, assuí ixé amuiapí se marã-pucú. Ninhún ucuáu-ana cuá… ixé assuí caá, nhún."
@@ -545,7 +546,7 @@
    "ja": "門はまた眠りについた。これからは俺が見張る番だ。待つことを、森が教えてくれるといい。",
    "el": "Οι πύλες κοιμούνται ξανά. Τώρα η φρουρά είναι δική μου. Ας με μάθει το δάσος να περιμένω.",
    "pl": "Bramy znów śpią. Teraz to ja trzymam wartę. Niech las nauczy mnie czekać.",
-   "ar": "البوابات نامت تاني. دلوقتي الحراسة عليا أنا. يا رب الغابة تعلمني الصبر.",
+   "ar": "عادت البواباتُ إلى النوم. والآن صارت الحراسةُ لي. لعلّ الغابةَ تعلّمُني الصبر.",
    "fr": "Les portails dorment à nouveau. Désormais, la garde m'appartient. Que la forêt m'apprenne à attendre.",
    "yrl": "Okena-itá uké yuíri. Kuíri ixé amaã aintá resé. Kaá umbué ixé asarú arama.",
    "yrl_tts": "Ocêna-itá uquê iuíri. Cuíri ixé amaã aintá ressê. Caá umbuê ixé assarú arama."
@@ -557,7 +558,7 @@
    "ja": "王は解き放たれた。王国を救ったのか、それとも観察者の牢を移しただけなのか…時が教えてくれる。",
    "el": "Ο Βασιλιάς είναι ελεύθερος. Αν έσωσα ένα βασίλειο ή απλώς άλλαξα τη φυλακή του Παρατηρητή… ο χρόνος θα δείξει.",
    "pl": "Król jest wolny. Czy ocaliłem królestwo, czy tylko przeniosłem Obserwatora do innego więzienia… czas pokaże.",
-   "ar": "الملك بقى حر. يا ترى أنقذت مملكة، ولا بس نقلت المراقب لسجن تاني… الأيام هتقول.",
+   "ar": "الملكُ حرٌّ الآن. هل أنقذتُ مملكة، أم نقلتُ المراقِبَ إلى سجنٍ آخر فحسب… الزمنُ سيُخبرُنا.",
    "fr": "Le Roi est libre. Ai-je sauvé un royaume, ou seulement changé la prison de l'Observateur… le temps le dira.",
    "yrl": "Muruxawa usikué piraí kuíri. Ixé apisirũ yepé tetama, ou amuyereu nhũ Umaãsara rendá… ara umbeú-ana.",
    "yrl_tts": "Muruxáua ussicuê piraí cuíri. Ixé apissirún iepé tetáma, ou amuierêu nhún Umaãssára rendá… ára umbeú-ana."
@@ -716,25 +717,25 @@
   "MAGE": [
    [
     "Cresci entre as dunas de Ra-Khem. Os espelhos do templo nunca apontaram para baixo… até agora.",
-    "كبرت بين كثبان رع-خم. مرايات المعبد عمرها ما اتوجهت لتحت… لحد دلوقتي."
+    "نشأتُ بين كثبانِ رَع خِم. مرايا المعبد لم تتّجه نحو الأسفل قطّ… حتى الآن."
    ],
    [
     "Os portais não são aleatórios. Formam um círculo — e este é um dos elos.",
-    "البوابات مش عشوائية. بتعمل دايرة — ودي واحدة من حلقاتها."
+    "البواباتُ ليست عشوائيّة. إنّها تشكّلُ دائرة، وهذه واحدةٌ من حلقاتها."
    ],
    [
     "O templo não queimava as trevas. Prendia-as. Isto não é uma porta… é uma cela.",
-    "المعبد ما كانش بيحرق الظلام. كان بيحبسه. ده مش باب… ده زنزانة."
+    "لم يكن المعبدُ يُحرقُ الظلام، بل كان يحبسُه. هذا ليس بابًا… إنّه زنزانة."
    ],
    [
     "“Seu manto tem runas dos Antigos. Isso não se compra.”",
-    "«عباءتك عليها رموز القدماء. دي حاجة ما تتشريش.»"
+    "«على عباءتِكِ رموزُ القدماء. شيءٌ كهذا لا يُشترى.»"
    ],
    {
     "pt": "Os espelhos de Ra-Khem podem voltar a apontar para o céu. Estou indo para casa.",
     "en": "The mirrors of Ra-Khem can point to the sky again. I'm going home.",
     "es": "Los espejos de Ra-Khem pueden volver a apuntar al cielo. Me voy a casa.",
-    "nat": "مرايات رع-خم تقدر ترجع تبص للسما تاني. أنا راجعة البيت."
+    "nat": "مرايا رَع خِم تستطيعُ أن تتّجهَ إلى السماء من جديد. أنا عائدةٌ إلى بيتي."
    }
   ],
   "NECROMANCER": [

@@ -39,10 +39,10 @@ async def tts_phrased(text, v, path):
     """frase a frase, cada pedaço com tom próprio: sobe no começo, desce no fim, pergunta sobe, reticências alongam
     (a voz não conhece a língua; assim a entonação deixa de soar robótica)"""
     import re
-    parts = [x.strip() for x in re.split(r"(?<=[…,.!?—])\s+", text) if x.strip()]
+    parts = [x.strip() for x in re.split(r"(?<=[…,.!?—،؟؛])\s+", text) if x.strip()]
     fs = []
     for j, pt in enumerate(parts):
-        q, ex, first, last = pt.endswith("?"), pt.endswith("!"), j == 0, j == len(parts) - 1
+        q, ex, first, last = pt.rstrip("»”").endswith(("?", "؟")), pt.rstrip("»”").endswith("!"), j == 0, j == len(parts) - 1
         pitch = "+6Hz" if q else "+4Hz" if ex else "+3Hz" if first else "-2Hz" if last else "+1Hz"
         rate = "-6%" if pt.endswith("…") else "+4%" if ex else "+0%"
         f = f"{path}.{j}.mp3"
