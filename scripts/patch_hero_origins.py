@@ -20,7 +20,16 @@ s = open(BUNDLE, encoding="utf-8").read()
 
 # ── falas: [fase, [falas ao entrar], fala depois do chefe | None]  com tradução EN / ES ──
 H = {
-    "SHAMAN": ("bosque", None, None),          # inalterado
+    "SHAMAN": ("bosque",
+               [("Esta é a mata dos meus avós. Ela está doente — eu sinto nas raízes.", "This is my grandparents' forest. It is sick — I can feel it in the roots.", "Esta es la selva de mis abuelos. Está enferma: lo siento en las raíces."),
+                ("No Rio Negro, os pajés antigos fecharam um portal num igapó. A doença desta mata vem de lá.", "On the Rio Negro, the old shamans closed a gate in a flooded forest. This forest's sickness comes from there.", "En el río Negro, los antiguos chamanes cerraron un portal en un igapó. La enfermedad de esta selva viene de allí."),
+                ("O Anhangá nunca fez mal a quem respeita a floresta. Algo o corrompeu.", "The Anhangá never harmed those who respect the forest. Something corrupted it.", "El Anhangá nunca dañó a quien respeta la selva. Algo lo corrompió.")],
+               ("Descanse, Anhangá. Vou levar o seu selo para longe da escuridão.", "Rest, Anhangá. I will carry your seal far from the darkness.", "Descansa, Anhangá. Llevaré tu sello lejos de la oscuridad.")),
+    "NECROMANCER": ("morta",
+                    [("Os mortos daqui sussurram a mesma frase:", "The dead here whisper the same phrase:", "Los muertos de aquí susurran la misma frase:"),
+                     ("“Não deixem que ele acorde.”", "“Do not let him wake.”", "«No dejéis que despierte»."),
+                     ("Esta floresta é o reflexo de Białowieża. Lá também os carvalhos guardavam mortos sem enterro… e um portal.", "This forest is a reflection of Białowieża. There, too, the oaks watched over the unburied dead… and a gate.", "Este bosque es el reflejo de Białowieża. Allí también los robles guardaban muertos sin sepultura… y un portal.")],
+                    ("Ela os comandava em nome dele… agora estão em silêncio. Por enquanto.", "She commanded them in his name… now they are silent. For now.", "Ella los comandaba en su nombre… ahora guardan silencio. Por ahora.")),
     "DRUID": ("ruins",
               [('Estas pedras têm os mesmos símbolos que meus ancestrais gravaram em Závist. Os Antigos também derrubaram um bosque sagrado para erguer seus portais.', 'These stones bear the same signs my ancestors carved at Závist. The Ancients felled a sacred grove here too, to raise their gates.', 'Estas piedras tienen los mismos signos que mis antepasados tallaron en Závist. Los Antiguos también talaron aquí un bosque sagrado para alzar sus portales.'),
                ('Ainda sinto as raízes debaixo do mármore… e elas têm medo, como os carvalhos de casa antes de secarem.', 'I can still feel the roots beneath the marble… and they are afraid, like the oaks back home before they withered.', 'Todavía siento las raíces bajo el mármol… y tienen miedo, como los robles de mi tierra antes de secarse.')],
@@ -77,14 +86,14 @@ H = {
              ("O templo não queimava as trevas. Prendia-as. Isto não é uma porta… é uma cela.",
               "The temple did not burn the darkness. It held it. This is not a door… it is a cell.",
               "El templo no quemaba la oscuridad. La encerraba. Esto no es una puerta… es una celda.")),
-    "NECROMANCER": ("morta", None, None),       # inalterado
     "HUNTER": ("glacial",
                [("Neve que não derrete, vento que corta a pele… estou em casa.",
                  "Snow that never melts, wind that cuts the skin… I am home.",
                  "Nieve que no se derrite, viento que corta la piel… estoy en casa."),
                 ("Os lobos do norte não uivam mais aqui. Alguma coisa os calou.",
                  "The northern wolves no longer howl here. Something silenced them.",
-                 "Los lobos del norte ya no aúllan aquí. Algo los silenció.")],
+                 "Los lobos del norte ya no aúllan aquí. Algo los silenció."),
+                 ("No Yukon, os mineiros cavaram fundo demais numa geleira. O que saiu de lá tinha o mesmo frio deste lugar.", "Back in the Yukon, the miners dug too deep into a glacier. Whatever came out of it had the same cold as this place.", "En el Yukón, los mineros cavaron demasiado hondo en un glaciar. Lo que salió de allí tenía el mismo frío que este lugar.")],
                ("O Golem de Gelo não caçava. Vigiava. As feras fugiam da prisão, não dele.",
                 "The Ice Golem did not hunt. It kept watch. The beasts were fleeing the prison, not it.",
                 "El Gólem de Hielo no cazaba. Vigilaba. Las fieras huían de la prisión, no de él.")),
@@ -129,9 +138,40 @@ s = s.replace(EN_A, EN_A + en_add).replace(ES_A, ES_A + es_add)
 CODEX = {
     "WARRIOR": {
         "subtitle": "Herdeiro de Valdrak & Guarda Inabalável",
-        "dimension": "Castelo de Valdrak, coração do antigo império",
-        "lore": "Draven é descendente do Rei de Valdrak, nascido séculos depois da queda do castelo, numa linhagem que guardou em segredo a memória do rei que abriu os portões para salvar o povo. Cresceu ouvindo que o portal do castelo foi selado com o próprio rei lá dentro, e foi esse sangue que as Profundezas reconheceram quando os selos começaram a ceder. Treinado como cavaleiro e escudo da família, atravessou a fenda para terminar o que o seu ancestral começou.",
-        "motivation": "Retomar o castelo dos seus ancestrais, descobrir o que restou do rei e fechar para sempre as portas que ele abriu.",
+        "era": "Por volta de 1350, séculos depois da queda de Valdrak",
+        "dimension": "Castelo de Valdrak, nas terras altas da Escócia",
+        "lore": "Draven nasceu por volta de 1350 nas terras altas da Escócia, séculos depois da queda do Castelo de Valdrak, numa linhagem que guardou em segredo a memória do rei que abriu os portões para salvar o povo. Cresceu ouvindo que o portal do castelo foi selado com o próprio rei lá dentro, e foi esse sangue que as Profundezas reconheceram quando os selos começaram a ceder. Treinado como cavaleiro e escudo da família, atravessou a fenda para terminar o que o seu ancestral começou.",
+        "motivation": "Retomar o castelo dos seus ancestrais, descobrir o que restou do rei e fechar para sempre as portas que ele abriu."
+    },
+    "MAGE": {
+        "era": "Por volta de 1822, quando o mundo começava a decifrar os hieróglifos",
+        "dimension": "Cairo e o Deserto Esquecido de Ra-Khem, a oeste do Nilo",
+        "lore": "Arthelia nasceu no Cairo por volta de 1822, quando estudiosos do mundo inteiro começavam a decifrar os hieróglifos. Cresceu entre as dunas de Ra-Khem, a oeste do Nilo, onde a Academia Arcana de Dal-Vor, uma irmandade secreta de eruditos, estudava os espelhos solares de um templo que já era ruína antiga muito antes dos faraós serem esquecidos. Prodígio dos círculos superiores, passou anos decifrando manuscritos sobre as portas entre os planos. Quando um experimento com fendas instáveis ameaçou engolir a biblioteca sagrada, ela usou a própria mana para conter o colapso e entrou no portal para selá-lo por dentro.",
+        "motivation": "Compreender a natureza das Profundezas, desvendar o que o templo do deserto realmente aprisionava e fechar as brechas para sempre."
+    },
+    "ROGUE": {
+        "era": "Por volta de 1798, tempo de corsários no Oceano Índico",
+        "dimension": "Mahé e as ilhas de granito das Seicheles",
+        "lore": "Seris nasceu em Mahé, nas Seicheles, por volta de 1798, quando corsários franceses e contrabandistas usavam as ilhas de granito do Oceano Índico para esconder barcos sem bandeira. Dominou a infiltração e a eliminação silenciosa antes de atingir a maioridade e conhece cada enseada do arquipélago. Quando marcas de um portal antigo começaram a surgir nas pedras das ilhas, ela seguiu o dinheiro da Ordem do Limiar até as Profundezas.",
+        "motivation": "Descobrir quem está abrindo portais nas Ilhas, saquear os maiores tesouros esquecidos e testar as adagas contra os horrores do Abismo."
+    },
+    "HUNTER": {
+        "era": "1897, a corrida do ouro do Klondike",
+        "dimension": "Yukon, no norte do Canadá",
+        "lore": "Kael nasceu no Yukon, no norte do Canadá, filho de um caçador escocês e de uma mulher do povo hän, que vive às margens do rio Yukon. Do pai herdou o rifle e a língua; da linhagem da mãe, o lobo espiritual que caminha ao seu lado e a arte de ler cada pegada na neve. Em 1897, durante a corrida do ouro, mineiros cavaram fundo demais numa geleira e romperam um portal selado havia séculos. Quando as feras corrompidas começaram a descer das geleiras, Kael seguiu o rastro delas até as Profundezas.",
+        "motivation": "Rastrear a besta suprema que lidera a corrupção das criaturas, devolver o uivo aos lobos do norte e fechar a ferida que a ganância abriu no gelo."
+    },
+    "NECROMANCER": {
+        "era": "Por volta de 1864, depois da Revolta de Janeiro",
+        "dimension": "Floresta de Białowieża, na Polônia",
+        "lore": "Valthor foi um erudito expulso da academia de Cracóvia por estudar textos proibidos sobre a morte. Por volta de 1864, depois da Revolta de Janeiro, refugiou-se na Floresta de Białowieża, a mata ancestral da Polônia, onde muitos mortos da revolta ficaram sem enterro. Ali, sob os carvalhos mais velhos, encontrou um portal selado havia séculos e entendeu que a morte não é um fim, mas uma ferramenta. Quando os mortos da floresta começaram a se levantar sozinhos, atravessou o portal decidido a descobrir quem os chamava.",
+        "motivation": "Descobrir a fonte primordial que reanima os mortos e submeter as entidades profanas à sua vontade, antes que elas submetam os vivos."
+    },
+    "SHAMAN": {
+        "era": "Por volta de 1750, no tempo da língua geral amazônica",
+        "dimension": "Rio Negro, na Amazônia",
+        "lore": "Araí nasceu às margens do Rio Negro por volta de 1750, quando o nheengatu era a língua de todos os povos do rio. Foi escolhida pelos pajés e pelos espíritos das águas e das matas depois de uma visão: o portal que os pajés antigos haviam fechado no fundo de um igapó estava se abrindo, e sombras de outras eras aprisionavam as forças da natureza. Com sua lâmina xamânica e pinturas de guerra sagradas, cruzou o portal com a bênção dos trovões de Tupã.",
+        "motivation": "Expulsar a podridão que ameaça os espíritos ancestrais da floresta, fechar de novo o portal do igapó e restaurar a harmonia da terra viva."
     },
     "BERSERKER": {
         "era": "Fim da Era dos Estados em Guerra (por volta de 1600), domínio de Satsuma",
@@ -147,30 +187,12 @@ CODEX = {
         "lore": "Hayato é o irmão mais novo de Akihiro. Enquanto o irmão aprendia a forja e a katana como herdeiro do clã, ele treinava o arco no alto da cratera de Sakurajima, onde o vento carregado de cinzas desvia qualquer flecha mal disparada. Quando a fenda engoliu o templo do clã e Akihiro desceu ao fogo, criaturas das trevas subiram as encostas atrás dele. Hayato seguiu o rastro de fogo para caçá-las na origem e para trazer o irmão de volta.",
         "motivation": "Encontrar Akihiro, impedir que a podridão do Abismo alcance Sakurajima e garantir que nenhuma flecha seja disparada em vão."
     },
-    "MAGE": {
-        "era": "Século Dourado da Academia Arcana de Dal-Vor",
-        "dimension": "Deserto Esquecido de Ra-Khem",
-        "lore": "Arthelia cresceu entre as dunas de Ra-Khem, onde a Academia Arcana de Dal-Vor estudava os espelhos solares do templo. Prodígio dos círculos superiores de magia, passou anos decifrando manuscritos sobre as portas proibidas entre os planos. Quando um experimento com fendas instáveis ameaçou engolir a biblioteca sagrada, ela usou a própria mana para conter o colapso e entrou no portal para selá-lo por dentro.",
-        "motivation": "Compreender a natureza das Profundezas, desvendar o que o templo do deserto realmente aprisionava e fechar as brechas para sempre.",
-    },
-    "ROGUE": {
-        "era": "Era dos Sindicatos das Ilhas",
-        "dimension": "As Ilhas, portos de contrabandistas",
-        "lore": "Seris nasceu nas Ilhas, entre contrabandistas e barcos sem bandeira, onde só os mais rápidos sobrevivem. Dominou a infiltração e a eliminação silenciosa antes de atingir a maioridade, e conhece cada enseada do arquipélago. Quando marcas de portais começaram a surgir nas pedras das ilhas, ela seguiu o dinheiro da Ordem do Limiar até as Profundezas.",
-        "motivation": "Descobrir quem está construindo portais nas Ilhas, saquear os maiores tesouros esquecidos e testar as adagas contra os horrores do Abismo.",
-    },
     "DRUID": {
         "subtitle": "Guardião da Mata & Senhor das Feras",
-        "era": "Tempo dos Boios & do Juramento dos Carvalhos",
+        "era": "Por volta de 1830, séculos depois dos boios",
         "dimension": "Floresta da Boêmia (Šumava), na República Tcheca",
-        "lore": "Tharion nasceu nas florestas da Boêmia, na atual República Tcheca, a terra que herdou o nome dos boios, o povo celta que a habitou antes de todos os reinos. Sua família guardou em segredo, por séculos, o caminho dos druidas: o carvalho, o visco e o juramento de vigiar o nemeton da Šumava, o bosque sagrado onde os antigos druidas selaram um portal com um círculo de carvalhos vivos. Quando os carvalhos começaram a secar de dentro para fora, Tharion entendeu que o selo cedia e seguiu as raízes até as Profundezas. Nas Ruínas Antigas reconhece, gravados na pedra, os mesmos símbolos que seus ancestrais deixaram no oppidum de Závist, e canaliza a fúria do javali e do lobisomem para defender a terra com dentes e garras.",
+        "lore": "Tharion nasceu por volta de 1830 nas florestas da Boêmia, na atual República Tcheca, a terra que herdou o nome dos boios, o povo celta que a habitou antes de todos os reinos. Sua família guardou em segredo, por séculos, o caminho dos druidas: o carvalho, o visco e o juramento de vigiar o nemeton da Šumava, o bosque sagrado onde os antigos druidas selaram um portal com um círculo de carvalhos vivos. Quando os carvalhos começaram a secar de dentro para fora, Tharion entendeu que o selo cedia e seguiu as raízes até as Profundezas. Nas Ruínas Antigas reconhece, gravados na pedra, os mesmos símbolos que seus ancestrais deixaram no oppidum de Závist, e canaliza a fúria do javali e do lobisomem para defender a terra com dentes e garras.",
         "motivation": "Renovar o juramento dos druidas boios, devolver a vida às raízes sob as Ruínas e garantir que o círculo de carvalhos da Šumava nunca mais se abra."
-    },
-    "HUNTER": {
-        "era": "Era Pré-Imperial das Terras Geladas",
-        "dimension": "Territórios Gélidos do Norte",
-        "lore": "Kael cresceu nas terras geladas do norte, onde a neve nunca derrete e os homens são presas fáceis. Ao lado de seu fiel lobo espiritual, aprendeu a ler cada pegada na neve, cada galho quebrado e cada mudança no vento. Atravessou a fenda quando as feras corrompidas começaram a descer das geleiras para suas terras sagradas de caça.",
-        "motivation": "Rastrear a besta suprema que lidera a corrupção das criaturas, devolver o uivo aos lobos do norte e garantir a sobrevivência de sua matilha.",
     },
 }
 ca = s.index("const __CODEX_HEROES = [")

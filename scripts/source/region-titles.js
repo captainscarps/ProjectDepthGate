@@ -50,7 +50,7 @@ function __rtPlates(S){const F="Georgia, 'Times New Roman', serif",P=[];
  S.events.on("update",upd);S.events.once("shutdown",()=>S.events.off("update",upd))}
 /* ── escolha de herói: língua nativa no card ── */
 const __HLANG={WARRIOR:["Inglês (Reino Unido)","English (UK)","Inglés (Reino Unido)"],BERSERKER:["Japonês","Japanese","Japonés"],ARCHER:["Japonês","Japanese","Japonés"],
- HUNTER:["Inglês (Alasca)","English (Alaska)","Inglés (Alaska)"],DRUID:["Tcheco (República Tcheca)","Czech (Czech Republic)","Checo (República Checa)"],NECROMANCER:["Polonês","Polish","Polaco"],MAGE:["Árabe (Egito)","Arabic (Egypt)","Árabe (Egipto)"],
+ HUNTER:["Inglês (Canadá)","English (Canada)","Inglés (Canadá)"],DRUID:["Tcheco (República Tcheca)","Czech (Czech Republic)","Checo (República Checa)"],NECROMANCER:["Polonês","Polish","Polaco"],MAGE:["Árabe (Egito)","Arabic (Egypt)","Árabe (Egipto)"],
  ROGUE:["Francês (Seicheles)","French (Seychelles)","Francés (Seychelles)"],SHAMAN:["Nheengatu","Nheengatu","Ñeengatú"]};
 {const C0=bl.prototype.create;bl.prototype.create=function(){const r=C0.apply(this,arguments);try{if(this.tagTxt&&this.nameTxt&&!this.natTxt){
   this.natTxt=this.add.text(this.nameTxt.x,this.tagTxt.y+1,"",{fontFamily:"Georgia, 'Times New Roman', serif",fontStyle:"italic",fontSize:"8px",color:"#cdb98a"}).setOrigin(.5,0).setDepth(3);

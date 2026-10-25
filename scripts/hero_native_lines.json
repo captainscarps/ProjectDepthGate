@@ -1,5 +1,5 @@
 {
- "_about": "Falas dos heróis na língua de cada um (o jogo mostra a legenda no idioma escolhido e toca esta voz). generic = valem para qualquer herói (uma tradução por língua); own = fala de um herói só. Línguas: en (Draven, Reino Unido; Kael, Alasca), ja (Akihiro e Hayato), cs (Tharion, República Tcheca, de origem celta boia), pl (Valthor), ar (Arthelia, Egito), fr (Seris, Seicheles), yrl (Araí, nheengatu). yrl_tts / terceiro item = grafia de pronúncia para a voz (o texto certo fica em yrl).",
+ "_about": "Falas dos heróis na língua de cada um (o jogo mostra a legenda no idioma escolhido e toca esta voz). generic = valem para qualquer herói (uma tradução por língua); own = fala de um herói só. Línguas: en (Draven, Reino Unido; Kael, Yukon/Canadá), ja (Akihiro e Hayato), cs (Tharion, República Tcheca, de origem celta boia), pl (Valthor), ar (Arthelia, Egito), fr (Seris, Seicheles), yrl (Araí, nheengatu). yrl_tts / terceiro item = grafia de pronúncia para a voz (o texto certo fica em yrl).",
  "voices": {
   "WARRIOR": {
    "lang": "en",
@@ -623,6 +623,11 @@
     "Cuá caá, ixé ramúnha-itá caá. Ussicuê mbaassí… assendú sapú-itá upé."
    ],
    [
+    "No Rio Negro, os pajés antigos fecharam um portal num igapó. A doença desta mata vem de lá.",
+    "Paranã-Pixuna upé, paié-itá kuxiimauara usukenda yepé ukena igapó upé. Kuá kaá mbaasí uri apé suí.",
+    "Paraná-Pixúna upé, paiê-itá cuxiimauára ussukendá iepé ukêna igapó upé. Cuá caá mbaassí urí apé suí."
+   ],
+   [
     "O Anhangá nunca fez mal a quem respeita a floresta. Algo o corrompeu.",
     "Anhangá ti mairamé umupuxi awá urespeitari kaá. Mbaá umupuxi aé.",
     "Anhangá ti mairamê umupúxi auá urespeitári caá. Mbaá umupúxi aê."
@@ -813,6 +818,10 @@
     "„Nie pozwólcie mu się obudzić.”"
    ],
    [
+    "Esta floresta é o reflexo de Białowieża. Lá também os carvalhos guardavam mortos sem enterro… e um portal.",
+    "Ten las to odbicie Puszczy Białowieskiej. Tam też dęby strzegły niepogrzebanych zmarłych… i bramy."
+   ],
+   [
     "Ela os comandava em nome dele… agora estão em silêncio. Por enquanto.",
     "Dowodziła nimi w jego imieniu… teraz milczą. Na razie."
    ],
@@ -835,6 +844,10 @@
    [
     "Os lobos do norte não uivam mais aqui. Alguma coisa os calou.",
     "The northern wolves don't howl here anymore. Something silenced them."
+   ],
+   [
+    "No Yukon, os mineiros cavaram fundo demais numa geleira. O que saiu de lá tinha o mesmo frio deste lugar.",
+    "Back in the Yukon, the miners dug too deep into a glacier. Whatever came out of it had the same cold as this place."
    ],
    [
     "O Golem de Gelo não caçava. Vigiava. As feras fugiam da prisão, não dele.",

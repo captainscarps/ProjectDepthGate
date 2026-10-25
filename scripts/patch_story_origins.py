@@ -1,6 +1,6 @@
 """
 História: cada herói foi tocado pelas Profundezas porque nasceu numa terra onde, há séculos, um portal foi
-selado. A Guardiã diz isso na abertura (páginas da história) e ao encontrar o herói na floresta. Re-executável.
+selado — e, como dentro dos selos não existe tempo, os portais trazem os heróis de épocas diferentes. A Guardiã diz isso na abertura (páginas da história) e ao encontrar o herói na floresta. Re-executável.
 """
 import base64
 import os
@@ -30,17 +30,25 @@ A = ("Cada um de vocês nasceu numa terra onde, há séculos, um portal foi sela
 B = ("Você nasceu numa terra onde um portal foi selado há séculos. Foi lá que as Profundezas tocaram você pela primeira vez.",
      "You were born in a land where a gate was sealed centuries ago. That is where the Depths first touched you.",
      "Naciste en una tierra donde se selló un portal hace siglos. Fue allí donde las Profundidades te tocaron por primera vez.")
+C = ("E os selos não conhecem o tempo. Os portais trouxeram vocês de séculos diferentes, mas todos chegam ao mesmo lago.",
+     "And the seals know nothing of time. The gates brought you from different centuries, yet all of you reach the same lake.",
+     "Y los sellos no conocen el tiempo. Los portales los trajeron de siglos distintos, pero todos llegan al mismo lago.")
+D = ("Dentro dos selos não existe tempo. Quem atravessa um portal pode ter nascido séculos antes ou depois de você… e todos chegam a este mesmo lago.",
+     "Inside the seals, time does not exist. Whoever crosses a gate may have been born centuries before or after you… and all of them arrive at this same lake.",
+     "Dentro de los sellos no existe el tiempo. Quien cruza un portal puede haber nacido siglos antes o después que tú… y todos llegan a este mismo lago.")
 q = lambda t: '"' + t.replace('"', '\\"') + '"'
 put('"Foram escolhidos porque já foram tocados pelas Profundezas.","Lá dentro está a resposta.",',
-    '"Foram escolhidos porque já foram tocados pelas Profundezas.",' + q(A[0]) + ',"Lá dentro está a resposta.",')
+    '"Foram escolhidos porque já foram tocados pelas Profundezas.",' + q(A[0]) + ',' + q(C[0]) + ',"Lá dentro está a resposta.",')
 put('{who:"guardia",expr:"talk",name:__GN,text:"Antes que você conhecesse as Profundezas, elas já conheciam você."},',
-    '{who:"guardia",expr:"talk",name:__GN,text:"Antes que você conhecesse as Profundezas, elas já conheciam você."},{who:"guardia",expr:"sadness",name:__GN,text:' + q(B[0]) + '},')
-put('const __TR={en:{', 'const __TR={en:{' + q(A[0]) + ':' + q(A[1]) + ',' + q(B[0]) + ':' + q(B[1]) + ',')
+    '{who:"guardia",expr:"talk",name:__GN,text:"Antes que você conhecesse as Profundezas, elas já conheciam você."},{who:"guardia",expr:"sadness",name:__GN,text:' + q(B[0]) + '},{who:"guardia",expr:"calm",name:__GN,text:' + q(D[0]) + '},')
+put('const __TR={en:{', 'const __TR={en:{' + ''.join(q(x[0]) + ':' + q(x[1]) + ',' for x in (A, B, C, D)))
 i = s.index("const __TR={en:{")
 j = s.index("},es:{", i)
-ES = "},es:{" + q(A[0]) + ":" + q(A[2]) + "," + q(B[0]) + ":" + q(B[2]) + ","
-if ES not in s:
-    s = s[:j] + ES + s[j + len("},es:{"):]
+for x in (A, B, C, D):
+    e = q(x[0]) + ":" + q(x[2]) + ","
+    if e not in s:
+        s = s[:j] + "},es:{" + e + s[j + len("},es:{"):]
+        j = s.index("},es:{", i)
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):
         open(p, "w", encoding="utf-8").write(s)
