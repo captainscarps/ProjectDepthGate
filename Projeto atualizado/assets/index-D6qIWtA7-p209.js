@@ -9147,7 +9147,7 @@ updateLife(dt,t,G){const S=this,R=Math.random,v=S.cameras.main.worldView,tw=t/1e
  S.fjT-=dt;if(S.fjT<=0){S.fjT=2.6+R()*4.4;const p=S.waterPt(v,12,S.mode==="boat"?S.boat:{x:hx,y:hy},70);p&&S.jumpFish(p.x,p.y)}
  S.bbT-=dt;if(S.bbT<=0){S.bbT=.9+R()*1.8;const p=S.waterPt(v,8);p&&S.bubbles(p.x,p.y)}
  /* títulos de região e o que acontece em cada uma */
- if(S.ret){}else if(S.mode==="boat"){const B=S.boat;S.gorge?.length&&S.gorge.some(p=>Math.hypot(p[0]-B.x,p[1]-B.y)<150)&&S.title("gorge");S.M.bridge&&Math.hypot(S.M.bridge[0]-B.x,S.M.bridge[1]-B.y)<250&&S.title("bridge");
+ if(S.ret&&S.mode==="boat"){}else if(S.mode==="boat"){const B=S.boat;S.gorge?.length&&S.gorge.some(p=>Math.hypot(p[0]-B.x,p[1]-B.y)<150)&&S.title("gorge");S.M.bridge&&Math.hypot(S.M.bridge[0]-B.x,S.M.bridge[1]-B.y)<250&&S.title("bridge");
   const dL=Math.hypot(S.lakeB[0]-B.x,S.lakeB[1]-B.y);if(!S.ret&&dL<S.lakeB[2]){S.title("lakeB");if(!S.levOn){S.levOn=1;S.time.delayedCall(3800,()=>S.mode==="boat"&&!S.leaving&&S.levShadow());S.time.delayedCall(12500,()=>S.mode==="boat"&&!S.leaving&&S.levBreach())}}}
  else if(land){const Z=S.M.zones||{},inZ=(q,k=1)=>q&&((hx-q[0])/(q[2]*k))**2+((hy-q[1])/(q[3]*k))**2<1;
   S.ret&&(inZ(Z.m1)&&S.mono("m1",__L3(...__RET.m1)),inZ(Z.g1,1.15)&&S.mono("g1",__L3(...__RET.g1)));

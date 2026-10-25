@@ -585,11 +585,13 @@
     "“Kaá anga-itá unheẽ mewé ne rera, Mukameẽsara. Ma ti katú-rupí.”",
     "Caá ânga-itá unhên meuê ne réra, Mucamenssára. Ma ti catú-rupí."
    ],
-   [
-    "Avós, a mata está curada. Estou voltando para casa.",
-    "Ramunha-itá, kaá ukuera ana. Ixé asú se ruka kití.",
-    "Ramúnha-itá, caá ucuéra ana. Ixé assú se ruca quití."
-   ]
+   {
+    "pt": "Avós, a mata está curada. Estou voltando para casa.",
+    "en": "Grandparents, the forest is healed. I'm coming home.",
+    "es": "Abuelos, el bosque está sanado. Estoy volviendo a casa.",
+    "nat": "Ramunha-itá, kaá ukuera ana. Ixé asú se ruka kití.",
+    "tts": "Ramúnha-itá, caá ucuéra ana. Ixé assú se ruca quití."
+   }
   ],
   "DRUID": [
    [
@@ -608,10 +610,12 @@
     "“As árvores não crescem perto de você.”",
     "«Τα δέντρα δεν φυτρώνουν κοντά σου.»"
    ],
-   [
-    "As raízes respiram outra vez. Vou aos bosques sagrados contar que eles ainda vivem.",
-    "Οι ρίζες ανασαίνουν ξανά. Θα πάω στα ιερά άλση να τους πω ότι ακόμα ζουν."
-   ]
+   {
+    "pt": "As raízes respiram outra vez. Vou aos bosques sagrados contar que eles ainda vivem.",
+    "en": "The roots breathe again. I'll go to the sacred groves and tell them they still live.",
+    "es": "Las raíces respiran otra vez. Iré a los bosques sagrados a contarles que aún viven.",
+    "nat": "Οι ρίζες ανασαίνουν ξανά. Θα πάω στα ιερά άλση να τους πω ότι ακόμα ζουν."
+   }
   ],
   "BERSERKER": [
    [
@@ -630,10 +634,12 @@
     "“Esse símbolo no seu cajado… é o brasão do meu clã.”",
     "「その杖の紋…我が一族の家紋だ。」"
    ],
-   [
-    "Hayato, meu irmão… vou te contar tudo quando a cinza de Sakurajima nos receber de novo.",
-    "ハヤト、我が兄弟よ…桜島の灰が再び我らを迎える時、すべてを話そう。"
-   ]
+   {
+    "pt": "Hayato, meu irmão… vou te contar tudo quando a cinza de Sakurajima nos receber de novo.",
+    "en": "Hayato, my brother… I'll tell you everything when the ash of Sakurajima welcomes us home again.",
+    "es": "Hayato, hermano… te lo contaré todo cuando la ceniza de Sakurajima nos reciba de nuevo.",
+    "nat": "ハヤト、我が兄弟よ…桜島の灰が再び我らを迎える時、すべてを話そう。"
+   }
   ],
   "WARRIOR": [
    [
@@ -652,10 +658,12 @@
     "“Você fala como quem já esteve lá dentro.”",
     "“You talk like someone who has been in there.”"
    ],
-   [
-    "Pai… encontrei o que restava de você. Agora posso voltar para casa.",
-    "Father… I found what was left of you. Now I can go home."
-   ]
+   {
+    "pt": "Pai… encontrei o que restava de você. Agora posso voltar para casa.",
+    "en": "Father… I found what was left of you. Now I can go home.",
+    "es": "Padre… encontré lo que quedaba de ti. Ahora puedo volver a casa.",
+    "nat": "Father… I found what was left of you. Now I can go home."
+   }
   ],
   "ARCHER": [
    [
@@ -674,10 +682,12 @@
     "“Estas trilhas não aparecem em nenhum mapa. Como você as conhece?”",
     "「この道はどの地図にも載っていない。なぜ知っている？」"
    ],
-   [
-    "Akihiro, meu irmão… guarde um lugar para mim no alto de Sakurajima. Estou voltando.",
-    "アキヒロ、兄弟…桜島の頂に俺の場所を取っておいてくれ。今、帰るよ。"
-   ]
+   {
+    "pt": "Akihiro, meu irmão… guarde um lugar para mim no alto de Sakurajima. Estou voltando.",
+    "en": "Akihiro, my brother… save me a place atop Sakurajima. I'm coming home.",
+    "es": "Akihiro, hermano… guárdame un lugar en lo alto de Sakurajima. Estoy volviendo.",
+    "nat": "アキヒロ、兄弟…桜島の頂に俺の場所を取っておいてくれ。今、帰るよ。"
+   }
   ],
   "ROGUE": [
    [
@@ -696,10 +706,12 @@
     "“Quem paga as suas contas, Guardiã?”",
     "« Qui paie tes dettes, Gardienne ? »"
    ],
-   [
-    "As ilhas me esperam. Desta vez, volto sem precisar me esconder.",
-    "Les îles m'attendent. Cette fois, je rentre sans avoir besoin de me cacher."
-   ]
+   {
+    "pt": "As ilhas me esperam. Desta vez, volto sem precisar me esconder.",
+    "en": "The islands are waiting for me. This time, I'm going back without having to hide.",
+    "es": "Las islas me esperan. Esta vez vuelvo sin tener que esconderme.",
+    "nat": "Les îles m'attendent. Cette fois, je rentre sans avoir besoin de me cacher."
+   }
   ],
   "MAGE": [
    [
@@ -718,10 +730,12 @@
     "“Seu manto tem runas dos Antigos. Isso não se compra.”",
     "«عباءتك عليها رموز القدماء. دي حاجة ما تتشريش.»"
    ],
-   [
-    "Os espelhos de Ra-Khem podem voltar a apontar para o céu. Estou indo para casa.",
-    "مرايات رع-خم تقدر ترجع تبص للسما تاني. أنا راجعة البيت."
-   ]
+   {
+    "pt": "Os espelhos de Ra-Khem podem voltar a apontar para o céu. Estou indo para casa.",
+    "en": "The mirrors of Ra-Khem can point to the sky again. I'm going home.",
+    "es": "Los espejos de Ra-Khem pueden volver a apuntar al cielo. Me voy a casa.",
+    "nat": "مرايات رع-خم تقدر ترجع تبص للسما تاني. أنا راجعة البيت."
+   }
   ],
   "NECROMANCER": [
    [
@@ -740,10 +754,12 @@
     "“Os mortos daqui ficam em silêncio quando você fala.”",
     "„Tutejsi umarli milkną, gdy mówisz.”"
    ],
-   [
-    "Os mortos finalmente descansam. Talvez agora eu também possa.",
-    "Umarli wreszcie odpoczywają. Może teraz ja też będę mógł."
-   ]
+   {
+    "pt": "Os mortos finalmente descansam. Talvez agora eu também possa.",
+    "en": "The dead finally rest. Maybe now I can too.",
+    "es": "Los muertos por fin descansan. Quizá ahora yo también pueda.",
+    "nat": "Umarli wreszcie odpoczywają. Może teraz ja też będę mógł."
+   }
   ],
   "HUNTER": [
    [
@@ -762,10 +778,12 @@
     "“As feras se afastam de você. Por quê?”",
     "“The beasts keep away from you. Why?”"
    ],
-   [
-    "O norte me espera. Os lobos vão voltar a uivar, eu sei.",
-    "The north is waiting for me. The wolves will howl again, I know it."
-   ]
+   {
+    "pt": "O norte me espera. Os lobos vão voltar a uivar, eu sei.",
+    "en": "The north is waiting for me. The wolves will howl again, I know it.",
+    "es": "El norte me espera. Los lobos volverán a aullar, lo sé.",
+    "nat": "The north is waiting for me. The wolves will howl again, I know it."
+   }
   ]
  }
 }

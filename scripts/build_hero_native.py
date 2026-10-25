@@ -102,17 +102,21 @@ def main():
             nat and jobs.append((hid, cls, nat, shown))
     for cls, rows in cfg["own"].items():
         for row in rows:
-            pt, nat = row[0], (row[2] if len(row) > 2 else row[1])
+            if isinstance(row, dict):
+                pt, nat = row["pt"], row.get("tts") or row["nat"]
+                shown = {norm(row["pt"]), norm(row.get("en", "")), norm(row.get("es", ""))}
+            else:
+                pt, nat = row[0], (row[2] if len(row) > 2 else row[1])
+                shown = {norm(pt)}
             pt = norm(pt)
             hid = fnv(pt)
-            shown = {pt}
             jobs.append((hid, cls, nat, shown))
     # o inglês que o jogo mostra para as falas próprias vem do manifesto principal (mesmo id)
     main = json.load(open(os.path.join(ROOT, "assets", "audio", "voice", "voice-manifest.json")))
     os.makedirs(OUT, exist_ok=True)
     old = json.load(open(MAN)) if os.path.exists(MAN) else {}
     man = {"k": {}, "d": {}, "s": {}}
-    own_ids = {fnv(norm(r[0])) for rows in cfg["own"].values() for r in rows}
+    own_ids = {fnv(norm(r["pt"] if isinstance(r, dict) else r[0])) for rows in cfg["own"].values() for r in rows}
     for k, hid in main["k"].items():
         if hid in own_ids:
             man["k"][k] = hid
