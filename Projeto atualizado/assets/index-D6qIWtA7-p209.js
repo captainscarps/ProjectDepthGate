@@ -9029,10 +9029,10 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
  for(const e of S.streaks){if(e.life<=0){const x=v.x+Math.random()*v.width,y=v.y+Math.random()*v.height;if(S.cell(x,y)===2&&S.cell(x+12,y)===2&&S.cell(x-12,y)===2){const k=S.near(x,y);if(k>=0){const tn=S.tan(k);e.setPosition(x,y);e.vx=tn.x;e.vy=tn.y;e.sp=(S.flow[k]||30)*(.9+Math.random()*.5);e.setRotation(Math.atan2(tn.y,tn.x));e.max=e.life=1.4+Math.random()*1.4}}continue}
   e.life-=dt;e.x+=e.vx*e.sp*dt;e.y+=e.vy*e.sp*dt;const q=e.life/e.max;e.setAlpha(Math.sin(q*Math.PI)*(e.sp>55?.55:.3));if(S.cell(e.x,e.y)!==2)e.life=0}
  let act=null,flowNear=0;
- if(S.mode==="boat"){const B=S.boat,acc=170,max=100;S.pi=S.near(B.x,B.y,S.pi);const tn=S.pi>=0?S.tan(S.pi):{x:0,y:0},fl=S.pi>=0?(S.flow[S.pi]||28):0;flowNear=fl;
+ if(S.mode==="boat"){const B=S.boat,talk=S.speaking?.75:1,acc=110*talk,max=58*talk;S.pi=S.near(B.x,B.y,S.pi);const tn=S.pi>=0?S.tan(S.pi):{x:0,y:0},fl=S.pi>=0?(S.flow[S.pi]||28):0;flowNear=fl;
   S.bv.x+=a.x*acc*dt;S.bv.y+=a.y*acc*dt;const sp=Math.hypot(S.bv.x,S.bv.y);if(sp>max){S.bv.x*=max/sp;S.bv.y*=max/sp}const dr=Math.pow(.4,dt);S.bv.x*=dr;S.bv.y*=dr;
   /* correnteza: empurra rio abaixo e puxa de leve para o meio do canal */
-  const cf=S.ret?-.42:.85;let cx=tn.x*fl*cf,cy=tn.y*fl*cf;if(S.pi>=0){const p=S.P[S.pi],ox=p[0]-B.x,oy=p[1]-B.y,lat=ox*-tn.y+oy*tn.x;cx+=-tn.y*lat*.35;cy+=tn.x*lat*.35}
+  const cf=(S.ret?-.3:.5)*talk;let cx=tn.x*fl*cf,cy=tn.y*fl*cf;if(S.pi>=0){const p=S.P[S.pi],ox=p[0]-B.x,oy=p[1]-B.y,lat=ox*-tn.y+oy*tn.x;cx+=-tn.y*lat*.35;cy+=tn.x*lat*.35}
   if(S.ret?S.pi<=3:S.pi>=S.P.length-4){cx*=.2;cy*=.2}
   const vx=S.bv.x+cx,vy=S.bv.y+cy;const tx=B.x+vx*dt,ty=B.y+vy*dt;let[nx,ny]=S.step(B.x,B.y,tx,ty,(x,y)=>S.okArea(x,y,2,14));
   const o={x:nx,y:ny};S.push(o,S.wobs,12);S.okArea(o.x,o.y,2,12)&&(nx=o.x,ny=o.y);
