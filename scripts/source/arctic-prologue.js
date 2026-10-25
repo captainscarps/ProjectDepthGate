@@ -12,6 +12,17 @@
    Botão "Pular prólogo" sempre visível.
    Mapa assado: assets/pixel-art/river-prologue (scripts/build_river_prologue.py), mesmo padrão do Bosque
    Amaldiçoado. Do pacote Arctic Viking só o barco (assets/pixel-art/arctic).                          */
+/* a Guardiã reconhece a língua do herói e explica que a magia dela faz qualquer língua ser compreendida */
+const __ARC_LANG={WARRIOR:["Você fala a língua da minha terra, Draven. Mas saiba: minha magia faz qualquer língua deste mundo ser compreendida.","You speak the tongue of my homeland, Draven. But know this: my magic lets any language in this world be understood.","Hablas la lengua de mi tierra, Draven. Pero debes saberlo: mi magia hace que cualquier lengua de este mundo se entienda."],
+ BERSERKER:["Japonês… a língua das ilhas de fogo, Akihiro. Não se preocupe: minha magia faz qualquer língua ser compreendida. Você me entende, e todos vão entender você.","Japanese… the tongue of the fire islands, Akihiro. Don't worry: my magic lets any language be understood. You understand me, and everyone will understand you.","Japonés… la lengua de las islas de fuego, Akihiro. No te preocupes: mi magia hace que cualquier lengua se entienda. Tú me entiendes, y todos te entenderán."],
+ ARCHER:["Japonês… você fala como o seu irmão, Hayato. Não se preocupe: minha magia faz qualquer língua ser compreendida. Você me entende, e todos vão entender você.","Japanese… you speak just like your brother, Hayato. Don't worry: my magic lets any language be understood. You understand me, and everyone will understand you.","Japonés… hablas igual que tu hermano, Hayato. No te preocupes: mi magia hace que cualquier lengua se entienda. Tú me entiendes, y todos te entenderán."],
+ HUNTER:["Você fala como os caçadores do norte gelado, Kael. Aonde quer que vá, minha magia faz qualquer língua ser compreendida.","You speak like the hunters of the frozen north, Kael. Wherever you go, my magic lets any language be understood.","Hablas como los cazadores del norte helado, Kael. Vayas a donde vayas, mi magia hace que cualquier lengua se entienda."],
+ DRUID:["Grego… a língua dos bosques sagrados, Tharion. Não tema: minha magia faz qualquer língua ser compreendida, por mim e por todos que você encontrar.","Greek… the tongue of the sacred groves, Tharion. Fear not: my magic lets any language be understood, by me and by everyone you meet.","Griego… la lengua de los bosques sagrados, Tharion. No temas: mi magia hace que cualquier lengua se entienda, por mí y por todos los que encuentres."],
+ NECROMANCER:["Polonês… uma língua que até os mortos respeitam, Valthor. Minha magia faz qualquer língua ser compreendida. Fale, e todos vão entender.","Polish… a tongue even the dead respect, Valthor. My magic lets any language be understood. Speak, and everyone will understand.","Polaco… una lengua que hasta los muertos respetan, Valthor. Mi magia hace que cualquier lengua se entienda. Habla, y todos entenderán."],
+ MAGE:["A língua das margens do Nilo, Arthelia. Não se preocupe: minha magia faz qualquer língua ser compreendida. Você me entende, e todos vão entender você.","The tongue of the banks of the Nile, Arthelia. Don't worry: my magic lets any language be understood. You understand me, and everyone will understand you.","La lengua de las orillas del Nilo, Arthelia. No te preocupes: mi magia hace que cualquier lengua se entienda. Tú me entiendes, y todos te entenderán."],
+ ROGUE:["O francês das ilhas, Seris. Fale à vontade: minha magia faz qualquer língua ser compreendida, por quem quer que seja.","The French of the islands, Seris. Speak freely: my magic lets any language be understood, by anyone at all.","El francés de las islas, Seris. Habla con libertad: mi magia hace que cualquier lengua se entienda, por quien sea."],
+ SHAMAN:["Nheengatu… a língua boa da mata, Araí. Minha magia leva as suas palavras a qualquer ouvido, e traz as minhas até você.","Nheengatu… the good tongue of the forest, Araí. My magic carries your words to any ear, and brings mine to you.","Ñeengatú… la buena lengua del bosque, Araí. Mi magia lleva tus palabras a cualquier oído, y trae las mías hasta ti."]};
+function __arcLangLine(){const c=String(window.__heroCls||"WARRIOR").toUpperCase();return __ARC_LANG[c]||__ARC_LANG.WARRIOR}
 function __arcLines(){const L=__L3;return[
  L("Desperte, viajante. O rio te trouxe mais longe do que qualquer barco deveria ir.","Wake, traveler. The river carried you farther than any boat should go.","Despierta, viajero. El río te trajo más lejos de lo que cualquier barco debería ir."),
  L("A floresta se lembra de quem cruzou antes de você. Siga a correnteza.","The forest remembers those who crossed before you. Follow the current.","El bosque recuerda a quienes cruzaron antes que tú. Sigue la corriente."),
@@ -27,8 +38,9 @@ function __arcLines(){const L=__L3;return[
  L("A vida ainda resiste nesta mata. Ande devagar… os animais daqui ainda não conhecem o medo das Profundezas.","Life still endures in these woods. Walk slowly… the animals here have not yet learned to fear the Depths.","La vida aún resiste en este bosque. Camina despacio… los animales de aquí aún no conocen el miedo a las Profundidades."),
  L("Este lago reflete o céu de antes das Profundezas. Guarde esta imagem quando a escuridão chegar.","This lake reflects the sky from before the Depths. Keep this image with you when the darkness comes.","Este lago refleja el cielo de antes de las Profundidades. Guarda esta imagen cuando llegue la oscuridad."),
  L("Estas pedras foram um posto dos guardiões do selo. Eu conheci cada um deles… há muito tempo.","These stones were an outpost of the seal's guardians. I knew every one of them… long ago.","Estas piedras fueron un puesto de los guardianes del sello. Conocí a cada uno de ellos… hace mucho tiempo."),
- L("As aves se calaram de repente. Mesmo aqui, sinto olhos nos observando. Siga a trilha para o leste.","The birds suddenly went quiet. Even here, I feel eyes watching us. Follow the trail east.","Las aves se callaron de repente. Incluso aquí, siento ojos que nos observan. Sigue el sendero hacia el este.")]}
-const __ARC_EXPR=["calm","talk","sadness","talk","special","sadness","calm","smile","calm","sadness","smile","smile","calm","sadness","aggression"];
+ L("As aves se calaram de repente. Mesmo aqui, sinto olhos nos observando. Siga a trilha para o leste.","The birds suddenly went quiet. Even here, I feel eyes watching us. Follow the trail east.","Las aves se callaron de repente. Incluso aquí, siento ojos que nos observan. Sigue el sendero hacia el este."),
+ L(...__arcLangLine())]}
+const __ARC_EXPR=["calm","talk","sadness","talk","special","sadness","calm","smile","calm","sadness","smile","smile","calm","sadness","aggression","smile"];
 /* o herói ainda não sabe quem é a voz: responde depois de algumas falas */
 function __arcHero(i){const L=__L3;return({0:L("Quem… quem está falando comigo?","Who… who is speaking to me?","¿Quién… quién me está hablando?"),
  1:L("Essa voz… parece vir de todos os lados.","That voice… it seems to come from everywhere.","Esa voz… parece venir de todas partes."),
@@ -81,7 +93,7 @@ preload(){this.textures.exists("arc-boat-red")||this.load.image("arc-boat-red","
  this.cache.json.exists("rp-meta")||this.load.json("rp-meta","assets/pixel-art/river-prologue/rp-meta.json");
  this.load.once("filecomplete-json-rp-meta",()=>more(this.cache.json.get("rp-meta")));
  if(this.cache.json.exists("rp-meta"))more(this.cache.json.get("rp-meta"))}
-create(){const S=this,M=S.cache.json.get("rp-meta"),R=Math.random,L3=__L3;S.M=M;S.W=M.w;S.H=M.h;le(S);const cam=S.cameras.main;cam.setBounds(0,0,S.W,S.H).setBackgroundColor(0x0d1a12);
+create(){const S=this,M=S.cache.json.get("rp-meta"),R=Math.random,L3=__L3;window.__heroCls=String(S.classId||"WARRIOR").toUpperCase();S.M=M;S.W=M.w;S.H=M.h;le(S);const cam=S.cameras.main;cam.setBounds(0,0,S.W,S.H).setBackgroundColor(0x0d1a12);
  S.uiCam=S.cameras.add(0,0,cam.width,cam.height);S.uiCam.setZoom(cam.zoom).centerOn(_/2,st/2);S.ui=S.add.container(0,0).setDepth(5e3);cam.ignore(S.ui);
  const w=o=>(S.uiCam.ignore(o),o);S.w=w;
  const raw=atob(M.grid);S.grid=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)S.grid[i]=raw.charCodeAt(i);
@@ -170,11 +182,13 @@ buildUI(){const S=this,L3=__L3,U=S.ui,F="Georgia, 'Times New Roman', serif";
 say(i){const S=this;if(S.lineDone.has(i))return;S.lineDone.add(i);S.queue.push(i);S.speaking||S.nextLine()}
 hsay(key,t){const S=this;if(!t||S.heroDone.has(key))return;S.heroDone.add(key);S.queue.push(t);S.speaking||S.nextLine()}
 nextLine(){const S=this,tok=++S.lineTok;S.typer?.remove();if(!S.queue.length){S.speaking=!1;S.skipBtn?.setVisible(!1);S.tweens.add({targets:S.nar,alpha:0,duration:600});return}S.speaking=!0;S.skipBtn?.setVisible(!0);const it=S.queue.shift();
- if(typeof it==="string"){const fadeMs=S.nar.alpha>.05?300:0;S.tweens.add({targets:S.nar,alpha:0,duration:Math.max(1,fadeMs-40)});const d=Math.max(2600,it.length*48);S.time.delayedCall(fadeMs,()=>tok===S.lineTok&&S.heroSay(it,d));S.time.delayedCall(fadeMs+d+500,()=>tok===S.lineTok&&S.sys.isActive()&&S.nextLine());return}
+ if(typeof it==="string"){const fadeMs=S.nar.alpha>.05?300:0;S.tweens.add({targets:S.nar,alpha:0,duration:Math.max(1,fadeMs-40)});const vd=(window.__dubDur?.(it)||0)*1e3,d=Math.max(2600,it.length*48,vd+500);
+  S.time.delayedCall(fadeMs,()=>{if(tok!==S.lineTok)return;S.heroSay(it,d);let fin=!1;const nx=()=>{if(fin||tok!==S.lineTok||!S.sys.isActive())return;fin=!0;S.nextLine()};
+   try{vd&&window.__dub?.(it,ok=>ok&&S.time.delayedCall(450,nx))}catch(e){}S.time.delayedCall(d+700,nx)});return}
  const i=it,t=__arcLines()[i],ex=__ARC_EXPR[i]||"talk";
  S.textures.exists("guardia-p-"+ex)&&S.por.setTexture("guardia-p-"+ex);S.narTx.setText("");S.tweens.add({targets:S.nar,alpha:1,duration:300});let n=0;
  i===8&&(S.gustBoost=1);
- let fin=!1;const done=ok=>{if(fin||tok!==S.lineTok)return;fin=!0;const hl=__arcHero(i);hl&&!S.heroDone.has("g"+i)&&(S.heroDone.add("g"+i),S.queue.unshift(hl));S.time.delayedCall(ok?900:Math.max(3e3,t.length*60),()=>tok===S.lineTok&&S.sys.isActive()&&S.nextLine())};
+ let fin=!1;const done=ok=>{if(fin||tok!==S.lineTok)return;fin=!0;const hl=__arcHero(i);hl&&!S.heroDone.has("g"+i)&&(S.heroDone.add("g"+i),S.queue.unshift(hl));i===0&&!S.lineDone.has(15)&&(S.lineDone.add(15),S.queue.splice(hl?1:0,0,15));S.time.delayedCall(ok?900:Math.max(3e3,t.length*60),()=>tok===S.lineTok&&S.sys.isActive()&&S.nextLine())};
  try{window.__dub?window.__dub(t,done):done(!1)}catch(e){done(!1)}
  /* o texto acompanha a voz (começa quando ela começa e termina junto) */
  S.typer=S.time.addEvent({delay:24,loop:!0,callback:()=>{if(tok!==S.lineTok){S.typer?.remove();return}n=window.__dubType?window.__dubType(t,n,1):Math.min(t.length,n+1);S.narTx.setText(t.slice(0,n));n>=t.length&&S.typer.remove()}})}

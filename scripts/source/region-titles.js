@@ -29,7 +29,7 @@ function __rtNext(G){const U=G.scene.get("UI"),it=(G.__rtQ||[]).shift();if(!it||
  U.tweens.add({targets:C,alpha:1,duration:900,ease:"Sine.easeOut"});U.tweens.add({targets:tx,scale:1,duration:1400,ease:"Sine.easeOut"});U.tweens.add({targets:gl,scaleX:1,duration:1100,delay:150,ease:"Cubic.easeOut"});U.tweens.add({targets:sb,alpha:.92,duration:900,delay:450});
  U.time.delayedCall(4200,()=>U.tweens.add({targets:C,alpha:0,y:C.y-6,duration:1100,ease:"Sine.easeIn",onComplete:()=>{C.destroy();U.time.delayedCall(500,()=>__rtNext(G))}}))}
 /* entrada na fase */
-{const C0=Sd.prototype.create;Sd.prototype.create=function(){const r=C0.apply(this,arguments);const S=this;try{
+{const C0=Sd.prototype.create;Sd.prototype.create=function(){const r=C0.apply(this,arguments);const S=this;try{window.__heroCls=String(S.classDef?.id||S.classId||"").toUpperCase();
  const mode=S.game.registry.get("mode");if(mode!=="campaign"||S.level?.endless||S.isRift)return r;S.__rtOn=!1;S.__rtQ=[];
  const id=S.levelId,name=St(`lvl.${id}`,S.level?.name??id),sb=__RT_SUB[id];S.time.delayedCall(1300,()=>S.sys.isActive()&&__rtTitle(S,name,sb?__L3(...sb):""));
  /* salas especiais da floresta */

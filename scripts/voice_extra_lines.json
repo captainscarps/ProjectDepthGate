@@ -1,20 +1,191 @@
 [
- {"voice": "guardia", "expr": "calm", "text": "Desperte, viajante. O rio te trouxe mais longe do que qualquer barco deveria ir.", "en": "Wake, traveler. The river carried you farther than any boat should go.", "es": "Despierta, viajero. El río te trajo más lejos de lo que cualquier barco debería ir."},
- {"voice": "guardia", "expr": "talk", "text": "A floresta se lembra de quem cruzou antes de você. Siga a correnteza.", "en": "The forest remembers those who crossed before you. Follow the current.", "es": "El bosque recuerda a quienes cruzaron antes que tú. Sigue la corriente."},
- {"voice": "guardia", "expr": "sadness", "text": "Estas águas já marcaram a fronteira dos Antigos. Poucos ousaram cruzá-la.", "en": "These waters once marked the border of the Ancients. Few dared to cross it.", "es": "Estas aguas marcaron la frontera de los Antiguos. Pocos se atrevieron a cruzarla."},
- {"voice": "guardia", "expr": "talk", "text": "Ali, a margem. Daqui em diante, você caminha.", "en": "There, the shore. From here on, you walk.", "es": "Allí, la orilla. De aquí en adelante, caminas."},
- {"voice": "guardia", "expr": "special", "text": "Ouça a floresta. É a última voz sincera antes das Profundezas.", "en": "Listen to the forest. It is the last honest voice before the Depths.", "es": "Escucha el bosque. Es la última voz sincera antes de las Profundidades."},
- {"voice": "guardia", "expr": "sadness", "text": "Outro barco, outro viajante. Nem todos chegaram até mim.", "en": "Another boat, another traveler. Not all of them reached me.", "es": "Otro barco, otro viajero. No todos llegaron hasta mí."},
- {"voice": "guardia", "expr": "calm", "text": "Esta estátua assistiu à primeira selagem. Logo você vai entender o que ela guardava.", "en": "This statue watched the first sealing. Soon you will understand what it guarded.", "es": "Esta estatua presenció el primer sellado. Pronto entenderás lo que guardaba."},
- {"voice": "guardia", "expr": "smile", "text": "Além das árvores fica o Coração da Floresta. Estou esperando por você lá.", "en": "Beyond the trees lies the Heart of the Forest. I am waiting for you there.", "es": "Más allá de los árboles está el Corazón del Bosque. Te espero allí."},
- {"voice": "guardia", "expr": "calm", "text": "Sinta o vento. Ele carrega os sussurros de quem se perdeu nestas águas.", "en": "Feel the wind. It carries the whispers of those who were lost in these waters.", "es": "Siente el viento. Lleva los susurros de quienes se perdieron en estas aguas."},
- {"voice": "guardia", "expr": "sadness", "text": "Esta ponte uniu dois reinos, até a escuridão rachar suas pedras.", "en": "This bridge once joined two kingdoms, until the darkness cracked its stones.", "es": "Este puente unió dos reinos, hasta que la oscuridad agrietó sus piedras."},
- {"voice": "guardia", "expr": "smile", "text": "Os vaga-lumes guiam quem ainda tem esperança. Deixe que te levem até a margem.", "en": "The fireflies guide those who still have hope. Let them lead you to the shore.", "es": "Las luciérnagas guían a quien aún tiene esperanza. Deja que te lleven a la orilla."},
- {"voice": "guardia", "expr": "aggression", "text": "Não se aproxime. Aquilo era um olho do Observador.", "en": "Don't go near it. That was an eye of the Observer.", "es": "No te acerques. Eso era un ojo del Observador."},
- {"voice": "guardia", "expr": "sadness", "text": "Ele espalha espiões por todas as terras. Mesmo agora, alguém pode estar nos observando.", "en": "He spreads spies across every land. Even now, someone may be watching us.", "es": "Él esparce espías por todas las tierras. Incluso ahora, alguien podría estar observándonos."},
- {"voice": "guardia", "expr": "talk", "text": "Lá fora, nas terras além dos portais, eles vão atacar. Derrube-os antes que fujam.", "en": "Out there, in the lands beyond the gates, they will attack. Strike them down before they flee.", "es": "Allá afuera, en las tierras más allá de los portales, atacarán. Derríbalos antes de que huyan."},
- {"voice": "guardia", "expr": "smile", "text": "A vida ainda resiste nesta mata. Ande devagar… os animais daqui ainda não conhecem o medo das Profundezas.", "en": "Life still endures in these woods. Walk slowly… the animals here have not yet learned to fear the Depths.", "es": "La vida aún resiste en este bosque. Camina despacio… los animales de aquí aún no conocen el miedo a las Profundidades."},
- {"voice": "guardia", "expr": "calm", "text": "Este lago reflete o céu de antes das Profundezas. Guarde esta imagem quando a escuridão chegar.", "en": "This lake reflects the sky from before the Depths. Keep this image with you when the darkness comes.", "es": "Este lago refleja el cielo de antes de las Profundidades. Guarda esta imagen cuando llegue la oscuridad."},
- {"voice": "guardia", "expr": "sadness", "text": "Estas pedras foram um posto dos guardiões do selo. Eu conheci cada um deles… há muito tempo.", "en": "These stones were an outpost of the seal's guardians. I knew every one of them… long ago.", "es": "Estas piedras fueron un puesto de los guardianes del sello. Conocí a cada uno de ellos… hace mucho tiempo."},
- {"voice": "guardia", "expr": "aggression", "text": "As aves se calaram de repente. Mesmo aqui, sinto olhos nos observando. Siga a trilha para o leste.", "en": "The birds suddenly went quiet. Even here, I feel eyes watching us. Follow the trail east.", "es": "Las aves se callaron de repente. Incluso aquí, siento ojos que nos observan. Sigue el sendero hacia el este."}
+ {
+  "voice": "guardia",
+  "expr": "calm",
+  "text": "Desperte, viajante. O rio te trouxe mais longe do que qualquer barco deveria ir.",
+  "en": "Wake, traveler. The river carried you farther than any boat should go.",
+  "es": "Despierta, viajero. El río te trajo más lejos de lo que cualquier barco debería ir."
+ },
+ {
+  "voice": "guardia",
+  "expr": "talk",
+  "text": "A floresta se lembra de quem cruzou antes de você. Siga a correnteza.",
+  "en": "The forest remembers those who crossed before you. Follow the current.",
+  "es": "El bosque recuerda a quienes cruzaron antes que tú. Sigue la corriente."
+ },
+ {
+  "voice": "guardia",
+  "expr": "sadness",
+  "text": "Estas águas já marcaram a fronteira dos Antigos. Poucos ousaram cruzá-la.",
+  "en": "These waters once marked the border of the Ancients. Few dared to cross it.",
+  "es": "Estas aguas marcaron la frontera de los Antiguos. Pocos se atrevieron a cruzarla."
+ },
+ {
+  "voice": "guardia",
+  "expr": "talk",
+  "text": "Ali, a margem. Daqui em diante, você caminha.",
+  "en": "There, the shore. From here on, you walk.",
+  "es": "Allí, la orilla. De aquí en adelante, caminas."
+ },
+ {
+  "voice": "guardia",
+  "expr": "special",
+  "text": "Ouça a floresta. É a última voz sincera antes das Profundezas.",
+  "en": "Listen to the forest. It is the last honest voice before the Depths.",
+  "es": "Escucha el bosque. Es la última voz sincera antes de las Profundidades."
+ },
+ {
+  "voice": "guardia",
+  "expr": "sadness",
+  "text": "Outro barco, outro viajante. Nem todos chegaram até mim.",
+  "en": "Another boat, another traveler. Not all of them reached me.",
+  "es": "Otro barco, otro viajero. No todos llegaron hasta mí."
+ },
+ {
+  "voice": "guardia",
+  "expr": "calm",
+  "text": "Esta estátua assistiu à primeira selagem. Logo você vai entender o que ela guardava.",
+  "en": "This statue watched the first sealing. Soon you will understand what it guarded.",
+  "es": "Esta estatua presenció el primer sellado. Pronto entenderás lo que guardaba."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "Além das árvores fica o Coração da Floresta. Estou esperando por você lá.",
+  "en": "Beyond the trees lies the Heart of the Forest. I am waiting for you there.",
+  "es": "Más allá de los árboles está el Corazón del Bosque. Te espero allí."
+ },
+ {
+  "voice": "guardia",
+  "expr": "calm",
+  "text": "Sinta o vento. Ele carrega os sussurros de quem se perdeu nestas águas.",
+  "en": "Feel the wind. It carries the whispers of those who were lost in these waters.",
+  "es": "Siente el viento. Lleva los susurros de quienes se perdieron en estas aguas."
+ },
+ {
+  "voice": "guardia",
+  "expr": "sadness",
+  "text": "Esta ponte uniu dois reinos, até a escuridão rachar suas pedras.",
+  "en": "This bridge once joined two kingdoms, until the darkness cracked its stones.",
+  "es": "Este puente unió dos reinos, hasta que la oscuridad agrietó sus piedras."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "Os vaga-lumes guiam quem ainda tem esperança. Deixe que te levem até a margem.",
+  "en": "The fireflies guide those who still have hope. Let them lead you to the shore.",
+  "es": "Las luciérnagas guían a quien aún tiene esperanza. Deja que te lleven a la orilla."
+ },
+ {
+  "voice": "guardia",
+  "expr": "aggression",
+  "text": "Não se aproxime. Aquilo era um olho do Observador.",
+  "en": "Don't go near it. That was an eye of the Observer.",
+  "es": "No te acerques. Eso era un ojo del Observador."
+ },
+ {
+  "voice": "guardia",
+  "expr": "sadness",
+  "text": "Ele espalha espiões por todas as terras. Mesmo agora, alguém pode estar nos observando.",
+  "en": "He spreads spies across every land. Even now, someone may be watching us.",
+  "es": "Él esparce espías por todas las tierras. Incluso ahora, alguien podría estar observándonos."
+ },
+ {
+  "voice": "guardia",
+  "expr": "talk",
+  "text": "Lá fora, nas terras além dos portais, eles vão atacar. Derrube-os antes que fujam.",
+  "en": "Out there, in the lands beyond the gates, they will attack. Strike them down before they flee.",
+  "es": "Allá afuera, en las tierras más allá de los portales, atacarán. Derríbalos antes de que huyan."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "A vida ainda resiste nesta mata. Ande devagar… os animais daqui ainda não conhecem o medo das Profundezas.",
+  "en": "Life still endures in these woods. Walk slowly… the animals here have not yet learned to fear the Depths.",
+  "es": "La vida aún resiste en este bosque. Camina despacio… los animales de aquí aún no conocen el miedo a las Profundidades."
+ },
+ {
+  "voice": "guardia",
+  "expr": "calm",
+  "text": "Este lago reflete o céu de antes das Profundezas. Guarde esta imagem quando a escuridão chegar.",
+  "en": "This lake reflects the sky from before the Depths. Keep this image with you when the darkness comes.",
+  "es": "Este lago refleja el cielo de antes de las Profundidades. Guarda esta imagen cuando llegue la oscuridad."
+ },
+ {
+  "voice": "guardia",
+  "expr": "sadness",
+  "text": "Estas pedras foram um posto dos guardiões do selo. Eu conheci cada um deles… há muito tempo.",
+  "en": "These stones were an outpost of the seal's guardians. I knew every one of them… long ago.",
+  "es": "Estas piedras fueron un puesto de los guardianes del sello. Conocí a cada uno de ellos… hace mucho tiempo."
+ },
+ {
+  "voice": "guardia",
+  "expr": "aggression",
+  "text": "As aves se calaram de repente. Mesmo aqui, sinto olhos nos observando. Siga a trilha para o leste.",
+  "en": "The birds suddenly went quiet. Even here, I feel eyes watching us. Follow the trail east.",
+  "es": "Las aves se callaron de repente. Incluso aquí, siento ojos que nos observan. Sigue el sendero hacia el este."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "Você fala a língua da minha terra, Draven. Mas saiba: minha magia faz qualquer língua deste mundo ser compreendida.",
+  "en": "You speak the tongue of my homeland, Draven. But know this: my magic lets any language in this world be understood.",
+  "es": "Hablas la lengua de mi tierra, Draven. Pero debes saberlo: mi magia hace que cualquier lengua de este mundo se entienda."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "Japonês… a língua das ilhas de fogo, Akihiro. Não se preocupe: minha magia faz qualquer língua ser compreendida. Você me entende, e todos vão entender você.",
+  "en": "Japanese… the tongue of the fire islands, Akihiro. Don't worry: my magic lets any language be understood. You understand me, and everyone will understand you.",
+  "es": "Japonés… la lengua de las islas de fuego, Akihiro. No te preocupes: mi magia hace que cualquier lengua se entienda. Tú me entiendes, y todos te entenderán."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "Japonês… você fala como o seu irmão, Hayato. Não se preocupe: minha magia faz qualquer língua ser compreendida. Você me entende, e todos vão entender você.",
+  "en": "Japanese… you speak just like your brother, Hayato. Don't worry: my magic lets any language be understood. You understand me, and everyone will understand you.",
+  "es": "Japonés… hablas igual que tu hermano, Hayato. No te preocupes: mi magia hace que cualquier lengua se entienda. Tú me entiendes, y todos te entenderán."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "Você fala como os caçadores do norte gelado, Kael. Aonde quer que vá, minha magia faz qualquer língua ser compreendida.",
+  "en": "You speak like the hunters of the frozen north, Kael. Wherever you go, my magic lets any language be understood.",
+  "es": "Hablas como los cazadores del norte helado, Kael. Vayas a donde vayas, mi magia hace que cualquier lengua se entienda."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "Grego… a língua dos bosques sagrados, Tharion. Não tema: minha magia faz qualquer língua ser compreendida, por mim e por todos que você encontrar.",
+  "en": "Greek… the tongue of the sacred groves, Tharion. Fear not: my magic lets any language be understood, by me and by everyone you meet.",
+  "es": "Griego… la lengua de los bosques sagrados, Tharion. No temas: mi magia hace que cualquier lengua se entienda, por mí y por todos los que encuentres."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "Polonês… uma língua que até os mortos respeitam, Valthor. Minha magia faz qualquer língua ser compreendida. Fale, e todos vão entender.",
+  "en": "Polish… a tongue even the dead respect, Valthor. My magic lets any language be understood. Speak, and everyone will understand.",
+  "es": "Polaco… una lengua que hasta los muertos respetan, Valthor. Mi magia hace que cualquier lengua se entienda. Habla, y todos entenderán."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "A língua das margens do Nilo, Arthelia. Não se preocupe: minha magia faz qualquer língua ser compreendida. Você me entende, e todos vão entender você.",
+  "en": "The tongue of the banks of the Nile, Arthelia. Don't worry: my magic lets any language be understood. You understand me, and everyone will understand you.",
+  "es": "La lengua de las orillas del Nilo, Arthelia. No te preocupes: mi magia hace que cualquier lengua se entienda. Tú me entiendes, y todos te entenderán."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "O francês das ilhas, Seris. Fale à vontade: minha magia faz qualquer língua ser compreendida, por quem quer que seja.",
+  "en": "The French of the islands, Seris. Speak freely: my magic lets any language be understood, by anyone at all.",
+  "es": "El francés de las islas, Seris. Habla con libertad: mi magia hace que cualquier lengua se entienda, por quien sea."
+ },
+ {
+  "voice": "guardia",
+  "expr": "smile",
+  "text": "Nheengatu… a língua boa da mata, Araí. Minha magia leva as suas palavras a qualquer ouvido, e traz as minhas até você.",
+  "en": "Nheengatu… the good tongue of the forest, Araí. My magic carries your words to any ear, and brings mine to you.",
+  "es": "Ñeengatú… la buena lengua del bosque, Araí. Mi magia lleva tus palabras a cualquier oído, y trae las mías hasta ti."
+ }
 ]
