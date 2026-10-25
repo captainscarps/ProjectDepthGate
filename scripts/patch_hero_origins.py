@@ -5,7 +5,7 @@ Origens dos heróis (falas ao entrar na terra natal + crônica + Códex):
   Arqueiro (Hayato)   -> Vulcão de Cinzas    (Sakurajima, arqueiro samurai)
   Ladina (Seris)      -> Ilhas (rio)
   Maga (Arthelia)     -> Deserto Esquecido (temple)
-  Druida (Tharion)    -> Ruínas Antigas
+  Druida (Tharion)    -> Ruínas Antigas  (Boêmia, República Tcheca, de origem celta boia)
   Caçador (Kael)      -> Cidadela Glacial (terras gélidas do norte)
   Xamã e Necromante continuam como estavam.
 Re-executável.
@@ -22,15 +22,9 @@ s = open(BUNDLE, encoding="utf-8").read()
 H = {
     "SHAMAN": ("bosque", None, None),          # inalterado
     "DRUID": ("ruins",
-              [("Estas pedras já foram um bosque sagrado. Os Antigos derrubaram as árvores-mães para erguer os portais.",
-                "These stones were once a sacred grove. The Ancients felled the mother trees to raise the gates.",
-                "Estas piedras fueron un bosque sagrado. Los Antiguos talaron los árboles madre para alzar los portales."),
-               ("Ainda sinto as raízes debaixo do mármore… e elas estão com medo.",
-                "I can still feel the roots beneath the marble… and they are afraid.",
-                "Todavía siento las raíces bajo el mármol… y tienen miedo.")],
-              ("O Colosso guardava as raízes, não o portal. Agora a terra pode respirar de novo.",
-               "The Colossus guarded the roots, not the gate. Now the land can breathe again.",
-               "El Coloso guardaba las raíces, no el portal. Ahora la tierra puede volver a respirar.")),
+              [('Estas pedras têm os mesmos símbolos que meus ancestrais gravaram em Závist. Os Antigos também derrubaram um bosque sagrado para erguer seus portais.', 'These stones bear the same signs my ancestors carved at Závist. The Ancients felled a sacred grove here too, to raise their gates.', 'Estas piedras tienen los mismos signos que mis antepasados tallaron en Závist. Los Antiguos también talaron aquí un bosque sagrado para alzar sus portales.'),
+               ('Ainda sinto as raízes debaixo do mármore… e elas têm medo, como os carvalhos de casa antes de secarem.', 'I can still feel the roots beneath the marble… and they are afraid, like the oaks back home before they withered.', 'Todavía siento las raíces bajo el mármol… y tienen miedo, como los robles de mi tierra antes de secarse.')],
+              ('O Colosso guardava as raízes, não o portal. Que a terra respire de novo, pelo juramento dos boios.', 'The Colossus guarded the roots, not the gate. Let the land breathe again, by the oath of the Boii.', 'El Coloso guardaba las raíces, no el portal. Que la tierra vuelva a respirar, por el juramento de los boyos.')),
     "BERSERKER": ("vulcao",
                   [("Esta cinza… é a mesma que caía sobre Sakurajima. O vulcão da minha terra.",
                     "This ash… it is the same that fell on Sakurajima. The volcano of my homeland.",
@@ -163,9 +157,11 @@ CODEX = {
         "motivation": "Descobrir quem está construindo portais nas Ilhas, saquear os maiores tesouros esquecidos e testar as adagas contra os horrores do Abismo.",
     },
     "DRUID": {
-        "dimension": "Bosque sagrado sob as Ruínas Antigas",
-        "lore": "Tharion foi consagrado no último círculo druídico que cuidava do bosque sagrado onde hoje estão as Ruínas Antigas, derrubado pelos Antigos para erguer os primeiros portais. Ainda ouve as raízes sob o mármore. Quando as fendas voltaram a rasgar a terra, canalizou a fúria do javali e do lobisomem para defender o solo com dentes e garras.",
-        "motivation": "Devolver a vida à terra sob as Ruínas, proteger os santuários naturais e esmagar as abominações que desonram a cadeia natural.",
+        "subtitle": "Guardião da Mata & Senhor das Feras",
+        "era": "Tempo dos Boios & do Juramento dos Carvalhos",
+        "dimension": "Floresta da Boêmia (Šumava), na República Tcheca",
+        "lore": "Tharion nasceu nas florestas da Boêmia, na atual República Tcheca, a terra que herdou o nome dos boios, o povo celta que a habitou antes de todos os reinos. Sua família guardou em segredo, por séculos, o caminho dos druidas: o carvalho, o visco e o juramento de vigiar o nemeton da Šumava, o bosque sagrado onde os antigos druidas selaram um portal com um círculo de carvalhos vivos. Quando os carvalhos começaram a secar de dentro para fora, Tharion entendeu que o selo cedia e seguiu as raízes até as Profundezas. Nas Ruínas Antigas reconhece, gravados na pedra, os mesmos símbolos que seus ancestrais deixaram no oppidum de Závist, e canaliza a fúria do javali e do lobisomem para defender a terra com dentes e garras.",
+        "motivation": "Renovar o juramento dos druidas boios, devolver a vida às raízes sob as Ruínas e garantir que o círculo de carvalhos da Šumava nunca mais se abra."
     },
     "HUNTER": {
         "era": "Era Pré-Imperial das Terras Geladas",
