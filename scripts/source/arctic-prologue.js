@@ -216,10 +216,20 @@ buildUI(){const S=this,L3=__L3,U=S.ui,F="Georgia, 'Times New Roman', serif";
  S.input.on("pointermove",p=>{if(!S.joy.on||p.id!==S.joy.id)return;const q=toUI(p);let dx=q.x-S.joy.ox,dy=q.y-S.joy.oy;const m=Math.hypot(dx,dy);if(m>26){dx*=26/m;dy*=26/m}S.joy.x=dx/26;S.joy.y=dy/26;jt.setPosition(S.joy.ox+dx,S.joy.oy+dy)});
  const up=p=>{if(p.id!==S.joy.id)return;S.joy.on=!1;S.joy.x=S.joy.y=0;jb.setVisible(!1);jt.setVisible(!1)};S.input.on("pointerup",up);S.input.on("pointerupoutside",up)}
 /* narração: UMA fila para a Guardiã (número da fala) e o herói (texto) — nada fala por cima de nada */
-say(i){const S=this;if(S.lineDone.has(i))return;S.lineDone.add(i);S.queue.push(i);S.speaking||S.nextLine()}
+/* fala de lugar entra na frente da fila (antes dos comentários soltos); quando chega a vez, só é dita se o
+   herói ainda estiver naquele lugar — senão é descartada e a próxima entra (nada fala fora do lugar) */
+say(i,front){const S=this;if(S.lineDone.has(i))return;S.lineDone.add(i);front?S.queue.splice(S.queue.findIndex(q=>typeof q!=="number")<0?S.queue.length:S.queue.findIndex(q=>typeof q!=="number"),0,i):S.queue.push(i);S.speaking||S.nextLine()}
+lineOk(it){const S=this;if(it&&typeof it==="object"&&it.h)return S.time.now-it.t<9e3;if(typeof it!=="number")return!0;const i=it;
+ if(S.ret||[0,4,5,6,7,15].includes(i))return!0;
+ const z=Object.entries(__RPZL).find(q=>q[1]===i);if(z){const Z=S.M.zones?.[z[0]];return S.mode==="land"&&!!Z&&((S.hx-Z[0])/(Z[2]*1.6))**2+((S.hy-Z[1])/(Z[3]*1.6))**2<1}
+ const c=S.cues.find(q=>q[0]===i);if(c){if(S.mode!=="boat")return!1;const nx=S.cues.filter(q=>q[1]>c[1]).sort((a,b)=>a[1]-b[1])[0];return S.prog<(nx?nx[1]+150:c[1]+900)}return!0}
+finale(){const S=this;if(S.fin7)return;S.fin7=1;S.lineDone.add(7);S.queue=[...S.queue.filter(q=>q===15||q===4),7];
+ /* chegou ao fim da trilha: corta comentário ou fala de lugar que esteja tocando e a Guardiã chama para o Coração da Floresta */
+ const cur=S.curItem;S.speaking&&!(typeof cur==="number"&&[0,4,15].includes(cur))&&!(typeof cur==="string")?S.skipLine():S.speaking||S.nextLine();S.finish(!1)}
 mono(key,t){const S=this;if(!t||S.heroDone.has("m:"+key))return!1;S.heroDone.add("m:"+key);S.queue.push({mono:t});S.speaking||S.nextLine();return!0}
-hsay(key,t){const S=this;if(S.ret||!t||S.heroDone.has(key))return;S.heroDone.add(key);S.queue.push(t);S.speaking||S.nextLine()}
-nextLine(){const S=this,tok=++S.lineTok;S.typer?.remove();if(!S.queue.length){S.speaking=!1;S.skipBtn?.setVisible(!1);S.tweens.add({targets:S.nar,alpha:0,duration:600});return}S.speaking=!0;S.skipBtn?.setVisible(!0);const it=S.queue.shift();
+hsay(key,t){const S=this;if(S.ret||S.fin7||!t||S.heroDone.has(key))return;S.heroDone.add(key);S.queue.push({h:t,t:S.time.now});S.speaking||S.nextLine()}
+nextLine(){const S=this,tok=++S.lineTok;S.typer?.remove();if(!S.queue.length){S.speaking=!1;S.skipBtn?.setVisible(!1);S.tweens.add({targets:S.nar,alpha:0,duration:600});return}let it=S.queue.shift();while(it!==void 0&&!S.lineOk(it))it=S.queue.shift();if(it===void 0){S.speaking=!1;S.skipBtn?.setVisible(!1);S.tweens.add({targets:S.nar,alpha:0,duration:600});return}
+ S.speaking=!0;S.skipBtn?.setVisible(!0);S.curItem=it;it&&typeof it==="object"&&it.h&&(it=it.h);
  if(typeof it==="string"){const fadeMs=S.nar.alpha>.05?300:0;S.tweens.add({targets:S.nar,alpha:0,duration:Math.max(1,fadeMs-40)});const vd=(window.__dubDur?.(it)||0)*1e3,d=Math.max(2600,it.length*48,vd+500);
   S.time.delayedCall(fadeMs,()=>{if(tok!==S.lineTok)return;S.heroSay(it,d);let fin=!1;const nx=()=>{if(fin||tok!==S.lineTok||!S.sys.isActive())return;fin=!0;S.nextLine()};
    try{vd&&window.__dub?.(it,ok=>ok&&S.time.delayedCall(450,nx))}catch(e){}S.time.delayedCall(d+700,nx)});return}
@@ -229,6 +239,8 @@ nextLine(){const S=this,tok=++S.lineTok;S.typer?.remove();if(!S.queue.length){S.
  i===8&&(S.gustBoost=1);
  let fin=!1;const done=ok=>{if(fin||tok!==S.lineTok)return;fin=!0;const hl=isM?null:__arcHero(i);hl&&!S.heroDone.has("g"+i)&&(S.heroDone.add("g"+i),S.queue.unshift(hl));i===0&&!S.lineDone.has(15)&&(S.lineDone.add(15),S.queue.splice(hl?1:0,0,15));S.time.delayedCall(ok?900:Math.max(3e3,t.length*60),()=>tok===S.lineTok&&S.sys.isActive()&&S.nextLine())};
  try{window.__dub?window.__dub(t,done):done(!1)}catch(e){done(!1)}
+ /* trava de segurança: se a voz não terminar (áudio ainda bloqueado pelo aparelho, rede lenta), a fala termina sozinha no tempo dela */
+ S.time.delayedCall(Math.max((window.__dubDur?.(t)||0)*1e3+2500,t.length*65+2500),()=>{if(!fin&&tok===S.lineTok){try{window.__dubStop?.()}catch(e){}done(!0)}});
  /* o texto acompanha a voz (começa quando ela começa e termina junto) */
  S.typer=S.time.addEvent({delay:24,loop:!0,callback:()=>{if(tok!==S.lineTok){S.typer?.remove();return}n=window.__dubType?window.__dubType(t,n,1):Math.min(t.length,n+1);S.narTx.setText(t.slice(0,n));n>=t.length&&S.typer.remove()}})}
 skipLine(){const S=this;if(!S.speaking||S.pauseOn)return;try{window.__dubStop?.()}catch(e){}S.typer?.remove();if(S.hbox){S.hbox.destroy();S.hbox=null}
@@ -304,7 +316,7 @@ updateAnimals(dt){const S=this;if(!S.animals?.length)return;const R=Math.random,
   case"hide":break}
   if(a.st!=="gone"){a.s.x=a.x;a.st!=="walk"||C.kind!=="bird"?a.s.y=a.y-a.alt:0;(a.st==="idle"||a.st==="walk")&&C.kind!=="fish"&&a.s.setDepth(a.y);a.sh&&a.sh.setPosition(a.x,a.y+2).setAlpha((a.alt>2?.08:C.kind==="duck"?.12:.22))}
   if(C.kind==="duck"&&a.st==="idle"&&R()<dt*.15)S.ring(a.x,a.y,10);if(C.kind==="fish"&&a.st==="idle"&&R()<dt*.1&&v.contains(a.x,a.y))S.ring(a.x,a.y,5)}}
-doAct(){const S=this,a=S.curAct;if(!a)return;if(a.kind==="land"){S.disembark();return}if(a.kind==="embark"){S.embark();return}if(a.kind==="poi"){a.p.done=!0;S.ret?S.mono(a.p.line===5?"wreck":"statue",__L3(...__RET[a.p.line===5?"wreck":"statue"])):S.say(a.p.line);S.game.audioEngine?.sfx?.("sfx-ui-tab");S.burst(a.p.x,a.p.y-20)}}
+doAct(){const S=this,a=S.curAct;if(!a)return;if(a.kind==="land"){S.disembark();return}if(a.kind==="embark"){S.embark();return}if(a.kind==="poi"){a.p.done=!0;S.ret?S.mono(a.p.line===5?"wreck":"statue",__L3(...__RET[a.p.line===5?"wreck":"statue"])):S.say(a.p.line,!0);S.game.audioEngine?.sfx?.("sfx-ui-tab");S.burst(a.p.x,a.p.y-20)}}
 burst(x,y){const S=this;for(let k=0;k<10;k++){const c=S.w(S.add.circle(x,y,1.5,0xd8ff9a,.9).setDepth(5e3));S.tweens.add({targets:c,x:x+(Math.random()-.5)*50,y:y-20-Math.random()*30,alpha:0,duration:700,onComplete:()=>c.destroy()})}}
 disembark(){const S=this;if(S.mode!=="boat")return;S.mode="land";S.bv={x:0,y:0};S.tweens.add({targets:S.boat,x:S.dock.x+34,y:S.dock.y+6,rotation:.25,duration:500});
  S.sfx("splash",.8);S.sfx("bump",.6);S.time.delayedCall(250,()=>S.sfx("step",.7));S.time.delayedCall(480,()=>S.sfx("step",.7));
@@ -342,7 +354,7 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
   /* câmera olha um pouco à frente do barco */
   const lk=.75;S.look.x+=(-vx*lk-S.look.x)*Math.min(1,dt*1.2);S.look.y+=(-vy*lk-S.look.y)*Math.min(1,dt*1.2);cam.setFollowOffset(S.look.x,S.look.y);
   /* roteiro da narração pelo quanto já desceu o rio */
-  if(S.ret)S.retRiver(B);else{if(S.pi>=0)S.prog=Math.max(S.prog,S.P[S.pi][2]);for(const[li,sv]of S.cues)S.prog>=sv&&S.say(li);
+  if(S.ret)S.retRiver(B);else{if(S.pi>=0)S.prog=Math.max(S.prog,S.P[S.pi][2]);for(const[li,sv]of S.cues)S.prog>=sv&&S.say(li,!0);
   if(Math.hypot(B.x-S.dock.x,B.y-S.dock.y)<70)act={kind:"land",label:L3("⚓ Desembarcar","⚓ Disembark","⚓ Desembarcar")}}}
  else if(S.hero){const inW=S.cell(S.hx,S.hy)!==1&&S.shallow(S.hx,S.hy)&&!(Math.abs(S.hx-S.dock.x)<14&&S.hy<M.land[1]+20),spd=inW?66:105;let[nx,ny]=S.step(S.hx,S.hy,S.hx+a.x*spd*dt,S.hy+a.y*spd*dt,(x,y)=>S.walkOk(x,y));const o={x:nx,y:ny};S.push(o,S.lobs,8);if(!S.walkOk(o.x,o.y)){o.x=nx;o.y=ny}
   const moved=Math.hypot(o.x-S.hx,o.y-S.hy);S.hx=o.x;S.hy=o.y;
@@ -353,8 +365,8 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
   if(inW&&!S.wadeSaid){S.wadeSaid=1;S.hsay("wade",__L3("Água fria… mas dá pé.","Cold water… but I can touch the bottom.","Agua fría… pero hago pie."))}
   for(const p of S.poi)if(!p.done&&Math.hypot(p.x-o.x,p.y-o.y)<48){act={kind:"poi",p,label:"✦ "+p.label};break}
   if(S.ret&&Math.hypot(o.x-M.land[0],o.y-M.land[1])<46)act={kind:"embark",label:L3("⚓ Embarcar","⚓ Board the boat","⚓ Embarcar")};
-  if(!S.ret)for(const[z,li]of Object.entries(__RPZL)){const Z=M.zones?.[z];if(Z&&!S.lineDone.has(li)&&((o.x-Z[0])/Z[2])**2+((o.y-Z[1])/Z[3])**2<1)S.say(li)}
-  if(!S.ret&&Math.hypot(o.x-M.exit[0],o.y-M.exit[1])<80){S.say(7);S.finish(!1)}}
+  if(!S.ret)for(const[z,li]of Object.entries(__RPZL)){const Z=M.zones?.[z];if(Z&&!S.lineDone.has(li)&&((o.x-Z[0])/Z[2])**2+((o.y-Z[1])/Z[3])**2<1)S.say(li,!0)}
+  if(!S.ret&&Math.hypot(o.x-M.exit[0],o.y-M.exit[1])<80)S.finale()}
  S.updateAnimals(dt);S.updateLife(dt,t,G);
  /* mixagem: rio perto, corredeira perto da garganta, casco pela velocidade, vento pelas rajadas */
  const fx=S.mode==="boat"?S.boat.x:S.hx,fy=S.mode==="boat"?S.boat.y:S.hy;let dg=1e9;for(const p of S.gorge){const d=Math.hypot(p[0]-fx,p[1]-fy);d<dg&&(dg=d)}
@@ -488,7 +500,7 @@ retRiver(B){const S=this,M=S.M,L3=__L3;
 finish(skip){const S=this;if(S.leaving)return;S.leaving=!0;const go=()=>{try{window.__dubStop?.()}catch(e){}S.audioStop();if(S.ret){const f=S.onDone;S.scene.stop();f&&f();return}S.scene.start(S.next.key,S.next.data)};
  S.hero&&S.anims.exists(S.hkey+"-idle")&&S.hero.play(S.hkey+"-idle");const fade=()=>{for(const n in S.au||{})S.gain(n,0,.3)};
  if(skip){fade();S.cameras.main.fadeOut(500,0,0,0);S.uiCam.fadeOut(500,0,0,0);S.time.delayedCall(520,go);return}
- let n=0;const wait=()=>{if((S.speaking||S.queue.length)&&n++<(S.ret?80:20)){S.time.delayedCall(500,wait);return}fade();S.cameras.main.fadeOut(900,0,0,0);S.uiCam.fadeOut(900,0,0,0);S.time.delayedCall(920,go)};S.time.delayedCall(400,wait)}}
+ let n=0;const wait=()=>{if((S.speaking||S.queue.length)&&n++<(S.ret||S.fin7?80:20)){S.time.delayedCall(500,wait);return}fade();S.cameras.main.fadeOut(900,0,0,0);S.uiCam.fadeOut(900,0,0,0);S.time.delayedCall(920,go)};S.time.delayedCall(400,wait)}}
 class __ReturnJourney extends __ArcticPrologue{constructor(){super("ReturnJourney")}}
 /* chamado no fim do epílogo, antes do vídeo do herói: pausa o jogo, faz o caminho de volta e devolve */
 function __retJourney(G,choice,done){try{const game=G?.game||window.__DED_GAME;if(!game){done();return}
