@@ -1,128 +1,565 @@
 {
-  "_about": "Falas dos heróis na língua de cada um (o jogo mostra a legenda no idioma escolhido e toca esta voz). generic = valem para qualquer herói (uma tradução por língua); own = fala de um herói só. Línguas: en (Draven, Reino Unido; Kael, Alasca), ja (Akihiro e Hayato), el (Tharion), pl (Valthor), ar (Arthelia, Egito), fr (Seris, Seicheles), yrl (Araí, nheengatu).",
-  "voices": {
-    "WARRIOR": {"lang": "en", "voice": "en-GB-RyanNeural", "rate": "-4%", "pitch": "-2Hz"},
-    "BERSERKER": {"lang": "ja", "voice": "ja-JP-KeitaNeural", "rate": "-6%", "pitch": "-10Hz"},
-    "ARCHER": {"lang": "ja", "voice": "ja-JP-KeitaNeural", "rate": "+3%", "pitch": "+7Hz"},
-    "HUNTER": {"lang": "en", "voice": "en-US-ChristopherNeural", "rate": "-6%", "pitch": "-4Hz"},
-    "DRUID": {"lang": "el", "voice": "el-GR-NestorasNeural", "rate": "-6%", "pitch": "-2Hz"},
-    "NECROMANCER": {"lang": "pl", "voice": "pl-PL-MarekNeural", "rate": "-8%", "pitch": "-8Hz"},
-    "MAGE": {"lang": "ar", "voice": "ar-EG-SalmaNeural", "rate": "-3%", "pitch": "+0Hz"},
-    "ROGUE": {"lang": "fr", "voice": "fr-FR-DeniseNeural", "rate": "+2%", "pitch": "+0Hz"},
-    "SHAMAN": {"lang": "yrl", "voice": "pt-BR-FranciscaNeural", "rate": "-6%", "pitch": "+0Hz"}
+ "_about": "Falas dos heróis na língua de cada um (o jogo mostra a legenda no idioma escolhido e toca esta voz). generic = valem para qualquer herói (uma tradução por língua); own = fala de um herói só. Línguas: en (Draven, Reino Unido; Kael, Alasca), ja (Akihiro e Hayato), el (Tharion), pl (Valthor), ar (Arthelia, Egito), fr (Seris, Seicheles), yrl (Araí, nheengatu). yrl_tts / terceiro item = grafia de pronúncia para a voz (o texto certo fica em yrl).",
+ "voices": {
+  "WARRIOR": {
+   "lang": "en",
+   "voice": "en-GB-RyanNeural",
+   "rate": "-4%",
+   "pitch": "-2Hz"
   },
-  "generic": [
-    {"pt": "Quem… quem está falando comigo?", "en": "Who… who is speaking to me?", "es": "¿Quién… quién me está hablando?",
-     "ja": "誰だ…誰が俺に話しかけている？", "el": "Ποιος… ποιος μου μιλάει;", "pl": "Kto… kto do mnie mówi?", "ar": "مين… مين اللي بيكلمني؟", "fr": "Qui… qui me parle ?", "yrl": "Awá taá… awá taá unheẽ se irũmu?"},
-    {"pt": "Essa voz… parece vir de todos os lados.", "en": "That voice… it seems to come from everywhere.", "es": "Esa voz… parece venir de todas partes.",
-     "ja": "この声…あらゆる方向から聞こえる。", "el": "Αυτή η φωνή… μοιάζει να έρχεται από παντού.", "pl": "Ten głos… jakby dochodził zewsząd.", "ar": "الصوت ده… كأنه جاي من كل حتة.", "fr": "Cette voix… on dirait qu'elle vient de partout.", "yrl": "Kuá nheẽnga… usika paá upé rupi."},
-    {"pt": "Como você sabe tudo isso? Quem é você?", "en": "How do you know all this? Who are you?", "es": "¿Cómo sabes todo eso? ¿Quién eres?",
-     "ja": "なぜそんなことまで知っている？お前は誰だ？", "el": "Πώς τα ξέρεις όλα αυτά; Ποια είσαι;", "pl": "Skąd to wszystko wiesz? Kim jesteś?", "ar": "إنتي عارفة كل ده إزاي؟ إنتي مين؟", "fr": "Comment tu sais tout ça ? Qui es-tu ?", "yrl": "Mayé taá rekuá panhẽ kuá? Awá taá indé?"},
-    {"pt": "Mostre-se! Por que não aparece?", "en": "Show yourself! Why won't you appear?", "es": "¡Muéstrate! ¿Por qué no apareces?",
-     "ja": "姿を見せろ！なぜ出てこない？", "el": "Φανερώσου! Γιατί δεν εμφανίζεσαι;", "pl": "Pokaż się! Dlaczego się nie ukazujesz?", "ar": "اظهري! ليه مش بتبيني نفسك؟", "fr": "Montre-toi ! Pourquoi tu n'apparais pas ?", "yrl": "Resendú ne! Marã taá resu ti resendú?"},
-    {"pt": "Coração da Floresta… então é lá que vou descobrir quem é essa voz.", "en": "The Heart of the Forest… so that's where I'll find out whose voice this is.", "es": "El Corazón del Bosque… entonces allí descubriré de quién es esta voz.",
-     "ja": "森の心臓…そこで、この声の正体がわかるのか。", "el": "Η Καρδιά του Δάσους… εκεί λοιπόν θα μάθω σε ποιον ανήκει αυτή η φωνή.", "pl": "Serce Lasu… więc tam się dowiem, czyj to głos.", "ar": "قلب الغابة… يبقى هناك هعرف الصوت ده بتاع مين.", "fr": "Le Cœur de la Forêt… c'est donc là que je saurai à qui appartient cette voix.", "yrl": "Kaá Pyá… aitá upé taá asikari awá nheẽnga kuá."},
-    {"pt": "Faz tanto tempo que não vejo uma água tão limpa…", "en": "It's been so long since I've seen water this clear…", "es": "Hace tanto que no veo un agua tan limpia…",
-     "ja": "こんなに澄んだ水を見るのは久しぶりだ…", "el": "Πόσος καιρός πέρασε από τότε που είδα τόσο καθαρό νερό…", "pl": "Tak dawno nie widziałem tak czystej wody…", "ar": "بقالي كتير أوي ما شفتش ميّه صافية كده…", "fr": "Ça fait si longtemps que je n'ai pas vu une eau aussi claire…", "yrl": "Ariré retana se ti amaã ií piranga kuá yawé…"},
-    {"pt": "Guardiões do selo… e você era um deles? Quem é você, afinal?", "en": "Guardians of the seal… and you were one of them? Who are you, really?", "es": "Guardianes del sello… ¿y tú eras una de ellos? ¿Quién eres, en realidad?",
-     "ja": "封印の守護者…お前もその一人だったのか？いったい何者なんだ？", "el": "Φύλακες της σφραγίδας… κι εσύ ήσουν μία από αυτούς; Ποια είσαι, τελικά;", "pl": "Strażnicy pieczęci… i ty byłaś jedną z nich? Kim ty właściwie jesteś?", "ar": "حراس الختم… وإنتي كنتي واحدة منهم؟ إنتي مين بجد؟", "fr": "Les gardiens du sceau… et tu étais l'une d'eux ? Qui es-tu, au fond ?", "yrl": "Kuá mukameẽsara itá… indé paá yepé aintá suí? Awá taá indé, supí?"},
-    {"pt": "Eu também sinto… como se algo me vigiasse entre as árvores.", "en": "I feel it too… as if something were watching me from the trees.", "es": "Yo también lo siento… como si algo me vigilara entre los árboles.",
-     "ja": "俺も感じる…木々の間から何かに見張られているような。", "el": "Το νιώθω κι εγώ… σαν κάτι να με παρακολουθεί μέσα από τα δέντρα.", "pl": "Też to czuję… jakby coś obserwowało mnie spomiędzy drzew.", "ar": "أنا كمان حاسس… كأن في حاجة بتراقبني من بين الشجر.", "fr": "Je le sens aussi… comme si quelque chose me guettait entre les arbres.", "yrl": "Se yuíri asendú… yawé mbaá umaã se kaá-itá pitera suí."},
-    {"pt": "Calma, pequeno… não vou te machucar.", "en": "Easy, little one… I won't hurt you.", "es": "Tranquilo, pequeño… no te haré daño.",
-     "ja": "落ち着け、ちびすけ…傷つけたりしない。", "el": "Ήρεμα, μικρέ… δεν θα σε πειράξω.", "pl": "Spokojnie, maluchu… nie zrobię ci krzywdy.", "ar": "اهدى يا صغير… مش هأذيك.", "fr": "Doucement, petit… je ne te ferai pas de mal.", "yrl": "Remurari, taína… ti asaã indé."},
-    {"pt": "Voltaram… só que em outro canto. Espertos.", "en": "They came back… just somewhere else. Clever.", "es": "Volvieron… solo que en otro rincón. Listos.",
-     "ja": "戻ってきた…でも別の場所に。賢いな。", "el": "Γύρισαν… μόνο που σε άλλη γωνιά. Έξυπνα.", "pl": "Wróciły… tylko w innym miejscu. Sprytne.", "ar": "رجعوا… بس في حتة تانية. أذكيا.", "fr": "Ils sont revenus… mais ailleurs. Malins.", "yrl": "Ausika yuíri… amú rendá upé. Kuaá-sara itá."},
-    {"pt": "Até os pássaros fogem… preciso aprender a andar mais leve.", "en": "Even the birds fly off… I need to learn to step lighter.", "es": "Hasta los pájaros huyen… tengo que aprender a pisar más suave.",
-     "ja": "鳥まで逃げていく…もっと静かに歩くことを覚えないと。", "el": "Ακόμα και τα πουλιά φεύγουν… πρέπει να μάθω να πατάω πιο απαλά.", "pl": "Nawet ptaki uciekają… muszę nauczyć się stąpać lżej.", "ar": "حتى العصافير بتهرب… لازم أتعلم أمشي بخفة أكتر.", "fr": "Même les oiseaux s'envolent… je dois apprendre à marcher plus légèrement.", "yrl": "Wirá-itá yuíri udiwá… se putári aikuá aiwatá mewé."},
-    {"pt": "Patos! Faz tempo que não vejo um lago cheio de vida.", "en": "Ducks! It's been ages since I saw a lake so full of life.", "es": "¡Patos! Hace tiempo que no veía un lago tan lleno de vida.",
-     "ja": "カモだ！こんなに生き物でいっぱいの湖は久しぶりだ。", "el": "Πάπιες! Είχα καιρό να δω λίμνη τόσο γεμάτη ζωή.", "pl": "Kaczki! Dawno nie widziałem jeziora tak pełnego życia.", "ar": "بط! بقالي زمان ما شفتش بحيرة مليانة حياة كده.", "fr": "Des canards ! Ça fait une éternité que je n'ai pas vu un lac aussi plein de vie.", "yrl": "Ipeka-itá! Ariré se ti amaã ipawa yawé kuá, sikué-sara."},
-    {"pt": "Água fria… mas dá pé.", "en": "Cold water… but I can touch the bottom.", "es": "Agua fría… pero hago pie.",
-     "ja": "冷たい水だ…でも足は着く。", "el": "Κρύο νερό… αλλά πατώνω.", "pl": "Zimna woda… ale dosięgam dna.", "ar": "الميّه ساقعة… بس رجلي لامسة القاع.", "fr": "L'eau est froide… mais j'ai pied.", "yrl": "Ií irusanga… ma se pí upika ií-kupé."},
-    {"pt": "Tem alguma coisa enorme passando embaixo do barco…", "en": "Something huge is passing under the boat…", "es": "Algo enorme está pasando bajo el barco…",
-     "ja": "何か巨大なものが船の下を通っている…", "el": "Κάτι τεράστιο περνάει κάτω από τη βάρκα…", "pl": "Coś ogromnego przepływa pod łodzią…", "ar": "في حاجة ضخمة بتعدي تحت المركب…", "fr": "Quelque chose d'énorme passe sous la barque…", "yrl": "Mbaá turusú usasá igara wírpe…"},
-    {"pt": "O que foi aquilo?! Algo enorme vive neste lago…", "en": "What was that?! Something huge lives in this lake…", "es": "¡¿Qué fue eso?! Algo enorme vive en este lago…",
-     "ja": "今のは何だ！？この湖には何か巨大なものが棲んでいる…", "el": "Τι ήταν αυτό;! Κάτι τεράστιο ζει σε αυτή τη λίμνη…", "pl": "Co to było?! W tym jeziorze żyje coś ogromnego…", "ar": "إيه ده؟! في حاجة ضخمة عايشة في البحيرة دي…", "fr": "C'était quoi, ça ?! Quelque chose d'énorme vit dans ce lac…", "yrl": "Mayé taá kuá?! Mbaá turusú usikué kuá ipawa upé…"},
-    {"pt": "Quanta cor… nem parece que as Profundezas estão tão perto.", "en": "So much color… you'd never guess the Depths are this close.", "es": "Cuánto color… nadie diría que las Profundidades están tan cerca.",
-     "ja": "なんて色だ…深淵がこんなに近いなんて信じられない。", "el": "Πόσα χρώματα… ποιος θα το έλεγε ότι τα Βάθη είναι τόσο κοντά.", "pl": "Tyle kolorów… nikt by nie zgadł, że Otchłań jest tak blisko.", "ar": "ألوان كتير أوي… محدش يصدق إن الأعماق قريبة كده.", "fr": "Que de couleurs… on ne dirait jamais que les Profondeurs sont si proches.", "yrl": "Iyakuá retana… ti paá iké-wara usikué ipupé-wasú kuá suí."},
-    {"pt": "Essas flores brilham sozinhas… este lugar é encantado.", "en": "These flowers glow on their own… this place is enchanted.", "es": "Estas flores brillan solas… este lugar está encantado.",
-     "ja": "この花、ひとりでに光っている…ここは魔法の場所だ。", "el": "Αυτά τα λουλούδια λάμπουν μόνα τους… αυτό το μέρος είναι μαγεμένο.", "pl": "Te kwiaty świecą same z siebie… to miejsce jest zaczarowane.", "ar": "الورد ده بينوّر لوحده… المكان ده مسحور.", "fr": "Ces fleurs brillent toutes seules… cet endroit est enchanté.", "yrl": "Kuá putira-itá uberabá aintá sesé… kuá rendá paié-wara."},
-    {"pt": "Cervos… e um filhote. Melhor não assustá-los.", "en": "Deer… and a fawn. Better not scare them.", "es": "Ciervos… y una cría. Mejor no asustarlos.",
-     "ja": "鹿だ…子鹿もいる。驚かさないほうがいい。", "el": "Ελάφια… κι ένα μικρό. Καλύτερα να μην τα τρομάξω.", "pl": "Jelenie… i młode. Lepiej ich nie płoszyć.", "ar": "غزلان… ومعاهم صغير. الأحسن ما أخوفهمش.", "fr": "Des cerfs… et un faon. Mieux vaut ne pas les effrayer.", "yrl": "Suasú-itá… asui yepé taíra. Puranga ti asaimbé aintá."},
-    {"pt": "Aquela voz no rio… disse que estaria me esperando. Mas quem é ela?", "en": "That voice on the river… it said it would be waiting for me. But who is she?", "es": "Esa voz en el río… dijo que me estaría esperando. ¿Pero quién es?",
-     "ja": "川で聞いたあの声…俺を待っていると言った。だが、彼女は誰なんだ？", "el": "Εκείνη η φωνή στο ποτάμι… είπε πως θα με περιμένει. Αλλά ποια είναι;", "pl": "Ten głos na rzece… mówił, że będzie na mnie czekać. Ale kim ona jest?", "ar": "الصوت اللي في النهر… قال إنه هيستناني. بس هي مين؟", "fr": "Cette voix sur la rivière… elle disait qu'elle m'attendrait. Mais qui est-elle ?", "yrl": "Nheẽnga paranã upé… unheẽ usarú-putári se. Ma awá taá aé?"},
-    {"pt": "Sinto que alguém está me guiando… ou me observando.", "en": "I feel like someone is guiding me… or watching me.", "es": "Siento que alguien me guía… o me observa.",
-     "ja": "誰かに導かれている気がする…それとも見張られているのか。", "el": "Νιώθω πως κάποιος με οδηγεί… ή με παρακολουθεί.", "pl": "Czuję, że ktoś mnie prowadzi… albo obserwuje.", "ar": "حاسس إن في حد بيوجهني… أو بيراقبني.", "fr": "J'ai l'impression que quelqu'un me guide… ou m'observe.", "yrl": "Asendú awá urasú se… ou umaã se."},
-    {"pt": "Voz… se você está aí, mostre-se!", "en": "Voice… if you're out there, show yourself!", "es": "Voz… si estás ahí, ¡muéstrate!",
-     "ja": "声よ…そこにいるなら、姿を見せろ！", "el": "Φωνή… αν είσαι εκεί, φανερώσου!", "pl": "Głosie… jeśli tam jesteś, pokaż się!", "ar": "يا صوت… لو إنتي هنا، اظهري!", "fr": "Voix… si tu es là, montre-toi !", "yrl": "Nheẽnga… se resikué ikú, resendú ne!"},
-    {"pt": "…O que é aquilo?!", "en": "…What is that?!", "es": "…¿¡Qué es eso!?",
-     "ja": "…あれは何だ！？", "el": "…Τι είναι αυτό;!", "pl": "…Co to jest?!", "ar": "…إيه ده؟!", "fr": "…Qu'est-ce que c'est ?!", "yrl": "…Mayé taá kuá?!"},
-    {"pt": "De novo essa voz… quem é você, afinal?", "en": "That voice again… who are you, really?", "es": "Otra vez esa voz… ¿quién eres, en realidad?",
-     "ja": "またこの声か…いったい誰なんだ？", "el": "Πάλι αυτή η φωνή… ποια είσαι, τελικά;", "pl": "Znowu ten głos… kim ty właściwie jesteś?", "ar": "تاني الصوت ده… إنتي مين بجد؟", "fr": "Encore cette voix… qui es-tu, au fond ?", "yrl": "Kuá nheẽnga yuíri… awá taá indé, supí?"},
-    {"pt": "Algum tipo de segredo existe aqui…", "en": "Some kind of secret lies here…", "es": "Algún tipo de secreto existe aquí…",
-     "ja": "ここには何か秘密がある…", "el": "Κάποιο μυστικό κρύβεται εδώ…", "pl": "Kryje się tu jakiś sekret…", "ar": "في سر ما هنا…", "fr": "Il y a une sorte de secret ici…", "yrl": "Mbaá iyumimi usikué iké…"},
-    {"pt": "Parece um novo quebra-cabeça.", "en": "Looks like a new puzzle.", "es": "Parece un nuevo rompecabezas.",
-     "ja": "新しい謎のようだ。", "el": "Μοιάζει με νέο γρίφο.", "pl": "Wygląda na nową zagadkę.", "ar": "شكله لغز جديد.", "fr": "On dirait une nouvelle énigme.", "yrl": "Yawé yepé purandusá pisasú."},
-    {"pt": "Hm… isso não está aqui por acaso.", "en": "Hm… this isn't here by chance.", "es": "Hm… esto no está aquí por casualidad.",
-     "ja": "ふむ…これは偶然ここにあるわけじゃない。", "el": "Χμ… αυτό δεν βρίσκεται εδώ τυχαία.", "pl": "Hm… to nie jest tu przypadkiem.", "ar": "همم… ده مش موجود هنا صدفة.", "fr": "Hm… ce n'est pas là par hasard.", "yrl": "Hm… kuá ti usikué iké panhé-panhé."},
-    {"pt": "Tem algo escondido por aqui.", "en": "Something is hidden around here.", "es": "Hay algo escondido por aquí.",
-     "ja": "この辺りに何か隠されている。", "el": "Κάτι είναι κρυμμένο εδώ γύρω.", "pl": "Coś jest tu ukryte.", "ar": "في حاجة متخبية هنا.", "fr": "Quelque chose est caché par ici.", "yrl": "Mbaá iyumimi usikué iké rupi."},
-    {"pt": "Um enigma… vamos ver o que ele guarda.", "en": "A riddle… let's see what it guards.", "es": "Un enigma… veamos qué guarda.",
-     "ja": "謎か…何を守っているのか見てみよう。", "el": "Ένα αίνιγμα… ας δούμε τι φυλάει.", "pl": "Zagadka… zobaczmy, czego strzeże.", "ar": "لغز… يلا نشوف بيحرس إيه.", "fr": "Une énigme… voyons ce qu'elle garde.", "yrl": "Yepé purandusá… yamaã mayé taá umukameẽ."}
-  ],
-  "own": {
-    "SHAMAN": [
-      ["Esta é a mata dos meus avós. Ela está doente — eu sinto nas raízes.", "Kuá kaá se ramunha-itá kaá. Usikué mbaasí — asendú sapú-itá upé."],
-      ["O Anhangá nunca fez mal a quem respeita a floresta. Algo o corrompeu.", "Anhangá ti mairamé umupuxi awá urespeitari kaá. Mbaá umupuxi aé."],
-      ["Descanse, Anhangá. Vou levar o seu selo para longe da escuridão.", "Remupitú, Anhangá. Arasú-ana ne mukameẽsá apekatu pituna suí."],
-      ["“Os espíritos da mata sussurram o seu nome, Guardiã. E não é com carinho.”", "“Kaá anga-itá unheẽ mewé ne rera, Mukameẽsara. Ma ti katú-rupi.”"]
-    ],
-    "DRUID": [
-      ["Estas pedras já foram um bosque sagrado. Os Antigos derrubaram as árvores-mães para erguer os portais.", "Αυτές οι πέτρες κάποτε ήταν ιερό άλσος. Οι Αρχαίοι έκοψαν τα μητρικά δέντρα για να υψώσουν τις πύλες."],
-      ["Ainda sinto as raízes debaixo do mármore… e elas estão com medo.", "Νιώθω ακόμα τις ρίζες κάτω από το μάρμαρο… και φοβούνται."],
-      ["O Colosso guardava as raízes, não o portal. Agora a terra pode respirar de novo.", "Ο Κολοσσός φύλαγε τις ρίζες, όχι την πύλη. Τώρα η γη μπορεί να ανασάνει ξανά."],
-      ["“As árvores não crescem perto de você.”", "«Τα δέντρα δεν φυτρώνουν κοντά σου.»"]
-    ],
-    "BERSERKER": [
-      ["Esta cinza… é a mesma que caía sobre Sakurajima. O vulcão da minha terra.", "この灰…桜島に降っていたものと同じだ。我が故郷の火山の。"],
-      ["Meu clã guardava as forjas da cratera. O que atravessou o fogo até aqui?", "我が一族は火口の鍛冶場を守っていた。何が炎を越えてここまで来たのだ？"],
-      ["Meus ancestrais forjaram as fechaduras nesta lava. E juraram nunca contar por quê.", "我が祖先はこの溶岩で錠を鍛えた。そして、その理由を決して語らぬと誓った。"],
-      ["“Esse símbolo no seu cajado… é o brasão do meu clã.”", "「その杖の紋…我が一族の家紋だ。」"]
-    ],
-    "WARRIOR": [
-      ["Eu cresci nestes corredores. Meu pai, o Rei Valdrak, abriu estes portões para salvar o nosso povo.", "I grew up in these halls. My father, King Valdrak, opened these gates to save our people."],
-      ["Se ainda restar alguma coisa dele aqui dentro… quem vai encontrá-lo sou eu.", "If anything of him is still left in here… I will be the one to find it."],
-      ["Este trono era do meu pai. As Profundezas não vão usá-lo como coroa.", "This throne was my father's. The Depths will not wear it as a crown."],
-      ["“Você fala como quem já esteve lá dentro.”", "“You talk like someone who has been in there.”"]
-    ],
-    "ARCHER": [
-      ["Eu treinava o arco no alto de Sakurajima, contra o vento de cinzas.", "桜島の頂で、灰の風に向かって弓の稽古をしていた。"],
-      ["Este não é o meu vulcão… mas a cinza tem o mesmo cheiro de casa.", "ここは俺の火山じゃない…でも、灰は故郷と同じ匂いがする。"],
-      ["O Dragão Pálido guardava a cratera como quem guarda um portão. Sakurajima precisa saber disso.", "白き竜は、門を守るように火口を守っていた。桜島に知らせなければ。"],
-      ["“Estas trilhas não aparecem em nenhum mapa. Como você as conhece?”", "「この道はどの地図にも載っていない。なぜ知っている？」"]
-    ],
-    "ROGUE": [
-      ["Nasci nestas ilhas, entre contrabandistas. Conheço cada enseada — e estas marcas não estavam aqui.", "Je suis née sur ces îles, parmi les contrebandiers. Je connais chaque crique — et ces marques n'étaient pas là."],
-      ["Alguém está construindo portais novos.", "Quelqu'un construit de nouveaux portails."],
-      ["Pedras marcadas, barcos sem bandeira… a Ordem do Limiar é real.", "Des pierres marquées, des bateaux sans pavillon… l'Ordre du Seuil existe vraiment."],
-      ["“Quem paga as suas contas, Guardiã?”", "« Qui paie tes dettes, Gardienne ? »"]
-    ],
-    "MAGE": [
-      ["Cresci entre as dunas de Ra-Khem. Os espelhos do templo nunca apontaram para baixo… até agora.", "كبرت بين كثبان رع-خم. مرايات المعبد عمرها ما اتوجهت لتحت… لحد دلوقتي."],
-      ["Os portais não são aleatórios. Formam um círculo — e este é um dos elos.", "البوابات مش عشوائية. بتعمل دايرة — ودي واحدة من حلقاتها."],
-      ["O templo não queimava as trevas. Prendia-as. Isto não é uma porta… é uma cela.", "المعبد ما كانش بيحرق الظلام. كان بيحبسه. ده مش باب… ده زنزانة."],
-      ["“Seu manto tem runas dos Antigos. Isso não se compra.”", "«عباءتك عليها رموز القدماء. دي حاجة ما تتشريش.»"]
-    ],
-    "NECROMANCER": [
-      ["Os mortos daqui sussurram a mesma frase:", "Tutejsi umarli szepczą to samo zdanie:"],
-      ["“Não deixem que ele acorde.”", "„Nie pozwólcie mu się obudzić.”"],
-      ["Ela os comandava em nome dele… agora estão em silêncio. Por enquanto.", "Dowodziła nimi w jego imieniu… teraz milczą. Na razie."],
-      ["“Os mortos daqui ficam em silêncio quando você fala.”", "„Tutejsi umarli milkną, gdy mówisz.”"]
-    ],
-    "HUNTER": [
-      ["Neve que não derrete, vento que corta a pele… estou em casa.", "Snow that never melts, wind that cuts the skin… I'm home."],
-      ["Os lobos do norte não uivam mais aqui. Alguma coisa os calou.", "The northern wolves don't howl here anymore. Something silenced them."],
-      ["O Golem de Gelo não caçava. Vigiava. As feras fugiam da prisão, não dele.", "The Ice Golem didn't hunt. It kept watch. The beasts were fleeing the prison, not it."],
-      ["“As feras se afastam de você. Por quê?”", "“The beasts keep away from you. Why?”"]
-    ]
+  "BERSERKER": {
+   "lang": "ja",
+   "voice": "ja-JP-KeitaNeural",
+   "rate": "-6%",
+   "pitch": "-10Hz"
+  },
+  "ARCHER": {
+   "lang": "ja",
+   "voice": "ja-JP-KeitaNeural",
+   "rate": "+3%",
+   "pitch": "+7Hz"
+  },
+  "HUNTER": {
+   "lang": "en",
+   "voice": "en-US-ChristopherNeural",
+   "rate": "-6%",
+   "pitch": "-4Hz"
+  },
+  "DRUID": {
+   "lang": "el",
+   "voice": "el-GR-NestorasNeural",
+   "rate": "-6%",
+   "pitch": "-2Hz"
+  },
+  "NECROMANCER": {
+   "lang": "pl",
+   "voice": "pl-PL-MarekNeural",
+   "rate": "-8%",
+   "pitch": "-8Hz"
+  },
+  "MAGE": {
+   "lang": "ar",
+   "voice": "ar-EG-SalmaNeural",
+   "rate": "-3%",
+   "pitch": "+0Hz"
+  },
+  "ROGUE": {
+   "lang": "fr",
+   "voice": "fr-FR-DeniseNeural",
+   "rate": "+2%",
+   "pitch": "+0Hz"
+  },
+  "SHAMAN": {
+   "lang": "yrl",
+   "voice": "pt-BR-FranciscaNeural",
+   "rate": "-2%",
+   "pitch": "+1Hz"
   }
+ },
+ "generic": [
+  {
+   "pt": "Quem… quem está falando comigo?",
+   "en": "Who… who is speaking to me?",
+   "es": "¿Quién… quién me está hablando?",
+   "ja": "誰だ…誰が俺に話しかけている？",
+   "el": "Ποιος… ποιος μου μιλάει;",
+   "pl": "Kto… kto do mnie mówi?",
+   "ar": "مين… مين اللي بيكلمني؟",
+   "fr": "Qui… qui me parle ?",
+   "yrl": "Awá taá… awá taá unheẽ ixé irũmu?",
+   "yrl_tts": "Auá taá… auá taá unhên ixé irúmu?"
+  },
+  {
+   "pt": "Essa voz… parece vir de todos os lados.",
+   "en": "That voice… it seems to come from everywhere.",
+   "es": "Esa voz… parece venir de todas partes.",
+   "ja": "この声…あらゆる方向から聞こえる。",
+   "el": "Αυτή η φωνή… μοιάζει να έρχεται από παντού.",
+   "pl": "Ten głos… jakby dochodził zewsząd.",
+   "ar": "الصوت ده… كأنه جاي من كل حتة.",
+   "fr": "Cette voix… on dirait qu'elle vient de partout.",
+   "yrl": "Kuá nheẽnga… usika paá panhẽ rendá suí.",
+   "yrl_tts": "Cuá nhênga… ussíca paá, panhên rendá suí."
+  },
+  {
+   "pt": "Como você sabe tudo isso? Quem é você?",
+   "en": "How do you know all this? Who are you?",
+   "es": "¿Cómo sabes todo eso? ¿Quién eres?",
+   "ja": "なぜそんなことまで知っている？お前は誰だ？",
+   "el": "Πώς τα ξέρεις όλα αυτά; Ποια είσαι;",
+   "pl": "Skąd to wszystko wiesz? Kim jesteś?",
+   "ar": "إنتي عارفة كل ده إزاي؟ إنتي مين؟",
+   "fr": "Comment tu sais tout ça ? Qui es-tu ?",
+   "yrl": "Mayé taá rekuáu panhẽ kuá? Awá taá indé?",
+   "yrl_tts": "Maiê taá recuáu panhên cuá? Auá taá indé?"
+  },
+  {
+   "pt": "Mostre-se! Por que não aparece?",
+   "en": "Show yourself! Why won't you appear?",
+   "es": "¡Muéstrate! ¿Por qué no apareces?",
+   "ja": "姿を見せろ！なぜ出てこない？",
+   "el": "Φανερώσου! Γιατί δεν εμφανίζεσαι;",
+   "pl": "Pokaż się! Dlaczego się nie ukazujesz?",
+   "ar": "اظهري! ليه مش بتبيني نفسك؟",
+   "fr": "Montre-toi ! Pourquoi tu n'apparais pas ?",
+   "yrl": "Resendú! Maresé taá ti resendú?",
+   "yrl_tts": "Ressendú! Maressê taá ti ressendú?"
+  },
+  {
+   "pt": "Coração da Floresta… então é lá que vou descobrir quem é essa voz.",
+   "en": "The Heart of the Forest… so that's where I'll find out whose voice this is.",
+   "es": "El Corazón del Bosque… entonces allí descubriré de quién es esta voz.",
+   "ja": "森の心臓…そこで、この声の正体がわかるのか。",
+   "el": "Η Καρδιά του Δάσους… εκεί λοιπόν θα μάθω σε ποιον ανήκει αυτή η φωνή.",
+   "pl": "Serce Lasu… więc tam się dowiem, czyj to głos.",
+   "ar": "قلب الغابة… يبقى هناك هعرف الصوت ده بتاع مين.",
+   "fr": "Le Cœur de la Forêt… c'est donc là que je saurai à qui appartient cette voix.",
+   "yrl": "Kaá Pyá… ape taá ixé asikuáu awá nheẽnga kuá.",
+   "yrl_tts": "Caá Piá… apê taá ixé assicuáu, auá nhênga cuá."
+  },
+  {
+   "pt": "Faz tanto tempo que não vejo uma água tão limpa…",
+   "en": "It's been so long since I've seen water this clear…",
+   "es": "Hace tanto que no veo un agua tan limpia…",
+   "ja": "こんなに澄んだ水を見るのは久しぶりだ…",
+   "el": "Πόσος καιρός πέρασε από τότε που είδα τόσο καθαρό νερό…",
+   "pl": "Tak dawno nie widziałem tak czystej wody…",
+   "ar": "بقالي كتير أوي ما شفتش ميّه صافية كده…",
+   "fr": "Ça fait si longtemps que je n'ai pas vu une eau aussi claire…",
+   "yrl": "Ariré retana ti amaã ií pukaturu kuá yawé…",
+   "yrl_tts": "Ariré retana, ti amaã ií pucatúru cuá iauê…"
+  },
+  {
+   "pt": "Guardiões do selo… e você era um deles? Quem é você, afinal?",
+   "en": "Guardians of the seal… and you were one of them? Who are you, really?",
+   "es": "Guardianes del sello… ¿y tú eras una de ellos? ¿Quién eres, en realidad?",
+   "ja": "封印の守護者…お前もその一人だったのか？いったい何者なんだ？",
+   "el": "Φύλακες της σφραγίδας… κι εσύ ήσουν μία από αυτούς; Ποια είσαι, τελικά;",
+   "pl": "Strażnicy pieczęci… i ty byłaś jedną z nich? Kim ty właściwie jesteś?",
+   "ar": "حراس الختم… وإنتي كنتي واحدة منهم؟ إنتي مين بجد؟",
+   "fr": "Les gardiens du sceau… et tu étais l'une d'eux ? Qui es-tu, au fond ?",
+   "yrl": "Mukameẽsara-itá… indé yuíri yepé aintá suí? Awá taá indé, supí?",
+   "yrl_tts": "Mucamenssára-itá… indé iuíri iepé aintá suí? Auá taá indé, supí?"
+  },
+  {
+   "pt": "Eu também sinto… como se algo me vigiasse entre as árvores.",
+   "en": "I feel it too… as if something were watching me from the trees.",
+   "es": "Yo también lo siento… como si algo me vigilara entre los árboles.",
+   "ja": "俺も感じる…木々の間から何かに見張られているような。",
+   "el": "Το νιώθω κι εγώ… σαν κάτι να με παρακολουθεί μέσα από τα δέντρα.",
+   "pl": "Też to czuję… jakby coś obserwowało mnie spomiędzy drzew.",
+   "ar": "أنا كمان حاسس… كأن في حاجة بتراقبني من بين الشجر.",
+   "fr": "Je le sens aussi… comme si quelque chose me guettait entre les arbres.",
+   "yrl": "Ixé yuíri asendú… yawé mbaá umaã ixé mirá-itá pitera suí.",
+   "yrl_tts": "Ixé iuíri assendú… iauê mbaá umaã ixé, mirá-itá pitéra suí."
+  },
+  {
+   "pt": "Calma, pequeno… não vou te machucar.",
+   "en": "Easy, little one… I won't hurt you.",
+   "es": "Tranquilo, pequeño… no te haré daño.",
+   "ja": "落ち着け、ちびすけ…傷つけたりしない。",
+   "el": "Ήρεμα, μικρέ… δεν θα σε πειράξω.",
+   "pl": "Spokojnie, maluchu… nie zrobię ci krzywdy.",
+   "ar": "اهدى يا صغير… مش هأذيك.",
+   "fr": "Doucement, petit… je ne te ferai pas de mal.",
+   "yrl": "Remurari, mirĩ… ti asaã indé.",
+   "yrl_tts": "Remurári, mirín… ti assaã indé."
+  },
+  {
+   "pt": "Voltaram… só que em outro canto. Espertos.",
+   "en": "They came back… just somewhere else. Clever.",
+   "es": "Volvieron… solo que en otro rincón. Listos.",
+   "ja": "戻ってきた…でも別の場所に。賢いな。",
+   "el": "Γύρισαν… μόνο που σε άλλη γωνιά. Έξυπνα.",
+   "pl": "Wróciły… tylko w innym miejscu. Sprytne.",
+   "ar": "رجعوا… بس في حتة تانية. أذكيا.",
+   "fr": "Ils sont revenus… mais ailleurs. Malins.",
+   "yrl": "Usika yuíri… amú rendá upé. Kuaá-sara aintá.",
+   "yrl_tts": "Ussíca iuíri… amú rendá upé. Cuaá-sára aintá."
+  },
+  {
+   "pt": "Até os pássaros fogem… preciso aprender a andar mais leve.",
+   "en": "Even the birds fly off… I need to learn to step lighter.",
+   "es": "Hasta los pájaros huyen… tengo que aprender a pisar más suave.",
+   "ja": "鳥まで逃げていく…もっと静かに歩くことを覚えないと。",
+   "el": "Ακόμα και τα πουλιά φεύγουν… πρέπει να μάθω να πατάω πιο απαλά.",
+   "pl": "Nawet ptaki uciekają… muszę nauczyć się stąpać lżej.",
+   "ar": "حتى العصافير بتهرب… لازم أتعلم أمشي بخفة أكتر.",
+   "fr": "Même les oiseaux s'envolent… je dois apprendre à marcher plus légèrement.",
+   "yrl": "Wirá-itá yuíri udiwá… ixé apuraku aiwatá mewé.",
+   "yrl_tts": "Uirá-itá iuíri udiuá… ixé apurácu aiuatá meuê."
+  },
+  {
+   "pt": "Patos! Faz tempo que não vejo um lago cheio de vida.",
+   "en": "Ducks! It's been ages since I saw a lake so full of life.",
+   "es": "¡Patos! Hace tiempo que no veía un lago tan lleno de vida.",
+   "ja": "カモだ！こんなに生き物でいっぱいの湖は久しぶりだ。",
+   "el": "Πάπιες! Είχα καιρό να δω λίμνη τόσο γεμάτη ζωή.",
+   "pl": "Kaczki! Dawno nie widziałem jeziora tak pełnego życia.",
+   "ar": "بط! بقالي زمان ما شفتش بحيرة مليانة حياة كده.",
+   "fr": "Des canards ! Ça fait une éternité que je n'ai pas vu un lac aussi plein de vie.",
+   "yrl": "Ipeka-itá! Ariré ti amaã ipawa sikué-sara yawé kuá.",
+   "yrl_tts": "Ipéca-itá! Ariré, ti amaã ipáua sicuê-sára iauê cuá."
+  },
+  {
+   "pt": "Água fria… mas dá pé.",
+   "en": "Cold water… but I can touch the bottom.",
+   "es": "Agua fría… pero hago pie.",
+   "ja": "冷たい水だ…でも足は着く。",
+   "el": "Κρύο νερό… αλλά πατώνω.",
+   "pl": "Zimna woda… ale dosięgam dna.",
+   "ar": "الميّه ساقعة… بس رجلي لامسة القاع.",
+   "fr": "L'eau est froide… mais j'ai pied.",
+   "yrl": "Ií irusanga… ma ixé apisika ií kupé.",
+   "yrl_tts": "Ií irussánga… ma ixé apissíca ií cupé."
+  },
+  {
+   "pt": "Tem alguma coisa enorme passando embaixo do barco…",
+   "en": "Something huge is passing under the boat…",
+   "es": "Algo enorme está pasando bajo el barco…",
+   "ja": "何か巨大なものが船の下を通っている…",
+   "el": "Κάτι τεράστιο περνάει κάτω από τη βάρκα…",
+   "pl": "Coś ogromnego przepływa pod łodzią…",
+   "ar": "في حاجة ضخمة بتعدي تحت المركب…",
+   "fr": "Quelque chose d'énorme passe sous la barque…",
+   "yrl": "Mbaá turusú usasá igara wyrpe…",
+   "yrl_tts": "Mbaá turussú ussassá igára uírpe…"
+  },
+  {
+   "pt": "O que foi aquilo?! Algo enorme vive neste lago…",
+   "en": "What was that?! Something huge lives in this lake…",
+   "es": "¡¿Qué fue eso?! Algo enorme vive en este lago…",
+   "ja": "今のは何だ！？この湖には何か巨大なものが棲んでいる…",
+   "el": "Τι ήταν αυτό;! Κάτι τεράστιο ζει σε αυτή τη λίμνη…",
+   "pl": "Co to było?! W tym jeziorze żyje coś ogromnego…",
+   "ar": "إيه ده؟! في حاجة ضخمة عايشة في البحيرة دي…",
+   "fr": "C'était quoi, ça ?! Quelque chose d'énorme vit dans ce lac…",
+   "yrl": "Mayé taá kuá?! Mbaá turusú usikué kuá ipawa upé…",
+   "yrl_tts": "Maiê taá cuá?! Mbaá turussú ussicuê cuá ipáua upé…"
+  },
+  {
+   "pt": "Quanta cor… nem parece que as Profundezas estão tão perto.",
+   "en": "So much color… you'd never guess the Depths are this close.",
+   "es": "Cuánto color… nadie diría que las Profundidades están tan cerca.",
+   "ja": "なんて色だ…深淵がこんなに近いなんて信じられない。",
+   "el": "Πόσα χρώματα… ποιος θα το έλεγε ότι τα Βάθη είναι τόσο κοντά.",
+   "pl": "Tyle kolorów… nikt by nie zgadł, że Otchłań jest tak blisko.",
+   "ar": "ألوان كتير أوي… محدش يصدق إن الأعماق قريبة كده.",
+   "fr": "Que de couleurs… on ne dirait jamais que les Profondeurs sont si proches.",
+   "yrl": "Iyakuá retana… ti paá Ipupé-wasú kuíri kuá suí.",
+   "yrl_tts": "Iacuá retana… ti paá Ipupê-uassú cuíri cuá suí."
+  },
+  {
+   "pt": "Essas flores brilham sozinhas… este lugar é encantado.",
+   "en": "These flowers glow on their own… this place is enchanted.",
+   "es": "Estas flores brillan solas… este lugar está encantado.",
+   "ja": "この花、ひとりでに光っている…ここは魔法の場所だ。",
+   "el": "Αυτά τα λουλούδια λάμπουν μόνα τους… αυτό το μέρος είναι μαγεμένο.",
+   "pl": "Te kwiaty świecą same z siebie… to miejsce jest zaczarowane.",
+   "ar": "الورد ده بينوّر لوحده… المكان ده مسحور.",
+   "fr": "Ces fleurs brillent toutes seules… cet endroit est enchanté.",
+   "yrl": "Kuá putira-itá uberabá aintá sesé… kuá rendá paié-wara.",
+   "yrl_tts": "Cuá putíra-itá uberabá aintá sessê… cuá rendá paié-uára."
+  },
+  {
+   "pt": "Cervos… e um filhote. Melhor não assustá-los.",
+   "en": "Deer… and a fawn. Better not scare them.",
+   "es": "Ciervos… y una cría. Mejor no asustarlos.",
+   "ja": "鹿だ…子鹿もいる。驚かさないほうがいい。",
+   "el": "Ελάφια… κι ένα μικρό. Καλύτερα να μην τα τρομάξω.",
+   "pl": "Jelenie… i młode. Lepiej ich nie płoszyć.",
+   "ar": "غزلان… ومعاهم صغير. الأحسن ما أخوفهمش.",
+   "fr": "Des cerfs… et un faon. Mieux vaut ne pas les effrayer.",
+   "yrl": "Suasú-itá… asui yepé taíra. Puranga ti asaimbé aintá.",
+   "yrl_tts": "Suassú-itá… assuí iepé taíra. Purânga ti assaimbé aintá."
+  },
+  {
+   "pt": "Aquela voz no rio… disse que estaria me esperando. Mas quem é ela?",
+   "en": "That voice on the river… it said it would be waiting for me. But who is she?",
+   "es": "Esa voz en el río… dijo que me estaría esperando. ¿Pero quién es?",
+   "ja": "川で聞いたあの声…俺を待っていると言った。だが、彼女は誰なんだ？",
+   "el": "Εκείνη η φωνή στο ποτάμι… είπε πως θα με περιμένει. Αλλά ποια είναι;",
+   "pl": "Ten głos na rzece… mówił, że będzie na mnie czekać. Ale kim ona jest?",
+   "ar": "الصوت اللي في النهر… قال إنه هيستناني. بس هي مين؟",
+   "fr": "Cette voix sur la rivière… elle disait qu'elle m'attendrait. Mais qui est-elle ?",
+   "yrl": "Nheẽnga paranã upé… unheẽ usarú-putári ixé. Ma awá taá aé?",
+   "yrl_tts": "Nhênga paranã upé… unhên ussarú-putári ixé. Ma auá taá aê?"
+  },
+  {
+   "pt": "Sinto que alguém está me guiando… ou me observando.",
+   "en": "I feel like someone is guiding me… or watching me.",
+   "es": "Siento que alguien me guía… o me observa.",
+   "ja": "誰かに導かれている気がする…それとも見張られているのか。",
+   "el": "Νιώθω πως κάποιος με οδηγεί… ή με παρακολουθεί.",
+   "pl": "Czuję, że ktoś mnie prowadzi… albo obserwuje.",
+   "ar": "حاسس إن في حد بيوجهني… أو بيراقبني.",
+   "fr": "J'ai l'impression que quelqu'un me guide… ou m'observe.",
+   "yrl": "Asendú awá urasú ixé… ou umaã ixé.",
+   "yrl_tts": "Assendú auá urassú ixé… ou umaã ixé."
+  },
+  {
+   "pt": "Voz… se você está aí, mostre-se!",
+   "en": "Voice… if you're out there, show yourself!",
+   "es": "Voz… si estás ahí, ¡muéstrate!",
+   "ja": "声よ…そこにいるなら、姿を見せろ！",
+   "el": "Φωνή… αν είσαι εκεί, φανερώσου!",
+   "pl": "Głosie… jeśli tam jesteś, pokaż się!",
+   "ar": "يا صوت… لو إنتي هنا، اظهري!",
+   "fr": "Voix… si tu es là, montre-toi !",
+   "yrl": "Nheẽnga… se resikué ape, resendú!",
+   "yrl_tts": "Nhênga… se ressicuê apê, ressendú!"
+  },
+  {
+   "pt": "…O que é aquilo?!",
+   "en": "…What is that?!",
+   "es": "…¿¡Qué es eso!?",
+   "ja": "…あれは何だ！？",
+   "el": "…Τι είναι αυτό;!",
+   "pl": "…Co to jest?!",
+   "ar": "…إيه ده؟!",
+   "fr": "…Qu'est-ce que c'est ?!",
+   "yrl": "…Mayé taá kuá?!",
+   "yrl_tts": "…Maiê taá cuá?!"
+  },
+  {
+   "pt": "De novo essa voz… quem é você, afinal?",
+   "en": "That voice again… who are you, really?",
+   "es": "Otra vez esa voz… ¿quién eres, en realidad?",
+   "ja": "またこの声か…いったい誰なんだ？",
+   "el": "Πάλι αυτή η φωνή… ποια είσαι, τελικά;",
+   "pl": "Znowu ten głos… kim ty właściwie jesteś?",
+   "ar": "تاني الصوت ده… إنتي مين بجد؟",
+   "fr": "Encore cette voix… qui es-tu, au fond ?",
+   "yrl": "Kuá nheẽnga yuíri… awá taá indé, supí?",
+   "yrl_tts": "Cuá nhênga iuíri… auá taá indé, supí?"
+  },
+  {
+   "pt": "Algum tipo de segredo existe aqui…",
+   "en": "Some kind of secret lies here…",
+   "es": "Algún tipo de secreto existe aquí…",
+   "ja": "ここには何か秘密がある…",
+   "el": "Κάποιο μυστικό κρύβεται εδώ…",
+   "pl": "Kryje się tu jakiś sekret…",
+   "ar": "في سر ما هنا…",
+   "fr": "Il y a une sorte de secret ici…",
+   "yrl": "Mbaá iyumimi usikué iké…",
+   "yrl_tts": "Mbaá iumími ussicuê iquê…"
+  },
+  {
+   "pt": "Parece um novo quebra-cabeça.",
+   "en": "Looks like a new puzzle.",
+   "es": "Parece un nuevo rompecabezas.",
+   "ja": "新しい謎のようだ。",
+   "el": "Μοιάζει με νέο γρίφο.",
+   "pl": "Wygląda na nową zagadkę.",
+   "ar": "شكله لغز جديد.",
+   "fr": "On dirait une nouvelle énigme.",
+   "yrl": "Yawé yepé purandusá pisasú.",
+   "yrl_tts": "Iauê iepé purandussá pissassú."
+  },
+  {
+   "pt": "Hm… isso não está aqui por acaso.",
+   "en": "Hm… this isn't here by chance.",
+   "es": "Hm… esto no está aquí por casualidad.",
+   "ja": "ふむ…これは偶然ここにあるわけじゃない。",
+   "el": "Χμ… αυτό δεν βρίσκεται εδώ τυχαία.",
+   "pl": "Hm… to nie jest tu przypadkiem.",
+   "ar": "همم… ده مش موجود هنا صدفة.",
+   "fr": "Hm… ce n'est pas là par hasard.",
+   "yrl": "Hm… kuá ti usikué iké panhé-panhé.",
+   "yrl_tts": "Hum… cuá ti ussicuê iquê panhê-panhê."
+  },
+  {
+   "pt": "Tem algo escondido por aqui.",
+   "en": "Something is hidden around here.",
+   "es": "Hay algo escondido por aquí.",
+   "ja": "この辺りに何か隠されている。",
+   "el": "Κάτι είναι κρυμμένο εδώ γύρω.",
+   "pl": "Coś jest tu ukryte.",
+   "ar": "في حاجة متخبية هنا.",
+   "fr": "Quelque chose est caché par ici.",
+   "yrl": "Mbaá iyumimi usikué iké rupí.",
+   "yrl_tts": "Mbaá iumími ussicuê iquê rupí."
+  },
+  {
+   "pt": "Um enigma… vamos ver o que ele guarda.",
+   "en": "A riddle… let's see what it guards.",
+   "es": "Un enigma… veamos qué guarda.",
+   "ja": "謎か…何を守っているのか見てみよう。",
+   "el": "Ένα αίνιγμα… ας δούμε τι φυλάει.",
+   "pl": "Zagadka… zobaczmy, czego strzeże.",
+   "ar": "لغز… يلا نشوف بيحرس إيه.",
+   "fr": "Une énigme… voyons ce qu'elle garde.",
+   "yrl": "Yepé purandusá… yamaã mayé taá umukameẽ.",
+   "yrl_tts": "Iepé purandussá… iamaã maiê taá umucamên."
+  }
+ ],
+ "own": {
+  "SHAMAN": [
+   [
+    "Esta é a mata dos meus avós. Ela está doente — eu sinto nas raízes.",
+    "Kuá kaá ixé ramunha-itá kaá. Usikué mbaasí — asendú sapú-itá upé.",
+    "Cuá caá, ixé ramúnha-itá caá. Ussicuê mbaassí… assendú sapú-itá upé."
+   ],
+   [
+    "O Anhangá nunca fez mal a quem respeita a floresta. Algo o corrompeu.",
+    "Anhangá ti mairamé umupuxi awá urespeitari kaá. Mbaá umupuxi aé.",
+    "Anhangá ti mairamê umupúxi auá urespeitári caá. Mbaá umupúxi aê."
+   ],
+   [
+    "Descanse, Anhangá. Vou levar o seu selo para longe da escuridão.",
+    "Remupitú, Anhangá. Arasú-ana ne mukameẽsá apekatu pituna suí.",
+    "Remupitú, Anhangá. Arassú-ana ne mucamenssá, apecatú pitúna suí."
+   ],
+   [
+    "“Os espíritos da mata sussurram o seu nome, Guardiã. E não é com carinho.”",
+    "“Kaá anga-itá unheẽ mewé ne rera, Mukameẽsara. Ma ti katú-rupí.”",
+    "Caá ânga-itá unhên meuê ne réra, Mucamenssára. Ma ti catú-rupí."
+   ]
+  ],
+  "DRUID": [
+   [
+    "Estas pedras já foram um bosque sagrado. Os Antigos derrubaram as árvores-mães para erguer os portais.",
+    "Αυτές οι πέτρες κάποτε ήταν ιερό άλσος. Οι Αρχαίοι έκοψαν τα μητρικά δέντρα για να υψώσουν τις πύλες."
+   ],
+   [
+    "Ainda sinto as raízes debaixo do mármore… e elas estão com medo.",
+    "Νιώθω ακόμα τις ρίζες κάτω από το μάρμαρο… και φοβούνται."
+   ],
+   [
+    "O Colosso guardava as raízes, não o portal. Agora a terra pode respirar de novo.",
+    "Ο Κολοσσός φύλαγε τις ρίζες, όχι την πύλη. Τώρα η γη μπορεί να ανασάνει ξανά."
+   ],
+   [
+    "“As árvores não crescem perto de você.”",
+    "«Τα δέντρα δεν φυτρώνουν κοντά σου.»"
+   ]
+  ],
+  "BERSERKER": [
+   [
+    "Esta cinza… é a mesma que caía sobre Sakurajima. O vulcão da minha terra.",
+    "この灰…桜島に降っていたものと同じだ。我が故郷の火山の。"
+   ],
+   [
+    "Meu clã guardava as forjas da cratera. O que atravessou o fogo até aqui?",
+    "我が一族は火口の鍛冶場を守っていた。何が炎を越えてここまで来たのだ？"
+   ],
+   [
+    "Meus ancestrais forjaram as fechaduras nesta lava. E juraram nunca contar por quê.",
+    "我が祖先はこの溶岩で錠を鍛えた。そして、その理由を決して語らぬと誓った。"
+   ],
+   [
+    "“Esse símbolo no seu cajado… é o brasão do meu clã.”",
+    "「その杖の紋…我が一族の家紋だ。」"
+   ]
+  ],
+  "WARRIOR": [
+   [
+    "Eu cresci nestes corredores. Meu pai, o Rei Valdrak, abriu estes portões para salvar o nosso povo.",
+    "I grew up in these halls. My father, King Valdrak, opened these gates to save our people."
+   ],
+   [
+    "Se ainda restar alguma coisa dele aqui dentro… quem vai encontrá-lo sou eu.",
+    "If anything of him is still left in here… I will be the one to find it."
+   ],
+   [
+    "Este trono era do meu pai. As Profundezas não vão usá-lo como coroa.",
+    "This throne was my father's. The Depths will not wear it as a crown."
+   ],
+   [
+    "“Você fala como quem já esteve lá dentro.”",
+    "“You talk like someone who has been in there.”"
+   ]
+  ],
+  "ARCHER": [
+   [
+    "Eu treinava o arco no alto de Sakurajima, contra o vento de cinzas.",
+    "桜島の頂で、灰の風に向かって弓の稽古をしていた。"
+   ],
+   [
+    "Este não é o meu vulcão… mas a cinza tem o mesmo cheiro de casa.",
+    "ここは俺の火山じゃない…でも、灰は故郷と同じ匂いがする。"
+   ],
+   [
+    "O Dragão Pálido guardava a cratera como quem guarda um portão. Sakurajima precisa saber disso.",
+    "白き竜は、門を守るように火口を守っていた。桜島に知らせなければ。"
+   ],
+   [
+    "“Estas trilhas não aparecem em nenhum mapa. Como você as conhece?”",
+    "「この道はどの地図にも載っていない。なぜ知っている？」"
+   ]
+  ],
+  "ROGUE": [
+   [
+    "Nasci nestas ilhas, entre contrabandistas. Conheço cada enseada — e estas marcas não estavam aqui.",
+    "Je suis née sur ces îles, parmi les contrebandiers. Je connais chaque crique — et ces marques n'étaient pas là."
+   ],
+   [
+    "Alguém está construindo portais novos.",
+    "Quelqu'un construit de nouveaux portails."
+   ],
+   [
+    "Pedras marcadas, barcos sem bandeira… a Ordem do Limiar é real.",
+    "Des pierres marquées, des bateaux sans pavillon… l'Ordre du Seuil existe vraiment."
+   ],
+   [
+    "“Quem paga as suas contas, Guardiã?”",
+    "« Qui paie tes dettes, Gardienne ? »"
+   ]
+  ],
+  "MAGE": [
+   [
+    "Cresci entre as dunas de Ra-Khem. Os espelhos do templo nunca apontaram para baixo… até agora.",
+    "كبرت بين كثبان رع-خم. مرايات المعبد عمرها ما اتوجهت لتحت… لحد دلوقتي."
+   ],
+   [
+    "Os portais não são aleatórios. Formam um círculo — e este é um dos elos.",
+    "البوابات مش عشوائية. بتعمل دايرة — ودي واحدة من حلقاتها."
+   ],
+   [
+    "O templo não queimava as trevas. Prendia-as. Isto não é uma porta… é uma cela.",
+    "المعبد ما كانش بيحرق الظلام. كان بيحبسه. ده مش باب… ده زنزانة."
+   ],
+   [
+    "“Seu manto tem runas dos Antigos. Isso não se compra.”",
+    "«عباءتك عليها رموز القدماء. دي حاجة ما تتشريش.»"
+   ]
+  ],
+  "NECROMANCER": [
+   [
+    "Os mortos daqui sussurram a mesma frase:",
+    "Tutejsi umarli szepczą to samo zdanie:"
+   ],
+   [
+    "“Não deixem que ele acorde.”",
+    "„Nie pozwólcie mu się obudzić.”"
+   ],
+   [
+    "Ela os comandava em nome dele… agora estão em silêncio. Por enquanto.",
+    "Dowodziła nimi w jego imieniu… teraz milczą. Na razie."
+   ],
+   [
+    "“Os mortos daqui ficam em silêncio quando você fala.”",
+    "„Tutejsi umarli milkną, gdy mówisz.”"
+   ]
+  ],
+  "HUNTER": [
+   [
+    "Neve que não derrete, vento que corta a pele… estou em casa.",
+    "Snow that never melts, wind that cuts the skin… I'm home."
+   ],
+   [
+    "Os lobos do norte não uivam mais aqui. Alguma coisa os calou.",
+    "The northern wolves don't howl here anymore. Something silenced them."
+   ],
+   [
+    "O Golem de Gelo não caçava. Vigiava. As feras fugiam da prisão, não dele.",
+    "The Ice Golem didn't hunt. It kept watch. The beasts were fleeing the prison, not it."
+   ],
+   [
+    "“As feras se afastam de você. Por quê?”",
+    "“The beasts keep away from you. Why?”"
+   ]
+  ]
+ }
 }

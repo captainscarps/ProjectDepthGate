@@ -80,10 +80,11 @@ def main():
         if pt not in bundle:
             print("aviso: texto não encontrado no jogo:", pt[:60])
         for cls, v in V.items():
-            nat = g.get(v["lang"]) if v["lang"] != "en" else g.get("en")
+            nat = g.get(v["lang"] + "_tts") or (g.get(v["lang"]) if v["lang"] != "en" else g.get("en"))
             nat and jobs.append((hid, cls, nat, shown))
     for cls, rows in cfg["own"].items():
-        for pt, nat in rows:
+        for row in rows:
+            pt, nat = row[0], (row[2] if len(row) > 2 else row[1])
             pt = norm(pt)
             hid = fnv(pt)
             shown = {pt}
@@ -93,7 +94,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     old = json.load(open(MAN)) if os.path.exists(MAN) else {}
     man = {"k": {}, "d": {}, "s": {}}
-    own_ids = {fnv(norm(pt)) for rows in cfg["own"].values() for pt, _ in rows}
+    own_ids = {fnv(norm(r[0])) for rows in cfg["own"].values() for r in rows}
     for k, hid in main["k"].items():
         if hid in own_ids:
             man["k"][k] = hid

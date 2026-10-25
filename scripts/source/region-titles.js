@@ -46,3 +46,11 @@ function __rtPlates(S){const F="Georgia, 'Times New Roman', serif",P=[];
   c.add([bg,t2]);P.push({hp,c,t2,st_,last:sl,name})}
  const upd=()=>{const p=S.player;if(!p)return;for(const o of P){const d=Math.hypot(o.hp.x-p.x,o.hp.y-p.y),a=Math.max(0,Math.min(1,1-(d-70)/130));o.c.setAlpha(o.c.alpha+(a-o.c.alpha)*.15);if(a>0){const[sl,sc]=o.st_();sl!==o.last&&(o.last=sl,o.t2.setText(sl).setColor(sc))}}};
  S.events.on("update",upd);S.events.once("shutdown",()=>S.events.off("update",upd))}
+/* ── escolha de herói: língua nativa no card ── */
+const __HLANG={WARRIOR:["Inglês (Reino Unido)","English (UK)","Inglés (Reino Unido)"],BERSERKER:["Japonês","Japanese","Japonés"],ARCHER:["Japonês","Japanese","Japonés"],
+ HUNTER:["Inglês (Alasca)","English (Alaska)","Inglés (Alaska)"],DRUID:["Grego","Greek","Griego"],NECROMANCER:["Polonês","Polish","Polaco"],MAGE:["Árabe (Egito)","Arabic (Egypt)","Árabe (Egipto)"],
+ ROGUE:["Francês (Seicheles)","French (Seychelles)","Francés (Seychelles)"],SHAMAN:["Nheengatu","Nheengatu","Ñeengatú"]};
+{const C0=bl.prototype.create;bl.prototype.create=function(){const r=C0.apply(this,arguments);try{if(this.tagTxt&&this.nameTxt&&!this.natTxt){
+  this.natTxt=this.add.text(this.nameTxt.x,this.tagTxt.y+1,"",{fontFamily:"Georgia, 'Times New Roman', serif",fontStyle:"italic",fontSize:"8px",color:"#cdb98a"}).setOrigin(.5,0).setDepth(3);
+  this.tagTxt.setY(this.tagTxt.y+13);this.refreshDetails?.()}}catch(e){}return r}}
+{const R0=bl.prototype.refreshDetails;bl.prototype.refreshDetails=function(){const v=R0.apply(this,arguments);try{const c=fe[this.selected],L=__HLANG[c];this.natTxt?.setText(L?"🗣 "+__L3("Língua nativa: ","Native language: ","Lengua nativa: ")+__L3(...L):"")}catch(e){}return v}}
