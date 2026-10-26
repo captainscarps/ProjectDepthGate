@@ -201,14 +201,17 @@ buildUI(){const S=this,L3=__L3,U=S.ui,F="Georgia, 'Times New Roman', serif";
  if(S.hkey){S.porH=S.add.sprite(-216,30,S.hkey,0).setOrigin(.5,(S.lay?.footY??120)/(S.lay?.frameH??128)).setScale((S.lay?.scale??.67)*.82).setVisible(!1);S.anims.exists(S.hkey+"-idle")&&S.porH.play(S.hkey+"-idle");S.nar.addAt(S.porH,2)}
  S.act=S.add.container(_-92,st-118).setVisible(!1);const ab=S.add.graphics();ab.fillStyle(0x1d2a20,.9).fillRoundedRect(-80,-15,160,30,8).lineStyle(1.5,0x8ae08a,.9).strokeRoundedRect(-80,-15,160,30,8);S.actTx=S.add.text(0,0,"",{fontFamily:F,fontStyle:"bold",fontSize:"10px",color:"#e8ffe0"}).setOrigin(.5);S.act.add([ab,S.actTx]);
  const az=S.add.zone(0,0,160,30).setInteractive({useHandCursor:!0});az.on("pointerdown",()=>{S.uiTap=!0;S.doAct()});S.act.add(az);U.add(S.act);
- const btn=(x,y,t,ox,fn)=>{const b=S.add.text(x,y,t,{fontFamily:"'Courier New', monospace",fontStyle:"bold",fontSize:"9px",color:"#e8dcb0",backgroundColor:"#1a120cdd",padding:{x:7,y:5}}).setOrigin(ox,0).setInteractive({useHandCursor:!0});b.on("pointerdown",()=>{S.uiTap=!0;fn()});U.add(b);return b};
- S.startBtn=btn(_-10,10,"❚❚ START",1,()=>S.togglePause());
- S.skipBtn=btn(_/2+250,st-102,L3("PULAR DIÁLOGO ▸","SKIP DIALOGUE ▸","SALTAR DIÁLOGO ▸"),1,()=>S.skipLine()).setVisible(!1);
+ /* botões maiores e com área de toque folgada (no celular eram difíceis de acertar) */
+ const btn=(x,y,t,ox,fn)=>{const b=S.add.text(x,y,t,{fontFamily:"'Courier New', monospace",fontStyle:"bold",fontSize:"12px",color:"#f2e6bc",backgroundColor:"#1a120cee",padding:{x:12,y:8}}).setOrigin(ox,0).setInteractive({useHandCursor:!0});Gt(b,16,12);
+  const bd=S.add.graphics();const draw=()=>{bd.clear();if(!b.visible)return;const w=b.width,h=b.height,x0=b.x-w*b.originX,y0=b.y;bd.lineStyle(1.5,0xc9a24a,.85).strokeRoundedRect(x0,y0,w,h,5)};S.events.on("update",draw);U.add(bd);
+  b.on("pointerdown",()=>{S.uiTap=!0;b.setScale(.94);S.time.delayedCall(90,()=>b.setScale(1));fn()});U.add(b);return b};
+ S.startBtn=btn(_-10,8,"❚❚ START",1,()=>S.togglePause());
+ S.skipBtn=btn(_/2+250,st-112,L3("PULAR DIÁLOGO ▸","SKIP DIALOGUE ▸","SALTAR DIÁLOGO ▸"),1,()=>S.skipLine()).setVisible(!1);
  /* menu de pausa */
- const PZ=S.add.container(0,0).setVisible(!1);const dim=S.add.rectangle(_/2,st/2,_*1.4,st*1.4,0x05070a,.72).setInteractive();const pb=S.add.graphics();pb.fillStyle(0x0f141c,.95).fillRoundedRect(_/2-120,st/2-78,240,156,10).lineStyle(1.5,0xc9a24a,.85).strokeRoundedRect(_/2-120,st/2-78,240,156,10);
+ const PZ=S.add.container(0,0).setVisible(!1);const dim=S.add.rectangle(_/2,st/2,_*1.4,st*1.4,0x05070a,.72).setInteractive();const pb=S.add.graphics();pb.fillStyle(0x0f141c,.95).fillRoundedRect(_/2-130,st/2-84,260,172,10).lineStyle(1.5,0xc9a24a,.85).strokeRoundedRect(_/2-130,st/2-84,260,172,10);
  PZ.add([dim,pb,S.add.text(_/2,st/2-56,L3("PAUSA","PAUSED","PAUSA"),{fontFamily:F,fontStyle:"bold",fontSize:"16px",color:"#f2d9a0",letterSpacing:4}).setOrigin(.5)]);
- const pbtn=(y,t,fn)=>{const b=S.add.text(_/2,y,t,{fontFamily:F,fontStyle:"bold",fontSize:"12px",color:"#ece2cc",backgroundColor:"#2a2116",padding:{x:14,y:6}}).setOrigin(.5).setInteractive({useHandCursor:!0});b.on("pointerover",()=>b.setColor("#ffd24a"));b.on("pointerout",()=>b.setColor("#ece2cc"));b.on("pointerdown",()=>{S.uiTap=!0;fn()});PZ.add(b);return b};
- pbtn(st/2-14,L3("CONTINUAR","RESUME","CONTINUAR"),()=>S.togglePause(!1));S.ret?pbtn(st/2+26,L3("PULAR CAMINHO ▸","SKIP JOURNEY ▸","SALTAR CAMINO ▸"),()=>{S.togglePause(!1);S.finish(!0)}):pbtn(st/2+26,L3("VOLTAR AO MENU","BACK TO MENU","VOLVER AL MENÚ"),()=>{S.togglePause(!1);S.leaving=!0;try{window.__dubStop?.()}catch(e){}S.audioStop();S.scene.start("MainMenu")});
+ const pbtn=(y,t,fn)=>{const b=S.add.text(_/2,y,t,{fontFamily:F,fontStyle:"bold",fontSize:"14px",color:"#ece2cc",backgroundColor:"#2a2116",padding:{x:18,y:8},fixedWidth:200,align:"center"}).setOrigin(.5).setInteractive({useHandCursor:!0});Gt(b,12,6);b.on("pointerover",()=>b.setColor("#ffd24a"));b.on("pointerout",()=>b.setColor("#ece2cc"));b.on("pointerdown",()=>{S.uiTap=!0;fn()});PZ.add(b);return b};
+ pbtn(st/2-12,L3("CONTINUAR","RESUME","CONTINUAR"),()=>S.togglePause(!1));S.ret?pbtn(st/2+34,L3("PULAR CAMINHO ▸","SKIP JOURNEY ▸","SALTAR CAMINO ▸"),()=>{S.togglePause(!1);S.finish(!0)}):pbtn(st/2+34,L3("VOLTAR AO MENU","BACK TO MENU","VOLVER AL MENÚ"),()=>{S.togglePause(!1);S.leaving=!0;try{window.__dubStop?.()}catch(e){}S.audioStop();S.scene.start("MainMenu")});
  PZ.setDepth(9e3);U.add(PZ);S.pz=PZ;
  S.joy={on:!1,ox:0,oy:0,x:0,y:0,id:null};const jb=S.add.circle(0,0,26,0xffffff,.12).setStrokeStyle(2,0xffffff,.35).setVisible(!1),jt=S.add.circle(0,0,11,0xffffff,.35).setVisible(!1);U.add([jb,jt]);
  const toUI=p=>({x:(p.x-S.uiCam.width/2)/S.uiCam.zoom+_/2,y:(p.y-S.uiCam.height/2)/S.uiCam.zoom+st/2});
@@ -245,7 +248,7 @@ nextLine(){const S=this,tok=++S.lineTok;S.typer?.remove();if(!S.queue.length){S.
  S.typer=S.time.addEvent({delay:24,loop:!0,callback:()=>{if(tok!==S.lineTok){S.typer?.remove();return}n=window.__dubType?window.__dubType(t,n,1):Math.min(t.length,n+1);S.narTx.setText(t.slice(0,n));n>=t.length&&S.typer.remove()}})}
 skipLine(){const S=this;if(!S.speaking||S.pauseOn)return;try{window.__dubStop?.()}catch(e){}S.typer?.remove();if(S.hbox){S.hbox.destroy();S.hbox=null}
  const cur=S.narTx.text;S.lineTok++;/* a resposta do herói à fala pulada continua na fila */S.nextLine()}
-togglePause(on){const S=this;on=on??!S.pauseOn;if(on===!!S.pauseOn||S.leaving)return;S.pauseOn=on;S.pz.setVisible(on);const C=S.game.audioEngine?.ctx;
+togglePause(on){const S=this;on=on??!S.pauseOn;if(on===!!S.pauseOn||S.leaving)return;S.pauseOn=on;S.pz.setVisible(on);on&&S.ui?.bringToTop?.(S.pz);const C=S.game.audioEngine?.ctx;
  if(on){S.tweens.pauseAll();S.time.paused=!0;S.anims.pauseAll();try{C&&C.state==="running"&&C.suspend()}catch(e){}S.joy.on=!1}
  else{S.tweens.resumeAll();S.time.paused=!1;S.anims.resumeAll();try{C&&C.state==="suspended"&&C.resume()}catch(e){}}}
 heroSay(t,dur=2800){const S=this,tgt=()=>S.mode==="boat"?S.boat:S.hero;if(!tgt())return;S.hbox?.destroy?.();const tx=S.add.text(0,0,t,{fontFamily:"Georgia, 'Times New Roman', serif",fontStyle:"italic",fontSize:"12px",color:"#1d2433",align:"center",wordWrap:{width:190}}).setOrigin(.5),w=tx.width+18,h=tx.height+10,bg=S.add.graphics();
