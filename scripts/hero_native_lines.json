@@ -648,6 +648,20 @@
     "es": "Abuelos, el bosque está sanado. Estoy volviendo a casa.",
     "nat": "Ramunha-itá, kaá ukuera ana. Ixé asú se ruka kití.",
     "tts": "Ramúnha-itá, caá ucuéra ana. Ixé assú se ruca quití."
+   },
+   {
+    "pt": "Minha avó dizia que ninguém derruba a sumaúma grande. Agora eu sei por quê.",
+    "en": "My grandmother used to say no one fells the great kapok tree. Now I know why.",
+    "es": "Mi abuela decía que nadie derriba la gran ceiba. Ahora sé por qué.",
+    "nat": "Se ramunha unheẽ: ti awá umukuí sumaúma-wasú. Kuíri ixé akuáu maã resé.",
+    "tts": "Se ramúnha unhên: ti auá umucuí sumaúma-uassú. Cuíri ixé acuáu maã ressé."
+   },
+   {
+    "pt": "A mata é a minha casa. Eu fico com ela.",
+    "en": "The forest is my home. I'm staying with it.",
+    "es": "La selva es mi casa. Me quedo con ella.",
+    "nat": "Kaá se ruka. Ixé apitá aé irũmu.",
+    "tts": "Caá se rúca. Ixé apitá aê irúmu."
    }
   ],
   "DRUID": [
@@ -678,6 +692,18 @@
     "en": "The roots breathe again. I'll go back to the Šumava and tell the oaks the oath was kept.",
     "es": "Las raíces respiran otra vez. Volveré a la Šumava a contarles a los robles que el juramento se cumplió.",
     "nat": "Kořeny zase dýchají. Vrátím se na Šumavu a povím dubům, že přísaha byla splněna."
+   },
+   {
+    "pt": "Um brasão em cada fechadura… meus ancestrais faziam o mesmo com os carvalhos de Závist: um nome entalhado em cada tronco, para ninguém esquecer quem jurou.",
+    "en": "A crest on every lock… my ancestors did the same with the oaks of Závist: a name carved into every trunk, so no one would forget who swore the oath.",
+    "es": "Un blasón en cada cerradura… mis antepasados hacían lo mismo con los robles de Závist: un nombre tallado en cada tronco, para que nadie olvidara quién juró.",
+    "nat": "Erb na každém zámku… moji předkové to dělali s duby na Závisti: do každého kmene vyřezali jméno, aby nikdo nezapomněl, kdo přísahal."
+   },
+   {
+    "pt": "Aqui o juramento foi de sangue. O nosso foi de raízes. Os dois foram quebrados.",
+    "en": "Here the oath was sworn in blood. Ours was sworn in roots. Both were broken.",
+    "es": "Aquí el juramento fue de sangre. El nuestro fue de raíces. Los dos se rompieron.",
+    "nat": "Tady se přísahalo krví. My jsme přísahali kořeny. Obě přísahy byly porušeny."
    }
   ],
   "BERSERKER": [
@@ -706,6 +732,18 @@
     "en": "Hayato, my brother… I'll tell you everything when the ash of Sakurajima welcomes us home again.",
     "es": "Hayato, hermano… te lo contaré todo cuando la ceniza de Sakurajima nos reciba de nuevo.",
     "nat": "ハヤト、我が兄弟よ…桜島の灰が再び我らを迎える時、すべてを話そう。"
+   },
+   {
+    "pt": "Este calor… é o mesmo das forjas do meu clã. Meu pai dizia que o fogo nunca esquece quem o alimentou.",
+    "en": "This heat… it is the same as my clan's forges. My father said fire never forgets those who fed it.",
+    "es": "Este calor… es el mismo de las forjas de mi clan. Mi padre decía que el fuego nunca olvida a quien lo alimentó.",
+    "nat": "この熱…我が一族の鍛冶場と同じだ。父上は申しておった。炎は、己を養った者を決して忘れぬと。"
+   },
+   {
+    "pt": "Hayato não devia ter vindo atrás de mim. Mas, se veio… que o fogo se lembre dele também.",
+    "en": "Hayato should not have followed me. But if he did… let the fire remember him too.",
+    "es": "Hayato no debió seguirme. Pero, si lo hizo… que el fuego lo recuerde a él también.",
+    "nat": "隼人は我を追うべきではなかった。だが、来たのならば…炎よ、あやつのことも覚えておれ。"
    }
   ],
   "WARRIOR": [
@@ -730,6 +768,18 @@
     "en": "Aelric… my ancestor. I found what was left of you. Now our bloodline can rest.",
     "es": "Aelric… mi antepasado. Encontré lo que quedaba de ti. Ahora nuestro linaje puede descansar.",
     "nat": "Aelric… my ancestor. I found what was left of you. Now our bloodline can rest."
+   },
+   {
+    "pt": "Aelric… o rei das histórias da minha avó. Ela dizia que ele abriu os portões por amor ao povo. Eu acabei de ver que ele foi avisado.",
+    "en": "Aelric… the king from my grandmother's stories. She said he opened the gates out of love for his people. I just saw that he was warned.",
+    "es": "Aelric… el rey de las historias de mi abuela. Decía que abrió las puertas por amor a su pueblo. Acabo de ver que lo advirtieron.",
+    "nat": "Aelric… the king from my grandmother's stories. She said he opened the gates out of love for his people. I just saw that he was warned."
+   },
+   {
+    "pt": "Elyndra… esse nome nunca apareceu nas histórias da minha família. Por que apagaram a rainha?",
+    "en": "Elyndra… that name never appeared in my family's stories. Why did they erase the queen?",
+    "es": "Elyndra… ese nombre nunca apareció en las historias de mi familia. ¿Por qué borraron a la reina?",
+    "nat": "Elyndra… that name never appeared in my family's stories. Why did they erase the queen?"
    }
   ],
   "ARCHER": [
@@ -758,6 +808,18 @@
     "en": "Akihiro, my brother… save me a place atop Sakurajima. I'm coming home.",
     "es": "Akihiro, hermano… guárdame un lugar en lo alto de Sakurajima. Estoy volviendo.",
     "nat": "アキヒロ、兄弟…桜島の頂に俺の場所を取っておいてくれ。今、帰るよ。"
+   },
+   {
+    "pt": "Quando éramos crianças, Akihiro me levava até a beira da cratera para ver as brasas subirem. Dizia que eram almas voltando para casa.",
+    "en": "When we were kids, Akihiro used to take me to the edge of the crater to watch the embers rise. He said they were souls going home.",
+    "es": "Cuando éramos niños, Akihiro me llevaba al borde del cráter a ver subir las brasas. Decía que eran almas volviendo a casa.",
+    "nat": "子どもの頃、兄上はよく俺を火口の縁まで連れて行ってくれた。舞い上がる火の粉を指さして、あれは家に帰る魂だと言っていた。"
+   },
+   {
+    "pt": "Se ele estiver aqui embaixo… eu vou encontrá-lo antes das brasas.",
+    "en": "If he's down here… I'll find him before the embers do.",
+    "es": "Si está aquí abajo… lo encontraré antes que las brasas.",
+    "nat": "兄上がこの下にいるなら…火の粉より先に、俺が見つけ出す。"
    }
   ],
   "ROGUE": [
@@ -782,6 +844,18 @@
     "en": "The islands are waiting for me. This time, I'm going back without having to hide.",
     "es": "Las islas me esperan. Esta vez vuelvo sin tener que esconderme.",
     "nat": "Les îles m'attendent. Cette fois, je rentre sans avoir besoin de me cacher."
+   },
+   {
+    "pt": "Essas sombras marcavam as pedras do mesmo jeito que a gente marca as rotas de contrabando. Alguém da minha gente aprendeu isso com eles.",
+    "en": "Those shadows marked the stones the same way we mark our smuggling routes. Someone among my people learned it from them.",
+    "es": "Esas sombras marcaban las piedras igual que nosotros marcamos las rutas de contrabando. Alguien de los míos lo aprendió de ellos.",
+    "nat": "Ces ombres marquaient les pierres comme nous marquons nos routes de contrebande. Quelqu'un des miens a appris ça d'eux."
+   },
+   {
+    "pt": "Em Mahé, a gente chamava esse sinal de porta do diabo. Agora eu sei que não era lenda.",
+    "en": "In Mahé, we called that sign the devil's door. Now I know it wasn't a legend.",
+    "es": "En Mahé, llamábamos a esa señal la puerta del diablo. Ahora sé que no era una leyenda.",
+    "nat": "À Mahé, on appelait ce signe la porte du diable. Maintenant, je sais que ce n'était pas une légende."
    }
   ],
   "MAGE": [
@@ -806,6 +880,18 @@
     "en": "The mirrors of Ra-Khem can point to the sky again. I'm going home.",
     "es": "Los espejos de Ra-Khem pueden volver a apuntar al cielo. Me voy a casa.",
     "nat": "مرايا رَع خِم تستطيعُ أن تتّجهَ إلى السماء من جديد. أنا عائدةٌ إلى بيتي."
+   },
+   {
+    "pt": "Em Ra-Khem nós estudávamos estes espelhos como quem estuda as estrelas. Nunca imaginei que eles também nos estudavam.",
+    "en": "In Ra-Khem we studied these mirrors the way one studies the stars. I never imagined they were studying us too.",
+    "es": "En Ra-Khem estudiábamos estos espejos como quien estudia las estrellas. Nunca imaginé que ellos también nos estudiaban.",
+    "nat": "فِي رَعْ-خِمْ كُنَّا نَدْرُسُ هٰذِهِ المَرَايَا كَمَا تُدْرَسُ النُّجُومُ. وَلَمْ أَتَخَيَّلْ قَطُّ أَنَّهَا كَانَتْ تَدْرُسُنَا أَيْضًا."
+   },
+   {
+    "pt": "Meu mestre dizia que todo templo é uma pergunta. Este aqui é uma resposta que alguém tentou esconder.",
+    "en": "My teacher used to say every temple is a question. This one is an answer someone tried to hide.",
+    "es": "Mi maestro decía que todo templo es una pregunta. Este es una respuesta que alguien intentó esconder.",
+    "nat": "كَانَ مُعَلِّمِي يَقُولُ إِنَّ كُلَّ مَعْبَدٍ سُؤَالٌ. أَمَّا هٰذَا، فَجَوَابٌ حَاوَلَ أَحَدُهُمْ أَنْ يُخْفِيَهُ."
    }
   ],
   "NECROMANCER": [
@@ -834,6 +920,18 @@
     "en": "The dead finally rest. Maybe now I can too.",
     "es": "Los muertos por fin descansan. Quizá ahora yo también pueda.",
     "nat": "Umarli wreszcie odpoczywają. Może teraz ja też będę mógł."
+   },
+   {
+    "pt": "Minha rainha… os mortos de Białowieża nunca chamaram ninguém assim. Mas obedeciam a alguém.",
+    "en": "My queen… the dead of Białowieża never called anyone that. But they obeyed someone.",
+    "es": "Mi reina… los muertos de Białowieża nunca llamaron así a nadie. Pero obedecían a alguien.",
+    "nat": "Moja królowo… umarli z Białowieży nigdy nikogo tak nie nazywali. Ale komuś byli posłuszni."
+   },
+   {
+    "pt": "Quem manda nos mortos não é quem os acorda. É quem os faz prometer.",
+    "en": "The one who rules the dead isn't the one who wakes them. It's the one who makes them promise.",
+    "es": "Quien manda en los muertos no es quien los despierta. Es quien los hace prometer.",
+    "nat": "Umarłymi nie rządzi ten, kto ich budzi. Rządzi ten, kto każe im przysięgać."
    }
   ],
   "HUNTER": [
@@ -862,6 +960,18 @@
     "en": "The north is waiting for me. The wolves will howl again, I know it.",
     "es": "El norte me espera. Los lobos volverán a aullar, lo sé.",
     "nat": "The north is waiting for me. The wolves will howl again, I know it."
+   },
+   {
+    "pt": "Minha mãe contava sobre uma mulher de gelo que prendeu um rei debaixo da geleira. Eu achava que era história para criança dormir.",
+    "en": "My mother used to tell of a woman of ice who trapped a king beneath the glacier. I thought it was a story to put children to sleep.",
+    "es": "Mi madre contaba de una mujer de hielo que encerró a un rey bajo el glaciar. Yo creía que era un cuento para dormir a los niños.",
+    "nat": "My mother used to tell of a woman of ice who trapped a king beneath the glacier. I thought it was a story to put children to sleep."
+   },
+   {
+    "pt": "O lobo rosnou para aquela sombra… do mesmo jeito que rosna para a Guardiã.",
+    "en": "The wolf growled at that shadow… the same way it growls at the Guardian.",
+    "es": "El lobo le gruñó a esa sombra… igual que le gruñe a la Guardiana.",
+    "nat": "The wolf growled at that shadow… the same way it growls at the Guardian."
    }
   ]
  }

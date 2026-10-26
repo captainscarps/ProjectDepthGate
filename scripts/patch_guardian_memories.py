@@ -65,8 +65,21 @@ i = s.index("const __TR={en:{")
 j = s.index("},es:{", i) + len("},es:{")
 add = "".join(f"{q(k)}:{q(v[1])}," for k, v in TR.items() if f"{q(k)}:{q(v[1])}" not in s)
 s = s[:j] + add + s[j:]
-s = s + T + "\n" + SRC + "\n" + T
+# lembranças do herói (pt no jogo; en/es no dicionário)
+HM = json.load(open(os.path.join(ROOT, "scripts", "hero_memory_lines.json"), encoding="utf-8"))
+for cls, (lv, rows) in HM.items():
+    for pt, en, es, _ in rows:
+        TR[pt] = (en, es)
+HMJS = "const __HMEM=" + json.dumps({c: [lv, [r[0] for r in rows]] for c, (lv, rows) in HM.items()}, ensure_ascii=False) + ";\n"
+i = s.index("const __TR={en:{")
+add = "".join(f",{q(k)}:{q(v[0])}" for k, v in TR.items() if f"{q(k)}:{q(v[0])}" not in s)
+j0 = s.index("},es:{", i)
+s = s[:j0] + add + s[j0:]
+j = s.index("},es:{", i) + len("},es:{")
+add = "".join(f"{q(k)}:{q(v[1])}," for k, v in TR.items() if f"{q(k)}:{q(v[1])}" not in s)
+s = s[:j] + add + s[j:]
+s = s + T + "\n" + HMJS + SRC + "\n" + T
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):
         open(p, "w", encoding="utf-8").write(s)
-print("lembranças da Guardiã:", len(TR), "falas")
+print("lembranças da Guardiã e dos heróis:", len(TR), "falas")
