@@ -17,4 +17,4 @@ s = s + T + "\n" + SRC + "\n" + T
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):
         open(p, "w", encoding="utf-8").write(s)
-print("visual moderno: etapa 1 (controles de toque e HUD do celular)")
+print("visual moderno: etapas 1-2 (controles de toque, HUD do celular, ícones de itens e habilidades)")

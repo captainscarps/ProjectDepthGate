@@ -58,3 +58,23 @@ __joyExcl=function(H){const J=H.joystick;if(!J)return;J.__excl=[[H.selectBtn,"IN
  }catch(e){}return r}}
 /* o ATAQUE fica sempre bem visível (mesmo com a opacidade dos controles baixa) */
 {const A0=Hd.prototype.applyLayout;Hd.prototype.applyLayout=function(){const r=A0.apply(this,arguments);try{const a=this.attackBtn;if(a?.__uc){const o=Math.max(.92,this.settings?.touchOpacity??.6);a.__bg.setAlpha(o);a.icon.setAlpha(o)}}catch(e){}return r}}
+/* ── etapa 2: ícones de itens e habilidades ─────────────────────────────────────────────────────────────
+   • os ícones de itens são desenhos vetoriais feitos num quadro de 20 px: agora cada um ganha também uma versão
+     nítida de 64 px ("hd-…"), usada nos espaços do inventário
+   • espaços do inventário: cartão escuro arredondado, borda e brilho na cor da raridade, gema no canto para
+     Raro ou melhor, item selecionado com borda âmbar
+   • ícones das habilidades maiores dentro dos botões de toque                                                */
+{const V0=vt;vt=function(c,i,t){const r=V0.apply(this,arguments);try{const{canvas:e,ctx:d}=Tt(64,64);d.scale(3.2,3.2);t(d);Et(c,"hd-"+i,e);c.textures.get("hd-"+i).setFilter(j.Textures.FilterMode.LINEAR)}catch(e){}return r}}
+const __UC_GEM=new Set([4886745,10771168,14715438,8382688]);
+Cd.prototype.slotBox=function(g,x,y,col,sel){const dark=col===xt.UI_BORDER_DARK;
+ g.fillStyle(0x0f1218,.88).fillRoundedRect(x,y,40,40,8);
+ if(!dark){g.fillStyle(col,.16).fillRoundedRect(x+2,y+2,36,36,7);g.fillStyle(0xffffff,.06).fillRoundedRect(x+3,y+3,34,14,{tl:6,tr:6,bl:0,br:0})}
+ g.lineStyle(sel?2.5:1.5,sel?0xffc14d:dark?0xffffff:col,sel?1:dark?.14:.9).strokeRoundedRect(x+.5,y+.5,39,39,8);
+ if(sel)g.lineStyle(4,0xffc14d,.22).strokeRoundedRect(x-2,y-2,44,44,10);
+ if(!dark&&__UC_GEM.has(col)){g.fillStyle(0x0f1218,1).fillCircle(x+35,y+5,4.5);g.fillStyle(col,1).fillCircle(x+35,y+5,3);g.fillStyle(0xffffff,.7).fillCircle(x+34.2,y+4.2,1)}};
+{const R0=Cd.prototype.refresh;Cd.prototype.refresh=function(){const r=R0.apply(this,arguments);try{if(!this.open)return r;const T=this.ui.textures;
+ for(const o of[...(this.equipUi||[]),...(this.gridUi||[])]){const ic=o.icon;if(!ic?.visible)continue;let k=ic.texture?.key||"";if(!k.startsWith("hd-")&&T.exists("hd-"+k)){ic.setTexture("hd-"+k);k="hd-"+k}
+  if(k.startsWith("hd-"))ic.setDisplaySize(34,34);else{const f=ic.frame,m=Math.max(f.width,f.height)||1;ic.setScale(Math.min(3,Math.max(1,Math.floor(30/m)||30/m)))}}
+ /* foco (teclado/gamepad): anel âmbar arredondado por cima do quadrado antigo */
+ if(this.focus){const p=this.focus.area==="inv"?this.gridUi[this.focus.index]?.pos:this.equipUi[this.focus.index]?.pos;p&&!(this.__sk&&this.__tab&&this.focus.area==="equip")&&this.slotsG.lineStyle(2.5,0xffc14d,1).strokeRoundedRect(p.x-3,p.y-3,46,46,10)}}catch(e){}return r}}
+{const C1=ne.prototype.setCooldown;ne.prototype.setCooldown=function(){const r=C1.apply(this,arguments);try{const ic=this.icon;if(this.__uc&&ic?.setTexture&&/^ABILITY_/.test(this.action||"")){const f=ic.frame,m=Math.max(f.width,f.height)||24,s=this.r*1.3/m;Math.abs(ic.scaleX-s)>.01&&ic.setScale(s)}}catch(e){}return r}}

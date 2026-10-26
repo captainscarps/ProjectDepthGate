@@ -21,7 +21,7 @@ function __rtTitle(G,name,sub){const U=G.scene.get("UI");if(!U||!U.sys?.isActive
 function __rtNext(G){const U=G.scene.get("UI"),it=(G.__rtQ||[]).shift();if(!it||!U||!U.sys?.isActive?.()||!G.sys?.isActive?.()){G.__rtOn=!1;return}
  /* espera painéis grandes fecharem (história, bênção, resultado) */
  if(U.storyPanel?.visible||U.blessingPanel?.visible||U.result?.isVisible?.()){G.__rtQ.unshift(it);G.__rtOn=!0;U.time.delayedCall(700,()=>__rtNext(G));return}
- G.__rtOn=!0;const[name,sub]=it,F="Georgia, 'Times New Roman', serif",C=U.add.container(_/2,st*.2).setDepth(940).setAlpha(0),sh=U.add.image(0,3,"light").setTint(0).setAlpha(.5).setScale(3,.62);
+ G.__rtOn=!0;const[name,sub]=it,F="Georgia, 'Times New Roman', serif",C=U.add.container(_/2,st*.2).setDepth(650).setAlpha(0),sh=U.add.image(0,3,"light").setTint(0).setAlpha(.5).setScale(3,.62);
  const tx=U.add.text(0,-3,name,{fontFamily:F,fontStyle:"bold",fontSize:"24px",color:"#fbf1d4",stroke:"#2a1808",strokeThickness:3}).setOrigin(.5).setShadow(0,2,"#000000",6,!0,!0).setScale(.94);
  const sb=U.add.text(0,19,(sub||"").toUpperCase(),{fontFamily:F,fontStyle:"italic",fontSize:"9px",color:"#ecdcac",letterSpacing:3}).setOrigin(.5).setAlpha(0);
  const wl=tx.width/2+12,gl=U.add.graphics();gl.lineStyle(1,0xd9b86a,.95).lineBetween(-wl-62,-3,-wl-4,-3).lineBetween(wl+4,-3,wl+62,-3);gl.fillStyle(0xf2d78f,1);for(const s of[-1,1]){const dx=s*wl;gl.fillTriangle(dx-3,-3,dx,-6,dx+3,-3).fillTriangle(dx-3,-3,dx,0,dx+3,-3);gl.fillCircle(s*(wl+64),-3,1.2)}gl.setScale(0,1);
