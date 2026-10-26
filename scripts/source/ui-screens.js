@@ -44,3 +44,7 @@ for(const K of[__BookScene,__CodexScene,__CollectiblesScene]){const C=K.prototyp
  g.fillStyle=function(c,a){return c===789766?F.call(this,0x161a22,.985):c===9053216?F.call(this,0xffc14d,0):F.call(this,c,a)};
  g.lineStyle=function(w,c,a){return c===9053216?Ls.call(this,1.5,0xffffff,.18):Ls.call(this,w,c,a)};
  __ucFonts([C.tipName,C.tipMeta,C.tipLock,C.tipStats,C.tipDesc,C.tipSet,C.cmpTitle,C.cmpText].filter(Boolean))}}catch(e){}return T0.apply(this,arguments)}}
+/* alerta "!" do botão HABILIDADES: vira um selo âmbar no canto do botão, sem encostar nas letras */
+{const A0=No.prototype.setSkillsAlert;No.prototype.setSkillsAlert=function(v){const r=A0.apply(this,arguments);try{const b=this.skillsBtn,a=this.skillsAlert;if(b&&a){
+ if(!a.__uc){a.__uc=1;a.setFontFamily(__UC_F).setFontStyle("bold").setFontSize("8px").setColor("#16130c").setStroke("#16130c",0).setBackgroundColor("#ffc14d").setPadding(4,1,4,1).setOrigin(.5)}
+ const x0=b.x-b.displayWidth*b.originX,y0=b.y-b.displayHeight*b.originY;a.setPosition(x0+b.displayWidth-7,y0+3).setScrollFactor(b.scrollFactorX,b.scrollFactorY);b.parentContainer&&a.parentContainer!==b.parentContainer&&b.parentContainer.add(a)}}catch(e){}return r}}
