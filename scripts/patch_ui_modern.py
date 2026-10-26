@@ -13,6 +13,17 @@ while T in s:
     a = s.index(T)
     b = s.index(T, a + 1)
     s = s[:a] + s[b + len(T):]
+# menu principal: a sombra da esquerda terminava com 15% de opacidade e cortava a tela ao meio (linha visível);
+# agora ela some aos poucos até 0 numa faixa mais larga
+import base64
+M = "/*__UCSHADE__*/"
+while M in s:
+    a0 = s.index(M); b0 = s.index(M, a0 + 1); inner = s[a0 + len(M):b0]; k0 = inner.rfind("/*§")
+    s = s[:a0] + base64.b64decode(inner[k0 + 3:inner.rindex("*/")]).decode("utf-8") + s[b0 + len(M):]
+OS = "sh.fillGradientStyle(0,0,0,0,.55,.15,.55,.15).fillRect(0,0,_*.55,st);"
+NS = "sh.fillGradientStyle(0,0,0,0,.55,0,.55,0).fillRect(0,0,_*.7,st);"
+assert s.count(OS) == 1, "sombra do menu"
+s = s.replace(OS, M + NS + "/*§" + base64.b64encode(OS.encode()).decode() + "*/" + M)
 s = s + T + "\n" + SRC + "\n" + T
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):
