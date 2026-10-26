@@ -47,10 +47,11 @@
   },
   "MAGE": {
    "lang": "ar",
-   "voice": "ar-EG-SalmaNeural",
-   "rate": "-2%",
+   "voice": "ar-SY-AmanyNeural",
+   "rate": "-4%",
    "pitch": "+0Hz",
-   "phrased": true
+   "plain": true,
+   "_nota": "frase inteira (sem cortes) e sem as vogais curtas marcadas: a voz escolhe a pronúncia natural; a shadda fica"
   },
   "ROGUE": {
    "lang": "fr",

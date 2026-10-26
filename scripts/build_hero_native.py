@@ -152,6 +152,9 @@ def main():
             async with sem:
                 with tempfile.TemporaryDirectory() as td:
                     raw = os.path.join(td, "r.mp3")
+                    if v.get("plain"):   # árabe: tira vogais curtas e tanwin (mantém a shadda) para soar falado, não recitado
+                        import re
+                        nat = re.sub("[\u064B-\u0650\u0652\u0670]", "", nat)
                     try:
                         await (tts_phrased if v.get("phrased") else tts)(nat, v, raw)
                     except Exception:   # se o corte por frases falhar, gera a fala inteira de uma vez
