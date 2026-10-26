@@ -40,9 +40,9 @@ function __ucReskin2(S){const T=S.textures;if(T.__uc2)return;T.__uc2=1;
  mk("ui2-xp-bg",480,14,(x)=>{rr(x,1,2,478,10,5);x.fillStyle="rgba(0,0,0,.6)";x.fill();x.lineWidth=1;x.strokeStyle="rgba(255,255,255,.14)";x.stroke()})}
 {const C0=bo.prototype.create;bo.prototype.create=function(){const r=C0?.apply(this,arguments);try{__ucReskin2(this)}catch(e){}return r}}
 /* textos do HUD do computador na fonte nova */
-{const U5=__Hud2.prototype.update;__Hud2.prototype.update=function(g){const r=U5.apply(this,arguments);try{if(this.ok&&this.mode!=="mob"){const S=this.s,n=S.children.list.length;if(this.__ucN!==n){this.__ucN=n;
+{const U5=__Hud2.prototype.update;__Hud2.prototype.update=function(g){const r=U5.apply(this,arguments);try{if(this.ok){const S=this.s,n=S.children.list.length;if(this.__ucN!==n){this.__ucN=n;
  for(const o of S.children.list){if(o.type!=="Text"||o.__ucF)continue;const f=o.style?.fontFamily||"",d=o.depth;if(!(/Georgia|Courier/.test(f))||!((d>=100&&d<=130)||d===539))continue;o.__ucF=1;o.setFontFamily(__UC_F).setFontStyle("bold")}
- this.lvlT&&this.lvlT.setColor("#16130c").setStroke("#16130c",0);this.lvlT2?.setColor?.("#16130c").setStroke("#16130c",0)}}}catch(e){}return r}}
+ this.mode!=="mob"&&this.lvlT&&this.lvlT.setColor("#16130c").setStroke("#16130c",0);this.lvlT2?.setColor?.("#16130c").setStroke("#16130c",0)}}}catch(e){}return r}}
 /* minimapa no estilo novo */
 {const M0=__mmSkin;__mmSkin=function(M){if(!M0(M))return!1;try{const x=M.x,y=M.y,w=M.width,h=M.height;M.panel.clear().fillStyle(0x12151c,.88).fillRoundedRect(x,y,w,h,12).lineStyle(1.5,0xffffff,.16).strokeRoundedRect(x+.5,y+.5,w-1,h-1,12);
  M.title.__uc||(M.title.__uc=1,M.title.setFontFamily(__UC_F));M.title.setColor("#c4cad4").setStroke("#000000",0)}catch(e){}return!0}}

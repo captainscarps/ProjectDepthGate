@@ -122,7 +122,6 @@ function __ucPill(t,primary){if(!t||t.__pill)return t;const S=t.scene;t.__pill=1
 {const B1=Bd.prototype.build;Bd.prototype.build=function(){const r=B1.apply(this,arguments);try{for(const o of this.root.list)o.type==="Text"&&o.style?.fontFamily?.includes("Georgia")&&(o.setFontFamily(__UC_F).setFontStyle("bold").setColor("#ffffff"),o.y===90&&o.setY(80).setFontSize("18px"))}catch(e){}return r}}
 /* ── Etapa 4 · animações e respostas ───────────────────────────────────────────────────────────────────
    • janelas (inventário, pausa, loja) entram com fade + leve subida
-   • Lendário e Relíquia brilham no inventário: borda pulsando e um brilho que corre pela borda
    • ao equipar, o ícone "salta" no espaço do equipamento
    • ao subir de nível, o círculo de nível do HUD pulsa com um anel
    • destaque dos menus (menu principal, seleção de herói, COMEÇAR) vira pílula âmbar                       */
@@ -131,19 +130,7 @@ function __ucIn(o,S){try{if(!o?.root||!S?.tweens)return;o.__tw?.stop?.();o.root.
 {const S1=Cd.prototype.show;Cd.prototype.show=function(){const w=this.open,r=S1.apply(this,arguments);!w&&this.open&&__ucIn(this,this.ui);return r}}
 {const S2=Bd.prototype.show;Bd.prototype.show=function(){const w=this.open,r=S2.apply(this,arguments);!w&&this.open&&__ucIn(this,this.ui);return r}}
 {const S3=bd.prototype.show;bd.prototype.show=function(){const w=this.open,r=S3.apply(this,arguments);!w&&this.open&&__ucIn(this,this.ui);return r}}
-/* brilho de Lendário/Relíquia */
-const __UC_GLOW={LEGENDARY:0xffa83a,RELIC:0xff5a7a};
-function __ucGlow(C){const S=C.ui;if(!C.__gl){C.__gl=S.add.graphics();C.root.add(C.__gl);S.events.on("postupdate",()=>__ucGlowDraw(C));S.events.once("shutdown",()=>{C.__gl=null})}}
-function __ucGlowDraw(C){const g=C.__gl;if(!g?.active)return;g.clear();if(!C.open)return;let inv;try{inv=C.gs()?.inventory}catch(e){}if(!inv)return;
- const t=C.ui.time.now,list=[];for(const o of C.equipUi||[]){const it=inv.equipment[o.slotName];it&&o.icon.visible&&list.push([o.icon,it])}
- (C.gridUi||[]).forEach((o,k)=>{const it=inv.items[k];it&&o.icon.visible&&list.push([o.icon,it])});
- let n=0;for(const[ic,it]of list){const c=__UC_GLOW[it.rarity];if(!c)continue;n++;const x=ic.x-20,y=ic.y-20,ph=t/900+n*.37,a=.45+.35*Math.sin(t/260+n);
-  g.lineStyle(4,c,a*.35).strokeRoundedRect(x-1,y-1,42,42,7);g.lineStyle(1.5,c,.6+a*.4).strokeRoundedRect(x+.5,y+.5,39,39,6);
-  const u=(ph%1)*160,P=u<40?[x+u,y]:u<80?[x+40,y+u-40]:u<120?[x+120-u,y+40]:[x,y+160-u],s=2.6;
-  g.fillStyle(0xffffff,.9).fillTriangle(P[0]-s,P[1],P[0],P[1]-s*2.2,P[0]+s,P[1]).fillTriangle(P[0]-s,P[1],P[0],P[1]+s*2.2,P[0]+s,P[1]).fillTriangle(P[0],P[1]-s,P[0]-s*2.2,P[1],P[0],P[1]+s).fillTriangle(P[0],P[1]-s,P[0]+s*2.2,P[1],P[0],P[1]+s);
-  g.fillStyle(c,.35).fillCircle(P[0],P[1],5)}
- C.__gl.parentContainer&&C.__gl.parentContainer.bringToTop(C.__gl)}
-{const R4=Cd.prototype.refresh;Cd.prototype.refresh=function(){const r=R4.apply(this,arguments);try{this.root&&__ucGlow(this)}catch(e){}return r}}
+/* (o brilho animado nas bordas de Lendário/Relíquia foi removido a pedido: a borda colorida do espaço já indica a raridade) */
 /* salto ao equipar */
 {const D0=Cd.prototype.doAction;Cd.prototype.doAction=function(){let t=null,src=null;try{t=this.selectedItem();src=this.selected?.source}catch(e){}const r=D0.apply(this,arguments);
  try{if(t&&src==="inv"&&t.slot){const o=(this.equipUi||[]).find(q=>this.gs().inventory.equipment[q.slotName]===t);if(o?.icon){const ic=o.icon,sx=ic.scaleX,sy=ic.scaleY;this.ui.tweens.add({targets:ic,scaleX:{from:sx*1.45,to:sx},scaleY:{from:sy*1.45,to:sy},duration:260,ease:"Back.easeOut"});

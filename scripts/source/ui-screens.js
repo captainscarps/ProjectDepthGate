@@ -39,3 +39,8 @@ for(const K of[__BookScene,__CodexScene,__CollectiblesScene]){const C=K.prototyp
 {const C2=bo.prototype.create;bo.prototype.create=function(){const r=C2?.apply(this,arguments);try{const T=this.textures;if(T.exists("ui2-np")&&!T.__ucNp){T.__ucNp=1;T.remove("ui2-np");const c=T.createCanvas("ui2-np",640,90),x=c.getContext();
  x.shadowColor="rgba(0,0,0,.5)";x.shadowBlur=10;x.beginPath();x.roundRect?x.roundRect(24,10,592,70,26):x.rect(24,10,592,70);x.fillStyle="rgba(18,21,28,.9)";x.fill();x.shadowColor="transparent";x.lineWidth=2;x.strokeStyle="rgba(255,255,255,.14)";x.stroke();c.refresh();T.get("ui2-np").setFilter(j.Textures.FilterMode.LINEAR)}}catch(e){}return r}}
 {const P0=Pd.prototype.show;Pd.prototype.show=function(){try{if(!this.__ucF){this.__ucF=1;this.nameText.setFontFamily(__UC_F).setStroke("#000000",3);this.subText.setFontFamily(__UC_F);this.phaseText.setFontFamily(__UC_F)}}catch(e){}return P0.apply(this,arguments)}}
+/* ficha do item (inventário): cartão grafite opaco, borda clara, textos na fonte nova */
+{const T0=__invTip;__invTip=function(C){try{const g=C.__tipG;if(g&&!g.__uc){g.__uc=1;const F=g.fillStyle,Ls=g.lineStyle;
+ g.fillStyle=function(c,a){return c===789766?F.call(this,0x161a22,.985):c===9053216?F.call(this,0xffc14d,0):F.call(this,c,a)};
+ g.lineStyle=function(w,c,a){return c===9053216?Ls.call(this,1.5,0xffffff,.18):Ls.call(this,w,c,a)};
+ __ucFonts([C.tipName,C.tipMeta,C.tipLock,C.tipStats,C.tipDesc,C.tipSet,C.cmpTitle,C.cmpText].filter(Boolean))}}catch(e){}return T0.apply(this,arguments)}}
