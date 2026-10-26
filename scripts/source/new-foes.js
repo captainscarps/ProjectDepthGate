@@ -110,7 +110,14 @@ function __heroBubble(S,t,ms=3400){const p=S.player;if(!p||!S.sys.isActive())ret
  S.__hbBox?.destroy?.();const box=S.add.container(p.x,p.y-74-h/2,[bg,tx]).setDepth(9600).setAlpha(0).setScale(.85);S.__hbBox=box;const fol=()=>{const q=S.player;q&&box.active&&box.setPosition(q.x,q.y-74-h/2)};S.events.on("update",fol);
  S.tweens.add({targets:box,alpha:1,scale:1,duration:220,ease:"Back.easeOut"});S.time.delayedCall(ms,()=>box.active&&S.tweens.add({targets:box,alpha:0,duration:350,onComplete:()=>{S.events.off("update",fol);box.destroy()}}))}
 function __calmNow(S){if(S.state!=="playing"||S.uiOpen||!S.player||S.player.dead)return!1;for(const e of S.enemies?.getChildren?.()||[])if(!e.dead&&e.active&&Math.hypot(e.x-S.player.x,e.y-S.player.y)<300&&(e.ai?.aggro||e.aggro))return!1;return!0}
-function __fsInit(S){const L3=__L3,reg=S.game.registry,met=()=>!!reg.get("story:gIntro");
+/* "já conheceu a Guardiã" precisa sobreviver a recarregar o jogo (antes só ficava na memória da sessão: ao continuar
+   um jogo salvo o herói voltava a perguntar "quem é ela?" mesmo depois de tudo). Saves antigos: deduz pelo progresso. */
+function __gMet(S){const reg=S.game.registry;if(reg.get("story:gIntro"))return!0;let m=!1;try{const sl=reg.get("save:slot")??1;
+ m=__stFlag(S,"gIntro")||__stFlag(S,"forest_done")||__stFlag(S,"spyWarn")||JSON.parse(localStorage.getItem("depthgate:portals:slot_"+sl)||"[]").length>0||!!S.roomManager?.activeRoom?.def?.hub}catch(e){}
+ m&&reg.set("story:gIntro",!0);return m}
+{const C0=Sd.prototype.create;Sd.prototype.create=function(){try{this.levelId==="forest"||this.scene?.settings?.data?.levelId==="forest"?__gMet(this):0}catch(e){}const r=C0.apply(this,arguments);
+ try{const S=this,reg=S.game.registry;if(reg.get("story:gIntro"))__stFlag(S,"gIntro",!0);else{const f=(p,k,v)=>{k==="story:gIntro"&&v&&__stFlag(S,"gIntro",!0)};reg.events.on("setdata",f);reg.events.on("changedata",f);S.events.once("shutdown",()=>{reg.events.off("setdata",f);reg.events.off("changedata",f)})}}catch(e){}return r}}
+function __fsInit(S){const L3=__L3,reg=S.game.registry,met=()=>__gMet(S);
  /* falas do herói antes de conhecer a Guardiã */
  const Q=[L3("Aquela voz no rio… disse que estaria me esperando. Mas quem é ela?","That voice on the river… it said it would be waiting for me. But who is she?","Esa voz en el río… dijo que me estaría esperando. ¿Pero quién es?"),
   L3("Sinto que alguém está me guiando… ou me observando.","I feel like someone is guiding me… or watching me.","Siento que alguien me guía… o me observa."),
