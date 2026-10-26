@@ -9539,11 +9539,53 @@ Cd.prototype.slotBox=function(g,x,y,col,sel){const dark=col===xt.UI_BORDER_DARK;
  if(sel)g.lineStyle(4,0xffc14d,.22).strokeRoundedRect(x-2,y-2,44,44,10);
  if(!dark&&__UC_GEM.has(col)){g.fillStyle(0x0f1218,1).fillCircle(x+35,y+5,4.5);g.fillStyle(col,1).fillCircle(x+35,y+5,3);g.fillStyle(0xffffff,.7).fillCircle(x+34.2,y+4.2,1)}};
 {const R0=Cd.prototype.refresh;Cd.prototype.refresh=function(){const r=R0.apply(this,arguments);try{if(!this.open)return r;const T=this.ui.textures;
- for(const o of[...(this.equipUi||[]),...(this.gridUi||[])]){const ic=o.icon;if(!ic?.visible)continue;let k=ic.texture?.key||"";if(!k.startsWith("hd-")&&T.exists("hd-"+k)){ic.setTexture("hd-"+k);k="hd-"+k}
+ for(const o of[...(this.equipUi||[]),...(this.gridUi||[])]){const ic=o.icon;if(!ic?.visible||ic.texture?.key==="items-hd")continue;let k=ic.texture?.key||"";if(!k.startsWith("hd-")&&T.exists("hd-"+k)){ic.setTexture("hd-"+k);k="hd-"+k}
   if(k.startsWith("hd-"))ic.setDisplaySize(34,34);else{const f=ic.frame,m=Math.max(f.width,f.height)||1;ic.setScale(Math.min(3,Math.max(1,Math.floor(30/m)||30/m)))}}
  /* foco (teclado/gamepad): anel âmbar arredondado por cima do quadrado antigo */
  if(this.focus){const p=this.focus.area==="inv"?this.gridUi[this.focus.index]?.pos:this.equipUi[this.focus.index]?.pos;p&&!(this.__sk&&this.__tab&&this.focus.area==="equip")&&this.slotsG.lineStyle(2.5,0xffc14d,1).strokeRoundedRect(p.x-3,p.y-3,46,46,10)}}catch(e){}return r}}
 {const C1=ne.prototype.setCooldown;ne.prototype.setCooldown=function(){const r=C1.apply(this,arguments);try{const ic=this.icon;if(this.__uc&&ic?.setTexture&&/^ABILITY_/.test(this.action||"")){const f=ic.frame,m=Math.max(f.width,f.height)||24,s=this.r*1.3/m;Math.abs(ic.scaleX-s)>.01&&ic.setScale(s)}}catch(e){}return r}}
+/* ── etapa 3: menus e janelas ─────────────────────────────────────────────────────────────────────────────
+   • as texturas de janela/botão/aba/slot da interface (ui2-*) são redesenhadas no estilo novo: vidro escuro
+     arredondado com borda clara, botões em pílula, selecionado em âmbar — todas as janelas que usam essas peças
+     (inventário, pausa, loja, ferreiro, refúgio, códex…) mudam juntas
+   • textos de menu passam para a fonte do sistema, com cores claras e destaque âmbar
+   • abas do inventário em pílula âmbar; botões de ação (Equipar, Descartar, Forja) em pílula                  */
+function __ucReskin(S){const T=S.textures;if(T.__ucDone)return;T.__ucDone=1;
+ const mk=(k,w,h,draw)=>{try{T.exists(k)&&T.remove(k);const c=T.createCanvas(k,w,h),x=c.getContext();draw(x,w,h);c.refresh();T.get(k).setFilter(j.Textures.FilterMode.LINEAR)}catch(e){}};
+ const rr=(x,X,Y,W,H,r)=>{x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+W,Y,X+W,Y+H,r);x.arcTo(X+W,Y+H,X,Y+H,r);x.arcTo(X,Y+H,X,Y,r);x.arcTo(X,Y,X+W,Y,r);x.closePath()};
+ mk("ui2-win",1200,700,(x,w,h)=>{x.shadowColor="rgba(0,0,0,.55)";x.shadowBlur=24;x.shadowOffsetY=8;rr(x,14,14,w-28,h-28,40);x.fillStyle="rgba(18,21,28,.97)";x.fill();x.shadowColor="transparent";
+  const g=x.createLinearGradient(0,14,0,180);g.addColorStop(0,"rgba(255,255,255,.07)");g.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=g;x.fill();x.lineWidth=4;x.strokeStyle="rgba(255,255,255,.13)";x.stroke()});
+ mk("ui2-hdr",520,46,(x,w,h)=>{});
+ mk("ui2-btn",340,62,(x,w,h)=>{rr(x,3,3,w-6,h-6,(h-6)/2);x.fillStyle="rgba(255,255,255,.08)";x.fill();x.lineWidth=2;x.strokeStyle="rgba(255,255,255,.14)";x.stroke()});
+ mk("ui2-btn-sel",340,62,(x,w,h)=>{rr(x,3,3,w-6,h-6,(h-6)/2);const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,"#ffd27a");g.addColorStop(1,"#f5a823");x.fillStyle=g;x.fill()});
+ mk("ui2-tabglow",200,60,(x,w,h)=>{});
+ mk("ui2-slot",56,56,(x,w,h)=>{rr(x,2,2,w-4,h-4,10);x.fillStyle="rgba(15,18,24,.85)";x.fill();x.lineWidth=2;x.strokeStyle="rgba(255,255,255,.16)";x.stroke()})}
+{const C0=bo.prototype.create;bo.prototype.create=function(){const r=C0?.apply(this,arguments);try{__ucReskin(this)}catch(e){}return r}}
+/* fontes e cores padrão dos menus */
+try{for(const o of[ye,ge,ts,Le,ti,la])o.fontFamily=__UC_F;ye.color="#e8ebf0";ti.color="#e8ebf0";ge.color="#9aa3b2";Le.color="#9aa3b2";ts.color="#ffc14d";la.color="#ffffff"}catch(e){}
+/* painel simples (quando não há textura) */
+Dt=function(c,i,t,e,d){c.fillStyle(0x12151c,.97).fillRoundedRect(i,t,e,d,12);c.fillStyle(0xffffff,.05).fillRoundedRect(i+1,t+1,e-2,Math.min(26,d*.3),{tl:11,tr:11,bl:0,br:0});c.lineStyle(1.5,0xffffff,.13).strokeRoundedRect(i+.5,t+.5,e-1,d-1,12);return c};
+/* abas do inventário */
+{const T0=__invTab;__invTab=function(C,k){const r=T0.apply(this,arguments);try{const g=C.__tabG,t=C.__tabT?.[C.__tab];C.__tabT.forEach((o,n)=>{o.setFontFamily(__UC_F).setFontStyle("bold").setColor(n===C.__tab?"#16130c":"#c4cad4")});
+ g.clear();t&&g.fillStyle(0xffc14d,1).fillRoundedRect(t.x-10,t.y-10,t.width+20,20,10)}catch(e){}return r}}
+/* botões de texto em pílula (inventário e loja) */
+function __ucPill(t,primary){if(!t||t.__pill)return t;const S=t.scene;t.__pill=1;t.setBackgroundColor("rgba(0,0,0,0)").setFontFamily(__UC_F).setFontStyle("bold").setColor(primary?"#16130c":"#ffffff").setPadding(14,8,14,8);
+ const g=S.add.graphics();t.__pg=g;const par=t.parentContainer;const sync=()=>{if(!t.active){g.destroy();S.events.off("postupdate",sync);return}const p=t.parentContainer;if(p&&g.parentContainer!==p){p.addAt(g,Math.max(0,p.getIndex(t)))}
+  g.setVisible(t.visible&&(p?p.visible:!0)).setAlpha(t.alpha);if(!g.visible)return;const w=t.displayWidth,h=t.displayHeight,x=t.x-w*t.originX,y=t.y-h*t.originY,k=t.__hov?1:0;
+  const key=`${x}|${y}|${w}|${h}|${k}`;if(g.__k===key)return;g.__k=key;g.clear();primary?g.fillStyle(k?0xffd27a:0xffc14d,1).fillRoundedRect(x,y,w,h,h/2):g.fillStyle(0xffffff,k?.16:.09).fillRoundedRect(x,y,w,h,h/2).lineStyle(1,0xffffff,.18).strokeRoundedRect(x,y,w,h,h/2)};
+ t.on("pointerover",()=>{t.__hov=1;t.setColor(primary?"#16130c":"#ffffff")});t.on("pointerout",()=>{t.__hov=0;t.setColor(primary?"#16130c":"#ffffff")});S.events.on("postupdate",sync);return t}
+{const M0=Cd.prototype.makeButton;Cd.prototype.makeButton=function(i,t,e,d){const b=M0.apply(this,arguments);return __ucPill(b,!this.actionBtn)}}
+{const M1=bd.prototype.makeButton;bd.prototype.makeButton=function(i,t,e,d){const b=M1.apply(this,arguments);return __ucPill(b,!1)}}
+/* menu de pausa: texto escuro no selecionado (fundo âmbar) */
+{const R0=Bd.prototype.refresh;Bd.prototype.refresh=function(){const r=R0.apply(this,arguments);try{(this.buttons||[]).forEach((b,k)=>{b.t.setFontFamily(__UC_F);b.bgI&&b.t.setColor(k===this.selected?"#16130c":"#e8ebf0")})}catch(e){}return r}}
+/* poção extra: sai de cima do minimapa e vai para o canto de baixo, ao lado do DASH */
+{const A1=Hd.prototype.applyLayout;Hd.prototype.applyLayout=function(){const r=A1.apply(this,arguments);try{if(this.pot2Btn){const i=Gd[this.settings?.touchSize??"medium"]??1,o=this.insets||{left:0,right:0,bottom:0},left=this.settings?.leftyMode===!0,h=left?92*i+o.left:_-92*i-o.right,u=st-88*i-o.bottom,p=left?-1:1;
+ this.pot2Btn.setPosition(h+p*52*i,u+56*i)}}catch(e){}return r}}
+/* botão SKILLS do HUD e o ✕ do inventário no estilo novo; título da pausa na fonte nova */
+{const B0=No.prototype.buildSkillsButton;No.prototype.buildSkillsButton=function(){const r=B0.apply(this,arguments);try{const b=this.skillsBtn;if(b&&!b.__pill){b.removeAllListeners("pointerover");b.removeAllListeners("pointerout");__ucPill(b,!1);b.setFontSize("9px").setPadding(10,5,10,5)}}catch(e){}return r}}
+{const S0=Cd.prototype.show;Cd.prototype.show=function(){const r=S0.apply(this,arguments);try{const c=this.closeBtn;if(c&&!c.__uc){c.__uc=1;c.removeAllListeners("pointerover");c.removeAllListeners("pointerout");c.setFontFamily(__UC_F).setFontSize("16px").setColor("#ffffff").setBackgroundColor("rgba(255,255,255,0.10)").setPadding(12,8,12,8);
+ c.on("pointerover",()=>c.setBackgroundColor("rgba(255,255,255,0.2)"));c.on("pointerout",()=>c.setBackgroundColor("rgba(255,255,255,0.10)"))}}catch(e){}return r}}
+{const B1=Bd.prototype.build;Bd.prototype.build=function(){const r=B1.apply(this,arguments);try{for(const o of this.root.list)o.type==="Text"&&o.style?.fontFamily?.includes("Georgia")&&o.setFontFamily(__UC_F).setFontStyle("bold").setColor("#ffffff")}catch(e){}return r}}
 
 /*__UIMODERN__*//*__ITEMHD__*/
 /* ── Ícones de itens em alta definição (atlas items-hd, gerado por scripts/build_item_icons.py) ─────────────
