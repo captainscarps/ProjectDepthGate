@@ -77,7 +77,6 @@ rep("    rowsContainer.add(tFrags);\n  };", """    rowsContainer.add(tFrags);
     const help = pad
       ? __L3("Ⓐ forjar   ·   ↑↓ escolher   ·   Ⓑ fechar", "Ⓐ forge   ·   ↑↓ choose   ·   Ⓑ close", "Ⓐ forjar   ·   ↑↓ elegir   ·   Ⓑ cerrar")
       : __L3("Enter / toque: forjar   ·   ↑↓ escolher   ·   Esc: fechar", "Enter / tap: forge   ·   ↑↓ choose   ·   Esc: close", "Enter / toque: forjar   ·   ↑↓ elegir   ·   Esc: cerrar");
-    rowsContainer.add(ui.add.text(cx, y0 + H - 14, help, { fontFamily: F_MONO, fontSize: "8px", color: "#e8c872", stroke: "#0a0604", strokeThickness: 2 }).setOrigin(0.5, 0.5));
   };""")
 # desmontar: 7ª linha da janela (o item selecionado/focado no inventário vira ouro)
 rep("  let selectedRow = 0; // 0..5 (COMMON..RELIC)", """  let selectedRow = 0; // 0..5 (COMMON..RELIC), 6 = desmontar
@@ -165,6 +164,33 @@ om = s.index(OM)
 s = s[:om] + T + NM + "/*§" + base64.b64encode(OM.encode("utf-8")).decode() + "*/" + T + s[om + len(OM):]
 i = s.index("const __FORGE_RARITIES")
 j = s.index("\n  drawRows();\n}", i) + len("\n  drawRows();\n}")
+# visual "C · limpo e moderno" na janela da forja (fonte do sistema, painel grafite, destaque âmbar)
+UC = [
+    ('const F_SERIF = "Georgia, \'Times New Roman\', serif";', 'const F_SERIF = "system-ui,-apple-system,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif";'),
+    ('const F_MONO = "\'Courier New\', monospace";', 'const F_MONO = "system-ui,-apple-system,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif";'),
+    ("bg.fillStyle(0x0e0906, 0.98);", "bg.fillStyle(0x12151c, 0.98);"),
+    ("(isSelected ? 0x2b5837 : 0x1c3a24)) : (isSelected ? 0x2a221a : 0x181410)", "(isSelected ? 0x2b5837 : 0x1c3a24)) : (isSelected ? 0x2a2f3a : 0x1b1f28)"),
+    ("(canForge ? (rar.key === \"RELIC\" ? 0xef4444 : 0x4ade80) : 0x3d3024)", "(canForge ? (rar.key === \"RELIC\" ? 0xef4444 : 0x4ade80) : 0x3a404c)"),
+    ("(it ? 0xc9a24a : 0x3d3024)", "(it ? 0xffc14d : 0x3a404c)"),
+    ("bg.lineStyle(2, 0xc9a24a, 0.95);", "bg.lineStyle(1.5, 0xffffff, 0.16);"),
+    ("bg.lineStyle(1, 0x3d2c18, 0.8);", "bg.lineStyle(1, 0xffffff, 0.06);"),
+    ('color: "#ffd24a",', 'color: "#ffc14d",'),
+    ('stroke: "#0a0604",', 'stroke: "#0b0d12",'),
+    ('color: "#d1c7b7",', 'color: "#c4cad4",'),
+    ('color: "#e8c872",', 'color: "#ffffff",'),
+    ('backgroundColor: "#2e150d",', 'backgroundColor: "#ffffff22",'),
+    ('closeBtn.setColor("#e8c872")', 'closeBtn.setColor("#ffffff")'),
+    ("rbg.fillStyle(isSelected ? 0x221a12 : (canForge ? 0x18120c : 0x100b08), 0.95);", "rbg.fillStyle(isSelected ? 0x2a2f3a : (canForge ? 0x1b1f28 : 0x15181f), 0.95);"),
+    ("isSelected ? 0xffd24a : (canForge ? rar.border : 0x2e2318)", "isSelected ? 0xffc14d : (canForge ? rar.border : 0x2a2f3a)"),
+    ("g2.fillStyle(isSel ? 0x2a1d10 : 0x15100a, 0.95)", "g2.fillStyle(isSel ? 0x2a2f3a : 0x1b1f28, 0.95)"),
+    ("isSel ? 0xffd24a : 0x8a6a3a", "isSel ? 0xffc14d : 0x3a404c"),
+    ("bg3.fillStyle(it ? (isSel ? 0x5a4214 : 0x3a2a0e) : 0x181410, 0.95)", "bg3.fillStyle(it ? (isSel ? 0x5a4718 : 0x3a3220) : 0x1b1f28, 0.95)"),
+]
+for a, b in UC:
+    if a in new:
+        new = new.replace(a, b)
+    else:
+        print("  (forja visual: trecho não achado)", a[:50])
 s = s[:i] + T + new + "/*§" + base64.b64encode(old.encode("utf-8")).decode() + "*/" + T + s[j:]
 s = s + T + WRAP + T
 for p in (BUNDLE, MIRROR):

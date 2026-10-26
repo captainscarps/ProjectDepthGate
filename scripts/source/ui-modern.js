@@ -119,4 +119,37 @@ function __ucPill(t,primary){if(!t||t.__pill)return t;const S=t.scene;t.__pill=1
 {const B0=No.prototype.buildSkillsButton;No.prototype.buildSkillsButton=function(){const r=B0.apply(this,arguments);try{const b=this.skillsBtn;if(b&&!b.__pill){b.removeAllListeners("pointerover");b.removeAllListeners("pointerout");__ucPill(b,!1);b.setFontSize("9px").setPadding(10,5,10,5)}}catch(e){}return r}}
 {const S0=Cd.prototype.show;Cd.prototype.show=function(){const r=S0.apply(this,arguments);try{const c=this.closeBtn;if(c&&!c.__uc){c.__uc=1;c.removeAllListeners("pointerover");c.removeAllListeners("pointerout");c.setFontFamily(__UC_F).setFontSize("16px").setColor("#ffffff").setBackgroundColor("rgba(255,255,255,0.10)").setPadding(12,8,12,8);
  c.on("pointerover",()=>c.setBackgroundColor("rgba(255,255,255,0.2)"));c.on("pointerout",()=>c.setBackgroundColor("rgba(255,255,255,0.10)"))}}catch(e){}return r}}
-{const B1=Bd.prototype.build;Bd.prototype.build=function(){const r=B1.apply(this,arguments);try{for(const o of this.root.list)o.type==="Text"&&o.style?.fontFamily?.includes("Georgia")&&o.setFontFamily(__UC_F).setFontStyle("bold").setColor("#ffffff")}catch(e){}return r}}
+{const B1=Bd.prototype.build;Bd.prototype.build=function(){const r=B1.apply(this,arguments);try{for(const o of this.root.list)o.type==="Text"&&o.style?.fontFamily?.includes("Georgia")&&(o.setFontFamily(__UC_F).setFontStyle("bold").setColor("#ffffff"),o.y===90&&o.setY(80).setFontSize("18px"))}catch(e){}return r}}
+/* ── Etapa 4 · animações e respostas ───────────────────────────────────────────────────────────────────
+   • janelas (inventário, pausa, loja) entram com fade + leve subida
+   • Lendário e Relíquia brilham no inventário: borda pulsando e um brilho que corre pela borda
+   • ao equipar, o ícone "salta" no espaço do equipamento
+   • ao subir de nível, o círculo de nível do HUD pulsa com um anel
+   • destaque dos menus (menu principal, seleção de herói, COMEÇAR) vira pílula âmbar                       */
+__brush=function(g,x,y,w,h=20,col=15260848){const c=col===15260848?0xffc14d:col===16774864?0xffd27a:col===7039851?0x5a606b:col;g.fillStyle(c,1).fillRoundedRect(x,y-h/2,w,h,h/2)};
+function __ucIn(o,S){try{if(!o?.root||!S?.tweens)return;o.__tw?.stop?.();o.root.setAlpha(0).setY(10);o.__tw=S.tweens.add({targets:o.root,alpha:1,y:0,duration:170,ease:"Cubic.easeOut"})}catch(e){}}
+{const S1=Cd.prototype.show;Cd.prototype.show=function(){const w=this.open,r=S1.apply(this,arguments);!w&&this.open&&__ucIn(this,this.ui);return r}}
+{const S2=Bd.prototype.show;Bd.prototype.show=function(){const w=this.open,r=S2.apply(this,arguments);!w&&this.open&&__ucIn(this,this.ui);return r}}
+{const S3=bd.prototype.show;bd.prototype.show=function(){const w=this.open,r=S3.apply(this,arguments);!w&&this.open&&__ucIn(this,this.ui);return r}}
+/* brilho de Lendário/Relíquia */
+const __UC_GLOW={LEGENDARY:0xffa83a,RELIC:0xff5a7a};
+function __ucGlow(C){const S=C.ui;if(!C.__gl){C.__gl=S.add.graphics();C.root.add(C.__gl);S.events.on("postupdate",()=>__ucGlowDraw(C));S.events.once("shutdown",()=>{C.__gl=null})}}
+function __ucGlowDraw(C){const g=C.__gl;if(!g?.active)return;g.clear();if(!C.open)return;let inv;try{inv=C.gs()?.inventory}catch(e){}if(!inv)return;
+ const t=C.ui.time.now,list=[];for(const o of C.equipUi||[]){const it=inv.equipment[o.slotName];it&&o.icon.visible&&list.push([o.icon,it])}
+ (C.gridUi||[]).forEach((o,k)=>{const it=inv.items[k];it&&o.icon.visible&&list.push([o.icon,it])});
+ let n=0;for(const[ic,it]of list){const c=__UC_GLOW[it.rarity];if(!c)continue;n++;const x=ic.x-20,y=ic.y-20,ph=t/900+n*.37,a=.45+.35*Math.sin(t/260+n);
+  g.lineStyle(4,c,a*.35).strokeRoundedRect(x-1,y-1,42,42,7);g.lineStyle(1.5,c,.6+a*.4).strokeRoundedRect(x+.5,y+.5,39,39,6);
+  const u=(ph%1)*160,P=u<40?[x+u,y]:u<80?[x+40,y+u-40]:u<120?[x+120-u,y+40]:[x,y+160-u],s=2.6;
+  g.fillStyle(0xffffff,.9).fillTriangle(P[0]-s,P[1],P[0],P[1]-s*2.2,P[0]+s,P[1]).fillTriangle(P[0]-s,P[1],P[0],P[1]+s*2.2,P[0]+s,P[1]).fillTriangle(P[0],P[1]-s,P[0]-s*2.2,P[1],P[0],P[1]+s).fillTriangle(P[0],P[1]-s,P[0]+s*2.2,P[1],P[0],P[1]+s);
+  g.fillStyle(c,.35).fillCircle(P[0],P[1],5)}
+ C.__gl.parentContainer&&C.__gl.parentContainer.bringToTop(C.__gl)}
+{const R4=Cd.prototype.refresh;Cd.prototype.refresh=function(){const r=R4.apply(this,arguments);try{this.root&&__ucGlow(this)}catch(e){}return r}}
+/* salto ao equipar */
+{const D0=Cd.prototype.doAction;Cd.prototype.doAction=function(){let t=null,src=null;try{t=this.selectedItem();src=this.selected?.source}catch(e){}const r=D0.apply(this,arguments);
+ try{if(t&&src==="inv"&&t.slot){const o=(this.equipUi||[]).find(q=>this.gs().inventory.equipment[q.slotName]===t);if(o?.icon){const ic=o.icon,sx=ic.scaleX,sy=ic.scaleY;this.ui.tweens.add({targets:ic,scaleX:{from:sx*1.45,to:sx},scaleY:{from:sy*1.45,to:sy},duration:260,ease:"Back.easeOut"});
+  const g=this.ui.add.graphics();this.root.add(g);const st={k:0};this.ui.tweens.add({targets:st,k:1,duration:380,ease:"Cubic.easeOut",onUpdate:()=>{g.clear().lineStyle(2,0xffc14d,1-st.k).strokeRoundedRect(ic.x-20-8*st.k,ic.y-20-8*st.k,40+16*st.k,40+16*st.k,8)},onComplete:()=>g.destroy()});this.ui.game.audioEngine?.sfx?.("sfx-ui-open")}}}catch(e){}return r}}
+/* pulso do nível no HUD */
+{const U4=__Hud2.prototype.update;__Hud2.prototype.update=function(g){const r=U4.apply(this,arguments);try{const T=this.mlvlT;if(T&&this.mode==="mob"&&T.visible){const v=T.text;if(this.__lv!==void 0&&v!==this.__lv){const S=this.s;S.tweens.add({targets:T,scale:{from:1.7,to:1},duration:420,ease:"Back.easeOut"});
+ const q=S.add.graphics().setDepth(108),st={k:0};T.parentContainer&&T.parentContainer.add(q);S.tweens.add({targets:st,k:1,duration:650,ease:"Cubic.easeOut",onUpdate:()=>{q.clear().lineStyle(3,0xffc14d,1-st.k).strokeCircle(T.x,T.y,12+14*st.k)},onComplete:()=>q.destroy()})}this.__lv=v}}catch(e){}return r}}
+/* menu principal: itens na fonte nova (a pílula âmbar acompanha a largura do texto) */
+{const RB=$o.prototype.refreshButtons;$o.prototype.refreshButtons=function(){try{(this.buttons||[]).forEach(b=>{if(!b.small&&b.t&&!b.t.__uc){b.t.__uc=1;b.t.setFontFamily(__UC_F).setFontStyle("bold")}})}catch(e){}return RB.apply(this,arguments)}}

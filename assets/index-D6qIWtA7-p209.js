@@ -4436,8 +4436,8 @@ function __openForge(invUi) {
     invUi.__forgeModal = null;
   }
 
-  const F_SERIF = "Georgia, 'Times New Roman', serif";
-  const F_MONO = "'Courier New', monospace";
+  const F_SERIF = "system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+  const F_MONO = "system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 
   const W = 420;
   const H = 322;
@@ -4455,11 +4455,11 @@ function __openForge(invUi) {
 
   // 2. Janela da Forja
   const bg = ui.add.graphics();
-  bg.fillStyle(0x0e0906, 0.98);
+  bg.fillStyle(0x12151c, 0.98);
   bg.fillRoundedRect(x0, y0, W, H, 10);
-  bg.lineStyle(2, 0xc9a24a, 0.95);
+  bg.lineStyle(1.5, 0xffffff, 0.16);
   bg.strokeRoundedRect(x0, y0, W, H, 10);
-  bg.lineStyle(1, 0x3d2c18, 0.8);
+  bg.lineStyle(1, 0xffffff, 0.06);
   bg.strokeRoundedRect(x0 + 4, y0 + 4, W - 8, H - 8, 8);
   R.add(bg);
 
@@ -4471,8 +4471,8 @@ function __openForge(invUi) {
     fontFamily: F_SERIF,
     fontStyle: "bold",
     fontSize: "13px",
-    color: "#ffd24a",
-    stroke: "#0a0604",
+    color: "#ffc14d",
+    stroke: "#0b0d12",
     strokeThickness: 3
   }).setOrigin(0.5, 0);
 
@@ -4484,9 +4484,9 @@ function __openForge(invUi) {
   const tSub = ui.add.text(cx, y0 + 30, subTxt, {
     fontFamily: F_MONO,
     fontSize: "8px",
-    color: "#d1c7b7",
+    color: "#c4cad4",
     align: "center",
-    stroke: "#0a0604",
+    stroke: "#0b0d12",
     strokeThickness: 2
   }).setOrigin(0.5, 0);
   R.add([tTitle, tSub]);
@@ -4527,14 +4527,14 @@ function __openForge(invUi) {
     fontFamily: F_SERIF,
     fontStyle: "bold",
     fontSize: "16px",
-    color: "#e8c872",
-    backgroundColor: "#2e150d",
+    color: "#ffffff",
+    backgroundColor: "#ffffff22",
     padding: { x: 10, y: 6 }
   }).setOrigin(0.5, 0).setInteractive({ useHandCursor: !0 });
   Gt(closeBtn, 22, 20);
   closeBtn.on("pointerdown", () => closeForge());
   closeBtn.on("pointerover", () => closeBtn.setColor("#ffffff"));
-  closeBtn.on("pointerout", () => closeBtn.setColor("#e8c872"));
+  closeBtn.on("pointerout", () => closeBtn.setColor("#ffffff"));
   R.add(closeBtn);
 
   // Container dinâmico das linhas de raridade
@@ -4592,9 +4592,9 @@ function __openForge(invUi) {
 
       // Fundo da linha
       const rbg = ui.add.graphics();
-      rbg.fillStyle(isSelected ? 0x221a12 : (canForge ? 0x18120c : 0x100b08), 0.95);
+      rbg.fillStyle(isSelected ? 0x2a2f3a : (canForge ? 0x1b1f28 : 0x15181f), 0.95);
       rbg.fillRoundedRect(x0 + 14, ry, W - 28, rowH - 4, 4);
-      rbg.lineStyle(isSelected ? 2 : 1, isSelected ? 0xffd24a : (canForge ? rar.border : 0x2e2318), isSelected ? 1 : (canForge ? 0.8 : 0.4));
+      rbg.lineStyle(isSelected ? 2 : 1, isSelected ? 0xffc14d : (canForge ? rar.border : 0x2a2f3a), isSelected ? 1 : (canForge ? 0.8 : 0.4));
       rbg.strokeRoundedRect(x0 + 14, ry, W - 28, rowH - 4, 4);
       rowsContainer.add(rbg);
 
@@ -4604,7 +4604,7 @@ function __openForge(invUi) {
         fontStyle: "bold",
         fontSize: "9px",
         color: isSelected ? "#ffffff" : rar.color,
-        stroke: "#0a0604",
+        stroke: "#0b0d12",
         strokeThickness: 2
       }).setOrigin(0, 0.5);
       rowsContainer.add(tRar);
@@ -4616,7 +4616,7 @@ function __openForge(invUi) {
         fontFamily: F_MONO,
         fontSize: "8.5px",
         color: qColor,
-        stroke: "#0a0604",
+        stroke: "#0b0d12",
         strokeThickness: 2
       }).setOrigin(0, 0.5);
       rowsContainer.add(tCount);
@@ -4628,10 +4628,10 @@ function __openForge(invUi) {
       const btnY = ry + (rowH - 4) / 2;
 
       const btnG = ui.add.graphics();
-      const fillC = canForge ? (rar.key === "RELIC" ? (isSelected ? 0x6e201a : 0x4a1814) : (isSelected ? 0x2b5837 : 0x1c3a24)) : (isSelected ? 0x2a221a : 0x181410);
+      const fillC = canForge ? (rar.key === "RELIC" ? (isSelected ? 0x6e201a : 0x4a1814) : (isSelected ? 0x2b5837 : 0x1c3a24)) : (isSelected ? 0x2a2f3a : 0x1b1f28);
       btnG.fillStyle(fillC, 0.95);
       btnG.fillRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
-      btnG.lineStyle(isSelected ? 2 : 1, isSelected ? 0xffffff : (canForge ? (rar.key === "RELIC" ? 0xef4444 : 0x4ade80) : 0x3d3024), 0.95);
+      btnG.lineStyle(isSelected ? 2 : 1, isSelected ? 0xffffff : (canForge ? (rar.key === "RELIC" ? 0xef4444 : 0x4ade80) : 0x3a404c), 0.95);
       btnG.strokeRoundedRect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 4);
       rowsContainer.add(btnG);
 
@@ -4644,7 +4644,7 @@ function __openForge(invUi) {
         fontStyle: "bold",
         fontSize: "8px",
         color: canForge ? (isSelected ? "#ffffff" : "#e0eedd") : "#6a6054",
-        stroke: "#0a0604",
+        stroke: "#0b0d12",
         strokeThickness: 2
       }).setOrigin(0.5, 0.5);
       rowsContainer.add(tBtn);
@@ -4669,18 +4669,18 @@ function __openForge(invUi) {
     {
       const di = __FORGE_RARITIES.length, ry = rowStartY + di * rowH + 4, isSel = selectedRow === di, it = dmTarget();
       const g2 = ui.add.graphics();
-      g2.fillStyle(isSel ? 0x2a1d10 : 0x15100a, 0.95).fillRoundedRect(x0 + 14, ry, W - 28, rowH - 4, 4);
-      g2.lineStyle(isSel ? 2 : 1, isSel ? 0xffd24a : 0x8a6a3a, isSel ? 1 : 0.7).strokeRoundedRect(x0 + 14, ry, W - 28, rowH - 4, 4);
+      g2.fillStyle(isSel ? 0x2a2f3a : 0x1b1f28, 0.95).fillRoundedRect(x0 + 14, ry, W - 28, rowH - 4, 4);
+      g2.lineStyle(isSel ? 2 : 1, isSel ? 0xffc14d : 0x3a404c, isSel ? 1 : 0.7).strokeRoundedRect(x0 + 14, ry, W - 28, rowH - 4, 4);
       rowsContainer.add(g2);
       const rc = (__FORGE_RARITIES.find(r => r.key === it?.rarity) || {}).color || "#8a7f66";
       const nm = it ? (typeof _t === "function" ? _t(it) : (it.name || "Item")) : __L3("selecione um item na mochila", "select an item in your bag", "elige un objeto de la bolsa");
-      rowsContainer.add(ui.add.text(x0 + 24, ry + (rowH - 4) / 2, (isSel ? "▶ " : "") + __L3("DESMONTAR", "DISMANTLE", "DESMONTAR"), { fontFamily: F_SERIF, fontStyle: "bold", fontSize: "9px", color: isSel ? "#ffffff" : "#e8c872", stroke: "#0a0604", strokeThickness: 2 }).setOrigin(0, 0.5));
-      rowsContainer.add(ui.add.text(x0 + 130, ry + (rowH - 4) / 2, nm.length > 26 ? nm.slice(0, 25) + "…" : nm, { fontFamily: F_MONO, fontSize: "8.5px", color: it ? rc : "#8a7f66", stroke: "#0a0604", strokeThickness: 2 }).setOrigin(0, 0.5));
+      rowsContainer.add(ui.add.text(x0 + 24, ry + (rowH - 4) / 2, (isSel ? "▶ " : "") + __L3("DESMONTAR", "DISMANTLE", "DESMONTAR"), { fontFamily: F_SERIF, fontStyle: "bold", fontSize: "9px", color: isSel ? "#ffffff" : "#e8c872", stroke: "#0b0d12", strokeThickness: 2 }).setOrigin(0, 0.5));
+      rowsContainer.add(ui.add.text(x0 + 130, ry + (rowH - 4) / 2, nm.length > 26 ? nm.slice(0, 25) + "…" : nm, { fontFamily: F_MONO, fontSize: "8.5px", color: it ? rc : "#8a7f66", stroke: "#0b0d12", strokeThickness: 2 }).setOrigin(0, 0.5));
       const bx = x0 + W - 24 - 55, by = ry + (rowH - 4) / 2, bg3 = ui.add.graphics();
-      bg3.fillStyle(it ? (isSel ? 0x5a4214 : 0x3a2a0e) : 0x181410, 0.95).fillRoundedRect(bx - 55, by - 10, 110, 20, 4);
-      bg3.lineStyle(isSel ? 2 : 1, isSel ? 0xffffff : (it ? 0xc9a24a : 0x3d3024), 0.95).strokeRoundedRect(bx - 55, by - 10, 110, 20, 4);
+      bg3.fillStyle(it ? (isSel ? 0x5a4718 : 0x3a3220) : 0x1b1f28, 0.95).fillRoundedRect(bx - 55, by - 10, 110, 20, 4);
+      bg3.lineStyle(isSel ? 2 : 1, isSel ? 0xffffff : (it ? 0xffc14d : 0x3a404c), 0.95).strokeRoundedRect(bx - 55, by - 10, 110, 20, 4);
       rowsContainer.add(bg3);
-      rowsContainer.add(ui.add.text(bx, by, it ? __L3(`⚒ +${__DM_GOLD[it.rarity] ?? 8} OURO`, `⚒ +${__DM_GOLD[it.rarity] ?? 8} GOLD`, `⚒ +${__DM_GOLD[it.rarity] ?? 8} ORO`) : "—", { fontFamily: F_SERIF, fontStyle: "bold", fontSize: "8px", color: it ? "#fff1c8" : "#6a6054", stroke: "#0a0604", strokeThickness: 2 }).setOrigin(0.5, 0.5));
+      rowsContainer.add(ui.add.text(bx, by, it ? __L3(`⚒ +${__DM_GOLD[it.rarity] ?? 8} OURO`, `⚒ +${__DM_GOLD[it.rarity] ?? 8} GOLD`, `⚒ +${__DM_GOLD[it.rarity] ?? 8} ORO`) : "—", { fontFamily: F_SERIF, fontStyle: "bold", fontSize: "8px", color: it ? "#fff1c8" : "#6a6054", stroke: "#0b0d12", strokeThickness: 2 }).setOrigin(0.5, 0.5));
       const z = ui.add.zone(x0 + W / 2, by, W - 28, rowH - 4).setInteractive({ useHandCursor: !0 });
       z.on("pointerover", () => { if (selectedRow !== di) { selectedRow = di; drawRows(); } });
       z.on("pointerdown", () => { selectedRow = di; dismantle(); });
@@ -4695,7 +4695,7 @@ function __openForge(invUi) {
       fontStyle: "bold",
       fontSize: "8px",
       color: "#c9a0ff",
-      stroke: "#0a0604",
+      stroke: "#0b0d12",
       strokeThickness: 2
     }).setOrigin(0.5, 0.5);
     rowsContainer.add(tFrags);
@@ -4703,7 +4703,6 @@ function __openForge(invUi) {
     const help = pad
       ? __L3("Ⓐ forjar   ·   ↑↓ escolher   ·   Ⓑ fechar", "Ⓐ forge   ·   ↑↓ choose   ·   Ⓑ close", "Ⓐ forjar   ·   ↑↓ elegir   ·   Ⓑ cerrar")
       : __L3("Enter / toque: forjar   ·   ↑↓ escolher   ·   Esc: fechar", "Enter / tap: forge   ·   ↑↓ choose   ·   Esc: close", "Enter / toque: forjar   ·   ↑↓ elegir   ·   Esc: cerrar");
-    rowsContainer.add(ui.add.text(cx, y0 + H - 14, help, { fontFamily: F_MONO, fontSize: "8px", color: "#e8c872", stroke: "#0a0604", strokeThickness: 2 }).setOrigin(0.5, 0.5));
   };
 
   let lastForge = 0;
@@ -9389,21 +9388,7 @@ function __retJourney(G,choice,done){try{const game=G?.game||window.__DED_GAME;i
 window.__retJourneyNow=(cls="WARRIOR",choice="seal")=>__retJourney({game:window.__DED_GAME,classDef:{id:cls}},choice,()=>{window.__retDone=1});
 
 try{wt.scene.add("ArcticPrologue",__ArcticPrologue,!1)}catch(e){}
-/*§*//*__ARC__*//*__FORGEPAD__*/
-/* Martelo de Forjador: comprado no Ferreiro do Refúgio (160 de ouro na campanha / 40 fragmentos no modo infinito);
-   sem ele a forja (fundir e desmontar) fica trancada */
-Ms.HAMMER={id:"HAMMER",get name(){return __L3("Martelo de Forjador","Forger's Hammer","Martillo de Forjador")},get desc(){return __L3("Libera fundir e desmontar","Unlocks fusing and dismantling","Desbloquea fundir y desmontar")},icon:"⚒",max:1,baseCost:40,costStep:0,bonus:()=>({})};
-function __hasHammer(S){try{const G=S?.game||window.__DED_GAME,mode=G?.registry?.get("mode");if(mode==="endless")return(Xe().upgrades?.HAMMER??0)>0;
- if((G?.registry?.get("campaign:refuge")?.upgrades?.HAMMER??0)>0)return!0;const sl=G?.registry?.get("save:slot")??1,r=Dn(sl);return(r.ok&&(r.data?.campaign?.refuge?.upgrades?.HAMMER??0)>0)}catch(e){return!1}}
-{const F0=__openForge;__openForge=function(inv){try{const S=inv?.gs?.();if(S&&!__hasHammer(S)){S.audioRef?.play?.("sfx-event-refuse");S.game.events.emit("ui:banner",__L3("🔒 Precisa do Martelo de Forjador — compre no Ferreiro do Refúgio","🔒 You need the Forger's Hammer — buy it from the Refuge Blacksmith","🔒 Necesitas el Martillo de Forjador — cómpralo al Herrero del Refugio"),"#e08a7a");return}}catch(e){}return F0.apply(this,arguments)}}
-/* inventário: com a forja aberta todas as teclas (e botões do gamepad) vão só para ela; Y abre/fecha a forja;
-   mover a seleção fecha a ficha de atributos do item anterior */
-{const H0=Cd.prototype.handleKey;Cd.prototype.handleKey=function(k){if(this.open&&this.__forgeModal&&this.__forgeKey)return this.__forgeKey(k);
- if(this.open&&this.selected&&["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(k)&&!(this.__sk&&this.__tab>=1))this.selected=null;return H0.apply(this,arguments)};
- const C0=Cd.prototype.close;Cd.prototype.close=function(){if(this.open&&this.__forgeModal&&this.__forgeKey){this.__forgeKey("Escape");return}return C0.apply(this,arguments)};
- const S0=Cd.prototype.show;Cd.prototype.show=function(){const r=S0.apply(this,arguments);try{if(!this.__forgeT){this.__forgeT=!0;this.ui.input.keyboard?.on("keydown-T",()=>{if(!this.open||this.ui.shopUI?.open||this.ui.settingsPanel?.open)return;this.__forgeModal&&this.__forgeKey?this.__forgeKey("t"):__openForge(this)})}}catch(e){}/* no gamepad o botão mostra qual botão abre a forja */
- try{const t=this.forgeBtn;if(t?.setText){t.setText(__L3("FORJA","FORGE","FORJA")+(this.ui.game.inputManager?.device==="gamepad"?" Ⓨ":""));t.input?.hitArea?.setTo?.(-8,-5,t.width+16,t.height+10)}}catch(e){}return r}}
-/*__FORGEPAD__*//*__RTITLE__*/
+/*§*//*__ARC__*//*__RTITLE__*/
 /* ── Títulos de região e prévia dos portais ────────────────────────────────────────────────────────────
    • ao entrar numa fase da campanha aparece o nome dela grande no alto da tela, com um subtítulo e um sino
      suave (como nos títulos do prólogo do rio)
@@ -9463,7 +9448,21 @@ const __HLANG={WARRIOR:["Inglês (Reino Unido)","English (UK)","Inglés (Reino U
   this.tagTxt.setY(this.tagTxt.y+13);this.refreshDetails?.()}}catch(e){}return r}}
 {const R0=bl.prototype.refreshDetails;bl.prototype.refreshDetails=function(){const v=R0.apply(this,arguments);try{const c=fe[this.selected],L=__HLANG[c];this.natTxt?.setText(L?"🗣 "+__L3("Língua nativa: ","Native language: ","Lengua nativa: ")+__L3(...L):"")}catch(e){}return v}}
 
-/*__RTITLE__*//*__UIMODERN__*/
+/*__RTITLE__*//*__FORGEPAD__*/
+/* Martelo de Forjador: comprado no Ferreiro do Refúgio (160 de ouro na campanha / 40 fragmentos no modo infinito);
+   sem ele a forja (fundir e desmontar) fica trancada */
+Ms.HAMMER={id:"HAMMER",get name(){return __L3("Martelo de Forjador","Forger's Hammer","Martillo de Forjador")},get desc(){return __L3("Libera fundir e desmontar","Unlocks fusing and dismantling","Desbloquea fundir y desmontar")},icon:"⚒",max:1,baseCost:40,costStep:0,bonus:()=>({})};
+function __hasHammer(S){try{const G=S?.game||window.__DED_GAME,mode=G?.registry?.get("mode");if(mode==="endless")return(Xe().upgrades?.HAMMER??0)>0;
+ if((G?.registry?.get("campaign:refuge")?.upgrades?.HAMMER??0)>0)return!0;const sl=G?.registry?.get("save:slot")??1,r=Dn(sl);return(r.ok&&(r.data?.campaign?.refuge?.upgrades?.HAMMER??0)>0)}catch(e){return!1}}
+{const F0=__openForge;__openForge=function(inv){try{const S=inv?.gs?.();if(S&&!__hasHammer(S)){S.audioRef?.play?.("sfx-event-refuse");S.game.events.emit("ui:banner",__L3("🔒 Precisa do Martelo de Forjador — compre no Ferreiro do Refúgio","🔒 You need the Forger's Hammer — buy it from the Refuge Blacksmith","🔒 Necesitas el Martillo de Forjador — cómpralo al Herrero del Refugio"),"#e08a7a");return}}catch(e){}return F0.apply(this,arguments)}}
+/* inventário: com a forja aberta todas as teclas (e botões do gamepad) vão só para ela; Y abre/fecha a forja;
+   mover a seleção fecha a ficha de atributos do item anterior */
+{const H0=Cd.prototype.handleKey;Cd.prototype.handleKey=function(k){if(this.open&&this.__forgeModal&&this.__forgeKey)return this.__forgeKey(k);
+ if(this.open&&this.selected&&["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(k)&&!(this.__sk&&this.__tab>=1))this.selected=null;return H0.apply(this,arguments)};
+ const C0=Cd.prototype.close;Cd.prototype.close=function(){if(this.open&&this.__forgeModal&&this.__forgeKey){this.__forgeKey("Escape");return}return C0.apply(this,arguments)};
+ const S0=Cd.prototype.show;Cd.prototype.show=function(){const r=S0.apply(this,arguments);try{if(!this.__forgeT){this.__forgeT=!0;this.ui.input.keyboard?.on("keydown-T",()=>{if(!this.open||this.ui.shopUI?.open||this.ui.settingsPanel?.open)return;this.__forgeModal&&this.__forgeKey?this.__forgeKey("t"):__openForge(this)})}}catch(e){}/* no gamepad o botão mostra qual botão abre a forja */
+ try{const t=this.forgeBtn;if(t?.setText){t.setText(__L3("FORJA","FORGE","FORJA")+(this.ui.game.inputManager?.device==="gamepad"?" Ⓨ":""));t.input?.hitArea?.setTo?.(-8,-5,t.width+16,t.height+10)}}catch(e){}return r}}
+/*__FORGEPAD__*//*__UIMODERN__*/
 /* ── Visual "C · limpo e moderno" — etapa 1: controles de toque e barras do HUD no celular ─────────────────
    • botões redondos de vidro escuro com borda clara; ATAQUE em destaque âmbar; toque dá um "pulo" e um anel
    • joystick translúcido com manete branca
@@ -9585,7 +9584,40 @@ function __ucPill(t,primary){if(!t||t.__pill)return t;const S=t.scene;t.__pill=1
 {const B0=No.prototype.buildSkillsButton;No.prototype.buildSkillsButton=function(){const r=B0.apply(this,arguments);try{const b=this.skillsBtn;if(b&&!b.__pill){b.removeAllListeners("pointerover");b.removeAllListeners("pointerout");__ucPill(b,!1);b.setFontSize("9px").setPadding(10,5,10,5)}}catch(e){}return r}}
 {const S0=Cd.prototype.show;Cd.prototype.show=function(){const r=S0.apply(this,arguments);try{const c=this.closeBtn;if(c&&!c.__uc){c.__uc=1;c.removeAllListeners("pointerover");c.removeAllListeners("pointerout");c.setFontFamily(__UC_F).setFontSize("16px").setColor("#ffffff").setBackgroundColor("rgba(255,255,255,0.10)").setPadding(12,8,12,8);
  c.on("pointerover",()=>c.setBackgroundColor("rgba(255,255,255,0.2)"));c.on("pointerout",()=>c.setBackgroundColor("rgba(255,255,255,0.10)"))}}catch(e){}return r}}
-{const B1=Bd.prototype.build;Bd.prototype.build=function(){const r=B1.apply(this,arguments);try{for(const o of this.root.list)o.type==="Text"&&o.style?.fontFamily?.includes("Georgia")&&o.setFontFamily(__UC_F).setFontStyle("bold").setColor("#ffffff")}catch(e){}return r}}
+{const B1=Bd.prototype.build;Bd.prototype.build=function(){const r=B1.apply(this,arguments);try{for(const o of this.root.list)o.type==="Text"&&o.style?.fontFamily?.includes("Georgia")&&(o.setFontFamily(__UC_F).setFontStyle("bold").setColor("#ffffff"),o.y===90&&o.setY(80).setFontSize("18px"))}catch(e){}return r}}
+/* ── Etapa 4 · animações e respostas ───────────────────────────────────────────────────────────────────
+   • janelas (inventário, pausa, loja) entram com fade + leve subida
+   • Lendário e Relíquia brilham no inventário: borda pulsando e um brilho que corre pela borda
+   • ao equipar, o ícone "salta" no espaço do equipamento
+   • ao subir de nível, o círculo de nível do HUD pulsa com um anel
+   • destaque dos menus (menu principal, seleção de herói, COMEÇAR) vira pílula âmbar                       */
+__brush=function(g,x,y,w,h=20,col=15260848){const c=col===15260848?0xffc14d:col===16774864?0xffd27a:col===7039851?0x5a606b:col;g.fillStyle(c,1).fillRoundedRect(x,y-h/2,w,h,h/2)};
+function __ucIn(o,S){try{if(!o?.root||!S?.tweens)return;o.__tw?.stop?.();o.root.setAlpha(0).setY(10);o.__tw=S.tweens.add({targets:o.root,alpha:1,y:0,duration:170,ease:"Cubic.easeOut"})}catch(e){}}
+{const S1=Cd.prototype.show;Cd.prototype.show=function(){const w=this.open,r=S1.apply(this,arguments);!w&&this.open&&__ucIn(this,this.ui);return r}}
+{const S2=Bd.prototype.show;Bd.prototype.show=function(){const w=this.open,r=S2.apply(this,arguments);!w&&this.open&&__ucIn(this,this.ui);return r}}
+{const S3=bd.prototype.show;bd.prototype.show=function(){const w=this.open,r=S3.apply(this,arguments);!w&&this.open&&__ucIn(this,this.ui);return r}}
+/* brilho de Lendário/Relíquia */
+const __UC_GLOW={LEGENDARY:0xffa83a,RELIC:0xff5a7a};
+function __ucGlow(C){const S=C.ui;if(!C.__gl){C.__gl=S.add.graphics();C.root.add(C.__gl);S.events.on("postupdate",()=>__ucGlowDraw(C));S.events.once("shutdown",()=>{C.__gl=null})}}
+function __ucGlowDraw(C){const g=C.__gl;if(!g?.active)return;g.clear();if(!C.open)return;let inv;try{inv=C.gs()?.inventory}catch(e){}if(!inv)return;
+ const t=C.ui.time.now,list=[];for(const o of C.equipUi||[]){const it=inv.equipment[o.slotName];it&&o.icon.visible&&list.push([o.icon,it])}
+ (C.gridUi||[]).forEach((o,k)=>{const it=inv.items[k];it&&o.icon.visible&&list.push([o.icon,it])});
+ let n=0;for(const[ic,it]of list){const c=__UC_GLOW[it.rarity];if(!c)continue;n++;const x=ic.x-20,y=ic.y-20,ph=t/900+n*.37,a=.45+.35*Math.sin(t/260+n);
+  g.lineStyle(4,c,a*.35).strokeRoundedRect(x-1,y-1,42,42,7);g.lineStyle(1.5,c,.6+a*.4).strokeRoundedRect(x+.5,y+.5,39,39,6);
+  const u=(ph%1)*160,P=u<40?[x+u,y]:u<80?[x+40,y+u-40]:u<120?[x+120-u,y+40]:[x,y+160-u],s=2.6;
+  g.fillStyle(0xffffff,.9).fillTriangle(P[0]-s,P[1],P[0],P[1]-s*2.2,P[0]+s,P[1]).fillTriangle(P[0]-s,P[1],P[0],P[1]+s*2.2,P[0]+s,P[1]).fillTriangle(P[0],P[1]-s,P[0]-s*2.2,P[1],P[0],P[1]+s).fillTriangle(P[0],P[1]-s,P[0]+s*2.2,P[1],P[0],P[1]+s);
+  g.fillStyle(c,.35).fillCircle(P[0],P[1],5)}
+ C.__gl.parentContainer&&C.__gl.parentContainer.bringToTop(C.__gl)}
+{const R4=Cd.prototype.refresh;Cd.prototype.refresh=function(){const r=R4.apply(this,arguments);try{this.root&&__ucGlow(this)}catch(e){}return r}}
+/* salto ao equipar */
+{const D0=Cd.prototype.doAction;Cd.prototype.doAction=function(){let t=null,src=null;try{t=this.selectedItem();src=this.selected?.source}catch(e){}const r=D0.apply(this,arguments);
+ try{if(t&&src==="inv"&&t.slot){const o=(this.equipUi||[]).find(q=>this.gs().inventory.equipment[q.slotName]===t);if(o?.icon){const ic=o.icon,sx=ic.scaleX,sy=ic.scaleY;this.ui.tweens.add({targets:ic,scaleX:{from:sx*1.45,to:sx},scaleY:{from:sy*1.45,to:sy},duration:260,ease:"Back.easeOut"});
+  const g=this.ui.add.graphics();this.root.add(g);const st={k:0};this.ui.tweens.add({targets:st,k:1,duration:380,ease:"Cubic.easeOut",onUpdate:()=>{g.clear().lineStyle(2,0xffc14d,1-st.k).strokeRoundedRect(ic.x-20-8*st.k,ic.y-20-8*st.k,40+16*st.k,40+16*st.k,8)},onComplete:()=>g.destroy()});this.ui.game.audioEngine?.sfx?.("sfx-ui-open")}}}catch(e){}return r}}
+/* pulso do nível no HUD */
+{const U4=__Hud2.prototype.update;__Hud2.prototype.update=function(g){const r=U4.apply(this,arguments);try{const T=this.mlvlT;if(T&&this.mode==="mob"&&T.visible){const v=T.text;if(this.__lv!==void 0&&v!==this.__lv){const S=this.s;S.tweens.add({targets:T,scale:{from:1.7,to:1},duration:420,ease:"Back.easeOut"});
+ const q=S.add.graphics().setDepth(108),st={k:0};T.parentContainer&&T.parentContainer.add(q);S.tweens.add({targets:st,k:1,duration:650,ease:"Cubic.easeOut",onUpdate:()=>{q.clear().lineStyle(3,0xffc14d,1-st.k).strokeCircle(T.x,T.y,12+14*st.k)},onComplete:()=>q.destroy()})}this.__lv=v}}catch(e){}return r}}
+/* menu principal: itens na fonte nova (a pílula âmbar acompanha a largura do texto) */
+{const RB=$o.prototype.refreshButtons;$o.prototype.refreshButtons=function(){try{(this.buttons||[]).forEach(b=>{if(!b.small&&b.t&&!b.t.__uc){b.t.__uc=1;b.t.setFontFamily(__UC_F).setFontStyle("bold")}})}catch(e){}return RB.apply(this,arguments)}}
 
 /*__UIMODERN__*//*__ITEMHD__*/
 /* ── Ícones de itens em alta definição (atlas items-hd, gerado por scripts/build_item_icons.py) ─────────────
