@@ -56,3 +56,16 @@ __cdBgSkin=function(ui){const T=ui.__cdT;if(!T||!__ui2ok(ui))return;ui.__cdBg&&u
 {const C3=bl.prototype.create;bl.prototype.create=function(){const r=C3.apply(this,arguments);try{const sg=this.statG;if(sg&&!sg.__uc){sg.__uc=1;const F=sg.fillStyle,Ls=sg.lineStyle;
  sg.fillStyle=function(c,a){return c===0&&a===.6?F.call(this,0xffffff,.1):F.call(this,c,a)};sg.fillRect=function(x,y,w,h){return this.fillRoundedRect(x,y,w,h,Math.min(3,h/2,w/2))};
  sg.lineStyle=function(w,c,a){return c===6045226?Ls.call(this,0,0,0):Ls.call(this,w,c,a)};sg.strokeRect=function(){return this};this.refreshDetails?.()}}catch(e){}return r}}
+/* ficha do item: quando o item tem muitos atributos, a comparação com o equipado vai para uma segunda coluna
+   (ficha mais larga e mais baixa); se ainda faltar espaço, a letra encolhe um pouco — nunca invade os botões */
+function __tipWide(C,parts,lim){const N=C.tipName,S=C.tipStats,T=C.cmpTitle,X=C.cmpText;if(!X?.visible||!X.text||!T)return!1;const W1=210,CW=146,W=W1+CW,x0=N.x-10,nx=Math.max(250,Math.min(x0,606-W)),dx=nx-x0;
+ for(const o of parts)o.x+=dx;X.setWordWrapWidth(CW-12);T.setWordWrapWidth(CW-12);T.setPosition(nx+W1,S.y);X.setPosition(nx+W1,T.y+T.height+3);
+ let vis=parts.filter(o=>o.visible&&o.text),top=Math.min(...vis.map(o=>o.y))-8,bot=Math.max(...vis.map(o=>o.y+o.height))+8;const g=C.__tipG;
+ /* volta para perto do item escolhido (sem passar do título nem dos botões) */
+ let want=64;try{if(C.selected?.source!=="equip"){const k=C.gs().inventory.items.findIndex(q=>q?.uid===C.selected.uid);want=C.gridUi[k]?.pos?.y??want}}catch(e){}
+ const ny=Math.max(54,Math.min(want,(lim??244)+8-(bot-top))),dy=ny-top;if(dy){for(const o of parts)o.y+=dy;top+=dy;bot+=dy}
+ g.clear().fillStyle(0x161a22,.985).fillRoundedRect(nx,top,W,bot-top,6).lineStyle(1.5,0xffffff,.18).strokeRoundedRect(nx+.5,top+.5,W-1,bot-top-1,6).lineStyle(1,0xffffff,.08).lineBetween(nx+W1-8,S.y,nx+W1-8,bot-10);return!0}
+{const T1=__invTip;__invTip=function(C){const parts=[C.tipName,C.tipMeta,C.tipLock,C.tipStats,C.tipDesc,C.tipSet,C.cmpTitle,C.cmpText].filter(Boolean);let r;
+ try{const lim=Math.min(244,(C.actionBtn?.y??256)-(C.actionBtn?.displayHeight??20)*(C.actionBtn?.originY??.5)-4),bot=()=>Math.max(...parts.filter(o=>o.visible&&o.text).map(o=>o.y+o.height));
+  for(let k=0;k<=3;k++){const f=1-.08*k;for(const o of parts){o.__fs0??=parseFloat(o.style.fontSize)||9;o.__ls0??=o.style.lineSpacing||0;o.setFontSize((Math.round(o.__fs0*f*10)/10)+"px");o.setLineSpacing(Math.max(0,o.__ls0-k))}
+   r=T1.apply(this,arguments);if(!parts.some(o=>o.visible)||bot()<=lim)break;if(__tipWide(C,parts,lim)&&bot()<=lim)break}}catch(e){r=r??T1.apply(this,arguments)}return r}}
