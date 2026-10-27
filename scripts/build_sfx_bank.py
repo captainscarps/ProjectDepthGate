@@ -847,6 +847,36 @@ def r_explosion():
             pad(mix(*[at(drop_bounce(J(500, 1800), int(J(2, 4)), J(.05, .1)) * J(.1, .3), J(.05, .5)) for _ in range(10)]), d))
     return fin(space(x, "stone", .2))
 
+
+def r_dog_happy():
+    """cão recebendo carinho: duas arfadas leves e um ganido curto e manso (sobe e desce, nasal), bem baixinho"""
+    def pant(d, f):
+        x = filt(noise(d), "bandpass", [f * .55, f * 1.6]) * env_bell(d, .3, 1.8)
+        return .3 * x
+    def whine(d, f0, f1, f2):
+        t = T(d)
+        u = t / d
+        f = f0 + (f1 - f0) * np.sin(np.pi * np.minimum(u / .6, 1) * .5) ** 2 - (f1 - f2) * np.clip((u - .6) / .4, 0, 1) ** 2
+        f = f * (1 + .012 * np.sin(2 * np.pi * 7 * t))
+        ph = 2 * np.pi * np.cumsum(f) / SR
+        x = np.sin(ph) + .35 * np.sin(2 * ph) + .12 * np.sin(3 * ph)
+        x = formant(x, (1100, 2300), (500, 700), (1.0, .45)) + .25 * x
+        x += .02 * filt(noise(d), "bandpass", [1500, 4000])
+        return x * env_bell(d, .35, 1.6)
+    pf = J(1500, 1900)
+    d = 1.05
+    out = np.zeros(int(d * SR))
+    def put(x, t0):
+        i = int(t0 * SR)
+        n = min(len(x), len(out) - i)
+        out[i:i + n] += x[:n]
+    put(pant(.11, pf), .0)
+    put(pant(.10, pf * .9), .17)
+    put(pant(.11, pf * 1.05), .34)
+    put(.8 * whine(J(.36, .46), J(560, 640), J(820, 920), J(600, 680)), .52)
+    out = filt(out, "lowpass", 5200)
+    return fin(space(out, "small", .08), -9.0)
+
 RECIPES = {
     # armas e ataques
     "sword-swing": (r_sword, 4, .6), "attack-miss": (r_miss, 3, .45),
@@ -879,6 +909,7 @@ def main():
     import sfx_voices
     RECIPES.update(sfx_voices.voice_recipes())
     RECIPES["snow-step"] = (r_snow_step, 5, .45)   # no fim: não muda a sorte dos sons anteriores
+    RECIPES["dog-happy"] = (r_dog_happy, 3, .5)   # cão do Refúgio recebendo carinho
     os.makedirs(OUT, exist_ok=True)
     clips, meta, pos = [], {}, 0.0
     gap = np.zeros(int(.04 * SR))

@@ -46,3 +46,8 @@ function __ucReskin2(S){const T=S.textures;if(T.__uc2)return;T.__uc2=1;
 /* minimapa no estilo novo */
 {const M0=__mmSkin;__mmSkin=function(M){if(!M0(M))return!1;try{const x=M.x,y=M.y,w=M.width,h=M.height;M.panel.clear().fillStyle(0x12151c,.88).fillRoundedRect(x,y,w,h,12).lineStyle(1.5,0xffffff,.16).strokeRoundedRect(x+.5,y+.5,w-1,h-1,12);
  M.title.__uc||(M.title.__uc=1,M.title.setFontFamily(__UC_F));M.title.setColor("#c4cad4").setStroke("#000000",0)}catch(e){}return!0}}
+/* o painel de Controles (módulo separado) usa a tradução de 3 idiomas do jogo */
+setTimeout(()=>{try{window.__dgMod&&(window.__dgMod.L3=__L3)}catch(e){}},0);
+/* Configurações: enquanto o painel de Controles está aberto, as teclas (e o gamepad) vão só para ele
+   (antes as duas telas recebiam: o A reabria o painel na primeira linha e o B fechava as Configurações por trás) */
+{const B9=Vn.prototype.build;Vn.prototype.build=function(){const r=B9.apply(this,arguments);try{const kh=this.keyHandler;this.keyHandler=e=>{if(this.controlsPanel?.root?.visible)return;return kh(e)}}catch(e){}return r}}

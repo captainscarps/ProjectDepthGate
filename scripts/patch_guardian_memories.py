@@ -45,6 +45,18 @@ TR = {
   ("Some promises don't die even with the ones who made them. This one was mine.",
    "Algunas promesas no mueren ni con quien las hizo. Esta fue una de las mías."),
  "Eu disse a ele para não abrir. Eu disse…": ("I told him not to open it. I told him…", "Le dije que no abriera. Se lo dije…"),
+ "Quando vencer o guardião de uma terra, pegue o cristal que ele deixar. O caminho de volta se abre sozinho e traz você até aqui — e aquela terra fica selada.":
+  ("When you defeat the guardian of a land, take the crystal it leaves behind. The way back opens on its own and brings you here — and that land is sealed.",
+   "Cuando venzas al guardián de una tierra, toma el cristal que deje. El camino de vuelta se abre solo y te trae hasta aquí, y esa tierra queda sellada."),
+ "Quando os nove selos estiverem comigo, o portal do Castelo de Valdrak vai despertar.":
+  ("When all nine seals are with me, the portal to Valdrak Castle will awaken.",
+   "Cuando los nueve sellos estén conmigo, el portal del Castillo de Valdrak despertará."),
+ "Está vendo o portal com a casinha? Ele leva ao Refúgio, a vila onde os heróis descansam entre uma terra e outra.":
+  ("See the portal with the little house? It leads to the Refuge, the village where heroes rest between one land and the next.",
+   "¿Ves el portal con la casita? Lleva al Refugio, la aldea donde los héroes descansan entre una tierra y otra."),
+ "Lá você compra suprimentos, melhora o equipamento com o ferreiro e conversa com quem já atravessou. Para voltar, use o portal da vila.":
+  ("There you can buy supplies, improve your gear with the blacksmith and talk to those who have already crossed. To come back, use the village portal.",
+   "Allí compras suministros, mejoras tu equipo con el herrero y hablas con quienes ya cruzaron. Para volver, usa el portal de la aldea."),
  "Você ouviu o meu nome, herói. Logo vai entender o resto. Só peço que continue andando.":
   ("You heard my name, hero. Soon you'll understand the rest. I only ask that you keep walking.",
    "Oíste mi nombre, héroe. Pronto entenderás el resto. Solo te pido que sigas caminando."),

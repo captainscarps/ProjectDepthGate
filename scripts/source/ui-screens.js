@@ -69,3 +69,21 @@ function __tipWide(C,parts,lim){const N=C.tipName,S=C.tipStats,T=C.cmpTitle,X=C.
  try{const lim=Math.min(244,(C.actionBtn?.y??256)-(C.actionBtn?.displayHeight??20)*(C.actionBtn?.originY??.5)-4),bot=()=>Math.max(...parts.filter(o=>o.visible&&o.text).map(o=>o.y+o.height));
   for(let k=0;k<=3;k++){const f=1-.08*k;for(const o of parts){o.__fs0??=parseFloat(o.style.fontSize)||9;o.__ls0??=o.style.lineSpacing||0;o.setFontSize((Math.round(o.__fs0*f*10)/10)+"px");o.setLineSpacing(Math.max(0,o.__ls0-k))}
    r=T1.apply(this,arguments);if(!parts.some(o=>o.visible)||bot()<=lim)break;if(__tipWide(C,parts,lim)&&bot()<=lim)break}}catch(e){r=r??T1.apply(this,arguments)}return r}}
+/* troca de cores de um Graphics antigo para a paleta nova (e cantos arredondados nos quadros) */
+function __ucRecolor(g,map,round){if(!g||g.__rc)return;g.__rc=1;const F=g.fillStyle,L=g.lineStyle;
+ g.fillStyle=function(c,a){const m=map[c];return F.call(this,m?m[0]:c,m&&m[1]!=null?m[1]:a)};g.lineStyle=function(w,c,a){const m=map[c];return L.call(this,w,m?m[0]:c,m&&m[1]!=null?m[1]:a)};
+ if(round){const fr=g.fillRect,sr=g.strokeRect;g.fillRect=function(x,y,w,h){return w>=18&&h>=18?this.fillRoundedRect(x,y,w,h,7):fr.call(this,x,y,w,h)};g.strokeRect=function(x,y,w,h){return w>=18&&h>=18?this.strokeRoundedRect(x,y,w,h,7):sr.call(this,x,y,w,h)}}}
+const __UC_MAP={0x141113:[0x12151c,.97],0x1d1610:[0x1b1f28],0x0f0c08:[0x15181f],0x14100a:[0x1b1f28],0x4a3b28:[0x3a404c],0xffd24a:[0xffc14d],0xe8c892:[0xffc14d],0xc9a24a:[0xffc14d]};
+function __ucRoot(root,round){const w=l=>{for(const o of l){if(o.list){w(o.list);continue}if(o.type==="Graphics")__ucRecolor(o,__UC_MAP,round);else if(o.type==="Text"){
+  const bg=o.style?.backgroundColor;if(o.text==="✕"&&!o.__ucB){__ucBtn(o,!1,!0);continue}if(bg==="#14240f"&&!o.__ucB){__ucBtn(o,!0);continue}if(bg==="#3a1810"&&!o.__ucB){__ucBtn(o,!1);continue}}}
+  __ucFonts(l)};w(root.list)}
+/* árvore de habilidades (aba HABILIDADES e tela própria): quadros grafite arredondados, seleção âmbar, fonte nova */
+{const R5=Rd.prototype.refresh;Rd.prototype.refresh=function(){try{this.root&&__ucRoot(this.root,!0)}catch(e){}const r=R5.apply(this,arguments);try{this.root&&__ucRoot(this.root,!0)}catch(e){}return r}}
+/* loja: fonte nova, aba ativa em pílula âmbar, linha escolhida em grafite, ✕ no estilo novo */
+{const R6=bd.prototype.refresh;bd.prototype.refresh=function(){const r=R6.apply(this,arguments);try{if(!this.root)return r;__ucRoot(this.root,!1);
+ for(const[t,k]of[[this.buyTab,"buy"],[this.sellTab,"sell"],[this.fuseTab,"fuse"]]){if(!t)continue;const on=this.tab===k;t.__prim=on;t.setColor(on?"#16130c":"#ffffff")}
+ for(const a of this.rows||[])a.bg?.setFillStyle?.(0xffffff,.07)}catch(e){}return r}}
+/* tela de resultado (vitória, derrota, fim do modo infinito): fonte nova, botões em pílula, foco em âmbar */
+{const S7=Td.prototype.show;Td.prototype.show=function(){const r=S7.apply(this,arguments);try{this.root&&(__ucRoot(this.root,!1),this.refreshFocus())}catch(e){}return r}
+ const F7=Td.prototype.refreshFocus;Td.prototype.refreshFocus=function(){const r=F7.apply(this,arguments);try{(this.focusables||[]).forEach((i,t)=>{const e=t===this.focusIdx,b=i.btn;if(!b?.setBackgroundColor)return;
+  b.__ucF||(b.__ucF=1,b.setFontFamily(__UC_F).setFontStyle("bold"));b.setBackgroundColor(e?"#ffc14d":i.primary?"#2a2f3a":"#1b1f28").setColor(e?"#16130c":i.primary?"#ffc14d":"#e8ebf0")})}catch(e){}return r}}

@@ -103,10 +103,10 @@ Dt=function(c,i,t,e,d){c.fillStyle(0x12151c,.97).fillRoundedRect(i,t,e,d,12);c.f
 {const T0=__invTab;__invTab=function(C,k){const r=T0.apply(this,arguments);try{const g=C.__tabG,t=C.__tabT?.[C.__tab];C.__tabT.forEach((o,n)=>{o.setFontFamily(__UC_F).setFontStyle("bold").setColor(n===C.__tab?"#16130c":"#c4cad4")});
  g.clear();t&&g.fillStyle(0xffc14d,1).fillRoundedRect(t.x-10,t.y-10,t.width+20,20,10)}catch(e){}return r}}
 /* botões de texto em pílula (inventário e loja) */
-function __ucPill(t,primary){if(!t||t.__pill)return t;const S=t.scene;t.__pill=1;t.setBackgroundColor("rgba(0,0,0,0)").setFontFamily(__UC_F).setFontStyle("bold").setColor(primary?"#16130c":"#ffffff").setPadding(14,8,14,8);
+function __ucPill(t,prim0){if(!t||t.__pill)return t;const primary=prim0;const S=t.scene;t.__pill=1;t.setBackgroundColor("rgba(0,0,0,0)").setFontFamily(__UC_F).setFontStyle("bold").setColor(primary?"#16130c":"#ffffff").setPadding(14,8,14,8);
  const g=S.add.graphics();t.__pg=g;const par=t.parentContainer;const sync=()=>{if(!t.active){g.destroy();S.events.off("postupdate",sync);return}const p=t.parentContainer;if(p&&g.parentContainer!==p){p.addAt(g,Math.max(0,p.getIndex(t)))}
-  g.setVisible(t.visible&&(p?p.visible:!0)).setAlpha(t.alpha);if(!g.visible)return;const w=t.displayWidth,h=t.displayHeight,x=t.x-w*t.originX,y=t.y-h*t.originY,k=t.__hov?1:0;
-  const key=`${x}|${y}|${w}|${h}|${k}`;if(g.__k===key)return;g.__k=key;g.clear();primary?g.fillStyle(k?0xffd27a:0xffc14d,1).fillRoundedRect(x,y,w,h,h/2):g.fillStyle(0xffffff,k?.16:.09).fillRoundedRect(x,y,w,h,h/2).lineStyle(1,0xffffff,.18).strokeRoundedRect(x,y,w,h,h/2)};
+  g.setVisible(t.visible&&(p?p.visible:!0)).setAlpha(t.alpha);if(!g.visible)return;const w=t.displayWidth,h=t.displayHeight,x=t.x-w*t.originX,y=t.y-h*t.originY,k=t.__hov?1:0,primary=t.__prim??prim0;
+  const key=`${x}|${y}|${w}|${h}|${k}|${primary}`;if(g.__k===key)return;g.__k=key;g.clear();primary?g.fillStyle(k?0xffd27a:0xffc14d,1).fillRoundedRect(x,y,w,h,h/2):g.fillStyle(0xffffff,k?.16:.09).fillRoundedRect(x,y,w,h,h/2).lineStyle(1,0xffffff,.18).strokeRoundedRect(x,y,w,h,h/2)};
  t.on("pointerover",()=>{t.__hov=1;t.setColor(primary?"#16130c":"#ffffff")});t.on("pointerout",()=>{t.__hov=0;t.setColor(primary?"#16130c":"#ffffff")});S.events.on("postupdate",sync);return t}
 {const M0=Cd.prototype.makeButton;Cd.prototype.makeButton=function(i,t,e,d){const b=M0.apply(this,arguments);return __ucPill(b,!this.actionBtn)}}
 {const M1=bd.prototype.makeButton;bd.prototype.makeButton=function(i,t,e,d){const b=M1.apply(this,arguments);return __ucPill(b,!1)}}

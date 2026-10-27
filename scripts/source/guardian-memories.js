@@ -31,3 +31,15 @@ function __hmemSay(S){const id=S.classDef?.id,h=typeof __HMEM!=="undefined"&&__H
  if(h&&h[0]===S.levelId&&S.game.registry.get("mode")==="campaign"&&!S.isRift&&!S.level?.endless){S.__echoNow=!1;let n=0;
   const tryH=()=>{if(!S.sys.isActive()||S.__echoNow)return;const lv=S.levelId;if(__ECHO[lv]&&!__stFlag(S,"echo_"+lv)&&n++<20){S.time.delayedCall(1e3,tryH);return}__hmemSay(S)};
   const on=(q,rm)=>{if(rm&&!rm.hasBoss){S.game.events.off("room:cleared",on);S.time.delayedCall(1500,tryH)}};S.game.events.on("room:cleared",on);S.events.once("shutdown",()=>S.game.events.off("room:cleared",on))}}catch(e){}return r}}
+/* Coração da Floresta: na primeira chegada aos portais a Guardiã explica como a jornada funciona e como ir ao
+   Refúgio. Quem já tinha ouvido a fala antiga (saves anteriores) ouve só a explicação nova, uma vez. */
+const __GHUBHELP=[{who:"guardia",expr:"talk",name:__GN,text:"Quando vencer o guardião de uma terra, pegue o cristal que ele deixar. O caminho de volta se abre sozinho e traz você até aqui — e aquela terra fica selada."},
+ {who:"guardia",expr:"calm",name:__GN,text:"Quando os nove selos estiverem comigo, o portal do Castelo de Valdrak vai despertar."},
+ {who:"guardia",expr:"smile",name:__GN,text:"Está vendo o portal com a casinha? Ele leva ao Refúgio, a vila onde os heróis descansam entre uma terra e outra."},
+ {who:"guardia",expr:"talk",name:__GN,text:"Lá você compra suprimentos, melhora o equipamento com o ferreiro e conversa com quem já atravessou. Para voltar, use o portal da vila."}];
+try{__GHUB0.splice(3,0,...__GHUBHELP)}catch(e){}
+{const G0=__gSay;__gSay=function(S,list){try{list===__GHUB0&&__stFlag(S,"gHubHelp",!0)}catch(e){}return G0.apply(this,arguments)}}
+{const C9=Sd.prototype.create;Sd.prototype.create=function(){const r=C9.apply(this,arguments);try{const S=this;if(S.levelId==="forest"&&!S.level?.endless){let t=0;const U=(_,dt)=>{t+=dt||16;if(t<500)return;t=0;
+  if(__stFlag(S,"gHubHelp")){S.events.off("update",U);return}const g=S.__guard;if(!g||g.intro||!S.player||S.uiOpen||!__stFlag(S,"gHub0"))return;
+  if(Math.hypot(S.player.x-g.x,S.player.y-g.y)<110){S.events.off("update",U);__stFlag(S,"gHubHelp",!0);__gSay(S,__GHUBHELP)}};
+ S.events.on("update",U);S.events.once("shutdown",()=>S.events.off("update",U))}}catch(e){}return r}}
