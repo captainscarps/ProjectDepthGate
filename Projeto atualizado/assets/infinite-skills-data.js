@@ -5462,4 +5462,204 @@
       cooldownReduction
     };
   };
+
+  // Register Infinite Mode Active Abilities into Ye
+  window.__registerInfiniteActiveAbilities = function() {
+    if (typeof window.Ye === 'undefined') return;
+
+    const abilities = {
+      WARRIOR_VALDRAK_EGIDE: {
+        id: "WARRIOR_VALDRAK_EGIDE", name: "Égide de Carvalho", icon: "icon-shield-wall", type: "buff",
+        req: "Escudo", cooldown: 14, duration: 6, buff: { stat: "defense", amount: 16 },
+        desc: "Escudo que absorve 25% da vida máxima por 6 s."
+      },
+      WARRIOR_VALDRAK_BRADO: {
+        id: "WARRIOR_VALDRAK_BRADO", name: "Brado do Clã", icon: "icon-roar", type: "aoe",
+        req: null, cooldown: 12, damageMult: 1.2, radius: 100,
+        desc: "Puxa inimigos num raio de 4 m e dá Fortificação."
+      },
+      WARRIOR_FURIA_INVESTIDA: {
+        id: "WARRIOR_FURIA_INVESTIDA", name: "Investida Escocesa", icon: "icon-charge", type: "dash",
+        req: "Espada", cooldown: 9, speedMult: 2.2, duration: 0.35,
+        desc: "Avança 5 m e derruba quem estiver no caminho."
+      },
+      WARRIOR_FURIA_REDEMOINHO: {
+        id: "WARRIOR_FURIA_REDEMOINHO", name: "Redemoinho", icon: "icon-whirlwind", type: "aoe",
+        req: "Machado/Maça", cooldown: 11, damageMult: 2.5, radius: 90,
+        desc: "Gira causando dano cortante em área ao redor."
+      },
+      BERSERKER_UKE_APARAR: {
+        id: "BERSERKER_UKE_APARAR", name: "Aparar (Uke)", icon: "icon-parry", type: "buff",
+        req: "Montante", cooldown: 8, duration: 0.5, buff: { stat: "defense", amount: 99 },
+        desc: "Janela de aparar: golpe recebido é anulado e contra-atacado."
+      },
+      BERSERKER_TSUBAME: {
+        id: "BERSERKER_TSUBAME", name: "Tsubame-gaeshi", icon: "icon-iaijutsu", type: "melee-heavy",
+        req: "Montante", cooldown: 7, damageMult: 3.0,
+        desc: "Corte lendário de andorinha de ida e volta."
+      },
+      BERSERKER_TERREMOTO: {
+        id: "BERSERKER_TERREMOTO", name: "Terremoto de Cinzas", icon: "icon-ground-slam", type: "aoe",
+        req: "Pesada", cooldown: 10, damageMult: 3.5, radius: 110,
+        desc: "Golpe colossal no chão que derruba inimigos."
+      },
+      ARCHER_SALTO_TRAS: {
+        id: "ARCHER_SALTO_TRAS", name: "Salto Para Trás", icon: "icon-tumble", type: "dash",
+        req: "Arco curto", cooldown: 8, speedMult: 2.0, duration: 0.3,
+        desc: "Recua 4 m em acrobacia e dispara uma flecha veloz."
+      },
+      ARCHER_BARREIRA: {
+        id: "ARCHER_BARREIRA", name: "Barreira de Flechas", icon: "icon-volley", type: "buff",
+        req: "Arco longo", cooldown: 14, duration: 4, buff: { stat: "defense", amount: 15 },
+        desc: "Crava flechas numa cerca que bloqueia inimigos."
+      },
+      ARCHER_FLECHA_EXPLOSIVA: {
+        id: "ARCHER_FLECHA_EXPLOSIVA", name: "Flecha Explosiva", icon: "icon-explosive-arrow", type: "projectile",
+        req: null, cooldown: 8, damageMult: 3.2,
+        desc: "Dispara uma flecha embebida em pólvora que explode ao impacto."
+      },
+      MAGE_BARREIRA_ESPELHOS: {
+        id: "MAGE_BARREIRA_ESPELHOS", name: "Barreira de Espelhos", icon: "icon-mirror-barrier", type: "buff",
+        req: "Cajado arcano", cooldown: 12, duration: 5, buff: { stat: "defense", amount: 18 },
+        desc: "Espelhos prismáticos que desviam feitiços inimigos."
+      },
+      MAGE_COMETA_GELO: {
+        id: "MAGE_COMETA_GELO", name: "Cometa de Gelo", icon: "icon-ice-comet", type: "projectile",
+        req: "Cajado de gelo", cooldown: 8, damageMult: 3.4,
+        desc: "Invoca um meteoro de gelo glacial que congela a área."
+      },
+      ROGUE_ROLAMENTO: {
+        id: "ROGUE_ROLAMENTO", name: "Rolamento", icon: "icon-tumble", type: "dash",
+        req: "Adagas gêmeas", cooldown: 6, speedMult: 2.5, duration: 0.35,
+        desc: "Rola atravessando inimigos sem sofrer dano."
+      },
+      ROGUE_DANCA_ADAGAS: {
+        id: "ROGUE_DANCA_ADAGAS", name: "Dança das Adagas", icon: "icon-daggers", type: "melee-heavy",
+        req: "Adagas gêmeas", cooldown: 7, damageMult: 3.5,
+        desc: "Cinco golpes ultra rápidos seguidos em turbilhão."
+      },
+      ROGUE_MARCA_MORTE: {
+        id: "ROGUE_MARCA_MORTE", name: "Marca da Morte", icon: "icon-death-mark", type: "buff",
+        req: "Adaga única", cooldown: 8, duration: 6, buff: { stat: "damage", amount: 8 },
+        desc: "Marca o alvo: ele recebe dano amplificado em 30%."
+      },
+      NECROMANCER_ARMADURA_OSSEA: {
+        id: "NECROMANCER_ARMADURA_OSSEA", name: "Armadura Óssea", icon: "icon-bone-armor", type: "buff",
+        req: null, cooldown: 14, duration: 6, buff: { stat: "defense", amount: 20 },
+        desc: "Absorve completamente até 5 golpes recebidos."
+      },
+      NECROMANCER_PRAGA: {
+        id: "NECROMANCER_PRAGA", name: "Praga", icon: "icon-plague", type: "aoe",
+        req: "Cetro", cooldown: 10, damageMult: 2.2, radius: 100,
+        desc: "Nuvem necrótica que sufoca e drena os infectados."
+      },
+      NECROMANCER_CEIFA: {
+        id: "NECROMANCER_CEIFA", name: "Ceifa", icon: "icon-scythe", type: "aoe",
+        req: "Foice", cooldown: 8, damageMult: 2.8, radius: 85,
+        desc: "Giro da foice que arranca a alma e cura vida."
+      },
+      HUNTER_UIVO_PROTECAO: {
+        id: "HUNTER_UIVO_PROTECAO", name: "Uivo de Proteção", icon: "icon-wolf-howl", type: "buff",
+        req: "Apito do Lobo", cooldown: 16, duration: 5, buff: { stat: "defense", amount: 15 },
+        desc: "O lobo absorve metade do dano sofrido por você."
+      },
+      HUNTER_TIRO_DUPLO: {
+        id: "HUNTER_TIRO_DUPLO", name: "Tiro Duplo", icon: "icon-double-shot", type: "projectile",
+        req: "Arco curto", cooldown: 5, damageMult: 2.4,
+        desc: "Duas flechas em sequência com cadência dobrada."
+      },
+      HUNTER_ATAQUE_COORDENADO: {
+        id: "HUNTER_ATAQUE_COORDENADO", name: "Ataque Coordenado", icon: "icon-coordinated-strike", type: "buff",
+        req: "Apito do Lobo", cooldown: 12, duration: 4, buff: { stat: "damage", amount: 10 },
+        desc: "Você e o lobo concentram presas e flechas no mesmo alvo."
+      },
+      SHAMAN_CIRCULO_JUREMA: {
+        id: "SHAMAN_CIRCULO_JUREMA", name: "Círculo de Jurema", icon: "icon-nature-circle", type: "buff",
+        req: "Maracá Sagrado", cooldown: 16, duration: 6, buff: { stat: "maxHp", amount: 6 },
+        desc: "Raízes ancestrais que curam aliados e imobilizam invasores."
+      },
+      SHAMAN_ESCUDO_CASCA: {
+        id: "SHAMAN_ESCUDO_CASCA", name: "Escudo de Casca", icon: "icon-bark-shield", type: "buff",
+        req: "Lâmina", cooldown: 14, duration: 6, buff: { stat: "defense", amount: 14 },
+        desc: "Casca viva de sumaúma que absorve o impacto de golpes."
+      },
+      SHAMAN_DARDOS: {
+        id: "SHAMAN_DARDOS", name: "Saraivada de Dardos", icon: "icon-poison-darts", type: "projectile",
+        req: "Zarabatana ou arco", cooldown: 8, damageMult: 2.8,
+        desc: "Cinco dardos venenosos em leque carregados com curare."
+      },
+      SHAMAN_DANCA_GUERRA: {
+        id: "SHAMAN_DANCA_GUERRA", name: "Dança de Guerra", icon: "icon-war-dance", type: "aoe",
+        req: "Lâmina", cooldown: 9, damageMult: 3.0, radius: 80,
+        desc: "Giro veloz de três golpes consagrados aos espíritos."
+      },
+      DRUID_PISOTEIO: {
+        id: "DRUID_PISOTEIO", name: "Pisoteio", icon: "icon-boar-charge", type: "dash",
+        req: "Forma de Javali", cooldown: 8, speedMult: 2.2, duration: 0.4,
+        desc: "Investida brutal de javali que atropela tudo à frente."
+      },
+      DRUID_CIRCULO_CARVALHOS: {
+        id: "DRUID_CIRCULO_CARVALHOS", name: "Círculo de Carvalhos", icon: "icon-oak-circle", type: "buff",
+        req: "Cajado de carvalho", cooldown: 16, duration: 5, buff: { stat: "defense", amount: 16 },
+        desc: "Anel de carvalhos centenários que protege contra projéteis."
+      },
+      DRUID_UIVO_SANGUINARIO: {
+        id: "DRUID_UIVO_SANGUINARIO", name: "Uivo Sanguinário", icon: "icon-blood-howl", type: "buff",
+        req: "Forma de Lobisomem", cooldown: 14, duration: 6, buff: { stat: "damage", amount: 12 },
+        desc: "Fúria lupina que concede velocidade de ataque frenética."
+      },
+      DRUID_COLHEITA_VISCO: {
+        id: "DRUID_COLHEITA_VISCO", name: "Colheita do Visco", icon: "icon-scythe-harvest", type: "aoe",
+        req: "Foice de Ouro", cooldown: 10, damageMult: 3.0, radius: 85,
+        desc: "Corte ritualístico em arco que drena a essência vital."
+      }
+    };
+
+    Object.assign(window.Ye, abilities);
+  };
+
+  // Helper to re-spec spent points in Endless Mode
+  window.__resetInfiniteSkills = function(scene) {
+    if (!scene || scene.mode !== 'endless') return !1;
+    const skillsState = scene.registry?.get('endless:skills');
+    if (!skillsState) return !1;
+
+    skillsState.invested = {};
+    skillsState.spentPoints = 0;
+    skillsState.spentNmPoints = 0;
+
+    scene.stats?.recompute();
+    scene.game?.audioEngine?.sfx?.("sfx-shrine-use");
+    scene.game.events.emit("ui:banner", "PONTOS DA ÁRVORE REDISTRIBUÍDOS!", "#00ff88");
+    return !0;
+  };
+
+  // Helper to record Endless Run into Hall of Fame
+  window.__recordEndlessRun = function(scene) {
+    if (!scene || scene.mode !== 'endless') return;
+    try {
+      const skillsState = scene.registry?.get('endless:skills') || {};
+      const stats = scene.stats || {};
+      const heroId = scene.classDef?.name || 'Guerreiro';
+      const tree = skillsState.chosenTree === 'defense' ? 'Defensivo' : 'Ofensivo';
+      const depth = scene.endlessDepth || 1;
+      const kills = scene.endlessKills || 0;
+      const nm = stats.nm || 0;
+
+      const record = {
+        date: new Date().toLocaleDateString('pt-BR'),
+        hero: heroId,
+        tree: tree,
+        depth: depth,
+        nightmare: nm,
+        kills: kills
+      };
+
+      const key = "dungeon-crawler:hall_of_fame";
+      const existing = JSON.parse(localStorage.getItem(key) || "[]");
+      existing.unshift(record);
+      localStorage.setItem(key, JSON.stringify(existing.slice(0, 10)));
+    } catch(e) {}
+  };
+
 })();

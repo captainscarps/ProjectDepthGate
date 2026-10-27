@@ -179,8 +179,18 @@
         this.toggleTreeBtn, this.toggleTreeText
       ]);
 
+      // Re-spec Button
+      this.respecBtn = i.add.rectangle(px + pw / 2, py + 282, pw - 30, 18, 0x1a1520).setInteractive({ useHandCursor: !0 });
+      this.respecText = i.add.text(px + pw / 2, py + 282, "[ (Y) Redistribuir Pontos ]", {
+        fontFamily: "sans-serif",
+        fontSize: "8px",
+        color: "#c28080"
+      }).setOrigin(0.5);
+      this.respecBtn.on("pointerdown", () => this.triggerRespec());
+      this.root.add([this.respecBtn, this.respecText]);
+
       // Footer Gamepad Hints
-      this.footerText = i.add.text(w / 2, 342, "🎮 [D-Pad] Navegar   [A] Aprimorar   [B / Esc] Voltar   [X] Ver Outro Caminho", {
+      this.footerText = i.add.text(w / 2, 342, "🎮 [D-Pad] Navegar   [A] Aprimorar   [Y] Redistribuir   [B] Voltar   [X] Ver Outro", {
         fontFamily: "sans-serif",
         fontSize: "9px",
         color: "#8c7e6a"
@@ -730,6 +740,29 @@
       const gScene = this.gs();
       gScene?.game?.audioEngine?.sfx?.("sfx-shrine-use");
 
+      // Register and equip active ability if this node is an active skill
+      if (node.category === 'active' && typeof window.__registerInfiniteActiveAbilities === 'function') {
+        window.__registerInfiniteActiveAbilities();
+        const abId = (tree.heroId + "_" + tree.treeKey.slice(0, 3) + "_" + node.name.replace(/\s+/g, '_')).toUpperCase();
+        // Check Ye for matching ability or find key
+        let targetKey = null;
+        if (window.Ye) {
+          for (const k of Object.keys(window.Ye)) {
+            if (window.Ye[k].name === node.name) { targetKey = k; break; }
+          }
+        }
+        if (targetKey && gScene?.skillState?.equipped) {
+          const eq = gScene.skillState.equipped;
+          if (!eq.includes(targetKey)) {
+            let emptyIdx = eq.indexOf(null);
+            if (emptyIdx === -1) emptyIdx = 3; // replace last slot
+            eq[emptyIdx] = targetKey;
+            gScene.abilities?.setEquipped?.(eq);
+            this.scene.game.events.emit("ui:banner", `HABILIDADE EQUIPADA: ${node.name.toUpperCase()}`, "#ffd24a");
+          }
+        }
+      }
+
       // Apply passive buffs and active skills
       this.applySkills();
 
@@ -756,6 +789,16 @@
         this.selectedNodeId = tree.nodes[0]?.id;
       }
       this.render();
+    }
+
+
+    triggerRespec() {
+      if (this.viewingLockedTree) return;
+      const gScene = this.gs();
+      if (typeof window.__resetInfiniteSkills === 'function') {
+        window.__resetInfiniteSkills(gScene);
+        this.render();
+      }
     }
 
     // GAMEPAD & KEYBOARD NAVIGATION
@@ -814,6 +857,9 @@
         }
       } else if (key === "Enter" || key === " " || key === "Space") {
         this.upgradeSelected();
+        return !0;
+      } else if (key === "y" || key === "Y") {
+        this.triggerRespec();
         return !0;
       } else if (key === "x" || key === "X") {
         this.toggleLockedView();
