@@ -43,7 +43,7 @@
       const state = this.getRunState();
 
       // Standard points: levels 3 to 15
-      const totalStd = Math.max(0, Math.min(13, lvl - 2));
+      const totalStd = Math.max(1, Math.min(15, lvl));
       // Bonus points from puzzle rooms or shrines
       const bonusPts = g.registry.get("endless:bonusSkillPoints") || 0;
       const availableStd = Math.max(0, (totalStd + bonusPts) - (state.spentPoints || 0));
@@ -229,7 +229,7 @@
         fontStyle: "bold"
       }).setOrigin(0.5);
 
-      this.mSubtitle = i.add.text(w / 2, 62, "Nível 3 Alcançado: escolha o seu estilo de combate. O outro caminho ficará trancado até o fim da run.", {
+      this.mSubtitle = i.add.text(w / 2, 62, "Escolha o seu caminho do Abismo. Seu estilo definirá suas árvores de habilidades e bônus da jornada.", {
         fontFamily: "sans-serif",
         fontSize: "9.5px",
         color: "#cfc4b2"
