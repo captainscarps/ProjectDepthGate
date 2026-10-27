@@ -13,6 +13,7 @@
       {
         "id": "warrior_def_postura_do_escudo",
         "name": "Postura do Escudo",
+        "icon": "icon-shield",
         "category": "passive",
         "maxRank": 3,
         "req": "Escudo",
@@ -31,6 +32,7 @@
       {
         "id": "warrior_def_gide_de_carvalho",
         "name": "Égide de Carvalho",
+        "icon": "icon-shield",
         "category": "active",
         "maxRank": 2,
         "req": "Escudo",
@@ -51,6 +53,7 @@
       {
         "id": "warrior_def_gide_espinhosa",
         "name": "Égide Espinhosa",
+        "icon": "icon-shield",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Escudo",
@@ -70,6 +73,7 @@
       },
       {
         "id": "warrior_def_pele_de_ferro",
+        "icon": "icon-shield",
         "name": "Pele de Ferro",
         "category": "passive",
         "maxRank": 3,
@@ -88,6 +92,7 @@
       },
       {
         "id": "warrior_def_brado_do_cl",
+        "icon": "icon-kiai",
         "name": "Brado do Clã",
         "category": "active",
         "maxRank": 2,
@@ -108,6 +113,7 @@
       },
       {
         "id": "warrior_def_eco_do_brado",
+        "icon": "icon-kiai",
         "name": "Eco do Brado",
         "category": "upgrade",
         "maxRank": 1,
@@ -128,6 +134,7 @@
       },
       {
         "id": "warrior_def_muralha_viva",
+        "icon": "icon-kiai",
         "name": "Muralha Viva",
         "category": "synergy",
         "maxRank": 1,
@@ -148,6 +155,7 @@
       },
       {
         "id": "warrior_def_ltimo_rei_de_p",
+        "icon": "icon-holy-smite",
         "name": "Último Rei de Pé",
         "category": "apex",
         "maxRank": 1,
@@ -169,6 +177,7 @@
       {
         "id": "warrior_def_baluarte",
         "name": "Baluarte",
+        "icon": "icon-shield",
         "category": "apex",
         "maxRank": 1,
         "req": "Escudo",
@@ -188,6 +197,7 @@
       },
       {
         "id": "warrior_def_pedra_de_valdrak",
+        "icon": "icon-doom",
         "name": "Pedra de Valdrak",
         "category": "nightmare",
         "maxRank": 5,
@@ -209,6 +219,7 @@
       {
         "id": "warrior_def_carvalho_eterno",
         "name": "Carvalho Eterno",
+        "icon": "icon-shield",
         "category": "nightmare",
         "maxRank": 5,
         "req": "Escudo",
@@ -280,6 +291,7 @@
     "nodes": [
       {
         "id": "warrior_att_mpeto_4",
+        "icon": "icon-ring",
         "name": "Ímpeto 4 ===",
         "category": "passive",
         "maxRank": 3,
@@ -298,6 +310,7 @@
       },
       {
         "id": "warrior_att_golpe_pesado_partido",
+        "icon": "icon-shield-bash",
         "name": "Golpe Pesado Partido",
         "category": "upgrade",
         "maxRank": 1,
@@ -319,6 +332,7 @@
       {
         "id": "warrior_att_fio_de_a_o",
         "name": "Fio de Aço",
+        "icon": "icon-ring",
         "category": "passive",
         "maxRank": 3,
         "req": "Espada",
@@ -339,6 +353,7 @@
       {
         "id": "warrior_att_investida_escocesa",
         "name": "Investida Escocesa",
+        "icon": "icon-javali-form",
         "category": "active",
         "maxRank": 1,
         "req": "Espada",
@@ -359,6 +374,7 @@
       {
         "id": "warrior_att_investida_em_cadeia",
         "name": "Investida em Cadeia",
+        "icon": "icon-javali-form",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Espada",
@@ -379,6 +395,7 @@
       {
         "id": "warrior_att_l_mina_do_herdeiro",
         "name": "Lâmina do Herdeiro",
+        "icon": "icon-dagger",
         "category": "apex",
         "maxRank": 1,
         "req": "Espada",
@@ -399,6 +416,7 @@
       {
         "id": "warrior_att_peso_do_machado",
         "name": "Peso do Machado",
+        "icon": "icon-shield",
         "category": "passive",
         "maxRank": 3,
         "req": "Machado/Maça",
@@ -419,6 +437,7 @@
       {
         "id": "warrior_att_redemoinho",
         "name": "Redemoinho",
+        "icon": "icon-whirlwind",
         "category": "active",
         "maxRank": 1,
         "req": "Machado/Maça",
@@ -439,6 +458,7 @@
       {
         "id": "warrior_att_redemoinho_puxador",
         "name": "Redemoinho Puxador",
+        "icon": "icon-whirlwind",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Machado/Maça",
@@ -459,6 +479,7 @@
       {
         "id": "warrior_att_executor_de_valdrak",
         "name": "Executor de Valdrak",
+        "icon": "icon-heavy-strike",
         "category": "apex",
         "maxRank": 1,
         "req": "Machado/Maça",
@@ -478,6 +499,7 @@
       },
       {
         "id": "warrior_att_f_ria_antiga",
+        "icon": "icon-bloodlust",
         "name": "Fúria Antiga",
         "category": "nightmare",
         "maxRank": 5,
@@ -498,6 +520,7 @@
       },
       {
         "id": "warrior_att_sangue_das_terras_altas",
+        "icon": "icon-bloodlust",
         "name": "Sangue das Terras Altas",
         "category": "nightmare",
         "maxRank": 5,
@@ -574,6 +597,7 @@
     "nodes": [
       {
         "id": "berserker_def_respira_o",
+        "icon": "icon-ring",
         "name": "Respiração",
         "category": "passive",
         "maxRank": 3,
@@ -593,6 +617,7 @@
       {
         "id": "berserker_def_kamae",
         "name": "Kamae",
+        "icon": "icon-shield",
         "category": "passive",
         "maxRank": 2,
         "req": "Montante",
@@ -612,6 +637,7 @@
       },
       {
         "id": "berserker_def_p_s_de_cinza",
+        "icon": "icon-ring",
         "name": "Pés de Cinza",
         "category": "passive",
         "maxRank": 2,
@@ -633,6 +659,7 @@
       {
         "id": "berserker_def_aparar_uke",
         "name": "Aparar (Uke)",
+        "icon": "icon-sword",
         "category": "active",
         "maxRank": 2,
         "req": "Montante",
@@ -653,6 +680,7 @@
       {
         "id": "berserker_def_aparar_perfeito",
         "name": "Aparar Perfeito",
+        "icon": "icon-iaijutsu",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Montante",
@@ -672,6 +700,7 @@
       },
       {
         "id": "berserker_def_kiai_inabal_vel",
+        "icon": "icon-kiai",
         "name": "Kiai Inabalável",
         "category": "upgrade",
         "maxRank": 1,
@@ -693,6 +722,7 @@
       {
         "id": "berserker_def_disciplina",
         "name": "Disciplina",
+        "icon": "icon-kiai",
         "category": "passive",
         "maxRank": 2,
         "req": "Kiai Inabalável",
@@ -712,6 +742,7 @@
       },
       {
         "id": "berserker_def_mente_vazia",
+        "icon": "icon-kiai",
         "name": "Mente Vazia",
         "category": "synergy",
         "maxRank": 1,
@@ -732,6 +763,7 @@
       },
       {
         "id": "berserker_def_juramento_de_satsuma",
+        "icon": "icon-aegis",
         "name": "Juramento de Satsuma",
         "category": "apex",
         "maxRank": 1,
@@ -753,6 +785,7 @@
       {
         "id": "berserker_def_montanha",
         "name": "Montanha",
+        "icon": "icon-iron-skin",
         "category": "apex",
         "maxRank": 1,
         "req": "Pesada",
@@ -772,6 +805,7 @@
       },
       {
         "id": "berserker_def_pele_de_cinza",
+        "icon": "icon-iron-skin",
         "name": "Pele de Cinza",
         "category": "nightmare",
         "maxRank": 5,
@@ -792,6 +826,7 @@
       },
       {
         "id": "berserker_def_respira_o_profunda",
+        "icon": "icon-holy-nova",
         "name": "Respiração Profunda",
         "category": "nightmare",
         "maxRank": 5,
@@ -873,6 +908,7 @@
       {
         "id": "berserker_att_l_mina_afiada",
         "name": "Lâmina Afiada",
+        "icon": "icon-dagger",
         "category": "passive",
         "maxRank": 3,
         "req": "Montante",
@@ -890,6 +926,7 @@
       },
       {
         "id": "berserker_att_marca_do_corte",
+        "icon": "icon-garrote",
         "name": "Marca do Corte",
         "category": "passive",
         "maxRank": 1,
@@ -911,6 +948,7 @@
       {
         "id": "berserker_att_tsubame_gaeshi",
         "name": "Tsubame- gaeshi",
+        "icon": "icon-sword",
         "category": "active",
         "maxRank": 1,
         "req": "Montante",
@@ -930,6 +968,7 @@
       },
       {
         "id": "berserker_att_mil_cortes",
+        "icon": "icon-ring",
         "name": "Mil Cortes",
         "category": "synergy",
         "maxRank": 1,
@@ -951,6 +990,7 @@
       {
         "id": "berserker_att_iaijutsu_rel_mpago",
         "name": "Iaijutsu Relâmpago",
+        "icon": "icon-iaijutsu",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Montante",
@@ -970,6 +1010,7 @@
       },
       {
         "id": "berserker_att_kaze_giri_duplo",
+        "icon": "icon-kaze-giri",
         "name": "Kaze-Giri Duplo",
         "category": "upgrade",
         "maxRank": 1,
@@ -991,6 +1032,7 @@
       {
         "id": "berserker_att_peso_total",
         "name": "Peso Total",
+        "icon": "icon-ring",
         "category": "passive",
         "maxRank": 3,
         "req": "Pesada",
@@ -1011,6 +1053,7 @@
       {
         "id": "berserker_att_terremoto_de_cinzas",
         "name": "Terremoto de Cinzas",
+        "icon": "icon-sword",
         "category": "active",
         "maxRank": 1,
         "req": "Pesada",
@@ -1031,6 +1074,7 @@
       {
         "id": "berserker_att_batto_jutsu",
         "name": "Batto-jutsu",
+        "icon": "icon-aegis",
         "category": "apex",
         "maxRank": 1,
         "req": "Montante",
@@ -1051,6 +1095,7 @@
       {
         "id": "berserker_att_sakurajima_desperta",
         "name": "Sakurajima Desperta",
+        "icon": "icon-aegis",
         "category": "apex",
         "maxRank": 1,
         "req": "Pesada",
@@ -1070,6 +1115,7 @@
       },
       {
         "id": "berserker_att_fio_da_alma",
+        "icon": "icon-soul-siphon",
         "name": "Fio da Alma",
         "category": "nightmare",
         "maxRank": 5,
@@ -1090,6 +1136,7 @@
       },
       {
         "id": "berserker_att_kiai_de_guerra",
+        "icon": "icon-kiai",
         "name": "Kiai de Guerra",
         "category": "nightmare",
         "maxRank": 5,
@@ -1166,6 +1213,7 @@
     "nodes": [
       {
         "id": "archer_def_passo_leve",
+        "icon": "icon-ring",
         "name": "Passo Leve",
         "category": "passive",
         "maxRank": 3,
@@ -1185,6 +1233,7 @@
       {
         "id": "archer_def_salto_para_tr_s",
         "name": "Salto Para Trás",
+        "icon": "icon-multishot",
         "category": "active",
         "maxRank": 2,
         "req": "Arco curto",
@@ -1204,6 +1253,7 @@
       },
       {
         "id": "archer_def_dist_ncia_segura",
+        "icon": "icon-shield",
         "name": "Distância Segura",
         "category": "passive",
         "maxRank": 3,
@@ -1223,6 +1273,7 @@
       {
         "id": "archer_def_barreira_de_flechas",
         "name": "Barreira de Flechas",
+        "icon": "icon-multishot",
         "category": "active",
         "maxRank": 2,
         "req": "Arco longo",
@@ -1242,6 +1293,7 @@
       },
       {
         "id": "archer_def_repuls_o_forte",
+        "icon": "icon-ring",
         "name": "Repulsão Forte",
         "category": "upgrade",
         "maxRank": 1,
@@ -1262,6 +1314,7 @@
       },
       {
         "id": "archer_def_dan_a_do_vento",
+        "icon": "icon-ring",
         "name": "Dança do Vento",
         "category": "synergy",
         "maxRank": 1,
@@ -1283,6 +1336,7 @@
       {
         "id": "archer_def_fantasma_de_cinza",
         "name": "Fantasma de Cinza",
+        "icon": "icon-multishot",
         "category": "apex",
         "maxRank": 1,
         "req": "Arco curto",
@@ -1303,6 +1357,7 @@
       {
         "id": "archer_def_torre_de_vigia",
         "name": "Torre de Vigia",
+        "icon": "icon-multishot",
         "category": "apex",
         "maxRank": 1,
         "req": "Arco longo",
@@ -1322,6 +1377,7 @@
       },
       {
         "id": "archer_def_vento_cortante",
+        "icon": "icon-kaze-giri",
         "name": "Vento Cortante",
         "category": "nightmare",
         "maxRank": 5,
@@ -1342,6 +1398,7 @@
       },
       {
         "id": "archer_def_pena_de_cinza",
+        "icon": "icon-doom",
         "name": "Pena de Cinza",
         "category": "nightmare",
         "maxRank": 5,
@@ -1410,6 +1467,7 @@
     "nodes": [
       {
         "id": "archer_att_ponta_perfurante",
+        "icon": "icon-piercing-arrow",
         "name": "Ponta Perfurante",
         "category": "passive",
         "maxRank": 2,
@@ -1428,6 +1486,7 @@
       },
       {
         "id": "archer_att_marca_do_ca_ador_8",
+        "icon": "icon-ring",
         "name": "Marca do Caçador 8 ===",
         "category": "passive",
         "maxRank": 2,
@@ -1449,6 +1508,7 @@
       {
         "id": "archer_att_tiro_r_pido",
         "name": "Tiro Rápido",
+        "icon": "icon-multishot",
         "category": "passive",
         "maxRank": 3,
         "req": "Arco curto",
@@ -1469,6 +1529,7 @@
       {
         "id": "archer_att_leque_de_flechas",
         "name": "Leque de Flechas",
+        "icon": "icon-multishot",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Arco curto",
@@ -1489,6 +1550,7 @@
       {
         "id": "archer_att_flecha_de_sakurajima",
         "name": "Flecha de Sakurajima",
+        "icon": "icon-multishot",
         "category": "apex",
         "maxRank": 1,
         "req": "Arco curto",
@@ -1509,6 +1571,7 @@
       {
         "id": "archer_att_tiro_carregado",
         "name": "Tiro Carregado",
+        "icon": "icon-multishot",
         "category": "active",
         "maxRank": 2,
         "req": "Arco longo",
@@ -1529,6 +1592,7 @@
       {
         "id": "archer_att_atravessa_tudo",
         "name": "Atravessa Tudo",
+        "icon": "icon-multishot",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Arco longo",
@@ -1549,6 +1613,7 @@
       {
         "id": "archer_att_um_tiro_uma_vida",
         "name": "Um Tiro, Uma Vida",
+        "icon": "icon-multishot",
         "category": "apex",
         "maxRank": 1,
         "req": "Arco longo",
@@ -1568,6 +1633,7 @@
       },
       {
         "id": "archer_att_explosiva_em_cacho",
+        "icon": "icon-ring",
         "name": "Explosiva em Cacho",
         "category": "upgrade",
         "maxRank": 1,
@@ -1588,6 +1654,7 @@
       },
       {
         "id": "archer_att_chuva_de_flechas",
+        "icon": "icon-arrow-rain",
         "name": "Chuva de Flechas",
         "category": "active",
         "maxRank": 1,
@@ -1608,6 +1675,7 @@
       },
       {
         "id": "archer_att_chuva_explosiva",
+        "icon": "icon-arrow-rain",
         "name": "Chuva Explosiva",
         "category": "apex",
         "maxRank": 1,
@@ -1628,6 +1696,7 @@
       },
       {
         "id": "archer_att_mira_do_vulc_o",
+        "icon": "icon-doom",
         "name": "Mira do Vulcão",
         "category": "nightmare",
         "maxRank": 5,
@@ -1648,6 +1717,7 @@
       },
       {
         "id": "archer_att_vento_de_satsuma",
+        "icon": "icon-doom",
         "name": "Vento de Satsuma",
         "category": "nightmare",
         "maxRank": 5,
@@ -1728,6 +1798,7 @@
     "nodes": [
       {
         "id": "mage_def_manto_de_mana",
+        "icon": "icon-arcane-orb",
         "name": "Manto de Mana",
         "category": "passive",
         "maxRank": 3,
@@ -1746,6 +1817,7 @@
       },
       {
         "id": "mage_def_concentra_o",
+        "icon": "icon-arcane-orb",
         "name": "Concentração",
         "category": "passive",
         "maxRank": 2,
@@ -1766,6 +1838,7 @@
       },
       {
         "id": "mage_def_explos_o_defensiva",
+        "icon": "icon-shield",
         "name": "Explosão Defensiva",
         "category": "upgrade",
         "maxRank": 1,
@@ -1787,6 +1860,7 @@
       {
         "id": "mage_def_espelho_solar",
         "name": "Espelho Solar",
+        "icon": "icon-arcane-orb",
         "category": "active",
         "maxRank": 2,
         "req": "Cajado arcano",
@@ -1805,6 +1879,7 @@
       {
         "id": "mage_def_espelho_duplo",
         "name": "Espelho Duplo",
+        "icon": "icon-arcane-orb",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Cajado arcano",
@@ -1824,6 +1899,7 @@
       },
       {
         "id": "mage_def_hier_glifo_vivo",
+        "icon": "icon-arcane-blast",
         "name": "Hieróglifo Vivo",
         "category": "synergy",
         "maxRank": 1,
@@ -1845,6 +1921,7 @@
       {
         "id": "mage_def_pele_de_gelo",
         "name": "Pele de Gelo",
+        "icon": "icon-iron-skin",
         "category": "passive",
         "maxRank": 3,
         "req": "Cajado de gelo",
@@ -1864,6 +1941,7 @@
       },
       {
         "id": "mage_def_sarc_fago",
+        "icon": "icon-aegis",
         "name": "Sarcófago",
         "category": "apex",
         "maxRank": 1,
@@ -1885,6 +1963,7 @@
       {
         "id": "mage_def_inverno_de_ra_khem",
         "name": "Inverno de Ra- Khem",
+        "icon": "icon-ice-shard",
         "category": "apex",
         "maxRank": 1,
         "req": "Cajado de gelo",
@@ -1904,6 +1983,7 @@
       },
       {
         "id": "mage_def_manto_antigo",
+        "icon": "icon-doom",
         "name": "Manto Antigo",
         "category": "nightmare",
         "maxRank": 5,
@@ -1924,6 +2004,7 @@
       },
       {
         "id": "mage_def_po_o_de_mana",
+        "icon": "icon-arcane-orb",
         "name": "Poço de Mana",
         "category": "nightmare",
         "maxRank": 5,
@@ -1996,6 +2077,7 @@
     "nodes": [
       {
         "id": "mage_att_precis_o_arcana_10",
+        "icon": "icon-ring",
         "name": "Precisão Arcana 10 ===",
         "category": "passive",
         "maxRank": 3,
@@ -2014,6 +2096,7 @@
       },
       {
         "id": "mage_att_sobrecarga",
+        "icon": "icon-ring",
         "name": "Sobrecarga",
         "category": "passive",
         "maxRank": 1,
@@ -2035,6 +2118,7 @@
       {
         "id": "mage_att_combust_o",
         "name": "Combustão",
+        "icon": "icon-fireball",
         "category": "passive",
         "maxRank": 3,
         "req": "Cajado de",
@@ -2055,6 +2139,7 @@
       {
         "id": "mage_att_bola_de_fogo_tripla",
         "name": "Bola de Fogo Tripla",
+        "icon": "icon-fireball",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Cajado de",
@@ -2075,6 +2160,7 @@
       {
         "id": "mage_att_meteoro_duplo",
         "name": "Meteoro Duplo",
+        "icon": "icon-meteor",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Cajado de",
@@ -2095,6 +2181,7 @@
       {
         "id": "mage_att_sol_de_ra_khem",
         "name": "Sol de Ra-Khem",
+        "icon": "icon-meteor",
         "category": "apex",
         "maxRank": 1,
         "req": "Cajado de",
@@ -2115,6 +2202,7 @@
       {
         "id": "mage_att_frio_cortante",
         "name": "Frio Cortante",
+        "icon": "icon-ice-shard",
         "category": "passive",
         "maxRank": 3,
         "req": "Cajado de",
@@ -2135,6 +2223,7 @@
       {
         "id": "mage_att_cometa_de_gelo",
         "name": "Cometa de Gelo",
+        "icon": "icon-ice-shard",
         "category": "active",
         "maxRank": 1,
         "req": "Cajado de",
@@ -2155,6 +2244,7 @@
       {
         "id": "mage_att_cometa_estilha_ante",
         "name": "Cometa Estilhaçante",
+        "icon": "icon-ice-shard",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Cajado de",
@@ -2175,6 +2265,7 @@
       {
         "id": "mage_att_zero_absoluto",
         "name": "Zero Absoluto",
+        "icon": "icon-frozen-heart",
         "category": "apex",
         "maxRank": 1,
         "req": "Cajado de",
@@ -2194,6 +2285,7 @@
       },
       {
         "id": "mage_att_chama_eterna",
+        "icon": "icon-fireball",
         "name": "Chama Eterna",
         "category": "nightmare",
         "maxRank": 5,
@@ -2214,6 +2306,7 @@
       },
       {
         "id": "mage_att_sobrecarga_arcana",
+        "icon": "icon-doom",
         "name": "Sobrecarga Arcana",
         "category": "nightmare",
         "maxRank": 5,
@@ -2290,6 +2383,7 @@
     "nodes": [
       {
         "id": "rogue_def_reflexos",
+        "icon": "icon-ring",
         "name": "Reflexos",
         "category": "passive",
         "maxRank": 3,
@@ -2309,6 +2403,7 @@
       {
         "id": "rogue_def_rolamento",
         "name": "Rolamento",
+        "icon": "icon-boreal-daggers",
         "category": "active",
         "maxRank": 2,
         "req": "Adagas gêmeas",
@@ -2328,6 +2423,7 @@
       },
       {
         "id": "rogue_def_contra_ataque_na_sombra",
+        "icon": "icon-mikiri",
         "name": "Contra-ataque na Sombra",
         "category": "passive",
         "maxRank": 1,
@@ -2348,6 +2444,7 @@
       },
       {
         "id": "rogue_def_mar_baixa",
+        "icon": "icon-ring",
         "name": "Maré Baixa",
         "category": "synergy",
         "maxRank": 1,
@@ -2368,6 +2465,7 @@
       },
       {
         "id": "rogue_def_fuma_a_t_xica",
+        "icon": "icon-smoke-bomb",
         "name": "Fumaça Tóxica",
         "category": "upgrade",
         "maxRank": 1,
@@ -2389,6 +2487,7 @@
       {
         "id": "rogue_def_isca",
         "name": "Isca",
+        "icon": "icon-dagger",
         "category": "active",
         "maxRank": 2,
         "req": "Adaga única",
@@ -2409,6 +2508,7 @@
       {
         "id": "rogue_def_isca_explosiva",
         "name": "Isca Explosiva",
+        "icon": "icon-dagger",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Adaga única",
@@ -2428,6 +2528,7 @@
       },
       {
         "id": "rogue_def_sombra_fugidia",
+        "icon": "icon-shadow-step",
         "name": "Sombra Fugidia",
         "category": "upgrade",
         "maxRank": 1,
@@ -2448,6 +2549,7 @@
       },
       {
         "id": "rogue_def_ningu_m_me_v",
+        "icon": "icon-aegis",
         "name": "Ninguém me Vê",
         "category": "apex",
         "maxRank": 1,
@@ -2468,6 +2570,7 @@
       },
       {
         "id": "rogue_def_l_mina_na_fuma_a",
+        "icon": "icon-dagger",
         "name": "Lâmina na Fumaça",
         "category": "apex",
         "maxRank": 1,
@@ -2488,6 +2591,7 @@
       },
       {
         "id": "rogue_def_n_voa_densa",
+        "icon": "icon-smoke-bomb",
         "name": "Névoa Densa",
         "category": "nightmare",
         "maxRank": 5,
@@ -2508,6 +2612,7 @@
       },
       {
         "id": "rogue_def_passos_de_gato",
+        "icon": "icon-doom",
         "name": "Passos de Gato",
         "category": "nightmare",
         "maxRank": 5,
@@ -2584,6 +2689,7 @@
     "nodes": [
       {
         "id": "rogue_att_pressa",
+        "icon": "icon-ring",
         "name": "Pressa",
         "category": "passive",
         "maxRank": 3,
@@ -2602,6 +2708,7 @@
       },
       {
         "id": "rogue_att_golpe_trai_oeiro_letal",
+        "icon": "icon-ring",
         "name": "Golpe Traiçoeiro Letal",
         "category": "upgrade",
         "maxRank": 1,
@@ -2623,6 +2730,7 @@
       {
         "id": "rogue_att_veneno_nas_l_minas",
         "name": "Veneno nas Lâminas",
+        "icon": "icon-boreal-daggers",
         "category": "passive",
         "maxRank": 3,
         "req": "Adagas gêmeas",
@@ -2643,6 +2751,7 @@
       {
         "id": "rogue_att_dan_a_das_l_minas",
         "name": "Dança das Lâminas",
+        "icon": "icon-boreal-daggers",
         "category": "active",
         "maxRank": 1,
         "req": "Adagas gêmeas",
@@ -2663,6 +2772,7 @@
       {
         "id": "rogue_att_ferroada",
         "name": "Ferroada",
+        "icon": "icon-iron-skin",
         "category": "synergy",
         "maxRank": 1,
         "req": "Dança das",
@@ -2683,6 +2793,7 @@
       {
         "id": "rogue_att_mil_presas",
         "name": "Mil Presas",
+        "icon": "icon-boreal-daggers",
         "category": "apex",
         "maxRank": 1,
         "req": "Adagas gêmeas",
@@ -2703,6 +2814,7 @@
       {
         "id": "rogue_att_golpe_certeiro",
         "name": "Golpe Certeiro",
+        "icon": "icon-dagger",
         "category": "passive",
         "maxRank": 3,
         "req": "Adaga única",
@@ -2723,6 +2835,7 @@
       {
         "id": "rogue_att_marca_da_morte",
         "name": "Marca da Morte",
+        "icon": "icon-dagger",
         "category": "active",
         "maxRank": 1,
         "req": "Adaga única",
@@ -2743,6 +2856,7 @@
       {
         "id": "rogue_att_marca_saltitante",
         "name": "Marca Saltitante",
+        "icon": "icon-dagger",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Adaga única",
@@ -2763,6 +2877,7 @@
       {
         "id": "rogue_att_execu_o_silenciosa",
         "name": "Execução Silenciosa",
+        "icon": "icon-kaishaku",
         "category": "apex",
         "maxRank": 1,
         "req": "Adaga única",
@@ -2782,6 +2897,7 @@
       },
       {
         "id": "rogue_att_veneno_do_limiar",
+        "icon": "icon-doom",
         "name": "Veneno do Limiar",
         "category": "nightmare",
         "maxRank": 5,
@@ -2802,6 +2918,7 @@
       },
       {
         "id": "rogue_att_contrato_de_sangue",
+        "icon": "icon-bloodlust",
         "name": "Contrato de Sangue",
         "category": "nightmare",
         "maxRank": 5,
@@ -2878,6 +2995,7 @@
     "nodes": [
       {
         "id": "necromancer_def_pacto",
+        "icon": "icon-skeleton-army",
         "name": "Pacto",
         "category": "passive",
         "maxRank": 3,
@@ -2897,6 +3015,7 @@
       {
         "id": "necromancer_def_ossos_duros",
         "name": "Ossos Duros",
+        "icon": "icon-arcane-staff",
         "category": "passive",
         "maxRank": 2,
         "req": "Cajado de osso",
@@ -2917,6 +3036,7 @@
       {
         "id": "necromancer_def_esqueletos_escudeiros",
         "name": "Esqueletos Escudeiros",
+        "icon": "icon-shield",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Cajado de osso",
@@ -2936,6 +3056,7 @@
       },
       {
         "id": "necromancer_def_armadura_de_ossos",
+        "icon": "icon-iron-skin",
         "name": "Armadura de Ossos",
         "category": "active",
         "maxRank": 2,
@@ -2956,6 +3077,7 @@
       },
       {
         "id": "necromancer_def_armadura_estilha_ante",
+        "icon": "icon-iron-skin",
         "name": "Armadura Estilhaçante",
         "category": "upgrade",
         "maxRank": 1,
@@ -2977,6 +3099,7 @@
       {
         "id": "necromancer_def_ex_rcito_imortal",
         "name": "Exército Imortal",
+        "icon": "icon-skeleton-army",
         "category": "synergy",
         "maxRank": 1,
         "req": "Esqueletos Escudeiros",
@@ -2997,6 +3120,7 @@
       {
         "id": "necromancer_def_medo",
         "name": "Medo",
+        "icon": "icon-ring",
         "category": "passive",
         "maxRank": 2,
         "req": "Cetro",
@@ -3017,6 +3141,7 @@
       {
         "id": "necromancer_def_rei_dos_mortos",
         "name": "Rei dos Mortos",
+        "icon": "icon-arcane-staff",
         "category": "apex",
         "maxRank": 1,
         "req": "Cajado de osso",
@@ -3037,6 +3162,7 @@
       {
         "id": "necromancer_def_n_o_morto",
         "name": "Não Morto",
+        "icon": "icon-skeleton-army",
         "category": "apex",
         "maxRank": 1,
         "req": "Cetro",
@@ -3056,6 +3182,7 @@
       },
       {
         "id": "necromancer_def_ossos_de_ferro",
+        "icon": "icon-iron-skin",
         "name": "Ossos de Ferro",
         "category": "nightmare",
         "maxRank": 5,
@@ -3077,6 +3204,7 @@
       {
         "id": "necromancer_def_legi_o",
         "name": "Legião",
+        "icon": "icon-arcane-staff",
         "category": "nightmare",
         "maxRank": 5,
         "req": "Cajado de osso",
@@ -3153,6 +3281,7 @@
       {
         "id": "necromancer_att_maldi_o_profunda",
         "name": "Maldição Profunda",
+        "icon": "icon-death-curse",
         "category": "passive",
         "maxRank": 3,
         "req": "Cetro",
@@ -3171,6 +3300,7 @@
       {
         "id": "necromancer_att_praga",
         "name": "Praga",
+        "icon": "icon-sword",
         "category": "active",
         "maxRank": 2,
         "req": "Cetro",
@@ -3191,6 +3321,7 @@
       {
         "id": "necromancer_att_colheita",
         "name": "Colheita",
+        "icon": "icon-arcane-orb",
         "category": "passive",
         "maxRank": 3,
         "req": "Foice",
@@ -3209,6 +3340,7 @@
       {
         "id": "necromancer_att_ceifa",
         "name": "Ceifa",
+        "icon": "icon-night-harvest",
         "category": "active",
         "maxRank": 2,
         "req": "Foice",
@@ -3228,6 +3360,7 @@
       },
       {
         "id": "necromancer_att_explos_o_de_cad_ver",
+        "icon": "icon-corpse-explosion",
         "name": "Explosão de Cadáver",
         "category": "passive",
         "maxRank": 1,
@@ -3248,6 +3381,7 @@
       },
       {
         "id": "necromancer_att_lan_a_tripla",
+        "icon": "icon-skull-scepter",
         "name": "Lança Tripla",
         "category": "upgrade",
         "maxRank": 1,
@@ -3269,6 +3403,7 @@
       {
         "id": "necromancer_att_peste_negra",
         "name": "Peste Negra",
+        "icon": "icon-aegis",
         "category": "apex",
         "maxRank": 1,
         "req": "Cetro",
@@ -3289,6 +3424,7 @@
       {
         "id": "necromancer_att_ceifador_de_almas",
         "name": "Ceifador de Almas",
+        "icon": "icon-night-harvest",
         "category": "apex",
         "maxRank": 1,
         "req": "Foice",
@@ -3308,6 +3444,7 @@
       },
       {
         "id": "necromancer_att_pandemia",
+        "icon": "icon-death-curse",
         "name": "Pandemia",
         "category": "nightmare",
         "maxRank": 5,
@@ -3328,6 +3465,7 @@
       },
       {
         "id": "necromancer_att_fome_dos_mortos",
+        "icon": "icon-skeleton-army",
         "name": "Fome dos Mortos",
         "category": "nightmare",
         "maxRank": 5,
@@ -3396,6 +3534,7 @@
     "nodes": [
       {
         "id": "hunter_def_pelagem_grossa",
+        "icon": "icon-shield",
         "name": "Pelagem Grossa",
         "category": "passive",
         "maxRank": 3,
@@ -3415,6 +3554,7 @@
       {
         "id": "hunter_def_lobo_leal",
         "name": "Lobo Leal",
+        "icon": "icon-wolf",
         "category": "passive",
         "maxRank": 2,
         "req": "Apito do Lobo",
@@ -3435,6 +3575,7 @@
       {
         "id": "hunter_def_uivo_de_prote_o",
         "name": "Uivo de Proteção",
+        "icon": "icon-wolf",
         "category": "active",
         "maxRank": 2,
         "req": "Apito do Lobo",
@@ -3455,6 +3596,7 @@
       {
         "id": "hunter_def_uivo_ressonante",
         "name": "Uivo Ressonante",
+        "icon": "icon-wolf",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Apito do Lobo",
@@ -3475,6 +3617,7 @@
       {
         "id": "hunter_def_esp_rito_h_n",
         "name": "Espírito Hän",
+        "icon": "icon-wolf",
         "category": "apex",
         "maxRank": 1,
         "req": "Apito do Lobo",
@@ -3494,6 +3637,7 @@
       },
       {
         "id": "hunter_def_fogueira",
+        "icon": "icon-natures-wrath",
         "name": "Fogueira",
         "category": "active",
         "maxRank": 2,
@@ -3514,6 +3658,7 @@
       },
       {
         "id": "hunter_def_fogueira_ancestral",
+        "icon": "icon-holy-nova",
         "name": "Fogueira Ancestral",
         "category": "upgrade",
         "maxRank": 1,
@@ -3534,6 +3679,7 @@
       },
       {
         "id": "hunter_def_acampamento",
+        "icon": "icon-snare",
         "name": "Acampamento",
         "category": "apex",
         "maxRank": 1,
@@ -3554,6 +3700,7 @@
       },
       {
         "id": "hunter_def_armadilha_defensiva",
+        "icon": "icon-snare",
         "name": "Armadilha Defensiva",
         "category": "passive",
         "maxRank": 1,
@@ -3574,6 +3721,7 @@
       },
       {
         "id": "hunter_def_armadilha_dupla",
+        "icon": "icon-snare",
         "name": "Armadilha Dupla",
         "category": "upgrade",
         "maxRank": 1,
@@ -3594,6 +3742,7 @@
       },
       {
         "id": "hunter_def_rastro_gelado",
+        "icon": "icon-snare",
         "name": "Rastro Gelado",
         "category": "apex",
         "maxRank": 1,
@@ -3614,6 +3763,7 @@
       },
       {
         "id": "hunter_def_couro_do_norte",
+        "icon": "icon-doom",
         "name": "Couro do Norte",
         "category": "nightmare",
         "maxRank": 5,
@@ -3635,6 +3785,7 @@
       {
         "id": "hunter_def_alfa_imortal",
         "name": "Alfa Imortal",
+        "icon": "icon-wolf",
         "category": "nightmare",
         "maxRank": 5,
         "req": "Apito do Lobo",
@@ -3715,6 +3866,7 @@
       {
         "id": "hunter_att_olho_do_rastreador",
         "name": "Olho do Rastreador",
+        "icon": "icon-multishot",
         "category": "passive",
         "maxRank": 3,
         "req": "Arco longo",
@@ -3733,6 +3885,7 @@
       {
         "id": "hunter_att_tiro_preciso_perfurante",
         "name": "Tiro Preciso Perfurante",
+        "icon": "icon-piercing-arrow",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Arco longo",
@@ -3753,6 +3906,7 @@
       {
         "id": "hunter_att_tiro_duplo",
         "name": "Tiro Duplo",
+        "icon": "icon-multishot",
         "category": "active",
         "maxRank": 1,
         "req": "Arco curto",
@@ -3773,6 +3927,7 @@
       {
         "id": "hunter_att_presas",
         "name": "Presas",
+        "icon": "icon-wolf",
         "category": "passive",
         "maxRank": 3,
         "req": "Apito do Lobo",
@@ -3791,6 +3946,7 @@
       {
         "id": "hunter_att_ataque_coordenado",
         "name": "Ataque Coordenado",
+        "icon": "icon-wolf",
         "category": "active",
         "maxRank": 2,
         "req": "Apito do Lobo",
@@ -3811,6 +3967,7 @@
       {
         "id": "hunter_att_matilha",
         "name": "Matilha",
+        "icon": "icon-wolf",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Apito do Lobo",
@@ -3830,6 +3987,7 @@
       },
       {
         "id": "hunter_att_ponto_fraco",
+        "icon": "icon-snare",
         "name": "Ponto Fraco",
         "category": "passive",
         "maxRank": 2,
@@ -3851,6 +4009,7 @@
       {
         "id": "hunter_att_ca_ada_perfeita",
         "name": "Caçada Perfeita",
+        "icon": "icon-piercing-arrow",
         "category": "synergy",
         "maxRank": 1,
         "req": "Tiro Preciso Perfurante",
@@ -3871,6 +4030,7 @@
       {
         "id": "hunter_att_tiro_da_corrida_do_ouro",
         "name": "Tiro da Corrida do Ouro",
+        "icon": "icon-aimed-shot",
         "category": "apex",
         "maxRank": 1,
         "req": "Arco longo",
@@ -3891,6 +4051,7 @@
       {
         "id": "hunter_att_rei_da_matilha",
         "name": "Rei da Matilha",
+        "icon": "icon-wolf",
         "category": "apex",
         "maxRank": 1,
         "req": "Apito do Lobo",
@@ -3910,6 +4071,7 @@
       },
       {
         "id": "hunter_att_ca_a_grossa",
+        "icon": "icon-doom",
         "name": "Caça Grossa",
         "category": "nightmare",
         "maxRank": 5,
@@ -3931,6 +4093,7 @@
       {
         "id": "hunter_att_f_ria_da_matilha",
         "name": "Fúria da Matilha",
+        "icon": "icon-bloodlust",
         "category": "nightmare",
         "maxRank": 5,
         "req": "Apito do Lobo",
@@ -4000,6 +4163,7 @@
     "nodes": [
       {
         "id": "shaman_def_pele_de_jenipapo",
+        "icon": "icon-shield",
         "name": "Pele de Jenipapo",
         "category": "passive",
         "maxRank": 3,
@@ -4018,6 +4182,7 @@
       },
       {
         "id": "shaman_def_ra_zes_firmes",
+        "icon": "icon-roots",
         "name": "Raízes Firmes",
         "category": "passive",
         "maxRank": 1,
@@ -4039,6 +4204,7 @@
       {
         "id": "shaman_def_c_rculo_de_jurema",
         "name": "Círculo de Jurema",
+        "icon": "icon-holy-nova",
         "category": "active",
         "maxRank": 2,
         "req": "Maracá Sagrado",
@@ -4058,6 +4224,7 @@
       },
       {
         "id": "shaman_def_ra_zes_que_abra_am",
+        "icon": "icon-roots",
         "name": "Raízes que Abraçam",
         "category": "upgrade",
         "maxRank": 1,
@@ -4079,6 +4246,7 @@
       {
         "id": "shaman_def_esp_rito_guardi_o",
         "name": "Espírito Guardião",
+        "icon": "icon-holy-nova",
         "category": "passive",
         "maxRank": 2,
         "req": "Maracá Sagrado",
@@ -4099,6 +4267,7 @@
       {
         "id": "shaman_def_trov_o_de_tup",
         "name": "Trovão de Tupã",
+        "icon": "icon-holy-smite",
         "category": "apex",
         "maxRank": 1,
         "req": "Maracá Sagrado",
@@ -4119,6 +4288,7 @@
       {
         "id": "shaman_def_escudo_de_casca",
         "name": "Escudo de Casca",
+        "icon": "icon-shield",
         "category": "active",
         "maxRank": 2,
         "req": "Lâmina",
@@ -4139,6 +4309,7 @@
       {
         "id": "shaman_def_casca_espinhosa",
         "name": "Casca Espinhosa",
+        "icon": "icon-dagger",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Lâmina",
@@ -4159,6 +4330,7 @@
       {
         "id": "shaman_def_suma_ma",
         "name": "Sumaúma",
+        "icon": "icon-shield",
         "category": "apex",
         "maxRank": 1,
         "req": "Lâmina",
@@ -4178,6 +4350,7 @@
       },
       {
         "id": "shaman_def_seiva_da_suma_ma",
+        "icon": "icon-doom",
         "name": "Seiva da Sumaúma",
         "category": "nightmare",
         "maxRank": 5,
@@ -4198,6 +4371,7 @@
       },
       {
         "id": "shaman_def_cura_do_igap",
+        "icon": "icon-holy-nova",
         "name": "Cura do Igapó",
         "category": "nightmare",
         "maxRank": 5,
@@ -4271,6 +4445,7 @@
       {
         "id": "shaman_att_ponta_de_curare",
         "name": "Ponta de Curare",
+        "icon": "icon-multishot",
         "category": "passive",
         "maxRank": 3,
         "req": "Zarabatana ou arco",
@@ -4288,6 +4463,7 @@
       },
       {
         "id": "shaman_att_paralisia",
+        "icon": "icon-holy-nova",
         "name": "Paralisia",
         "category": "passive",
         "maxRank": 1,
@@ -4309,6 +4485,7 @@
       {
         "id": "shaman_att_saraivada_de_dardos",
         "name": "Saraivada de Dardos",
+        "icon": "icon-multishot",
         "category": "active",
         "maxRank": 1,
         "req": "Zarabatana ou arco",
@@ -4328,6 +4505,7 @@
       },
       {
         "id": "shaman_att_curare_mortal",
+        "icon": "icon-holy-nova",
         "name": "Curare Mortal",
         "category": "upgrade",
         "maxRank": 1,
@@ -4348,6 +4526,7 @@
       },
       {
         "id": "shaman_att_selva_faminta",
+        "icon": "icon-holy-nova",
         "name": "Selva Faminta",
         "category": "synergy",
         "maxRank": 1,
@@ -4369,6 +4548,7 @@
       {
         "id": "shaman_att_mergulho_do_gavi_o",
         "name": "Mergulho do Gavião",
+        "icon": "icon-holy-nova",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Maracá Sagrado",
@@ -4389,6 +4569,7 @@
       {
         "id": "shaman_att_fio_da_l_mina",
         "name": "Fio da Lâmina",
+        "icon": "icon-dagger",
         "category": "passive",
         "maxRank": 3,
         "req": "Lâmina",
@@ -4409,6 +4590,7 @@
       {
         "id": "shaman_att_dan_a_de_guerra",
         "name": "Dança de Guerra",
+        "icon": "icon-dagger",
         "category": "active",
         "maxRank": 1,
         "req": "Lâmina",
@@ -4429,6 +4611,7 @@
       {
         "id": "shaman_att_revoada",
         "name": "Revoada",
+        "icon": "icon-holy-nova",
         "category": "apex",
         "maxRank": 1,
         "req": "Maracá Sagrado",
@@ -4449,6 +4632,7 @@
       {
         "id": "shaman_att_garra_da_on_a",
         "name": "Garra da Onça",
+        "icon": "icon-dagger",
         "category": "apex",
         "maxRank": 1,
         "req": "Lâmina",
@@ -4468,6 +4652,7 @@
       },
       {
         "id": "shaman_att_veneno_da_mata",
+        "icon": "icon-doom",
         "name": "Veneno da Mata",
         "category": "nightmare",
         "maxRank": 5,
@@ -4488,6 +4673,7 @@
       },
       {
         "id": "shaman_att_f_ria_de_guerreira",
+        "icon": "icon-bloodlust",
         "name": "Fúria de Guerreira",
         "category": "nightmare",
         "maxRank": 5,
@@ -4565,6 +4751,7 @@
       {
         "id": "druid_def_couro_de_javali",
         "name": "Couro de Javali",
+        "icon": "icon-javali-form",
         "category": "passive",
         "maxRank": 3,
         "req": "Forma de",
@@ -4583,6 +4770,7 @@
       {
         "id": "druid_def_pisoteio",
         "name": "Pisoteio",
+        "icon": "icon-javali-form",
         "category": "active",
         "maxRank": 2,
         "req": "Forma de",
@@ -4603,6 +4791,7 @@
       {
         "id": "druid_def_casca_de_carvalho",
         "name": "Casca de Carvalho",
+        "icon": "icon-shield",
         "category": "passive",
         "maxRank": 3,
         "req": "Cajado de",
@@ -4621,6 +4810,7 @@
       {
         "id": "druid_def_c_rculo_de_carvalhos",
         "name": "Círculo de Carvalhos",
+        "icon": "icon-arcane-staff",
         "category": "active",
         "maxRank": 2,
         "req": "Cajado de",
@@ -4640,6 +4830,7 @@
       },
       {
         "id": "druid_def_instinto_animal",
+        "icon": "icon-ring",
         "name": "Instinto Animal",
         "category": "passive",
         "maxRank": 1,
@@ -4660,6 +4851,7 @@
       },
       {
         "id": "druid_def_visco_sagrado",
+        "icon": "icon-holy-nova",
         "name": "Visco Sagrado",
         "category": "passive",
         "maxRank": 2,
@@ -4680,6 +4872,7 @@
       },
       {
         "id": "druid_def_guia_protetora",
+        "icon": "icon-eagle",
         "name": "Águia Protetora",
         "category": "upgrade",
         "maxRank": 1,
@@ -4701,6 +4894,7 @@
       {
         "id": "druid_def_guardi_o_da_umava",
         "name": "Guardião da Šumava",
+        "icon": "icon-arcane-staff",
         "category": "apex",
         "maxRank": 1,
         "req": "Cajado de",
@@ -4720,6 +4914,7 @@
       },
       {
         "id": "druid_def_renascer",
+        "icon": "icon-aegis",
         "name": "Renascer",
         "category": "apex",
         "maxRank": 1,
@@ -4740,6 +4935,7 @@
       },
       {
         "id": "druid_def_cerne_do_carvalho",
+        "icon": "icon-doom",
         "name": "Cerne do Carvalho",
         "category": "nightmare",
         "maxRank": 5,
@@ -4761,6 +4957,7 @@
       {
         "id": "druid_def_javali_ancestral",
         "name": "Javali Ancestral",
+        "icon": "icon-javali-form",
         "category": "nightmare",
         "maxRank": 5,
         "req": "Forma de",
@@ -4827,6 +5024,7 @@
       {
         "id": "druid_att_garras_afiadas",
         "name": "Garras Afiadas",
+        "icon": "icon-ring",
         "category": "passive",
         "maxRank": 3,
         "req": "Forma de",
@@ -4845,6 +5043,7 @@
       {
         "id": "druid_att_sangue_celta",
         "name": "Sangue Celta",
+        "icon": "icon-bloodlust",
         "category": "passive",
         "maxRank": 1,
         "req": "Forma de",
@@ -4865,6 +5064,7 @@
       {
         "id": "druid_att_uivo_sanguin_rio",
         "name": "Uivo Sanguinário",
+        "icon": "icon-wolf",
         "category": "active",
         "maxRank": 1,
         "req": "Forma de",
@@ -4885,6 +5085,7 @@
       {
         "id": "druid_att_matilha_interior",
         "name": "Matilha Interior",
+        "icon": "icon-wolf",
         "category": "upgrade",
         "maxRank": 1,
         "req": "Forma de",
@@ -4905,6 +5106,7 @@
       {
         "id": "druid_att_lua_de_z_vist",
         "name": "Lua de Závist",
+        "icon": "icon-aegis",
         "category": "apex",
         "maxRank": 1,
         "req": "Forma de",
@@ -4925,6 +5127,7 @@
       {
         "id": "druid_att_corte_da_foice",
         "name": "Corte da Foice",
+        "icon": "icon-night-harvest",
         "category": "passive",
         "maxRank": 3,
         "req": "Foice de Ouro",
@@ -4945,6 +5148,7 @@
       {
         "id": "druid_att_colheita_do_visco",
         "name": "Colheita do Visco",
+        "icon": "icon-night-harvest",
         "category": "active",
         "maxRank": 1,
         "req": "Foice de Ouro",
@@ -4965,6 +5169,7 @@
       {
         "id": "druid_att_foice_de_samhain",
         "name": "Foice de Samhain",
+        "icon": "icon-night-harvest",
         "category": "apex",
         "maxRank": 1,
         "req": "Foice de Ouro",
@@ -4984,6 +5189,7 @@
       },
       {
         "id": "druid_att_mergulho_da_guia",
+        "icon": "icon-eagle",
         "name": "Mergulho da Águia",
         "category": "upgrade",
         "maxRank": 1,
@@ -5004,6 +5210,7 @@
       },
       {
         "id": "druid_att_c_u_boio",
+        "icon": "icon-eagle",
         "name": "Céu Boio",
         "category": "passive",
         "maxRank": 2,
@@ -5025,6 +5232,7 @@
       {
         "id": "druid_att_tempestade_de_penas",
         "name": "Tempestade de Penas",
+        "icon": "icon-eagle",
         "category": "apex",
         "maxRank": 1,
         "req": "Mergulho da",
@@ -5044,6 +5252,7 @@
       },
       {
         "id": "druid_att_f_ria_ancestral",
+        "icon": "icon-bloodlust",
         "name": "Fúria Ancestral",
         "category": "nightmare",
         "maxRank": 5,
@@ -5064,6 +5273,7 @@
       },
       {
         "id": "druid_att_lua_cheia",
+        "icon": "icon-doom",
         "name": "Lua Cheia",
         "category": "nightmare",
         "maxRank": 5,

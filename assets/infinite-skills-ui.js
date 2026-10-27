@@ -96,6 +96,8 @@
       // 2. Right Detail Panel (Parchment with double gold border)
       this.detailG = i.add.graphics();
       this.root.add(this.detailG);
+      this.detailCardContent = i.add.container(0, 0);
+      this.root.add(this.detailCardContent);
 
       // Header Texts
       this.titleText = i.add.text(45, 22, "", {
@@ -190,7 +192,7 @@
       this.root.add([this.respecBtn, this.respecText]);
 
       // Footer Gamepad Hints
-      this.footerText = i.add.text(w / 2, 342, "🎮 [D-Pad] Navegar   [A] Aprimorar   [Y] Redistribuir   [B] Voltar   [X] Ver Outro", {
+      this.footerText = i.add.text(w / 2, 348, "🎮 [D-Pad] Navegar   [A] Aprimorar   [Y] Redistribuir   [B] Voltar   [X] Ver Outro", {
         fontFamily: "sans-serif",
         fontSize: "9px",
         color: "#8c7e6a"
@@ -332,7 +334,7 @@
       g.strokePath();
 
       // Right detail card background (dark parchment with double gold border)
-      const px = 375, py = 16, pw = 235, ph = 315;
+      const px = 375, py = 16, pw = 235, ph = 320;
       g.fillStyle(0x110c1c, 0.95);
       g.fillRoundedRect(px, py, pw, ph, 4);
 
@@ -341,12 +343,6 @@
       g.strokeRoundedRect(px, py, pw, ph, 4);
       g.lineStyle(1, 0x544018, 0.7);
       g.strokeRoundedRect(px + 3, py + 3, pw - 6, ph - 6, 3);
-
-      // Diamond ornament divider (◆ ─── ◆)
-      g.lineStyle(1, 0x8a6a2a, 0.6);
-      g.beginPath();
-      g.moveTo(px + 20, py + 74); g.lineTo(px + pw - 20, py + 74);
-      g.strokePath();
 
       g.fillStyle(0xffd24a, 0.9);
       this.drawDiamond(g, px + pw / 2, py + 74, 4);
@@ -532,6 +528,7 @@
     renderNodes(tree) {
       this.nodesContainer.removeAll(!0);
       this.cursorG.clear();
+
       const state = this.getRunState();
       const pts = this.getAvailablePoints();
       const isLockedTree = this.viewingLockedTree;
@@ -541,10 +538,9 @@
 
       for (const node of tree.nodes) {
         const rank = !isLockedTree ? (state.invested[node.id] || 0) : 0;
-        const reqCheck = window.__checkNodeWeaponReq(node.req, eq, druidForm);
-        const wepActive = reqCheck.active;
+        const wepCheck = window.__checkNodeWeaponReq(node.req, eq, druidForm);
+        const wepActive = wepCheck.active;
 
-        // Check if prerequisites are met
         let prereqsMet = !0;
         for (const reqId of (node.requires || [])) {
           if (!state.invested[reqId] || state.invested[reqId] <= 0) {
@@ -564,70 +560,91 @@
         const diamondG = this.scene.add.graphics();
         nodeContainer.add(diamondG);
 
-        const r = 14; // Node radius
+        const r = 15; // Node diamond radius
 
         // Fill and stroke based on state
         if (rank > 0) {
           if (wepActive) {
-            // Unlocked & active
-            diamondG.fillStyle(0xffca3a, 1);
-            diamondG.lineStyle(2, 0xfff099, 1);
+            diamondG.fillStyle(0x382a12, 1);
+            diamondG.lineStyle(2, 0xffd24a, 1);
           } else {
-            // Unlocked but weapon not equipped (disabled)
-            diamondG.fillStyle(0x5a4a35, 1);
+            diamondG.fillStyle(0x331c18, 1);
             diamondG.lineStyle(1.5, 0x994444, 1);
           }
         } else if (isAvailable) {
-          // Available to unlock (pulsing border)
-          diamondG.fillStyle(0x251c36, 1);
+          diamondG.fillStyle(0x231a33, 1);
           diamondG.lineStyle(2, 0xffb703, 1);
         } else {
-          // Locked
-          diamondG.fillStyle(0x130e20, 0.95);
+          diamondG.fillStyle(0x100c1c, 0.95);
           diamondG.lineStyle(1.5, 0x332845, 0.8);
         }
 
         this.drawDiamond(diamondG, 0, 0, r);
 
-        // Icon or rank inside node
+        // Render Ability Icon Texture inside diamond
+        const iconKey = node.icon || "icon-sword";
+        if (this.scene.textures.exists(iconKey)) {
+          const iconImg = this.scene.add.image(0, 0, iconKey).setDisplaySize(18, 18);
+          if (rank > 0) {
+            if (wepActive) {
+              iconImg.setAlpha(1.0);
+            } else {
+              iconImg.setTint(0xaa6655).setAlpha(0.7);
+            }
+          } else if (isAvailable) {
+            iconImg.setTint(0xffe280).setAlpha(0.9);
+          } else {
+            iconImg.setTint(0x4a3d5c).setAlpha(0.45);
+          }
+          nodeContainer.add(iconImg);
+        }
+
+        // Rank / Lock / Status badges (neatly positioned in corners)
         if (rank > 0) {
-          const rankText = this.scene.add.text(0, 0, rank > 1 ? `${rank}` : "✓", {
-            fontFamily: "sans-serif",
-            fontSize: "10px",
-            color: wepActive ? "#140e04" : "#ff7777",
-            fontStyle: "bold"
-          }).setOrigin(0.5);
-          nodeContainer.add(rankText);
+          if (!wepActive) {
+            const warnBadge = this.scene.add.text(9, -9, "✕", {
+              fontSize: "9px",
+              color: "#ff3333",
+              fontStyle: "bold"
+            }).setOrigin(0.5);
+            nodeContainer.add(warnBadge);
+          }
+          if (node.maxRank > 1) {
+            const badgeBg = this.scene.add.rectangle(0, 11, 16, 9, 0x0a0612, 0.85);
+            const rankText = this.scene.add.text(0, 11, `${rank}/${node.maxRank}`, {
+              fontFamily: "sans-serif",
+              fontSize: "7px",
+              color: wepActive ? "#ffd24a" : "#ff8888",
+              fontStyle: "bold"
+            }).setOrigin(0.5);
+            nodeContainer.add([badgeBg, rankText]);
+          } else {
+            const checkText = this.scene.add.text(8, 8, "★", {
+              fontSize: "8px",
+              color: "#ffd24a"
+            }).setOrigin(0.5);
+            nodeContainer.add(checkText);
+          }
         } else if (!prereqsMet || isLockedTree) {
-          const lockText = this.scene.add.text(0, 0, "🔒", {
-            fontSize: "9px"
+          const lockText = this.scene.add.text(8, 8, "🔒", {
+            fontSize: "8px"
           }).setOrigin(0.5);
           nodeContainer.add(lockText);
         } else {
-          const plusText = this.scene.add.text(0, 0, "+", {
+          const plusText = this.scene.add.text(8, 8, "+", {
             fontFamily: "sans-serif",
-            fontSize: "11px",
-            color: "#ffca3a",
+            fontSize: "10px",
+            color: "#ffd24a",
             fontStyle: "bold"
           }).setOrigin(0.5);
           nodeContainer.add(plusText);
         }
 
-        // Draw weapon disabled badge if inactive
-        if (rank > 0 && !wepActive) {
-          const warnBadge = this.scene.add.text(8, -8, "✕", {
-            fontSize: "9px",
-            color: "#ff4444",
-            fontStyle: "bold"
-          }).setOrigin(0.5);
-          nodeContainer.add(warnBadge);
-        }
-
         // Selection Cursor on focused node
         if (isSelected) {
-          this.cursorG.lineStyle(2, 0xffffff, 0.9);
+          this.cursorG.lineStyle(2, 0xffffff, 0.95);
           this.drawDiamond(this.cursorG, node.x, node.y, r + 5);
-          this.cursorG.lineStyle(1, 0xffd24a, 0.6);
+          this.cursorG.lineStyle(1.5, 0xffd24a, 0.7);
           this.drawDiamond(this.cursorG, node.x, node.y, r + 8);
         }
 
@@ -636,6 +653,7 @@
         hitZone.on("pointerdown", () => {
           this.selectedNodeId = node.id;
           this.render();
+          window.__triggerHaptic?.(25, 0.2);
         });
         nodeContainer.add(hitZone);
 
@@ -644,6 +662,13 @@
     }
 
     renderDetailCard(tree) {
+      if (!this.detailCardContent) {
+        this.detailCardContent = this.scene.add.container(0, 0);
+        this.root.add(this.detailCardContent);
+      }
+      this.detailCardContent.removeAll(!0);
+      this.detailG.clear();
+
       const node = tree.nodes.find(n => n.id === this.selectedNodeId);
       if (!node) return;
 
@@ -655,25 +680,105 @@
       const druidForm = gScene?.druidForm || null;
       const reqCheck = window.__checkNodeWeaponReq(node.req, eq, druidForm);
 
-      this.dName.setText(node.name.toUpperCase());
-      this.dTag.setText(`TIPO: ${node.rawType.toUpperCase()}`);
+      const px = 375, py = 16, pw = 235;
 
-      // Weapon requirement status
-      if (!node.req || node.req === '—') {
-        this.dReq.setText("REQUER: Qualquer arma").setColor("#a09080");
-      } else if (reqCheck.active) {
-        this.dReq.setText(`✓ REQUER: ${node.req} (ATIVO)`).setColor("#55e088");
-      } else {
-        this.dReq.setText(`✗ REQUER: ${node.req} (NÃO EQUIPADA)`).setColor("#ff6b6b");
+      // 1. Icon Box with gold frame
+      const iconBoxX = px + 14, iconBoxY = py + 12;
+      this.detailG.lineStyle(1.5, 0xc9a24a, 0.85);
+      this.detailG.strokeRoundedRect(iconBoxX, iconBoxY, 36, 36, 4);
+      this.detailG.fillStyle(0x181024, 0.95);
+      this.detailG.fillRoundedRect(iconBoxX, iconBoxY, 36, 36, 4);
+
+      const iconKey = node.icon || "icon-sword";
+      if (this.scene.textures.exists(iconKey)) {
+        const iconImg = this.scene.add.image(iconBoxX + 18, iconBoxY + 18, iconKey).setDisplaySize(28, 28);
+        this.detailCardContent.add(iconImg);
       }
 
-      // Rank
-      this.dRank.setText(`GRAU: ${rank} / ${node.maxRank}`);
+      // 2. Name next to Icon
+      const nameX = px + 56, nameY = py + 12;
+      const dName = this.scene.add.text(nameX, nameY, node.name.toUpperCase(), {
+        fontFamily: "Cinzel, Georgia, serif",
+        fontSize: "11px",
+        color: "#ffd24a",
+        fontStyle: "bold",
+        wordWrap: { width: pw - 68 }
+      });
+      this.detailCardContent.add(dName);
 
-      // Description
-      this.dDesc.setText(node.desc);
+      // 3. Category / Type Tag below Name
+      const tagY = dName.y + dName.height + 2;
+      const dTag = this.scene.add.text(nameX, tagY, `TIPO: ${node.rawType.toUpperCase()}`, {
+        fontFamily: "sans-serif",
+        fontSize: "8px",
+        color: "#c29b38"
+      });
+      this.detailCardContent.add(dTag);
 
-      // Button state
+      // 4. Gold Divider Glyph
+      const divY = Math.max(py + 54, dTag.y + dTag.height + 5);
+      this.detailG.lineStyle(1, 0x8a6a2a, 0.55);
+      this.detailG.beginPath();
+      this.detailG.moveTo(px + 14, divY); this.detailG.lineTo(px + pw - 14, divY);
+      this.detailG.strokePath();
+
+      // 5. Weapon Requirement
+      const reqY = divY + 6;
+      let reqStr = "REQUER: Qualquer arma";
+      let reqColor = "#a09080";
+      if (node.req && node.req !== '—') {
+        if (reqCheck.active) {
+          reqStr = `✓ REQUER: ${node.req} (ATIVO)`;
+          reqColor = "#55e088";
+        } else {
+          reqStr = `✗ REQUER: ${node.req} (NÃO EQUIPADA)`;
+          reqColor = "#ff6b6b";
+        }
+      }
+      const dReq = this.scene.add.text(px + 14, reqY, reqStr, {
+        fontFamily: "sans-serif",
+        fontSize: "8.5px",
+        color: reqColor,
+        wordWrap: { width: pw - 28 }
+      });
+      this.detailCardContent.add(dReq);
+
+      // 6. Rank
+      const rankY = dReq.y + dReq.height + 4;
+      const dRank = this.scene.add.text(px + 14, rankY, `GRAU: ${rank} / ${node.maxRank}`, {
+        fontFamily: "sans-serif",
+        fontSize: "8.5px",
+        color: "#cfc4b2",
+        fontStyle: "bold"
+      });
+      this.detailCardContent.add(dRank);
+
+      // 7. Description (dynamically wrapped, line-spaced)
+      const descY = dRank.y + dRank.height + 6;
+      const dDesc = this.scene.add.text(px + 14, descY, node.desc, {
+        fontFamily: "sans-serif",
+        fontSize: "8.5px",
+        color: "#e8e0d5",
+        lineSpacing: 2.5,
+        wordWrap: { width: pw - 28 }
+      });
+      this.detailCardContent.add(dDesc);
+
+      // 8. Buttons cleanly positioned from bottom up
+      const btnActionY = 268;
+      const btnToggleY = 294;
+      const btnRespecY = 316;
+
+      this.actionBtnBg.setPosition(px + pw / 2, btnActionY);
+      this.actionBtnText.setPosition(px + pw / 2, btnActionY);
+
+      this.toggleTreeBtn.setPosition(px + pw / 2, btnToggleY);
+      this.toggleTreeText.setPosition(px + pw / 2, btnToggleY);
+
+      this.respecBtn.setPosition(px + pw / 2, btnRespecY);
+      this.respecText.setPosition(px + pw / 2, btnRespecY);
+
+      // Button states
       if (this.viewingLockedTree) {
         this.actionBtnBg.setFillStyle(0x221a2e, 0.6);
         this.actionBtnText.setText("[ CAMINHO TRANCADO ]").setColor("#7a6b8a");
@@ -684,7 +789,6 @@
         this.actionBtnBg.setFillStyle(0x241a10, 0.8);
         this.actionBtnText.setText("[ GRAU MÁXIMO ]").setColor("#a6927a");
       } else {
-        // Check if can upgrade
         let prereqsMet = !0;
         for (const reqId of (node.requires || [])) {
           if (!state.invested[reqId] || state.invested[reqId] <= 0) {
