@@ -5288,6 +5288,9 @@
     const accName = (acc?.name || '').toLowerCase();
     const accId = (acc?.id || '').toLowerCase();
     const reqLower = req.toLowerCase();
+    // Check adaptation secondaryFamily (e.g. from Altar of Adaptation)
+    const secFam = (wep?.secondaryFamily || '').toLowerCase();
+    if (secFam && reqLower.includes(secFam)) return { active: true, label: `${req} (Adaptada)` };
 
     if (reqLower.includes('escudo')) {
       const hasShield = offId.includes('shield') || offName.includes('escudo');
