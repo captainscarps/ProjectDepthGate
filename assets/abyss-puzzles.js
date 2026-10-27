@@ -43,6 +43,7 @@
 
       this.activePuzzle = puzzleState;
       this.renderLaserPuzzle(puzzleState);
+      s.game.events.emit("ui:banner", "🧩 ENIGMA DOS PRISMAS: ALINHE O FEIXE SOLAR AO ALTAR!", "#ffd24a");
     }
 
     renderLaserPuzzle(pState) {
@@ -59,12 +60,22 @@
       g.lineStyle(2, 0xffd24a, 1);
       g.strokeCircle(pState.emitter.x, pState.emitter.y, 12);
 
-      // Draw Receiver
+      // Draw Receiver (Solar Altar)
       const recColor = pState.receiver.hit ? 0x00ff88 : 0x443366;
       g.fillStyle(recColor, 1);
-      g.fillCircle(pState.receiver.x, pState.receiver.y, 12);
+      g.fillCircle(pState.receiver.x, pState.receiver.y, 14);
       g.lineStyle(2.5, pState.receiver.hit ? 0x88ffbb : 0x7755aa, 1);
-      g.strokeCircle(pState.receiver.x, pState.receiver.y, 14);
+      g.strokeCircle(pState.receiver.x, pState.receiver.y, 16);
+
+      // Label on altar
+      if (!pState.altarT) {
+        pState.altarT = s.add.text(pState.receiver.x, pState.receiver.y - 24, "ALTAR SOLAR", {
+          fontFamily: "Cinzel, serif",
+          fontSize: "9px",
+          color: "#ffd24a",
+          fontStyle: "bold"
+        }).setOrigin(0.5).setDepth(251);
+      }
 
       // Trace laser beam
       this.traceLaserBeam(pState, g);
@@ -166,21 +177,35 @@
       }
     }
 
+    getNearbyPrism(playerX, playerY, maxDist = 36) {
+      if (!this.activePuzzle || this.activePuzzle.type !== "laser_prisms" || this.activePuzzle.solved) return null;
+      for (const pr of this.activePuzzle.prisms) {
+        const d = Phaser.Math.Distance.Between(pr.x, pr.y, playerX, playerY);
+        if (d <= maxDist) return pr;
+      }
+      return null;
+    }
+
     interactPrism(prismId) {
       if (!this.activePuzzle || this.activePuzzle.solved) return;
       const pr = this.activePuzzle.prisms?.find(p => p.id === prismId);
       if (pr) {
         pr.angle = (pr.angle + 90) % 360;
         this.scene.game?.audioEngine?.sfx?.("sfx-lever");
+        window.__triggerHaptic?.(50, 0.4);
         this.renderLaserPuzzle(this.activePuzzle);
       }
     }
 
     // --- ENIGMA 2: SEQUÊNCIA RÚNICA DO ABISMO (Memory Sequence) ---
+    startRuneMemoryPuzzle(container, roomBounds, onComplete) {
+      this.startRunicMemoryPuzzle(roomBounds, onComplete);
+    }
+
     startRunicMemoryPuzzle(roomBounds, onComplete) {
       const s = this.scene;
-      const cx = roomBounds?.x || 280;
-      const cy = roomBounds?.y || 160;
+      const cx = roomBounds?.x ? roomBounds.x + (roomBounds.width || 300) / 2 : 280;
+      const cy = roomBounds?.y ? roomBounds.y + (roomBounds.height || 200) / 2 : 160;
 
       // 4 Runes on ground: Fogo (Top), Gelo (Bottom), Raio (Left), Terra (Right)
       const runes = [
@@ -190,9 +215,8 @@
         { id: 3, key: "earth", name: "Runa da Terra", color: 0x44dd66, x: cx + 55,  y: cy,       dpad: "RIGHT" }
       ];
 
-      // Generate random sequence of 5 steps
       const sequence = [];
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 4; i++) {
         sequence.push(Math.floor(Math.random() * 4));
       }
 
@@ -227,7 +251,7 @@
         g.lineStyle(isActive ? 3 : 1.5, isActive ? 0xffffff : r.color, 0.9);
         g.strokeCircle(r.x, r.y, 22);
 
-        // Subtle glowing glyph
+        // Glowing glyph
         g.fillStyle(isActive ? 0xffffff : r.color, 0.8);
         g.fillCircle(r.x, r.y, 6);
       }
@@ -242,7 +266,7 @@
         if (stepIndex >= pState.sequence.length) {
           pState.isPlayingSequence = !1;
           this.renderRunicPuzzle(pState, null);
-          s.game.events.emit("ui:banner", "REPITA A SEQUÊNCIA RÚNICA NO GAMEPAD!", "#ffd24a");
+          s.game.events.emit("ui:banner", "REPITA A SEQUÊNCIA PISANDO NAS RUNAS!", "#ffd24a");
           return;
         }
 
@@ -260,7 +284,6 @@
       s.time.delayedCall(600, flashNext);
     }
 
-    // Player inputs rune step (via Gamepad D-pad or walking over plate)
     inputRuneStep(runeId) {
       const pState = this.activePuzzle;
       if (!pState || pState.type !== "runic_memory" || pState.isPlayingSequence || pState.solved) return;
@@ -269,9 +292,9 @@
       const expectedRune = pState.sequence[pState.playerStep];
 
       if (runeId === expectedRune) {
-        // Correct step!
         this.renderRunicPuzzle(pState, runeId);
         s.game?.audioEngine?.sfx?.("sfx-parry");
+        window.__triggerHaptic?.(40, 0.4);
         pState.playerStep++;
 
         s.time.delayedCall(250, () => {
@@ -283,9 +306,9 @@
           this.onPuzzleSolved(pState);
         }
       } else {
-        // Wrong step! Camera shake and reset round
         s.cameras?.main?.shake(200, 0.01);
         s.game?.audioEngine?.sfx?.("sfx-trap-dart");
+        window.__triggerHaptic?.(120, 0.8);
         s.game.events.emit("ui:banner", "SEQUÊNCIA QUEBRADA! OBSERVE NOVAMENTE...", "#ff5544");
         pState.playerStep = 0;
         this.playRunicDemonstration(pState);
@@ -295,6 +318,7 @@
     onPuzzleSolved(pState) {
       const s = this.scene;
       s.game?.audioEngine?.sfx?.("sfx-shrine-use");
+      window.__triggerHaptic?.(250, 1.0);
 
       s.game.events.emit("ui:banner", "ENIGMA DO ABISMO RESOLVIDO! +1 PONTO DE HABILIDADE", "#00ff88");
 
@@ -324,6 +348,27 @@
         s.spawnLootItem(x, y, rewardItemKey, "RARE");
       }
     }
+
+    update(dt) {
+      const pState = this.activePuzzle;
+      if (!pState || pState.solved) return;
+      const p = this.scene?.player;
+      if (!p) return;
+
+      if (pState.type === "runic_memory" && !pState.isPlayingSequence) {
+        for (const r of pState.runes) {
+          const dist = Phaser.Math.Distance.Between(r.x, r.y, p.x, p.y);
+          if (dist < 24) {
+            if (!r.__stepped) {
+              r.__stepped = !0;
+              this.inputRuneStep(r.id);
+            }
+          } else if (dist > 32) {
+            r.__stepped = !1;
+          }
+        }
+      }
+    }
   }
 
   // --- AFIXOS E MODIFICADORES DE PESADELO (Nightmare Modifiers) ---
@@ -343,6 +388,42 @@
       if (!scene || scene.mode !== "endless" || (tier || 0) <= 0) return;
       const affix = NightmareModifierSystem.getAffixForTier(tier);
       scene.game.events.emit("ui:banner", `⚠️ PESADELO ${tier} · AFLIÇÃO: ${affix.name.toUpperCase()}`, affix.color);
+    }
+
+    static update(scene, dt) {
+      if (!scene || scene.mode !== "endless") return;
+      const tier = scene.stats?.nm || scene.nmLvl || 0;
+      if (tier <= 0) return;
+
+      const affix = NightmareModifierSystem.getAffixForTier(tier);
+      if (affix.id === "magma") {
+        if (!scene.__magmaG) {
+          scene.__magmaG = scene.add.graphics().setDepth(20);
+        }
+        const g = scene.__magmaG;
+        g.clear();
+        const p = scene.player;
+        if (!p) return;
+
+        // Draw pulsing fissures around room centers
+        const t = scene.time.now * 0.003;
+        const pulse = Math.sin(t) * 0.3 + 0.7;
+        g.fillStyle(0xff4400, 0.35 * pulse);
+        for (const room of scene.roomManager?.rooms || []) {
+          const fx = (room.x + 3) * 32;
+          const fy = (room.y + 3) * 32;
+          g.fillCircle(fx, fy, 24);
+          if (Phaser.Math.Distance.Between(fx, fy, p.x, p.y) < 22) {
+            if (!p.__magmaTick || scene.time.now - p.__magmaTick > 1500) {
+              p.__magmaTick = scene.time.now;
+              p.hp = Math.max(1, p.hp - 2);
+              scene.effects?.floatText?.(p.x, p.y - 20, "QUEIMANDO! -2", "#ff4411", 10);
+              scene.cameras?.main?.shake(100, 0.005);
+              window.__triggerHaptic?.(60, 0.4);
+            }
+          }
+        }
+      }
     }
   }
 
