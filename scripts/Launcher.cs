@@ -171,6 +171,8 @@ namespace DepthgateLauncher
                         case ".wav": mime = "audio/wav"; break;
                         case ".mp3": mime = "audio/mpeg"; break;
                         case ".ogg": mime = "audio/ogg"; break;
+                        case ".mp4": mime = "video/mp4"; break;
+                        case ".webm": mime = "video/webm"; break;
                         case ".woff": mime = "application/font-woff"; break;
                         case ".woff2": mime = "font/woff2"; break;
                         case ".ttf": mime = "application/font-ttf"; break;
