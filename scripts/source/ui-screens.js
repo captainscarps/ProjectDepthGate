@@ -48,3 +48,11 @@ for(const K of[__BookScene,__CodexScene,__CollectiblesScene]){const C=K.prototyp
 {const A0=No.prototype.setSkillsAlert;No.prototype.setSkillsAlert=function(v){const r=A0.apply(this,arguments);try{const b=this.skillsBtn,a=this.skillsAlert;if(b&&a){
  if(!a.__uc){a.__uc=1;a.setFontFamily(__UC_F).setFontStyle("bold").setFontSize("8px").setColor("#16130c").setStroke("#16130c",0).setBackgroundColor("#ffc14d").setPadding(4,1,4,1).setOrigin(.5)}
  const x0=b.x-b.displayWidth*b.originX,y0=b.y-b.displayHeight*b.originY;a.setPosition(x0+b.displayWidth-7,y0+3).setScrollFactor(b.scrollFactorX,b.scrollFactorY);b.parentContainer&&a.parentContainer!==b.parentContainer&&b.parentContainer.add(a)}}catch(e){}return r}}
+/* caixa dos Selos/objetivo (canto superior direito): cartão grafite com faixa âmbar */
+__cdBgSkin=function(ui){const T=ui.__cdT;if(!T||!__ui2ok(ui))return;ui.__cdBg&&ui.__cdBg.scene||(ui.__cdBg=ui.add.graphics().setDepth(538));const g=ui.__cdBg;g.clear();if(!T.visible||!T.text){g.setVisible(!1);return}g.setVisible(!0);
+ const w=T.displayWidth,h=T.displayHeight,x=T.x-w-12,y=T.y-6;g.fillStyle(0x12151c,.88).fillRoundedRect(x,y,w+24,h+12,8).lineStyle(1,0xffffff,.14).strokeRoundedRect(x+.5,y+.5,w+23,h+11,8).fillStyle(0xffc14d,1).fillRoundedRect(x+3,y+4,3,h+4,1.5)};
+/* escolha de herói: barras de atributo arredondadas, sem moldura marrom; divisórias claras nos painéis */
+{const SP=__softPanel;__softPanel=function(g){if(g&&!g.__ucL){g.__ucL=1;const Ls=g.lineStyle;g.lineStyle=function(w,c,a){return c===13214282?Ls.call(this,1,0xffffff,.1):Ls.call(this,w,c,a)}}return SP.apply(this,arguments)}}
+{const C3=bl.prototype.create;bl.prototype.create=function(){const r=C3.apply(this,arguments);try{const sg=this.statG;if(sg&&!sg.__uc){sg.__uc=1;const F=sg.fillStyle,Ls=sg.lineStyle;
+ sg.fillStyle=function(c,a){return c===0&&a===.6?F.call(this,0xffffff,.1):F.call(this,c,a)};sg.fillRect=function(x,y,w,h){return this.fillRoundedRect(x,y,w,h,Math.min(3,h/2,w/2))};
+ sg.lineStyle=function(w,c,a){return c===6045226?Ls.call(this,0,0,0):Ls.call(this,w,c,a)};sg.strokeRect=function(){return this};this.refreshDetails?.()}}catch(e){}return r}}
