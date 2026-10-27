@@ -369,8 +369,8 @@
       this.build();
 
       const state = this.getRunState();
-      // If level >= 3 and no tree chosen yet, trigger choice modal!
-      if ((g.stats?.level || 1) >= 3 && !state.chosenTree) {
+      // If no tree chosen yet, open choice modal (or preview at levels 1-2)
+      if (!state.chosenTree) {
         this.openChoiceModal();
         return;
       }
