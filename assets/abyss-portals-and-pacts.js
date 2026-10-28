@@ -1,5 +1,5 @@
 // Abyss Branching Portals, Cursed Pacts, and Elemental Build Auras
-// Full Gamepad, Touch, and Keyboard navigation with tactile haptics
+// Full Gamepad, Touch, and Keyboard navigation with tactile haptics & Fullscreen Responsive Layout
 (() => {
   // --- 1. PACTS & CURSED RELICS DATA ---
   const ABYSS_PACTS = [
@@ -84,7 +84,14 @@
     return { damageMult, defenseAdd, critAdd, speedMult, goldMult };
   };
 
-  // --- 2. BRANCHING PORTALS UI (Escolha de Caminho entre Andares) ---
+  function getViewport(scene) {
+    const cam = scene?.cameras?.main;
+    const w = Math.max(cam?.width || 0, scene?.scale?.width || 0, window.innerWidth || 0, 640);
+    const h = Math.max(cam?.height || 0, scene?.scale?.height || 0, window.innerHeight || 0, 360);
+    return { w, h, cx: Math.round(w / 2), cy: Math.round(h / 2) };
+  }
+
+  // --- 2. BRANCHING PORTALS UI (Escolha de Caminho entre Andares - 100% Fullscreen) ---
   class AbyssPortalChoiceUI {
     constructor(scene) {
       this.ui = scene;
@@ -103,27 +110,30 @@
       if (this.built) return;
       this.built = !0;
       const i = this.ui;
-      const w = 640, h = 360;
+      const { w, h, cx, cy } = getViewport(i);
 
       this.root = i.add.container(0, 0).setDepth(910).setVisible(!1);
 
-      this.backdrop = i.add.rectangle(w / 2, h / 2, w * 1.5, h * 1.5, 0x06040b, 0.94).setInteractive();
+      // Fundo infinito que cobre toda e qualquer resolução / tela cheia / ultrawide
+      this.backdrop = i.add.rectangle(cx, cy, Math.max(w * 4, 3840), Math.max(h * 4, 2160), 0x06040b, 0.95).setOrigin(0.5).setInteractive();
       this.root.add(this.backdrop);
 
       this.frameG = i.add.graphics();
       this.root.add(this.frameG);
 
-      this.title = i.add.text(w / 2, 38, "ESCOLHA SEU CAMINHO NO ABISMO", {
+      this.title = i.add.text(cx, Math.max(26, cy - 138), "ESCOLHA SEU CAMINHO NO ABISMO", {
         fontFamily: "Cinzel, Georgia, serif",
-        fontSize: "16px",
+        fontSize: "17px",
         color: "#ffd24a",
-        fontStyle: "bold"
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 3
       }).setOrigin(0.5);
 
-      this.subtitle = i.add.text(w / 2, 60, "Selecione o destino para a próxima descida nas profundezas", {
+      this.subtitle = i.add.text(cx, Math.max(50, cy - 114), "Selecione o destino para a próxima descida nas profundezas", {
         fontFamily: "sans-serif",
-        fontSize: "9.5px",
-        color: "#9e8e76"
+        fontSize: "10px",
+        color: "#c2ab87"
       }).setOrigin(0.5);
 
       this.root.add([this.title, this.subtitle]);
@@ -131,15 +141,31 @@
       this.cardsContainer = i.add.container(0, 0);
       this.root.add(this.cardsContainer);
 
-      this.footerText = i.add.text(w / 2, 328, "🎮 [D-Pad Esquerda/Direita] Navegar   [A / Enter] Entrar no Portal", {
+      this.footerText = i.add.text(cx, Math.min(h - 22, cy + 146), "🎮 [D-Pad Esquerda/Direita] Navegar   [A / Enter] Entrar no Portal", {
         fontFamily: "sans-serif",
-        fontSize: "9.5px",
-        color: "#ffd24a"
+        fontSize: "10px",
+        color: "#ffd24a",
+        stroke: "#000000",
+        strokeThickness: 2
       }).setOrigin(0.5);
       this.root.add(this.footerText);
+
+      // Redimensionamento responsivo automático em fullscreen / resize
+      i.scale?.on("resize", () => {
+        if (this.open) this.layout();
+      });
     }
 
-    // Open portal choices for the next depth
+    layout() {
+      if (!this.root || !this.ui) return;
+      const { w, h, cx, cy } = getViewport(this.ui);
+      this.backdrop.setPosition(cx, cy).setSize(Math.max(w * 4, 3840), Math.max(h * 4, 2160));
+      this.title.setPosition(cx, Math.max(26, cy - 138));
+      this.subtitle.setPosition(cx, Math.max(50, cy - 114));
+      this.footerText.setPosition(cx, Math.min(h - 22, cy + 146));
+      this.renderCards();
+    }
+
     show(nextDepth, onChoiceCallback) {
       this.build();
       this.open = !0;
@@ -147,43 +173,41 @@
       this.selectedIdx = 0;
       this.root.setVisible(!0);
 
-      // Generate 3 random portal choices
       const possiblePortals = [
         {
           type: "puzzle",
           title: "CÂMARA DO ENIGMA",
           icon: "🧩",
           badgeColor: "#00e5ff",
-          desc: "Um enigma ancestral de luz ou runas.\n\n✨ Recompensa: +1 Ponto de Habilidade Extra e Equipamento Raro garantido!"
+          desc: "Um enigma ancestral de luz ou runas místicas.\n\n✨ Recompensa: +1 Ponto de Habilidade Extra e Baú de Relíquia garantido!"
         },
         {
           type: "elite",
           title: "COVIL DE ELITE",
           icon: "💀",
           badgeColor: "#ff4455",
-          desc: "Inimigos de elite perigosos com vida dobrada.\n\n🏆 Recompensa: Baú de Tesouro Lendário com alta chance das armas da Página 21!"
+          desc: "Inimigos de elite coléricos com vida e agressividade aumentadas.\n\n🏆 Recompensa: Baú Lendário com alta chance das armas supremas!"
         },
         {
           type: "shop",
           title: "BAZAR & ALTAR",
           icon: "🪙",
           badgeColor: "#ffd24a",
-          desc: "Refúgio pacífico com o Mercador das Sombras.\n\n🔥 Fogueira de cura e Altar de Redistribuição de Pontos (Re-spec)!"
+          desc: "Refúgio pacífico com o Mercador das Sombras.\n\n🔥 Fogueira restauradora e Altar de Purificação / Redistribuição de Pontos!"
         },
         {
           type: "pact",
           title: "ALTAR DO PACTO",
           icon: "🩸",
           badgeColor: "#b055ff",
-          desc: "Comungue com entidades do abismo.\n\n⚡ Recompensa: Escolha uma Relíquia Amaldiçoada com bônus colossais!"
+          desc: "Comungue com entidades esquecidas do abismo.\n\n⚡ Recompensa: Escolha uma Relíquia Amaldiçoada com poderes devastadores!"
         }
       ];
 
-      // Shuffle and pick 3
       Phaser.Utils.Array.Shuffle(possiblePortals);
       this.cards = possiblePortals.slice(0, 3);
 
-      this.renderCards();
+      this.layout();
       window.__triggerHaptic?.(60, 0.4);
     }
 
@@ -195,52 +219,54 @@
 
     renderCards() {
       this.cardsContainer.removeAll(!0);
-      const w = 640;
-      const cardW = 175, cardH = 220;
-      const startX = w / 2 - (cardW * 1.5 + 20) + cardW / 2;
-      const cardY = 82;
+      const { cx, cy } = getViewport(this.ui);
+      const cardW = 184, cardH = 224;
+      const gap = 20;
+      const totalW = this.cards.length * cardW + (this.cards.length - 1) * gap;
+      const startX = cx - totalW / 2 + cardW / 2;
+      const cardY = cy - cardH / 2 + 6;
 
       for (let idx = 0; idx < this.cards.length; idx++) {
         const cData = this.cards[idx];
-        const cx = startX + idx * (cardW + 20);
+        const curX = startX + idx * (cardW + gap);
         const isSel = idx === this.selectedIdx;
 
-        const cardC = this.ui.add.container(cx, cardY);
+        const cardC = this.ui.add.container(curX, cardY);
 
-        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, 0x120d1e, 0.95);
+        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, isSel ? 0x1b132c : 0x110b1a, 0.96);
         const borderG = this.ui.add.graphics();
 
         if (isSel) {
           borderG.lineStyle(2.5, 0xffd24a, 1);
-          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 6);
+          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 8);
           borderG.lineStyle(1, 0xffe680, 0.7);
-          borderG.strokeRoundedRect(-cardW / 2 + 3, 3, cardW - 6, cardH - 6, 4);
+          borderG.strokeRoundedRect(-cardW / 2 + 3, 3, cardW - 6, cardH - 6, 6);
         } else {
-          borderG.lineStyle(1.5, 0x3d304f, 0.8);
-          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 6);
+          borderG.lineStyle(1.5, 0x483a5e, 0.85);
+          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 8);
         }
 
         const iconT = this.ui.add.text(0, 32, cData.icon, {
-          fontSize: "26px"
+          fontSize: "28px"
         }).setOrigin(0.5);
 
-        const titleT = this.ui.add.text(0, 68, cData.title, {
+        const titleT = this.ui.add.text(0, 70, cData.title, {
           fontFamily: "Cinzel, Georgia, serif",
           fontSize: "11px",
           color: isSel ? "#ffffff" : cData.badgeColor,
           fontStyle: "bold"
         }).setOrigin(0.5);
 
-        const descT = this.ui.add.text(0, 92, cData.desc, {
+        const descT = this.ui.add.text(0, 96, cData.desc, {
           fontFamily: "sans-serif",
           fontSize: "9px",
-          color: isSel ? "#f2ede4" : "#baa892",
-          lineSpacing: 2,
+          color: isSel ? "#f5f0e6" : "#baa892",
+          lineSpacing: 3,
           wordWrap: { width: cardW - 24 }
         }).setOrigin(0.5, 0);
 
-        const btn = this.ui.add.rectangle(0, cardH - 20, cardW - 30, 22, isSel ? 0x6e4318 : 0x241a2e).setInteractive({ useHandCursor: !0 });
-        const btnT = this.ui.add.text(0, cardH - 20, isSel ? "[ (A) ENTRAR ]" : "[ SELECIONAR ]", {
+        const btn = this.ui.add.rectangle(0, cardH - 22, cardW - 32, 24, isSel ? 0x7a4a1a : 0x241830).setInteractive({ useHandCursor: !0 });
+        const btnT = this.ui.add.text(0, cardH - 22, isSel ? "[ (A) ENTRAR ]" : "[ SELECIONAR ]", {
           fontFamily: "sans-serif",
           fontSize: "9px",
           color: isSel ? "#ffd24a" : "#8a7e6a",
@@ -296,7 +322,6 @@
         return !0;
       }
       if (key === "Escape" || key === "b" || key === "B" || key === "CANCEL" || key === "x" || key === "X") {
-        // Default to first card if backed out
         this.confirmChoice(this.selectedIdx);
         return !0;
       }
@@ -305,7 +330,7 @@
     }
   }
 
-  // --- 3. CURSED PACTS UI (Escolha de Pactos Amaldiçoados) ---
+  // --- 3. CURSED PACTS UI (Escolha de Pactos Amaldiçoados - 100% Fullscreen) ---
   class AbyssPactsUI {
     constructor(scene) {
       this.ui = scene;
@@ -319,24 +344,26 @@
       if (this.built) return;
       this.built = !0;
       const i = this.ui;
-      const w = 640, h = 360;
+      const { w, h, cx, cy } = getViewport(i);
 
       this.root = i.add.container(0, 0).setDepth(920).setVisible(!1);
 
-      this.backdrop = i.add.rectangle(w / 2, h / 2, w * 1.5, h * 1.5, 0x050308, 0.95).setInteractive();
+      this.backdrop = i.add.rectangle(cx, cy, Math.max(w * 4, 3840), Math.max(h * 4, 2160), 0x050308, 0.96).setOrigin(0.5).setInteractive();
       this.root.add(this.backdrop);
 
-      this.title = i.add.text(w / 2, 36, "PACTO DAS PROFUNDEZAS", {
+      this.title = i.add.text(cx, Math.max(26, cy - 138), "PACTO DAS PROFUNDEZAS", {
         fontFamily: "Cinzel, Georgia, serif",
-        fontSize: "16px",
+        fontSize: "17px",
         color: "#ff3355",
-        fontStyle: "bold"
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 3
       }).setOrigin(0.5);
 
-      this.subtitle = i.add.text(w / 2, 58, "Aceite um poder proibido... ao custo de uma terrível maldição", {
+      this.subtitle = i.add.text(cx, Math.max(50, cy - 114), "Aceite um poder proibido... ao custo de uma terrível maldição", {
         fontFamily: "sans-serif",
-        fontSize: "9.5px",
-        color: "#c29b9b"
+        fontSize: "10px",
+        color: "#d8a4a4"
       }).setOrigin(0.5);
 
       this.root.add([this.title, this.subtitle]);
@@ -344,12 +371,28 @@
       this.pactsContainer = i.add.container(0, 0);
       this.root.add(this.pactsContainer);
 
-      this.footerText = i.add.text(w / 2, 330, "🎮 [D-Pad Esquerda/Direita] Selecionar   [A] Aceitar Pacto   [B / Esc] Recusar", {
+      this.footerText = i.add.text(cx, Math.min(h - 22, cy + 146), "🎮 [D-Pad Esquerda/Direita] Selecionar   [A] Aceitar Pacto   [B / Esc] Recusar", {
         fontFamily: "sans-serif",
-        fontSize: "9.5px",
-        color: "#ffd24a"
+        fontSize: "10px",
+        color: "#ffd24a",
+        stroke: "#000000",
+        strokeThickness: 2
       }).setOrigin(0.5);
       this.root.add(this.footerText);
+
+      i.scale?.on("resize", () => {
+        if (this.open) this.layout();
+      });
+    }
+
+    layout() {
+      if (!this.root || !this.ui) return;
+      const { w, h, cx, cy } = getViewport(this.ui);
+      this.backdrop.setPosition(cx, cy).setSize(Math.max(w * 4, 3840), Math.max(h * 4, 2160));
+      this.title.setPosition(cx, Math.max(26, cy - 138));
+      this.subtitle.setPosition(cx, Math.max(50, cy - 114));
+      this.footerText.setPosition(cx, Math.min(h - 22, cy + 146));
+      this.renderPacts();
     }
 
     show() {
@@ -358,12 +401,11 @@
       this.selectedIdx = 0;
       this.root.setVisible(!0);
 
-      // Offer 3 random pacts from ABYSS_PACTS
       const available = [...ABYSS_PACTS];
       Phaser.Utils.Array.Shuffle(available);
       this.pacts = available.slice(0, 3);
 
-      this.renderPacts();
+      this.layout();
       window.__triggerHaptic?.(100, 0.5);
     }
 
@@ -375,51 +417,51 @@
 
     renderPacts() {
       this.pactsContainer.removeAll(!0);
-      const w = 640;
-      const cardW = 175, cardH = 220;
-      const startX = w / 2 - (cardW * 1.5 + 20) + cardW / 2;
-      const cardY = 82;
+      const { cx, cy } = getViewport(this.ui);
+      const cardW = 184, cardH = 224;
+      const gap = 20;
+      const totalW = this.pacts.length * cardW + (this.pacts.length - 1) * gap;
+      const startX = cx - totalW / 2 + cardW / 2;
+      const cardY = cy - cardH / 2 + 6;
 
       for (let idx = 0; idx < this.pacts.length; idx++) {
         const pData = this.pacts[idx];
-        const cx = startX + idx * (cardW + 20);
+        const curX = startX + idx * (cardW + gap);
         const isSel = idx === this.selectedIdx;
 
-        const cardC = this.ui.add.container(cx, cardY);
-        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, 0x160c18, 0.95);
+        const cardC = this.ui.add.container(curX, cardY);
+        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, isSel ? 0x220e18 : 0x150910, 0.96);
         const borderG = this.ui.add.graphics();
 
         if (isSel) {
           borderG.lineStyle(2.5, 0xff3355, 1);
-          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 6);
+          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 8);
           borderG.lineStyle(1, 0xff8899, 0.7);
-          borderG.strokeRoundedRect(-cardW / 2 + 3, 3, cardW - 6, cardH - 6, 4);
+          borderG.strokeRoundedRect(-cardW / 2 + 3, 3, cardW - 6, cardH - 6, 6);
         } else {
-          borderG.lineStyle(1.5, 0x4a2233, 0.8);
-          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 6);
+          borderG.lineStyle(1.5, 0x542337, 0.85);
+          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 8);
         }
 
-        const iconT = this.ui.add.text(0, 30, pData.icon, { fontSize: "26px" }).setOrigin(0.5);
+        const iconT = this.ui.add.text(0, 30, pData.icon, { fontSize: "28px" }).setOrigin(0.5);
 
-        const titleT = this.ui.add.text(0, 64, pData.name.toUpperCase(), {
+        const titleT = this.ui.add.text(0, 66, pData.name.toUpperCase(), {
           fontFamily: "Cinzel, Georgia, serif",
           fontSize: "11px",
           color: isSel ? "#ffffff" : pData.color,
           fontStyle: "bold"
         }).setOrigin(0.5);
 
-        // Boon
-        const boonT = this.ui.add.text(0, 95, `✓ BÊNÇÃO:\n${pData.boon}`, {
-          fontFamily: "sans-serif", fontSize: "9px", color: "#55ff88", fontStyle: "bold", wordWrap: { width: cardW - 24 }, lineSpacing: 2
+        const boonT = this.ui.add.text(0, 96, `✓ BÊNÇÃO:\n${pData.boon}`, {
+          fontFamily: "sans-serif", fontSize: "9px", color: "#55ff88", fontStyle: "bold", wordWrap: { width: cardW - 24 }, lineSpacing: 3
         }).setOrigin(0.5, 0);
 
-        // Curse
-        const curseT = this.ui.add.text(0, 145, `✗ MALDIÇÃO:\n${pData.curse}`, {
-          fontFamily: "sans-serif", fontSize: "9px", color: "#ff5555", fontStyle: "bold", wordWrap: { width: cardW - 24 }, lineSpacing: 2
+        const curseT = this.ui.add.text(0, 146, `✗ MALDIÇÃO:\n${pData.curse}`, {
+          fontFamily: "sans-serif", fontSize: "9px", color: "#ff5555", fontStyle: "bold", wordWrap: { width: cardW - 24 }, lineSpacing: 3
         }).setOrigin(0.5, 0);
 
-        const btn = this.ui.add.rectangle(0, cardH - 20, cardW - 30, 22, isSel ? 0x6e1828 : 0x241018).setInteractive({ useHandCursor: !0 });
-        const btnT = this.ui.add.text(0, cardH - 20, isSel ? "[ ACEITAR PACTO ]" : "[ EXAMINAR ]", {
+        const btn = this.ui.add.rectangle(0, cardH - 22, cardW - 32, 24, isSel ? 0x7a1828 : 0x2a101c).setInteractive({ useHandCursor: !0 });
+        const btnT = this.ui.add.text(0, cardH - 22, isSel ? "[ ACEITAR PACTO ]" : "[ EXAMINAR ]", {
           fontFamily: "sans-serif", fontSize: "9px", color: isSel ? "#ff8899" : "#a66a7a", fontStyle: "bold"
         }).setOrigin(0.5);
 
@@ -477,7 +519,6 @@
         return !0;
       }
       if (key === "Escape" || key === "b" || key === "B" || key === "CANCEL" || key === "x" || key === "X") {
-        // Decline pact
         this.close();
         window.__triggerHaptic?.(50, 0.3);
         return !0;
@@ -504,11 +545,6 @@
       const treeKey = skillsState.chosenTree;
       const heroId = scene.classDef?.id;
 
-      // Color themes:
-      // Fire/Fury: 0xff6600
-      // Frost/Ice/Bones: 0x00ccff
-      // Poison/Curare/Shadows: 0x00ff66
-      // Aegis/Defense/Shield: 0xffd24a
       let auraColor = 0xffd24a;
       if (treeKey === "attack") {
         auraColor = (heroId === "MAGE" || heroId === "WARRIOR") ? 0xff5511 : (heroId === "SHAMAN" || heroId === "ROGUE") ? 0x00ff88 : 0xaa44ff;
@@ -516,7 +552,6 @@
         auraColor = (heroId === "MAGE" || heroId === "ARCHER") ? 0x00ccff : (heroId === "NECROMANCER") ? 0x8844ff : 0xffcc22;
       }
 
-      // Draw subtle glowing rune halo at feet
       const time = scene.time.now * 0.003;
       const pulseR = 16 + Math.sin(time) * 3;
 
