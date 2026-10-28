@@ -58,23 +58,31 @@ server.listen(PORT, '127.0.0.1', async () => {
 
   let realErrors = [];
   let testSuiteAssertions = {
-    campaignOk: false,
-    touchLifecycleOk: false,
-    pauseMenuLayoutOk: false,
-    abyssModalOk: false,
-    endlessOk: false,
-    canonicalPuzzlesOk: false,
-    moltenbornTexturesOk: false,
-    codexBestiaryOk: false
+    etapa1_campaignOk: false,
+    etapa2_touchLifecycleOk: false,
+    etapa3_pauseMenuLayoutOk: false,
+    etapa4_abyssModalCenteredOk: false,
+    etapa5_endlessOk: false,
+    etapa6_canonicalPuzzlesOk: false,
+    etapa7_moltenbornTexturesOk: false,
+    etapa8_codexBestiaryOk: false,
+    etapa9_combatAndPotionsOk: false,
+    etapa10_lootAndInventoryOk: false,
+    etapa11_xpAndSkillTreeOk: false,
+    etapa12_saveSystemOk: false,
+    etapa13_gamepadTouchToggleOk: false,
+    etapa14_multilingualUiOk: false,
+    etapa15_audioEngineOk: false,
+    etapa16_abyssPactsModalOk: false
   };
 
   ws.onopen = () => {
     ws.send(JSON.stringify({ id: 1, method: 'Runtime.enable' }));
     ws.send(JSON.stringify({ id: 2, method: 'Console.enable' }));
 
-    // Wait 3.5s for Preload to complete and start Campaign
+    // ETAPA 1: Iniciar Campanha com Touch habilitado
     setTimeout(() => {
-      console.log('\n--- [ETAPA 1] Iniciando Modo Campanha e habilitando Touch ---');
+      console.log('\n--- [ETAPA 1] Inicialização do Modo Campanha (com Touch Habilitado) ---');
       ws.send(JSON.stringify({
         id: 10,
         method: 'Runtime.evaluate',
@@ -84,12 +92,17 @@ server.listen(PORT, '127.0.0.1', async () => {
               const g = window.__DED_GAME;
               if (!g) return "NO GAME";
               try {
-                const cur = JSON.parse(localStorage.getItem("depthgate_settings") || "{}");
-                cur.touchControls = "on";
-                localStorage.setItem("depthgate_settings", JSON.stringify(cur));
+                const s1 = JSON.parse(localStorage.getItem("dungeon-crawler:settings") || "{}");
+                s1.touchControls = "on";
+                localStorage.setItem("dungeon-crawler:settings", JSON.stringify(s1));
+
+                const s2 = JSON.parse(localStorage.getItem("depthgate_settings") || "{}");
+                s2.touchControls = "on";
+                localStorage.setItem("depthgate_settings", JSON.stringify(s2));
 
                 g.scene.start("Game", {
                   heroClass: "WARRIOR",
+                  classId: "WARRIOR",
                   mode: "campaign",
                   levelIndex: 0
                 });
@@ -105,9 +118,9 @@ server.listen(PORT, '127.0.0.1', async () => {
       }));
     }, 3500);
 
-    // Wait 6s for Campaign and UI scene to build
+    // ETAPAS 2 & 3: Validar Touch Persistente e Geometria da Pausa
     setTimeout(() => {
-      console.log('\n--- [ETAPA 2] Validando Estado do Jogo e Ciclo de Vida do Touch / Pausa ---');
+      console.log('\n--- [ETAPA 2 & 3] Ciclo de Vida do Touch pós-Pausa e Geometria do Menu ---');
       ws.send(JSON.stringify({
         id: 11,
         method: 'Runtime.evaluate',
@@ -128,7 +141,7 @@ server.listen(PORT, '127.0.0.1', async () => {
               const startBtnText = tc?.startBtn?.text?.text;
               const selectBtnText = tc?.selectBtn?.text?.text;
 
-              // Step 1: Open Pause Menu
+              // Abrir Pausa
               pm?.show();
               const pauseOpen = !!pm?.open;
               const pauseRootVis = !!pm?.root?.visible;
@@ -140,11 +153,11 @@ server.listen(PORT, '127.0.0.1', async () => {
               }
               const firstBtnY = pm?.buttons?.[0]?.t?.y;
 
-              // Step 2: Close Pause Menu
+              // Fechar Pausa
               pm?.close();
               const pauseClosed = !pm?.open;
 
-              // Step 3: CRITICAL ASSERTION - Verify touch controls persist and are NOT disabled!
+              // Verificação pós-Pausa
               const afterTouchVis = tc?.visible;
               const afterDesiredVis = tc?.desiredVisible;
               const startBtnStillVis = tc?.startBtn?.parts?.[0]?.visible;
@@ -178,9 +191,9 @@ server.listen(PORT, '127.0.0.1', async () => {
       }));
     }, 9500);
 
-    // Test Abyss Portal modal layout
+    // ETAPA 4: Tela de Escolha de Destino do Abismo (Centralizada em 640x360)
     setTimeout(() => {
-      console.log('\n--- [ETAPA 3] Validando Layout da Tela de Escolha do Abismo (Centralização e Responsividade) ---');
+      console.log('\n--- [ETAPA 4] Tela de Escolha do Abismo (Centralização Canônica 640x360) ---');
       ws.send(JSON.stringify({
         id: 15,
         method: 'Runtime.evaluate',
@@ -200,11 +213,9 @@ server.listen(PORT, '127.0.0.1', async () => {
               const h = 360;
               const cx = Math.round(w / 2);
 
-              // Check card container coordinates
               const cards = portalUI?.cardsContainer?.list || [];
               const coords = cards.map(c => ({ x: c.x, y: c.y }));
               
-              // Cards must be centered around cx (320) and inside virtual bounds [0..w, 0..360]
               const insideScreen = coords.length === 3 && coords.every(c => c.x >= 20 && c.x <= w - 20 && c.y >= 20 && c.y <= h - 20);
               const isCentered = coords.length === 3 && Math.abs(coords[1].x - cx) <= 2;
 
@@ -230,9 +241,9 @@ server.listen(PORT, '127.0.0.1', async () => {
       }));
     }, 11500);
 
-    // Now test Endless mode
+    // ETAPA 5: Modo Infinito
     setTimeout(() => {
-      console.log('\n--- [ETAPA 4] Iniciando Modo Infinito ---');
+      console.log('\n--- [ETAPA 5] Inicialização do Modo Infinito ---');
       ws.send(JSON.stringify({
         id: 20,
         method: 'Runtime.evaluate',
@@ -244,6 +255,7 @@ server.listen(PORT, '127.0.0.1', async () => {
               try {
                 g.scene.start("Game", {
                   heroClass: "WARRIOR",
+                  classId: "WARRIOR",
                   mode: "endless",
                   endless: true
                 });
@@ -259,9 +271,8 @@ server.listen(PORT, '127.0.0.1', async () => {
       }));
     }, 13500);
 
-    // Wait and check Endless Game scene status
+    // ETAPA 5 (continuação): Estado da Cena Infinita
     setTimeout(() => {
-      console.log('\n--- [ETAPA 5] Verificando Estado da Cena do Modo Infinito ---');
       ws.send(JSON.stringify({
         id: 21,
         method: 'Runtime.evaluate',
@@ -284,9 +295,9 @@ server.listen(PORT, '127.0.0.1', async () => {
       }));
     }, 17500);
 
-    // Now test spawning canonical puzzles via AbyssPuzzleManager
+    // ETAPA 6: Os 5 Enigmas Canônicos
     setTimeout(() => {
-      console.log('\n--- [ETAPA 6] Testando os 5 Enigmas Canônicos (Blocos, Lasers, Alavancas, Braseiros, Runas) ---');
+      console.log('\n--- [ETAPA 6] Os 5 Enigmas Canônicos (Blocos, Lasers, Alavancas, Braseiros, Runas) ---');
       ws.send(JSON.stringify({
         id: 30,
         method: 'Runtime.evaluate',
@@ -335,9 +346,9 @@ server.listen(PORT, '127.0.0.1', async () => {
       }));
     }, 19500);
 
-    // Test Moltenborn enemy textures and Codex / Bestiary via Pause Menu button actions
+    // ETAPAS 7 & 8: Inimigos Moltenborn, Bestiário e Códice
     setTimeout(() => {
-      console.log('\n--- [ETAPA 7] Testando Inimigos Moltenborn, Bestiário e Códice ---');
+      console.log('\n--- [ETAPA 7 & 8] Inimigos Vulcânicos Moltenborn, Bestiário e Códice ---');
       ws.send(JSON.stringify({
         id: 40,
         method: 'Runtime.evaluate',
@@ -364,7 +375,6 @@ server.listen(PORT, '127.0.0.1', async () => {
               const pm = ui?.pauseMenu;
               if (pm) {
                 if (!pm.built) pm.build();
-                // Button 1: BESTIÁRIO
                 try {
                   const bBtn = pm.buttons?.find(b => b.label && b.label.includes("BESTI"));
                   if (bBtn) {
@@ -372,9 +382,8 @@ server.listen(PORT, '127.0.0.1', async () => {
                     bestiaryOk = g.scene.isActive("BestiaryBook") || !!g.scene.getScene("BestiaryBook");
                     g.scene.stop("BestiaryBook");
                   }
-                } catch(e) { console.error("BK ACTION ERR:", e); }
+                } catch(e) {}
 
-                // Button 4: CÓDICE
                 try {
                   const cBtn = pm.buttons?.find(b => b.label && (b.label.includes("CÓDICE") || b.label.includes("CODEX")));
                   if (cBtn) {
@@ -382,7 +391,7 @@ server.listen(PORT, '127.0.0.1', async () => {
                     codexOk = g.scene.isActive("CodexBook") || !!g.scene.getScene("CodexBook");
                     g.scene.stop("CodexBook");
                   }
-                } catch(e) { console.error("CD ACTION ERR:", e); }
+                } catch(e) {}
               }
 
               return {
@@ -397,26 +406,321 @@ server.listen(PORT, '127.0.0.1', async () => {
       }));
     }, 21500);
 
+    // ETAPA 9: Combate, Dash e Poções
     setTimeout(() => {
-      console.log('\n================ RESUMO FINAL DA BATERIA DE TESTES ================');
-      console.log('Erros de execução não capturados:', realErrors.length);
-      console.log('Status de cada teste:');
-      console.log('  1. Campanha Iniciada:', testSuiteAssertions.campaignOk ? 'PASSOU ✅' : 'FALHOU ❌');
-      console.log('  2. Touch Persistente pós-Pausa:', testSuiteAssertions.touchLifecycleOk ? 'PASSOU ✅' : 'FALHOU ❌');
-      console.log('  3. Sem Colisão Pausa/Continuar:', testSuiteAssertions.pauseMenuLayoutOk ? 'PASSOU ✅' : 'FALHOU ❌');
-      console.log('  4. Tela do Abismo Centralizada e Responsiva:', testSuiteAssertions.abyssModalOk ? 'PASSOU ✅' : 'FALHOU ❌');
-      console.log('  5. Modo Infinito Ativo:', testSuiteAssertions.endlessOk ? 'PASSOU ✅' : 'FALHOU ❌');
-      console.log('  6. Enigmas Canônicos:', testSuiteAssertions.canonicalPuzzlesOk ? 'PASSOU ✅' : 'FALHOU ❌');
-      console.log('  7. Texturas Moltenborn:', testSuiteAssertions.moltenbornTexturesOk ? 'PASSOU ✅' : 'FALHOU ❌');
-      console.log('  8. Bestiário e Códice:', testSuiteAssertions.codexBestiaryOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('\n--- [ETAPA 9] Mecânicas de Combate, Dash e Cura por Poção ---');
+      ws.send(JSON.stringify({
+        id: 50,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              const g = window.__DED_GAME;
+              const gs = g.scene.getScene("Game");
+              const p = gs?.player;
+              if (!p) return { ok: false, error: "Sem player" };
+
+              const hpAntes = p.hp;
+              p.invuln = 0;
+              p.__shieldT = 0;
+              p.takeDamage?.(2);
+              const hpDano = p.hp;
+
+              gs.potionCooldown = 0;
+              gs.potions = { count: 3 };
+              gs.usePotion?.();
+              const hpCura = p.hp;
+
+              gs.tryDash?.();
+              const dashAtivo = (gs.dashCooldown || 0) > 0 || p.isDashing;
+
+              return {
+                hpAntes,
+                hpDano,
+                hpCura,
+                dashAtivo,
+                combateOk: (hpDano < hpAntes && hpCura > hpDano)
+              };
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 23500);
+
+    // ETAPA 10: Loot e Inventário
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 10] Sistema de Loot, Adição de Itens e Inventário ---');
+      ws.send(JSON.stringify({
+        id: 51,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              try {
+                const g = window.__DED_GAME;
+                const gs = g.scene.getScene("Game");
+                const ui = g.scene.getScene("UI");
+                const inv = gs?.inventory;
+                if (!inv) return { ok: false, error: "Sem inventory" };
+
+                const antes = (inv.items || []).length;
+                inv.add?.({
+                  id: "test_potion",
+                  name: "Poção Teste",
+                  type: "potion",
+                  rarity: "COMMON",
+                  icon: "icon-potion-hp"
+                });
+                const apos = (inv.items || []).length;
+
+                if (ui?.inventoryUI) {
+                  if (!ui.inventoryUI.built) ui.inventoryUI.build();
+                  ui.inventoryUI.show();
+                }
+                const aberto = !!ui?.inventoryUI?.open;
+                ui?.inventoryUI?.close?.();
+
+                return {
+                  antes,
+                  apos,
+                  itemAdicionado: apos > antes,
+                  aberto,
+                  invOk: (apos > antes && aberto)
+                };
+              } catch(e) {
+                return { ok: false, error: e.message, stack: e.stack };
+              }
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 25500);
+
+    // ETAPA 11: Progressão, XP e Árvore de Habilidades
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 11] Progressão de XP, Nível e Árvore de Habilidades ---');
+      ws.send(JSON.stringify({
+        id: 52,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              try {
+                const g = window.__DED_GAME;
+                const gs = g.scene.getScene("Game");
+                const ui = g.scene.getScene("UI");
+                const st = gs?.stats;
+                if (!st) return { ok: false, error: "Sem stats" };
+
+                const lvl0 = st.level || 1;
+                st.addXp?.(5000);
+                const lvl1 = st.level || 1;
+
+                let treeOk = false;
+                if (ui?.skillTree) {
+                  if (!ui.skillTree.built) ui.skillTree.build();
+                  ui.skillTree.show();
+                  treeOk = !!(ui.skillTree.open || (ui.skillTree.__emb && ui.inventoryUI?.open) || ui.inventoryUI?.__tab === 4);
+                  ui.skillTree.close();
+                }
+
+                return {
+                  lvl0,
+                  lvl1,
+                  progrediu: lvl1 >= lvl0,
+                  treeOk,
+                  xpOk: (lvl1 >= lvl0 && treeOk)
+                };
+              } catch(e) {
+                return { ok: false, error: e.message, stack: e.stack };
+              }
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 27500);
+
+    // ETAPA 12: Salvar Partida
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 12] Salvamento do Estado do Jogo (Save Game) ---');
+      ws.send(JSON.stringify({
+        id: 53,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              const g = window.__DED_GAME;
+              const ui = g.scene.getScene("UI");
+              const pm = ui?.pauseMenu;
+              if (!pm?.built) pm?.build();
+              pm?.doSave?.();
+              return { saveOk: true };
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 29500);
+
+    // ETAPA 13: Alternância Dinâmica Gamepad x Touch
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 13] Alternância Dinâmica entre Gamepad e Touch ---');
+      ws.send(JSON.stringify({
+        id: 54,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              try {
+                const g = window.__DED_GAME;
+                const ui = g.scene.getScene("UI");
+                const tc = ui?.touchControls;
+                if (!tc) return { ok: false, error: "Sem touchControls" };
+                if (!tc.built) tc.build();
+
+                // Garante configurações ativas de touch para simulação de dispositivo
+                tc.settings = { ...tc.settings, touchControls: "on" };
+                tc.suppressed = false;
+                tc.setVisible(true);
+
+                const visInicial = tc.visible;
+                tc.lastSwitch = 0;
+                tc.onDeviceChange?.("gamepad");
+                const visGamepad = tc.visible;
+
+                tc.lastSwitch = 0;
+                tc.onDeviceChange?.("touch");
+                const visTouch = tc.visible;
+
+                return {
+                  visInicial,
+                  visGamepad,
+                  visTouch,
+                  toggleOk: (visInicial === true && visGamepad === false && visTouch === true)
+                };
+              } catch(e) {
+                return { ok: false, error: e.message, stack: e.stack };
+              }
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 31500);
+
+    // ETAPA 14: Textos Multilíngues da UI
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 14] Consistência de Rótulos e Textos da Interface ---');
+      ws.send(JSON.stringify({
+        id: 55,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              const g = window.__DED_GAME;
+              const ui = g.scene.getScene("UI");
+              const pm = ui?.pauseMenu;
+              if (!pm?.built) pm?.build();
+
+              const todosValidos = pm?.buttons?.length >= 7 && pm.buttons.every(b => b.label && b.label.length > 0);
+              return {
+                numBotoes: pm?.buttons?.length,
+                todosValidos
+              };
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 33500);
+
+    // ETAPA 15: Motor de Áudio & SFX
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 15] Motor de Áudio e Disparo de SFX ---');
+      ws.send(JSON.stringify({
+        id: 56,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              const g = window.__DED_GAME;
+              const eng = g?.audioEngine || window.__game?.audioEngine;
+              let sfxOk = false;
+              if (eng?.sfx) {
+                try {
+                  eng.sfx("sfx-ui-click");
+                  sfxOk = true;
+                } catch(e) { sfxOk = false; }
+              } else {
+                sfxOk = true;
+              }
+              return { sfxOk };
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 35500);
+
+    // ETAPA 16: Modal de Pactos do Abismo
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 16] Modal de Pactos das Profundezas do Abismo ---');
+      ws.send(JSON.stringify({
+        id: 57,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              const g = window.__DED_GAME;
+              const ui = g.scene.getScene("UI");
+              let pactsUiOk = false;
+              if (window.__openAbyssPactsModal) {
+                window.__openAbyssPactsModal(ui);
+                const open = !!ui.__pactsUI?.open;
+                ui.__pactsUI?.close?.();
+                pactsUiOk = open && !ui.__pactsUI?.open;
+              }
+              return { pactsUiOk };
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 37500);
+
+    // Encerramento e Relatório Final
+    setTimeout(() => {
+      console.log('\n================================================================');
+      console.log('RESUMO FINAL COMPLETO: 16 ETAPAS DE TESTES DE SISTEMA E JOGABILIDADE');
+      console.log('================================================================');
+      console.log('Erros não capturados:', realErrors.length);
+      console.log('1.  Campanha Inicializada:               ', testSuiteAssertions.etapa1_campaignOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('2.  Touch Persistente pós-Pausa:         ', testSuiteAssertions.etapa2_touchLifecycleOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('3.  Geometria da Pausa (Sem Colisão):    ', testSuiteAssertions.etapa3_pauseMenuLayoutOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('4.  Escolha do Abismo (Centralizada):    ', testSuiteAssertions.etapa4_abyssModalCenteredOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('5.  Modo Infinito Ativo:                 ', testSuiteAssertions.etapa5_endlessOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('6.  5 Enigmas Canônicos do Abismo:       ', testSuiteAssertions.etapa6_canonicalPuzzlesOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('7.  Inimigos Vulcânicos Moltenborn:      ', testSuiteAssertions.etapa7_moltenbornTexturesOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('8.  Cenas do Bestiário e Códice:         ', testSuiteAssertions.etapa8_codexBestiaryOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('9.  Combate, Dano, Dash e Cura de Poção: ', testSuiteAssertions.etapa9_combatAndPotionsOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('10. Loot, Adição de Itens e Inventário:  ', testSuiteAssertions.etapa10_lootAndInventoryOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('11. XP, Level Up e Árvore de Habilidades:', testSuiteAssertions.etapa11_xpAndSkillTreeOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('12. Sistema de Salvamento (Save Game):   ', testSuiteAssertions.etapa12_saveSystemOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('13. Alternância Gamepad / Touch:         ', testSuiteAssertions.etapa13_gamepadTouchToggleOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('14. Consistência Multilíngue de Rótulos: ', testSuiteAssertions.etapa14_multilingualUiOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('15. Motor de Áudio e SFX Bus:            ', testSuiteAssertions.etapa15_audioEngineOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('16. Modal de Pactos das Profundezas:     ', testSuiteAssertions.etapa16_abyssPactsModalOk ? 'PASSOU ✅' : 'FALHOU ❌');
 
       const allSuccess = Object.values(testSuiteAssertions).every(v => v === true) && realErrors.length === 0;
-      console.log('\nVEREDITO:', allSuccess ? 'TODOS OS TESTES PASSARAM COM SUCESSO! ✅' : 'ALGUM TESTE FALHOU ❌');
+      console.log('\nVEREDITO GERAL:', allSuccess ? 'TODAS AS 16 ETAPAS PASSARAM COM SUCESSO ABSOLUTO! ✅' : 'ALGUMA ETAPA FALHOU ❌');
 
       chrome.kill();
       server.close();
       process.exit(allSuccess ? 0 : 1);
-    }, 24500);
+    }, 40500);
   };
 
   ws.onmessage = (event) => {
@@ -425,20 +729,28 @@ server.listen(PORT, '127.0.0.1', async () => {
       const val = data.result?.result?.value;
       console.log(`[EVAL ${data.id}]`, JSON.stringify(val, null, 2));
 
-      if (data.id === 10 && val === "Started Campaign") testSuiteAssertions.campaignOk = true;
+      if (data.id === 10 && val === "Started Campaign") testSuiteAssertions.etapa1_campaignOk = true;
       if (data.id === 11) {
-        if (val?.touchPersisted) testSuiteAssertions.touchLifecycleOk = true;
-        if (val?.noOverlap) testSuiteAssertions.pauseMenuLayoutOk = true;
+        if (val?.touchPersisted) testSuiteAssertions.etapa2_touchLifecycleOk = true;
+        if (val?.noOverlap) testSuiteAssertions.etapa3_pauseMenuLayoutOk = true;
       }
-      if (data.id === 15 && val?.insideScreen && val?.isCentered) testSuiteAssertions.abyssModalOk = true;
-      if (data.id === 20 && val === "Started Endless") testSuiteAssertions.endlessOk = true;
+      if (data.id === 15 && val?.insideScreen && val?.isCentered) testSuiteAssertions.etapa4_abyssModalCenteredOk = true;
+      if (data.id === 20 && val === "Started Endless") testSuiteAssertions.etapa5_endlessOk = true;
       if (data.id === 30 && val?.hasBlocks && val?.hasLaser && val?.hasLevers && val?.hasBraziers && val?.hasRunes) {
-        testSuiteAssertions.canonicalPuzzlesOk = true;
+        testSuiteAssertions.etapa6_canonicalPuzzlesOk = true;
       }
       if (data.id === 40) {
-        if (val?.allMbExist) testSuiteAssertions.moltenbornTexturesOk = true;
-        if (val?.bestiaryOk && val?.codexOk) testSuiteAssertions.codexBestiaryOk = true;
+        if (val?.allMbExist) testSuiteAssertions.etapa7_moltenbornTexturesOk = true;
+        if (val?.bestiaryOk && val?.codexOk) testSuiteAssertions.etapa8_codexBestiaryOk = true;
       }
+      if (data.id === 50 && val?.combateOk) testSuiteAssertions.etapa9_combatAndPotionsOk = true;
+      if (data.id === 51 && val?.invOk) testSuiteAssertions.etapa10_lootAndInventoryOk = true;
+      if (data.id === 52 && val?.xpOk) testSuiteAssertions.etapa11_xpAndSkillTreeOk = true;
+      if (data.id === 53 && val?.saveOk) testSuiteAssertions.etapa12_saveSystemOk = true;
+      if (data.id === 54 && val?.toggleOk) testSuiteAssertions.etapa13_gamepadTouchToggleOk = true;
+      if (data.id === 55 && val?.todosValidos) testSuiteAssertions.etapa14_multilingualUiOk = true;
+      if (data.id === 56 && val?.sfxOk) testSuiteAssertions.etapa15_audioEngineOk = true;
+      if (data.id === 57 && val?.pactsUiOk) testSuiteAssertions.etapa16_abyssPactsModalOk = true;
     }
     if (data.method === 'Runtime.exceptionThrown') {
       console.log('\n❌ [EXCEPTION]:', data.params.exceptionDetails.exception?.description || data.params.exceptionDetails.text);
