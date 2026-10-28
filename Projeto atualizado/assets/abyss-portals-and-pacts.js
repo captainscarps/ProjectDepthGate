@@ -85,9 +85,10 @@
   };
 
   function getViewport(scene) {
+    const sc = scene?.scale;
     const cam = scene?.cameras?.main;
-    const w = Math.max(cam?.width || 0, scene?.scale?.width || 0, window.innerWidth || 0, 640);
-    const h = Math.max(cam?.height || 0, scene?.scale?.height || 0, window.innerHeight || 0, 360);
+    const w = sc?.width || cam?.width || 640;
+    const h = sc?.height || cam?.height || 360;
     return { w, h, cx: Math.round(w / 2), cy: Math.round(h / 2) };
   }
 
@@ -172,6 +173,7 @@
       this.onChoice = onChoiceCallback;
       this.selectedIdx = 0;
       this.root.setVisible(!0);
+      this.ui.game?.events?.emit("ui:inventory", !0);
 
       const possiblePortals = [
         {
@@ -215,6 +217,7 @@
       if (!this.open) return;
       this.open = !1;
       this.root.setVisible(!1);
+      this.ui.game?.events?.emit("ui:inventory", !1);
     }
 
     renderCards() {
