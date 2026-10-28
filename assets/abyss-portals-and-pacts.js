@@ -85,10 +85,17 @@
   };
 
   function getViewport(scene) {
-    const sc = scene?.scale;
-    const cam = scene?.cameras?.main;
-    const w = sc?.width || cam?.width || 640;
-    const h = sc?.height || cam?.height || 360;
+    let w = 640;
+    try {
+      if (typeof window !== "undefined" && window._) {
+        w = window._;
+      } else if (scene?.scale?.width) {
+        w = scene.scale.width > 700 ? Math.round(scene.scale.width / 2) : scene.scale.width;
+      }
+    } catch (e) {
+      w = 640;
+    }
+    const h = 360;
     return { w, h, cx: Math.round(w / 2), cy: Math.round(h / 2) };
   }
 

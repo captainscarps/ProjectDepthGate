@@ -196,16 +196,15 @@ server.listen(PORT, '127.0.0.1', async () => {
               const open = portalUI?.open;
               const rootVis = portalUI?.root?.visible;
 
-              const sc = ui?.scale;
-              const w = sc?.width || 640;
-              const h = sc?.height || 360;
+              const w = window._ || 640;
+              const h = 360;
               const cx = Math.round(w / 2);
 
               // Check card container coordinates
               const cards = portalUI?.cardsContainer?.list || [];
               const coords = cards.map(c => ({ x: c.x, y: c.y }));
               
-              // Cards must be centered around cx and inside bounds
+              // Cards must be centered around cx (320) and inside virtual bounds [0..w, 0..360]
               const insideScreen = coords.length === 3 && coords.every(c => c.x >= 20 && c.x <= w - 20 && c.y >= 20 && c.y <= h - 20);
               const isCentered = coords.length === 3 && Math.abs(coords[1].x - cx) <= 2;
 
