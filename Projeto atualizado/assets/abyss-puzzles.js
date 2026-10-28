@@ -1,9 +1,9 @@
-// Abyss Puzzles & Nightmare Modifiers System for Endless Mode
-// Fully aligned with Depth Gate's canonical pixel-art visual & interaction standards (__gsPuzzles)
+// Abyss Puzzles System for Depth Gate
+// Fully aligned with Depth Gate's canonical puzzle mechanics, textures, sounds and rewards (__pzBuild / __gsPuzzles)
 (() => {
-  // --- 1. PROCEDURAL PIXEL-ART TEXTURES GENERATOR ---
-  function initPuzzleTextures(scene) {
-    if (!scene || scene.textures.exists("ab-prism-base")) return;
+  // --- 1. PROCEDURAL PIXEL-ART TEXTURES & ASSET INITIALIZER ---
+  function initCanonicalPuzzleTextures(scene) {
+    if (!scene) return;
     const textures = scene.textures;
 
     const mk = (key, w, h, drawFn) => {
@@ -20,712 +20,957 @@
       return q;
     };
 
-    // 1.1 Base de Pedra Ornada do Prisma (32x32)
-    mk("ab-prism-base", 32, 32, (ctx) => {
-      // Sombra projetada
-      ctx.fillStyle = "rgba(10, 8, 14, 0.4)";
-      ctx.beginPath();
-      ctx.ellipse(16, 26, 14, 5, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Pedestal de pedra chanfrada
-      ctx.fillStyle = grad(ctx, 0, 6, 0, 26, [[0, "#3d3248"], [0.5, "#251d2f"], [1, "#140f1a"]]);
-      ctx.beginPath();
-      ctx.moveTo(8, 8);
-      ctx.lineTo(24, 8);
-      ctx.lineTo(28, 22);
-      ctx.lineTo(4, 22);
-      ctx.closePath();
-      ctx.fill();
-
-      // Borda de pedra entalhada
-      ctx.strokeStyle = "rgba(180, 160, 210, 0.5)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Topo dourado rúnico
-      ctx.fillStyle = grad(ctx, 0, 8, 0, 16, [[0, "#ffd24a"], [1, "#946f20"]]);
-      ctx.fillRect(9, 9, 14, 4);
-
-      // Runa central mística
-      ctx.fillStyle = "#ffe680";
-      ctx.fillRect(15, 10, 2, 2);
+    // 1.1 Bloco de Pedra Pesada Deslizante (32x40)
+    mk("pz-stone", 32, 40, (g) => {
+      g.fillStyle = "rgba(0,0,0,.38)";
+      g.beginPath();
+      g.ellipse(16, 37, 15, 3.2, 0, 0, 7);
+      g.fill();
+      g.fillStyle = grad(g, 0, 12, 0, 38, [[0, "#e2e2e2"], [1, "#8c8c8c"]]);
+      g.beginPath();
+      g.moveTo(2, 14);
+      g.lineTo(30, 14);
+      g.lineTo(30, 36);
+      g.lineTo(28, 38);
+      g.lineTo(4, 38);
+      g.lineTo(2, 36);
+      g.closePath();
+      g.fill();
+      g.fillStyle = grad(g, 0, 3, 0, 15, [[0, "#ffffff"], [1, "#d0d0d0"]]);
+      g.beginPath();
+      g.moveTo(2, 14);
+      g.lineTo(6, 5);
+      g.lineTo(9, 4);
+      g.lineTo(27, 4);
+      g.lineTo(30, 6);
+      g.lineTo(30, 14);
+      g.closePath();
+      g.fill();
+      g.strokeStyle = "rgba(60,60,60,.55)";
+      g.lineWidth = 1;
+      g.beginPath();
+      g.moveTo(2, 25.5);
+      g.lineTo(30, 25.5);
+      g.moveTo(15.5, 14);
+      g.lineTo(15.5, 25.5);
+      g.moveTo(9.5, 25.5);
+      g.lineTo(9.5, 38);
+      g.moveTo(22.5, 25.5);
+      g.lineTo(22.5, 38);
+      g.stroke();
+      g.strokeStyle = "rgba(255,255,255,.55)";
+      g.beginPath();
+      g.moveTo(3, 15);
+      g.lineTo(29, 15);
+      g.stroke();
+      g.strokeStyle = "rgba(50,50,50,.6)";
+      g.lineWidth = 1.4;
+      g.beginPath();
+      g.arc(16, 9, 3.2, 0, 6.3);
+      g.moveTo(16, 5);
+      g.lineTo(16, 13);
+      g.stroke();
+      g.strokeStyle = "rgba(40,40,40,.45)";
+      g.lineWidth = 1;
+      g.beginPath();
+      g.moveTo(25, 27);
+      g.lineTo(27, 31);
+      g.lineTo(25, 34);
+      g.moveTo(5, 17);
+      g.lineTo(7, 20);
+      g.stroke();
+      g.fillStyle = "rgba(30,30,30,.25)";
+      g.fillRect(26, 30, 3, 2);
+      g.fillRect(4, 31, 2, 3);
+      g.fillStyle = "rgba(0,0,0,.28)";
+      g.fillRect(29, 14, 1, 22);
     });
 
-    // 1.2 Cristal de Luz Refletor (32x32)
-    mk("ab-prism-crystal", 32, 32, (ctx) => {
-      // Prisma de diamante lapidado
-      ctx.fillStyle = grad(ctx, 16, 4, 16, 28, [
-        [0, "#ffffff"],
-        [0.2, "#80ffff"],
-        [0.6, "#00b3cc"],
-        [1, "#004d66"]
-      ]);
-      ctx.beginPath();
-      ctx.moveTo(16, 4);
-      ctx.lineTo(26, 14);
-      ctx.lineTo(16, 26);
-      ctx.lineTo(6, 14);
-      ctx.closePath();
-      ctx.fill();
-
-      // Facetas de reflexão
-      ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-      ctx.beginPath();
-      ctx.moveTo(16, 4);
-      ctx.lineTo(16, 26);
-      ctx.lineTo(6, 14);
-      ctx.closePath();
-      ctx.fill();
-
-      // Contorno de brilho prismático
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-
-      // Centro brilhante
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(15, 13, 2, 2);
-    });
-
-    // 1.3 Emissor Solar / Foco Arcano (32x32)
-    mk("ab-solar-emitter", 32, 32, (ctx) => {
-      ctx.fillStyle = "rgba(20, 10, 5, 0.4)";
-      ctx.beginPath();
-      ctx.ellipse(16, 26, 14, 5, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Altar dourado
-      ctx.fillStyle = grad(ctx, 0, 8, 0, 24, [[0, "#ffd24a"], [0.5, "#b3861b"], [1, "#593d05"]]);
-      ctx.beginPath();
-      ctx.arc(16, 16, 12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = "#ffe680";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Núcleo solar flamejante
-      ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.arc(16, 16, 6, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
-    // 1.4 Altar Solar Receptor (Apagado / Aceso - 36x36)
+    // 1.2 Placa de Pressão Rúnica (Desativada / Ativada) (30x22)
     for (const on of [0, 1]) {
-      mk(on ? "ab-solar-altar-on" : "ab-solar-altar-off", 36, 36, (ctx) => {
-        ctx.fillStyle = "rgba(10, 6, 14, 0.45)";
-        ctx.beginPath();
-        ctx.ellipse(18, 30, 16, 5, 0, 0, Math.PI * 2);
-        ctx.fill();
+      mk(on ? "pz-plate-on" : "pz-plate", 30, 22, (g) => {
+        g.fillStyle = "rgba(10,20,40,.35)";
+        g.beginPath();
+        g.ellipse(15, 13, 14, 7, 0, 0, 7);
+        g.fill();
+        g.fillStyle = grad(g, 0, 2, 0, 20, [[0, "#9aa6b4"], [1, "#566270"]]);
+        g.beginPath();
+        g.ellipse(15, 10, 13, 7, 0, 0, 7);
+        g.fill();
+        g.fillStyle = on ? "#ffd24a" : "#3a4654";
+        g.beginPath();
+        g.ellipse(15, 9, 9, 4.5, 0, 0, 7);
+        g.fill();
+        g.strokeStyle = on ? "#fff0a0" : "#7d8a98";
+        g.lineWidth = 1.2;
+        g.beginPath();
+        g.moveTo(10, 9);
+        g.lineTo(15, 6);
+        g.lineTo(20, 9);
+        g.lineTo(15, 12);
+        g.closePath();
+        g.stroke();
+      });
+    }
 
-        // Círculo de pedra mágica
-        ctx.fillStyle = grad(ctx, 0, 4, 0, 32, on ? [[0, "#2a3d24"], [1, "#121a10"]] : [[0, "#2c2536"], [1, "#15101a"]]);
-        ctx.beginPath();
-        ctx.arc(18, 18, 14, 0, Math.PI * 2);
-        ctx.fill();
+    // 1.3 Altar / Pilar de Recomeçar (24x30)
+    mk("pz-reset", 24, 30, (g) => {
+      g.fillStyle = "rgba(10,20,40,.35)";
+      g.beginPath();
+      g.ellipse(12, 27, 10, 3, 0, 0, 7);
+      g.fill();
+      g.fillStyle = grad(g, 0, 2, 0, 28, [[0, "#a8b2c0"], [1, "#5a6574"]]);
+      g.beginPath();
+      g.moveTo(4, 27);
+      g.lineTo(3, 10);
+      g.quadraticCurveTo(12, 0, 21, 10);
+      g.lineTo(20, 27);
+      g.closePath();
+      g.fill();
+      g.strokeStyle = "#ffd24a";
+      g.lineWidth = 1.5;
+      g.beginPath();
+      g.arc(12, 15, 5, 0.3, 5.6);
+      g.stroke();
+      g.beginPath();
+      g.moveTo(16, 10);
+      g.lineTo(17, 14);
+      g.lineTo(13, 13);
+      g.stroke();
+    });
 
-        ctx.strokeStyle = on ? "#00ff88" : "#6f5b82";
-        ctx.lineWidth = on ? 2 : 1.2;
-        ctx.stroke();
+    // 1.4 Espelho de Luz Giratório (Posições A e B) (30x44)
+    for (const k of ["a", "b"]) {
+      mk("pz-mirror-" + k, 30, 44, (g) => {
+        g.fillStyle = "rgba(10,20,40,.35)";
+        g.beginPath();
+        g.ellipse(15, 41, 12, 3, 0, 0, 7);
+        g.fill();
+        g.fillStyle = grad(g, 0, 30, 0, 42, [[0, "#8d97a6"], [1, "#4c5664"]]);
+        g.fillRect(6, 32, 18, 9);
+        g.fillStyle = "#6c7684";
+        g.fillRect(13, 22, 4, 11);
+        g.save();
+        g.translate(15, 16);
+        g.rotate(k === "a" ? -0.62 : 0.62);
+        g.fillStyle = grad(g, -11, 0, 11, 0, [[0, "#d8f6ff"], [0.45, "#8fd4f4"], [0.55, "#ffffff"], [1, "#5aa8d8"]]);
+        g.fillRect(-12, -5, 24, 9);
+        g.strokeStyle = "#2e6c96";
+        g.lineWidth = 1;
+        g.strokeRect(-12, -5, 24, 9);
+        g.restore();
+      });
+    }
 
-        // Disco interno
-        ctx.fillStyle = on ? "#00ff88" : "#3b3047";
-        ctx.beginPath();
-        ctx.arc(18, 18, on ? 8 : 6, 0, Math.PI * 2);
-        ctx.fill();
+    // 1.5 Lápide de Dica / Enigma Antigo (26x32)
+    mk("pz-plaque", 26, 32, (g) => {
+      g.fillStyle = "rgba(10,20,40,.35)";
+      g.beginPath();
+      g.ellipse(13, 29, 11, 3, 0, 0, 7);
+      g.fill();
+      g.fillStyle = grad(g, 0, 0, 0, 30, [[0, "#b9c2ce"], [1, "#66707e"]]);
+      g.beginPath();
+      g.moveTo(3, 29);
+      g.lineTo(3, 8);
+      g.quadraticCurveTo(13, -2, 23, 8);
+      g.lineTo(23, 29);
+      g.closePath();
+      g.fill();
+      g.fillStyle = "#f4fbff";
+      g.fillRect(5, 5, 16, 3);
+      g.fillStyle = "#4a5462";
+      for (let y = 12; y < 26; y += 4) g.fillRect(7, y, 12, 1.5);
+    });
 
-        if (on) {
-          ctx.fillStyle = "#ffffff";
-          ctx.beginPath();
-          ctx.arc(18, 18, 4, 0, Math.PI * 2);
-          ctx.fill();
+    // 1.6 Braseiro Cerimonial de Fogo (26x28)
+    mk("pz-brazier", 26, 28, (g) => {
+      g.fillStyle = "rgba(10,20,40,.35)";
+      g.beginPath();
+      g.ellipse(13, 25, 11, 3, 0, 0, 7);
+      g.fill();
+      g.fillStyle = "#3a3f48";
+      g.fillRect(6, 14, 2, 11);
+      g.fillRect(18, 14, 2, 11);
+      g.fillRect(12, 15, 2, 10);
+      g.fillStyle = grad(g, 0, 6, 0, 16, [[0, "#7a828e"], [1, "#30353e"]]);
+      g.beginPath();
+      g.moveTo(2, 8);
+      g.lineTo(24, 8);
+      g.lineTo(20, 16);
+      g.lineTo(6, 16);
+      g.closePath();
+      g.fill();
+      g.fillStyle = "#1c1f26";
+      g.beginPath();
+      g.ellipse(13, 8, 11, 3, 0, 0, 7);
+      g.fill();
+    });
+
+    // 1.7 Pedestal de Cristal / Foco (22x34)
+    mk("pz-post", 22, 34, (g) => {
+      const q = g.createLinearGradient(3, 0, 19, 0);
+      q.addColorStop(0, "#7c7c7c");
+      q.addColorStop(0.45, "#d8d8d8");
+      q.addColorStop(1, "#6a6a6a");
+      g.fillStyle = "rgba(0,0,0,.35)";
+      g.beginPath();
+      g.ellipse(11, 31, 10, 3, 0, 0, 7);
+      g.fill();
+      g.fillStyle = q;
+      g.fillRect(4, 6, 14, 25);
+      g.fillStyle = "#efefef";
+      g.beginPath();
+      g.moveTo(3, 7);
+      g.lineTo(11, 1);
+      g.lineTo(19, 7);
+      g.closePath();
+      g.fill();
+      g.fillStyle = "rgba(0,0,0,.3)";
+      g.fillRect(4, 28, 14, 3);
+    });
+
+    // 1.8 Orbe Radiante de Energia (20x20)
+    mk("pz-orb", 20, 20, (g) => {
+      const q = g.createRadialGradient(8, 7, 1, 10, 10, 9);
+      q.addColorStop(0, "#ffffff");
+      q.addColorStop(0.45, "#ffd98a");
+      q.addColorStop(1, "rgba(255,180,50,0)");
+      g.fillStyle = q;
+      g.beginPath();
+      g.arc(10, 10, 9, 0, 7);
+      g.fill();
+      g.fillStyle = "#ffffff";
+      g.beginPath();
+      g.arc(10, 10, 4.5, 0, 7);
+      g.fill();
+    });
+
+    // 1.9 Glifos Celestiais (Sol, Lua, Estrela, Triângulo, Losango, Olho)
+    for (let k = 0; k < 6; k++) {
+      mk("pz-glyph-" + k, 16, 16, (g) => {
+        g.fillStyle = "#ffffff";
+        g.strokeStyle = "#ffffff";
+        g.lineWidth = 1.6;
+        g.beginPath();
+        if (k === 0) {
+          g.arc(8, 8, 3.4, 0, 7);
+          g.fill();
+          for (let a = 0; a < 8; a++) {
+            const q = (a * Math.PI) / 4;
+            g.moveTo(8 + Math.cos(q) * 5, 8 + Math.sin(q) * 5);
+            g.lineTo(8 + Math.cos(q) * 7.4, 8 + Math.sin(q) * 7.4);
+          }
+          g.stroke();
+        } else if (k === 1) {
+          g.arc(8, 8, 6, 0, 7);
+          g.fill();
+          g.globalCompositeOperation = "destination-out";
+          g.beginPath();
+          g.arc(11, 6, 5.4, 0, 7);
+          g.fill();
+          g.globalCompositeOperation = "source-over";
+        } else if (k === 2) {
+          for (let a = 0; a < 10; a++) {
+            const q = -Math.PI / 2 + (a * Math.PI) / 5;
+            const r = a % 2 ? 3 : 7.2;
+            a ? g.lineTo(8 + Math.cos(q) * r, 8 + Math.sin(q) * r) : g.moveTo(8 + Math.cos(q) * r, 8 + Math.sin(q) * r);
+          }
+          g.closePath();
+          g.fill();
+        } else if (k === 3) {
+          g.moveTo(8, 1.5);
+          g.lineTo(14.5, 14);
+          g.lineTo(1.5, 14);
+          g.closePath();
+          g.fill();
+        } else if (k === 4) {
+          g.moveTo(8, 1);
+          g.lineTo(14, 8);
+          g.lineTo(8, 15);
+          g.lineTo(2, 8);
+          g.closePath();
+          g.fill();
+        } else {
+          g.moveTo(1, 8);
+          g.quadraticCurveTo(8, 1, 15, 8);
+          g.quadraticCurveTo(8, 15, 1, 8);
+          g.closePath();
+          g.fill();
+          g.globalCompositeOperation = "destination-out";
+          g.beginPath();
+          g.arc(8, 8, 2.6, 0, 7);
+          g.fill();
+          g.globalCompositeOperation = "source-over";
         }
       });
     }
 
-    // 1.5 Placas Rúnicas Elementais (Fogo, Gelo, Raio, Terra - 34x34)
-    const runeDefs = [
-      { key: "ab-rune-fire", color: "#ff4422", glyph: "🔥" },
-      { key: "ab-rune-ice", color: "#33ccff", glyph: "❄️" },
-      { key: "ab-rune-shock", color: "#ffd24a", glyph: "⚡" },
-      { key: "ab-rune-earth", color: "#44dd66", glyph: "🌿" }
-    ];
-
-    for (const rDef of runeDefs) {
-      for (const on of [0, 1]) {
-        mk(`${rDef.key}${on ? "-on" : ""}`, 34, 34, (ctx) => {
-          ctx.fillStyle = "rgba(8, 6, 12, 0.4)";
-          ctx.beginPath();
-          ctx.ellipse(17, 27, 15, 6, 0, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Placa de pedra com chanfro octogonal
-          ctx.fillStyle = grad(ctx, 0, 4, 0, 28, on ? [[0, "#2e2230"], [1, "#171018"]] : [[0, "#221b26"], [1, "#120e15"]]);
-          ctx.beginPath();
-          ctx.arc(17, 16, 13, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.strokeStyle = on ? rDef.color : "rgba(160, 140, 180, 0.4)";
-          ctx.lineWidth = on ? 2.2 : 1;
-          ctx.stroke();
-
-          // Anel rúnico interno
-          ctx.strokeStyle = on ? "#ffffff" : rDef.color;
-          ctx.lineWidth = on ? 1.5 : 0.8;
-          ctx.beginPath();
-          ctx.arc(17, 16, 8, 0, Math.PI * 2);
-          ctx.stroke();
-
-          // Ponto de poder central
-          ctx.fillStyle = on ? "#ffffff" : rDef.color;
-          ctx.beginPath();
-          ctx.arc(17, 16, on ? 4 : 2.5, 0, Math.PI * 2);
-          ctx.fill();
+    // 1.10 Alavancas Mecânicas (cx-lever-off / on)
+    if (!textures.exists("cx-lever-off")) {
+      const mkLev = (k, on) => {
+        mk(k, 20, 26, (g) => {
+          g.fillStyle = "rgba(0,0,0,.35)";
+          g.fillRect(3, 22, 14, 3);
+          g.fillStyle = "#3a3630";
+          g.fillRect(3, 16, 14, 8);
+          g.fillStyle = "#5a544a";
+          g.fillRect(4, 17, 12, 3);
+          g.fillStyle = "#2a2620";
+          g.fillRect(8, 14, 4, 3);
+          g.strokeStyle = "#8a7a5a";
+          g.lineWidth = 2;
+          g.beginPath();
+          g.moveTo(10, 15);
+          g.lineTo(on ? 16 : 4, 4);
+          g.stroke();
+          g.fillStyle = on ? "#8ae0b0" : "#c9a24a";
+          g.fillRect(on ? 14 : 2, 2, 4, 4);
         });
-      }
+      };
+      mkLev("cx-lever-off", 0);
+      mkLev("cx-lever-on", 1);
     }
   }
 
+  // --- 2. ÁUDIO SINTETIZADO E CANÔNICO ---
+  function playTone(scene, freq, dur = 0.35) {
+    const audio = scene?.game?.audioEngine;
+    if (!audio?.ctx || !audio.sfxBus) return;
+    try {
+      const t0 = audio.ctx.currentTime;
+      const osc1 = audio.ctx.createOscillator();
+      const osc2 = audio.ctx.createOscillator();
+      const gain = audio.ctx.createGain();
+
+      osc1.type = "sine";
+      osc2.type = "triangle";
+      osc1.frequency.value = freq;
+      osc2.frequency.value = freq * 2.01;
+
+      gain.gain.setValueAtTime(0, t0);
+      gain.gain.linearRampToValueAtTime(0.3, t0 + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur * 2.2);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(audio.sfxBus);
+
+      osc1.start(t0);
+      osc2.start(t0);
+      osc1.stop(t0 + dur * 2.4);
+      osc2.stop(t0 + dur * 2.4);
+    } catch (_) {}
+  }
+
+  const GLYPH_NAMES = [
+    ["Sol", "Sun", "Sol"],
+    ["Lua", "Moon", "Luna"],
+    ["Estrela", "Star", "Estrella"],
+    ["Triângulo", "Triangle", "Triángulo"],
+    ["Losango", "Diamond", "Rombo"],
+    ["Olho", "Eye", "Ojo"]
+  ];
+
+  // Helper para rótulo interativo padrão Depth Gate
+  function setInteractLabel(obj, fn) {
+    Object.defineProperty(obj, "interactLabel", { get: fn, configurable: true });
+  }
+
+  // --- 3. ABYSS PUZZLE MANAGER (CANÔNICO) ---
   class AbyssPuzzleManager {
-    constructor(gameScene) {
-      this.scene = gameScene;
+    constructor(scene) {
+      this.scene = scene;
       this.activePuzzle = null;
-      this.solved = !1;
-      this.puzzleG = null;
-      this.sprites = [];
-      initPuzzleTextures(gameScene);
+      this.isDestroyed = true;
+      this.activeObjects = [];
+      this.laserGraphics = null;
+      this.isSolved = false;
+      this.updateHandler = null;
+      this.activeTimers = [];
+
+      initCanonicalPuzzleTextures(scene);
     }
 
-    shouldSpawnAbyssPortal(depth) {
-      if (this.scene.mode !== "endless") return !1;
-      return depth > 0 && depth % 4 === 0;
-    }
-
-    clearSprites() {
-      for (const sp of this.sprites) {
-        try { sp.destroy(); } catch (e) {}
+    destroyActive() {
+      if (this.updateHandler) {
+        this.scene?.events?.off("update", this.updateHandler);
+        this.updateHandler = null;
       }
-      this.sprites = [];
-      if (this.puzzleG) {
-        this.puzzleG.clear();
+      if (this.laserGraphics) {
+        this.laserGraphics.destroy();
+        this.laserGraphics = null;
       }
-    }
-
-    // Tom harmônico suave usando WebAudio/Tone (idêntico ao padrão canônico de Depth Gate)
-    playTone(freq, dur = 0.35) {
-      const E = this.scene?.game?.audioEngine;
-      if (!E?.ctx || !E.sfxBus) return;
-      try {
-        const t0 = E.ctx.currentTime;
-        const osc = E.ctx.createOscillator();
-        const osc2 = E.ctx.createOscillator();
-        const gain = E.ctx.createGain();
-
-        osc.type = "sine";
-        osc2.type = "triangle";
-        osc.frequency.value = freq;
-        osc2.frequency.value = freq * 1.5;
-
-        gain.gain.setValueAtTime(0, t0);
-        gain.gain.linearRampToValueAtTime(0.28, t0 + 0.015);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
-
-        osc.connect(gain);
-        osc2.connect(gain);
-        gain.connect(E.sfxBus);
-
-        osc.start(t0);
-        osc2.start(t0);
-        osc.stop(t0 + dur);
-        osc2.stop(t0 + dur);
-      } catch (e) {}
-    }
-
-    // --- ENIGMA 1: PRISMAS E FEIXES DE LUZ (Alinhamento Prismático) ---
-    startLaserPrismPuzzle(container, roomBounds, onComplete) {
-      const s = this.scene;
-      initPuzzleTextures(s);
-      this.clearSprites();
-
-      const cx = roomBounds?.x ? roomBounds.x + 80 : 80;
-      const cy = roomBounds?.y ? roomBounds.y + 40 : 40;
-
-      const prisms = [
-        { id: 1, x: cx + 80,  y: cy + 60,  angle: 0 },
-        { id: 2, x: cx + 240, y: cy + 60,  angle: 180 },
-        { id: 3, x: cx + 240, y: cy + 200, angle: 90 },
-        { id: 4, x: cx + 380, y: cy + 200, angle: 0 }
-      ];
-
-      const receiver = { x: cx + 380, y: cy + 60, hit: !1 };
-      const emitter = { x: cx + 80, y: cy + 200, dir: "UP" };
-
-      const puzzleState = {
-        type: "laser_prisms",
-        prisms,
-        receiver,
-        emitter,
-        solved: !1,
-        onComplete
-      };
-
-      this.activePuzzle = puzzleState;
-      this.renderLaserPuzzle(puzzleState);
-      s.game.events.emit("ui:banner", "🧩 ENIGMA DOS PRISMAS: ALINHE O FEIXE SOLAR AO ALTAR!", "#ffd24a");
-      s.game?.audioEngine?.sfx?.("sfx-portal");
-    }
-
-    renderLaserPuzzle(pState) {
-      const s = this.scene;
-      initPuzzleTextures(s);
-
-      if (!this.puzzleG) {
-        this.puzzleG = s.add.graphics().setDepth(250);
+      for (const obj of this.activeObjects) {
+        try {
+          if (obj?.body && obj.body.enable) obj.body.enable = false;
+          obj?.destroy();
+        } catch (_) {}
       }
-      const g = this.puzzleG;
-      g.clear();
-
-      // Criar sprites se não existirem
-      if (!pState.createdSprites) {
-        pState.createdSprites = !0;
-
-        // Emitter
-        const emitSp = s.add.image(pState.emitter.x, pState.emitter.y, "ab-solar-emitter").setDepth(pState.emitter.y);
-        this.sprites.push(emitSp);
-
-        // Receiver (Altar Solar)
-        const recSp = s.add.image(pState.receiver.x, pState.receiver.y, "ab-solar-altar-off").setDepth(pState.receiver.y);
-        pState.recSp = recSp;
-        this.sprites.push(recSp);
-
-        // Altar Label
-        const altarT = s.add.text(pState.receiver.x, pState.receiver.y - 24, "ALTAR SOLAR", {
-          fontFamily: "Cinzel, Georgia, serif",
-          fontSize: "9px",
-          color: "#ffd24a",
-          fontStyle: "bold",
-          stroke: "#000000",
-          strokeThickness: 2
-        }).setOrigin(0.5).setDepth(255);
-        this.sprites.push(altarT);
-
-        // Prisms
-        pState.prismSprites = [];
-        for (const pr of pState.prisms) {
-          const baseSp = s.add.image(pr.x, pr.y, "ab-prism-base").setDepth(pr.y - 1);
-          const crySp = s.add.image(pr.x, pr.y - 4, "ab-prism-crystal").setDepth(pr.y).setAngle(pr.angle);
-          pState.prismSprites.push({ baseSp, crySp, data: pr });
-          this.sprites.push(baseSp, crySp);
+      if (this.activeTimers) {
+        for (const t of this.activeTimers) {
+          try { t?.remove?.(); } catch(_) {}
         }
+        this.activeTimers = [];
       }
-
-      // Atualizar rotação visual dos cristais
-      if (pState.prismSprites) {
-        for (const item of pState.prismSprites) {
-          item.crySp.setAngle(item.data.angle);
-        }
-      }
-
-      // Traçar feixe solar
-      this.traceLaserBeam(pState, g);
+      this.activeObjects = [];
+      this.activePuzzle = null;
+      this.isDestroyed = true;
     }
 
-    traceLaserBeam(pState, g) {
-      let curX = pState.emitter.x;
-      let curY = pState.emitter.y;
-      let curDir = "UP";
+    // Spawna o Baú Épico Canônico de Recompensa
+    spawnRewardChest(x, y, onSolve) {
+      const scene = this.scene;
+      const key = "chest-epic";
+      const chest = scene.add.image(x, y, key).setDepth(y).setScale(0.3).setAlpha(0);
+      chest.opened = false;
 
-      // Feixe de luz solar com dupla camada (halo suave + núcleo brilhante)
-      g.lineStyle(6, 0xffaa00, 0.3);
-      g.beginPath();
-      g.moveTo(curX, curY);
-
-      let hitsReceiver = !1;
-      const pathPoints = [{ x: curX, y: curY }];
-
-      for (let step = 0; step < 8; step++) {
-        let nextPrism = null;
-        let minDist = 999999;
-
-        for (const pr of pState.prisms) {
-          if (curDir === "UP" && pr.x === curX && pr.y < curY && (curY - pr.y) < minDist) {
-            minDist = curY - pr.y; nextPrism = pr;
-          } else if (curDir === "DOWN" && pr.x === curX && pr.y > curY && (pr.y - curY) < minDist) {
-            minDist = pr.y - curY; nextPrism = pr;
-          } else if (curDir === "RIGHT" && pr.y === curY && pr.x > curX && (pr.x - curX) < minDist) {
-            minDist = pr.x - curX; nextPrism = pr;
-          } else if (curDir === "LEFT" && pr.y === curY && pr.x < curX && (curX - pr.x) < minDist) {
-            minDist = curX - pr.x; nextPrism = pr;
-          }
-        }
-
-        const rx = pState.receiver.x;
-        const ry = pState.receiver.y;
-        let hitsRecThisStep = !1;
-        if (curDir === "UP" && rx === curX && ry < curY && (curY - ry) < minDist) {
-          hitsRecThisStep = !0; minDist = curY - ry;
-        } else if (curDir === "DOWN" && rx === curX && ry > curY && (ry - curY) < minDist) {
-          hitsRecThisStep = !0; minDist = ry - curY;
-        } else if (curDir === "RIGHT" && ry === curY && rx > curX && (rx - curX) < minDist) {
-          hitsRecThisStep = !0; minDist = rx - curX;
-        } else if (curDir === "LEFT" && ry === curY && rx < curX && (curX - rx) < minDist) {
-          hitsRecThisStep = !0; minDist = curX - rx;
-        }
-
-        if (hitsRecThisStep) {
-          pathPoints.push({ x: rx, y: ry });
-          hitsReceiver = !0;
-          break;
-        }
-
-        if (nextPrism) {
-          pathPoints.push({ x: nextPrism.x, y: nextPrism.y });
-          const ang = nextPrism.angle % 360;
-
-          if (ang === 0) {
-            if (curDir === "UP") curDir = "RIGHT";
-            else if (curDir === "LEFT") curDir = "DOWN";
-            else break;
-          } else if (ang === 90) {
-            if (curDir === "DOWN") curDir = "RIGHT";
-            else if (curDir === "LEFT") curDir = "UP";
-            else break;
-          } else if (ang === 180) {
-            if (curDir === "DOWN") curDir = "LEFT";
-            else if (curDir === "RIGHT") curDir = "UP";
-            else break;
-          } else if (ang === 270) {
-            if (curDir === "UP") curDir = "LEFT";
-            else if (curDir === "RIGHT") curDir = "DOWN";
-            else break;
-          } else {
-            break;
-          }
-
-          curX = nextPrism.x;
-          curY = nextPrism.y;
-        } else {
-          let endX = curX, endY = curY;
-          if (curDir === "UP") endY = curY - 90;
-          else if (curDir === "DOWN") endY = curY + 90;
-          else if (curDir === "LEFT") endX = curX - 90;
-          else if (curDir === "RIGHT") endX = curX + 90;
-          pathPoints.push({ x: endX, y: endY });
-          break;
-        }
-      }
-
-      // Desenhar linha de halo
-      for (let pIdx = 1; pIdx < pathPoints.length; pIdx++) {
-        g.lineTo(pathPoints[pIdx].x, pathPoints[pIdx].y);
-      }
-      g.strokePath();
-
-      // Desenhar núcleo intenso de laser solar
-      g.lineStyle(2.5, 0xffffff, 0.95);
-      g.beginPath();
-      g.moveTo(pathPoints[0].x, pathPoints[0].y);
-      for (let pIdx = 1; pIdx < pathPoints.length; pIdx++) {
-        g.lineTo(pathPoints[pIdx].x, pathPoints[pIdx].y);
-      }
-      g.strokePath();
-
-      pState.receiver.hit = hitsReceiver;
-      if (pState.recSp) {
-        pState.recSp.setTexture(hitsReceiver ? "ab-solar-altar-on" : "ab-solar-altar-off");
-      }
-
-      if (hitsReceiver && !pState.solved) {
-        pState.solved = !0;
-        this.onPuzzleSolved(pState);
-      }
-    }
-
-    getNearbyPrism(playerX, playerY, maxDist = 38) {
-      if (!this.activePuzzle || this.activePuzzle.type !== "laser_prisms" || this.activePuzzle.solved) return null;
-      for (const pr of this.activePuzzle.prisms) {
-        const d = Phaser.Math.Distance.Between(pr.x, pr.y, playerX, playerY);
-        if (d <= maxDist) return pr;
-      }
-      return null;
-    }
-
-    interactPrism(prismId) {
-      if (!this.activePuzzle || this.activePuzzle.solved) return;
-      const pr = this.activePuzzle.prisms?.find(p => p.id === prismId);
-      if (pr) {
-        pr.angle = (pr.angle + 90) % 360;
-        this.scene.game?.audioEngine?.sfx?.("sfx-lever");
-        this.playTone(440 + (pr.angle / 90) * 110, 0.25);
-        window.__triggerHaptic?.(50, 0.4);
-        this.renderLaserPuzzle(this.activePuzzle);
-      }
-    }
-
-    // --- ENIGMA 2: SEQUÊNCIA RÚNICA DO ABISMO (Memory Sequence) ---
-    startRuneMemoryPuzzle(container, roomBounds, onComplete) {
-      this.startRunicMemoryPuzzle(roomBounds, onComplete);
-    }
-
-    startRunicMemoryPuzzle(roomBounds, onComplete) {
-      const s = this.scene;
-      initPuzzleTextures(s);
-      this.clearSprites();
-
-      const cx = roomBounds?.x ? roomBounds.x + (roomBounds.width || 300) / 2 : 280;
-      const cy = roomBounds?.y ? roomBounds.y + (roomBounds.height || 200) / 2 : 160;
-
-      const runes = [
-        { id: 0, key: "ab-rune-fire",  name: "Runa de Fogo",  color: 0xff4422, freq: 261.63, x: cx,       y: cy - 48,  dpad: "UP" },
-        { id: 1, key: "ab-rune-ice",   name: "Runa de Gelo",  color: 0x33ccff, freq: 329.63, x: cx,       y: cy + 48,  dpad: "DOWN" },
-        { id: 2, key: "ab-rune-shock", name: "Runa de Raio",  color: 0xffd24a, freq: 392.00, x: cx - 60,  y: cy,       dpad: "LEFT" },
-        { id: 3, key: "ab-rune-earth", name: "Runa da Terra", color: 0x44dd66, freq: 523.25, x: cx + 60,  y: cy,       dpad: "RIGHT" }
-      ];
-
-      const sequence = [];
-      for (let i = 0; i < 4; i++) {
-        sequence.push(Math.floor(Math.random() * 4));
-      }
-
-      const puzzleState = {
-        type: "runic_memory",
-        runes,
-        sequence,
-        playerStep: 0,
-        isPlayingSequence: !0,
-        solved: !1,
-        onComplete
-      };
-
-      this.activePuzzle = puzzleState;
-      this.renderRunicPuzzle(puzzleState);
-      this.playRunicDemonstration(puzzleState);
-    }
-
-    renderRunicPuzzle(pState, activeRuneId = null) {
-      const s = this.scene;
-      initPuzzleTextures(s);
-
-      if (!pState.runeSprites) {
-        pState.runeSprites = [];
-        for (const r of pState.runes) {
-          const sp = s.add.image(r.x, r.y, r.key).setDepth(r.y).setScale(1.15);
-          pState.runeSprites.push({ sp, def: r });
-          this.sprites.push(sp);
-        }
-      }
-
-      for (const item of pState.runeSprites) {
-        const isActive = activeRuneId === item.def.id;
-        item.sp.setTexture(isActive ? `${item.def.key}-on` : item.def.key);
-        if (isActive) {
-          item.sp.setScale(1.35);
-          s.tweens.add({
-            targets: item.sp,
-            scale: 1.15,
-            duration: 200,
-            ease: "Back.easeOut"
-          });
-          s.effectsRef?.burstTinted?.(item.def.x, item.def.y, item.def.color, 12);
-        }
-      }
-    }
-
-    playRunicDemonstration(pState) {
-      const s = this.scene;
-      pState.isPlayingSequence = !0;
-      let stepIndex = 0;
-
-      const flashNext = () => {
-        if (stepIndex >= pState.sequence.length) {
-          pState.isPlayingSequence = !1;
-          this.renderRunicPuzzle(pState, null);
-          s.game.events.emit("ui:banner", "REPITA A SEQUÊNCIA PISANDO NAS RUNAS!", "#ffd24a");
-          return;
-        }
-
-        const runeId = pState.sequence[stepIndex];
-        const rDef = pState.runes.find(r => r.id === runeId);
-        this.renderRunicPuzzle(pState, runeId);
-        this.playTone(rDef ? rDef.freq : 330, 0.4);
-
-        s.time.delayedCall(450, () => {
-          this.renderRunicPuzzle(pState, null);
-          stepIndex++;
-          s.time.delayedCall(200, flashNext);
-        });
-      };
-
-      s.time.delayedCall(600, flashNext);
-    }
-
-    inputRuneStep(runeId) {
-      const pState = this.activePuzzle;
-      if (!pState || pState.type !== "runic_memory" || pState.isPlayingSequence || pState.solved) return;
-
-      const s = this.scene;
-      const expectedRune = pState.sequence[pState.playerStep];
-      const rDef = pState.runes.find(r => r.id === runeId);
-
-      if (runeId === expectedRune) {
-        this.renderRunicPuzzle(pState, runeId);
-        this.playTone(rDef ? rDef.freq : 440, 0.35);
-        s.game?.audioEngine?.sfx?.("sfx-parry");
-        window.__triggerHaptic?.(40, 0.4);
-        pState.playerStep++;
-
-        s.time.delayedCall(250, () => {
-          this.renderRunicPuzzle(pState, null);
-        });
-
-        if (pState.playerStep >= pState.sequence.length) {
-          pState.solved = !0;
-          this.onPuzzleSolved(pState);
-        }
-      } else {
-        s.cameras?.main?.shake(200, 0.01);
-        s.game?.audioEngine?.sfx?.("sfx-trap-dart");
-        window.__triggerHaptic?.(120, 0.8);
-        s.game.events.emit("ui:banner", "SEQUÊNCIA QUEBRADA! OBSERVE NOVAMENTE...", "#ff5544");
-        pState.playerStep = 0;
-        this.playRunicDemonstration(pState);
-      }
-    }
-
-    onPuzzleSolved(pState) {
-      const s = this.scene;
-      s.game?.audioEngine?.sfx?.("sfx-secret-reveal");
-      s.cameras?.main?.shake(300, 0.007);
-      window.__triggerHaptic?.(250, 1.0);
-
-      s.game.events.emit("ui:banner", "ENIGMA DO ABISMO RESOLVIDO! +1 PONTO DE HABILIDADE", "#00ff88");
-
-      const curBonus = s.registry.get("endless:bonusSkillPoints") || 0;
-      s.registry.set("endless:bonusSkillPoints", curBonus + 1);
-
-      const cx = pState.receiver ? pState.receiver.x : (pState.runes ? pState.runes[0].x : 200);
-      const cy = pState.receiver ? pState.receiver.y : (pState.runes ? pState.runes[0].y : 150);
-
-      // Spawn Baú Épico no padrão canônico de Depth Gate
-      this.spawnPuzzleChest(cx, cy);
-
-      if (typeof pState.onComplete === "function") {
-        pState.onComplete();
-      }
-    }
-
-    spawnPuzzleChest(x, y) {
-      const s = this.scene;
-      const chestKey = s.textures.exists("chest-epic") ? "chest-epic" : "chest-rare";
-      const ch = s.add.image(x, y + 10, chestKey).setDepth(y + 10).setScale(0.3).setAlpha(0);
-      ch.opened = !1;
-      ch.def = { col: Math.round(x / 32), row: Math.round(y / 32), tier: "EPIC" };
-
-      s.tweens.add({
-        targets: ch,
-        scale: 1,
+      scene.tweens.add({
+        targets: chest,
         alpha: 1,
+        scale: 1,
         duration: 500,
         ease: "Back.easeOut"
       });
 
-      s.effectsRef?.burstTinted?.(x, y, 16765514, 25);
-      s.effectsRef?.shockwaveRing?.(x, y, 40);
+      scene.effectsRef?.burstTinted?.(x, y - 6, 0xffd24a, 24);
+      scene.effectsRef?.shockwaveRing?.(x, y, 32);
 
-      Object.defineProperty(ch, "interactLabel", {
-        get: () => !ch.opened ? (typeof W === "function" ? W("g.openChest") : "[E] Abrir Baú") : null,
-        configurable: !0
-      });
+      setInteractLabel(chest, () => (!chest.opened ? "Abrir Baú do Enigma" : null));
 
-      ch.interact = () => {
-        if (ch.opened) return;
-        ch.opened = !0;
-        s.game?.audioEngine?.sfx?.("sfx-chest-open");
-        if (s.textures.exists(chestKey + "-open")) {
-          ch.setTexture(chestKey + "-open");
-        }
-        s.effectsRef?.burstTinted?.(x, y - 8, 16765514, 30);
-        this.dropPuzzleReward(x, y);
+      chest.interact = () => {
+        if (chest.opened) return;
+        chest.opened = true;
+        scene.tweens.add({
+          targets: chest,
+          scaleY: 0.75,
+          duration: 90,
+          yoyo: true,
+          onYoyo: () => {
+            if (scene.textures.exists(key + "-open")) chest.setTexture(key + "-open");
+          }
+        });
+        scene.effectsRef?.burstTinted?.(x, y - 8, 0xffd24a, 20);
+        scene.game?.audioEngine?.sfx?.("sfx-chest-open");
+        scene.lootSystem?.openChest?.(chest);
+        if (onSolve) onSolve();
       };
 
-      // Registrar nas listas de objetos interativos se existirem
-      if (s.interactables) s.interactables.push(ch);
-      if (s.chests) s.chests.push(ch);
-      this.sprites.push(ch);
+      this.activeObjects.push(chest);
+      return chest;
     }
 
-    dropPuzzleReward(x, y) {
-      const s = this.scene;
-      const heroId = s.classDef?.id;
-      let rewardItemKey = "wolf_whistle";
-      if (heroId === "HUNTER") rewardItemKey = "wolf_whistle";
-      else if (heroId === "SHAMAN") rewardItemKey = Math.random() < 0.5 ? "sacred_maraca" : "blowpipe";
-      else if (heroId === "DRUID") rewardItemKey = "golden_scythe";
-      else if (heroId === "NECROMANCER") rewardItemKey = Math.random() < 0.5 ? "profane_ivory_staff" : "midnight_scythe";
-      else rewardItemKey = "dragon_heart_amulet";
+    // Finaliza qualquer enigma com feedback canônico
+    triggerSolve(title, chestX, chestY, onSolve) {
+      if (this.isSolved) return;
+      this.isSolved = true;
 
-      if (typeof s.spawnLootItem === "function") {
-        s.spawnLootItem(x, y + 8, rewardItemKey, "RARE");
-      }
-    }
-  }
+      const scene = this.scene;
+      scene.game?.audioEngine?.sfx?.("sfx-secret-reveal");
+      scene.cameraSys?.shake?.(0.005, 220);
+      scene.game?.events?.emit("ui:banner", `✨ ENIGMA RESOLVIDO: ${title}`, "#9ff0ff");
 
-  // --- 5. NIGHTMARE MODIFIERS SYSTEM ---
-  class NightmareModifierSystem {
-    static getAffixForTier(tier) {
-      const affixes = [
-        { id: "magma",   name: "Fissuras Vulcânicas", color: "#ff4411", desc: "Fissuras de lava periódicas surgem no chão das câmaras." },
-        { id: "decay",   name: "Miasma Venenoso",     color: "#00ff88", desc: "Reduz a regeneração passiva em 50%." },
-        { id: "vamp",    name: "Vampirismo Espectral",color: "#ff3355", desc: "Inimigos recuperam 8% de vida ao golpear." },
-        { id: "frenzy",  name: "Frenesi do Abismo",   color: "#ffd24a", desc: "Inimigos têm +30% de cadência e velocidade." },
-        { id: "chaos",   name: "Caos do Pesadelo V",  color: "#ff0044", desc: "Inimigos com stats multiplicados ao extremo e afixos combinados." }
-      ];
-      return affixes[Math.min(affixes.length - 1, Math.max(0, (tier || 1) - 1))];
+      this.spawnRewardChest(chestX, chestY, onSolve);
     }
 
-    static applyToScene(scene, tier) {
-      if (!scene || scene.mode !== "endless" || (tier || 0) <= 0) return;
-      const affix = NightmareModifierSystem.getAffixForTier(tier);
-      scene.game.events.emit("ui:banner", `⚠️ PESADELO ${tier} · AFLIÇÃO: ${affix.name.toUpperCase()}`, affix.color);
-    }
+    // =========================================================================
+    // 1. ENIGMA CANÔNICO DE BLOCOS DESLIZANTES & PLACAS DE PRESSÃO (KITS.blocks)
+    // =========================================================================
+    startBlocksPuzzle(targetRoom, roomBounds, onSolve) {
+      this.destroyActive();
+      this.isSolved = false;
+      const S = this.scene;
+      initCanonicalPuzzleTextures(S);
 
-    static update(scene, dt) {
-      if (!scene || scene.mode !== "endless") return;
-      const tier = scene.stats?.nm || scene.nmLvl || 0;
-      if (tier <= 0) return;
+      const bounds = roomBounds || {
+        x: (S.player?.x || 400) - 160,
+        y: (S.player?.y || 400) - 120,
+        width: 320,
+        height: 240
+      };
 
-      const affix = NightmareModifierSystem.getAffixForTier(tier);
-      if (affix.id === "magma") {
-        if (!scene.__magmaG) {
-          scene.__magmaG = scene.add.graphics().setDepth(20);
+      const cx = bounds.x + bounds.width / 2;
+      const cy = bounds.y + bounds.height / 2;
+
+      // 1 Altar / Placa de Pressão
+      const plateX = cx + 64;
+      const plateY = cy - 24;
+      const plate = S.add.image(plateX, plateY, "pz-plate").setDepth(plateY - 10);
+      this.activeObjects.push(plate);
+
+      // Bloco de Pedra Pesada Deslizante
+      const startX = cx - 64;
+      const startY = cy + 24;
+      const stone = S.add.image(startX, startY, "pz-stone").setOrigin(0.5, 0.85).setDepth(startY);
+      S.physics.add.existing(stone, false);
+      stone.body.setSize(26, 20);
+      stone.body.setOffset(3, 16);
+      stone.body.setImmovable(true);
+      if (S.solids) S.solids.add(stone);
+      this.activeObjects.push(stone);
+
+      // Altar de Recomeçar
+      const resetX = cx;
+      const resetY = cy - 70;
+      const resetAltar = S.add.image(resetX, resetY, "pz-reset").setOrigin(0.5, 0.85).setDepth(resetY);
+      setInteractLabel(resetAltar, () => "Reiniciar Posição da Pedra");
+      resetAltar.interact = () => {
+        if (this.isSolved || stone.sliding) return;
+        stone.setPosition(startX, startY);
+        stone.setDepth(startY);
+        S.effectsRef?.burstTinted?.(startX, startY, 0x8ae0ff, 12);
+        S.game?.audioEngine?.sfx?.("sfx-door-open");
+      };
+      this.activeObjects.push(resetAltar);
+
+      let plateActivated = false;
+
+      // Mecânica de Empurrar o Bloco (Hero encosta e segura a direção)
+      let pushTimer = 0;
+      this.updateHandler = () => {
+        if (this.isSolved || !S.player || stone.sliding) return;
+
+        const dist = Phaser.Math.Distance.Between(S.player.x, S.player.y, stone.x, stone.y);
+        if (dist < 36) {
+          pushTimer++;
+          if (pushTimer > 10) {
+            // Empurra na direção do herói
+            const dx = Math.sign(stone.x - S.player.x);
+            const dy = Math.sign(stone.y - S.player.y);
+            const pushX = Math.abs(dx) > Math.abs(dy) ? dx : 0;
+            const pushY = pushX === 0 ? dy : 0;
+
+            if (pushX !== 0 || pushY !== 0) {
+              stone.sliding = true;
+              pushTimer = 0;
+              S.game?.audioEngine?.sfx?.("sfx-door-open");
+
+              const targetX = Phaser.Math.Clamp(stone.x + pushX * 64, bounds.x + 32, bounds.x + bounds.width - 32);
+              const targetY = Phaser.Math.Clamp(stone.y + pushY * 64, bounds.y + 32, bounds.y + bounds.height - 32);
+
+              S.tweens.add({
+                targets: stone,
+                x: targetX,
+                y: targetY,
+                duration: 320,
+                ease: "Sine.easeOut",
+                onUpdate: () => {
+                  stone.setDepth(stone.y);
+                  // Verifica se chegou na placa de pressão
+                  if (!plateActivated && Phaser.Math.Distance.Between(stone.x, stone.y, plateX, plateY) < 22) {
+                    plateActivated = true;
+                    plate.setTexture("pz-plate-on");
+                    S.effectsRef?.burstTinted?.(plateX, plateY, 0xffd24a, 20);
+                    S.effectsRef?.shockwaveRing?.(plateX, plateY, 26);
+                    this.triggerSolve("O Bloco Ancestral", cx, cy + 20, onSolve);
+                  }
+                },
+                onComplete: () => {
+                  stone.sliding = false;
+                }
+              });
+            }
+          }
+        } else {
+          pushTimer = 0;
         }
-        const g = scene.__magmaG;
-        g.clear();
-        const p = scene.player;
-        if (!p) return;
+      };
 
-        const t = scene.time.now * 0.003;
-        const pulse = Math.sin(t) * 0.3 + 0.7;
-        g.fillStyle(0xff4400, 0.35 * pulse);
-        for (const room of scene.roomManager?.rooms || []) {
-          const fx = (room.x + 3) * 32;
-          const fy = (room.y + 3) * 32;
-          g.fillCircle(fx, fy, 24);
-          if (Phaser.Math.Distance.Between(fx, fy, p.x, p.y) < 22) {
-            if (!p.__magmaTick || scene.time.now - p.__magmaTick > 1500) {
-              p.__magmaTick = scene.time.now;
-              p.hp = Math.max(1, p.hp - 2);
-              scene.effects?.floatText?.(p.x, p.y - 20, "QUEIMANDO! -2", "#ff4411", 10);
-              scene.cameras?.main?.shake(100, 0.005);
-              window.__triggerHaptic?.(60, 0.4);
+      S.events.on("update", this.updateHandler);
+      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Empurre o Monólito de Pedra até o Selo", "#ffd24a");
+    }
+
+    // =========================================================================
+    // 2. ENIGMA CANÔNICO DE ESPELHOS GIRATÓRIOS & FEIXE DE LUZ (KITS.mirror)
+    // =========================================================================
+    startLaserPrismPuzzle(targetRoom, roomBounds, onSolve) {
+      this.destroyActive();
+      this.isSolved = false;
+      const S = this.scene;
+      initCanonicalPuzzleTextures(S);
+
+      const bounds = roomBounds || {
+        x: (S.player?.x || 400) - 160,
+        y: (S.player?.y || 400) - 120,
+        width: 320,
+        height: 240
+      };
+
+      const cx = bounds.x + bounds.width / 2;
+      const cy = bounds.y + bounds.height / 2;
+
+      // Emissor de Foco Solar
+      const emitterX = cx - 100;
+      const emitterY = cy;
+      const emitterPost = S.add.image(emitterX, emitterY + 6, "pz-post").setDepth(emitterY);
+      const emitterOrb = S.add.image(emitterX, emitterY - 8, "pz-orb").setDepth(emitterY + 1);
+      this.activeObjects.push(emitterPost, emitterOrb);
+
+      // Receptor de Energia Alvo
+      const targetX = cx + 100;
+      const targetY = cy;
+      const targetPost = S.add.image(targetX, targetY + 6, "pz-post").setDepth(targetY);
+      const targetOrb = S.add.image(targetX, targetY - 8, "pz-orb").setDepth(targetY + 1).setTint(0x777777);
+      this.activeObjects.push(targetPost, targetOrb);
+
+      // Dois Espelhos Giratórios
+      const m1X = cx - 30;
+      const m1Y = cy - 40;
+      const m2X = cx + 30;
+      const m2Y = cy + 40;
+
+      const createMirror = (x, y, initialAngle) => {
+        let angleState = initialAngle; // 0 ou 1
+        const mirror = S.add.image(x, y, angleState ? "pz-mirror-b" : "pz-mirror-a").setDepth(y);
+        setInteractLabel(mirror, () => (this.isSolved ? null : "Girar Espelho de Cristal"));
+
+        mirror.interact = () => {
+          if (this.isSolved) return;
+          angleState = 1 - angleState;
+          mirror.setTexture(angleState ? "pz-mirror-b" : "pz-mirror-a");
+          S.game?.audioEngine?.sfx?.("sfx-lever");
+          S.effectsRef?.burstTinted?.(x, y - 8, 0x8ae0ff, 10);
+          updateLaserRay();
+        };
+
+        this.activeObjects.push(mirror);
+        return {
+          getAngle: () => angleState,
+          x,
+          y
+        };
+      };
+
+      const mirror1 = createMirror(m1X, m1Y, 0);
+      const mirror2 = createMirror(m2X, m2Y, 0);
+
+      this.laserGraphics = S.add.graphics().setDepth(cy + 50);
+
+      const updateLaserRay = () => {
+        if (!this.laserGraphics) return;
+        this.laserGraphics.clear();
+
+        // Linha de luz do emissor
+        this.laserGraphics.lineStyle(3, 0xffea75, 0.85);
+
+        const a1 = mirror1.getAngle();
+        const a2 = mirror2.getAngle();
+
+        if (a1 === 1 && a2 === 1) {
+          // Solução alinhada! O feixe viaja do emissor para espelho 1, para espelho 2, e atinge o receptor!
+          this.laserGraphics.beginPath();
+          this.laserGraphics.moveTo(emitterX, emitterY - 8);
+          this.laserGraphics.lineTo(m1X, m1Y);
+          this.laserGraphics.lineTo(m2X, m2Y);
+          this.laserGraphics.lineTo(targetX, targetY - 8);
+          this.laserGraphics.strokePath();
+
+          // Brilho do receptor
+          targetOrb.clearTint();
+          S.effectsRef?.burstTinted?.(targetX, targetY - 8, 0xffd24a, 24);
+          this.triggerSolve("O Foco dos Espelhos Ancestrais", cx, cy, onSolve);
+        } else {
+          // Feixe parcial
+          this.laserGraphics.beginPath();
+          this.laserGraphics.moveTo(emitterX, emitterY - 8);
+          this.laserGraphics.lineTo(m1X, m1Y);
+          this.laserGraphics.strokePath();
+        }
+      };
+
+      updateLaserRay();
+      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Ajuste os Espelhos de Cristal para Conduzir a Luz", "#ffd24a");
+    }
+
+    // =========================================================================
+    // 3. ENIGMA CANÔNICO DE ALAVANCAS MECÂNICAS & LÁPIDE (KITS.levers)
+    // =========================================================================
+    startLeversPuzzle(targetRoom, roomBounds, onSolve) {
+      this.destroyActive();
+      this.isSolved = false;
+      const S = this.scene;
+      initCanonicalPuzzleTextures(S);
+
+      const bounds = roomBounds || {
+        x: (S.player?.x || 400) - 160,
+        y: (S.player?.y || 400) - 120,
+        width: 320,
+        height: 240
+      };
+
+      const cx = bounds.x + bounds.width / 2;
+      const cy = bounds.y + bounds.height / 2;
+
+      // 3 Alavancas com Glifos (Sol, Lua, Estrela)
+      const leverCount = 3;
+      const correctOrder = [1, 0, 2]; // Ordem: Lua -> Sol -> Estrela
+      let currentStep = [];
+
+      // Lápide com Enigma
+      const plaqueX = cx;
+      const plaqueY = cy - 50;
+      const plaque = S.add.image(plaqueX, plaqueY, "pz-plaque").setOrigin(0.5, 1).setDepth(plaqueY);
+      setInteractLabel(plaque, () => "Ler a Lápide Ancestral");
+      plaque.interact = () => {
+        S.game?.events?.emit("story:show", {
+          title: "LÁPIDE DOS TRÊS SIGNOS",
+          lines: [
+            "\"A noite sussurra sob o véu da LUA;",
+            "O dia desperta na glória do SOL;",
+            "E a imensidão descansa sob a ESTRELA eterna.\""
+          ]
+        });
+      };
+      this.activeObjects.push(plaque);
+
+      const levers = [];
+      for (let i = 0; i < leverCount; i++) {
+        const lx = cx - 64 + i * 64;
+        const ly = cy + 30;
+
+        const lev = S.add.image(lx, ly, "cx-lever-off").setOrigin(0.5, 0.75).setDepth(ly);
+        const glyphImg = S.add.image(lx, ly - 28, "pz-glyph-" + i).setDepth(ly + 1).setTint(0xffd24a);
+        this.activeObjects.push(lev, glyphImg);
+
+        setInteractLabel(lev, () => (this.isSolved || currentStep.includes(i) ? null : `Puxar Alavanca (${GLYPH_NAMES[i][0]})`));
+
+        lev.interact = () => {
+          if (this.isSolved || currentStep.includes(i)) return;
+          currentStep.push(i);
+          lev.setTexture("cx-lever-on");
+          S.game?.audioEngine?.sfx?.("sfx-lever");
+          S.effectsRef?.burstTinted?.(lx, ly - 8, 0xffd24a, 10);
+
+          const ok = currentStep.every((val, idx) => val === correctOrder[idx]);
+          if (!ok) {
+            // Errou a sequência: reseta com alarme
+            S.time.delayedCall(450, () => {
+              S.game?.audioEngine?.sfx?.("sfx-event-refuse");
+              S.cameraSys?.shake?.(0.005, 180);
+              S.effectsRef?.floatText?.(cx, cy - 20, "Ordem Incorreta...", "#e08a7a");
+              currentStep = [];
+              levers.forEach((l) => l.setTexture("cx-lever-off"));
+            });
+          } else if (currentStep.length === leverCount) {
+            // Acertou todas as alavancas!
+            this.triggerSolve("O Selo das Alavancas", cx, cy + 80, onSolve);
+          }
+        };
+
+        levers.push(lev);
+      }
+
+      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Descifre a Lápide e Puxe as Alavancas na Ordem", "#ffd24a");
+    }
+
+    // =========================================================================
+    // 4. ENIGMA CANÔNICO DE BRASEIROS TEMPORIZADOS (KITS.braziers)
+    // =========================================================================
+    startBraziersPuzzle(targetRoom, roomBounds, onSolve) {
+      this.destroyActive();
+      this.isSolved = false;
+      const S = this.scene;
+      initCanonicalPuzzleTextures(S);
+
+      const bounds = roomBounds || {
+        x: (S.player?.x || 400) - 160,
+        y: (S.player?.y || 400) - 120,
+        width: 320,
+        height: 240
+      };
+
+      const cx = bounds.x + bounds.width / 2;
+      const cy = bounds.y + bounds.height / 2;
+
+      // 4 Braseiros dispostos nos cantos
+      const offsets = [
+        [-60, -40],
+        [60, -40],
+        [-60, 40],
+        [60, 40]
+      ];
+
+      const BURN_TIME = 8.5; // Segundos para cada braseiro
+      const braziers = [];
+
+      offsets.forEach(([ox, oy], idx) => {
+        const bx = cx + ox;
+        const by = cy + oy;
+
+        const img = S.add.image(bx, by, "pz-brazier").setOrigin(0.5, 1).setDepth(by);
+        const flame = S.add.sprite(bx, by - 16, "torch-flame", 0).setOrigin(0.5, 1).setScale(1.2).setDepth(by + 1).setVisible(false);
+        if (S.anims.exists("torch-flame-burn")) flame.play("torch-flame-burn");
+
+        const data = { img, flame, timeLeft: 0, index: idx };
+
+        setInteractLabel(img, () => (this.isSolved || data.timeLeft > 0 ? null : "Acender o Braseiro"));
+
+        img.interact = () => {
+          if (this.isSolved || data.timeLeft > 0) return;
+          data.timeLeft = BURN_TIME;
+          flame.setVisible(true);
+          S.game?.audioEngine?.sfx?.("sfx-mage-fireball");
+          S.effectsRef?.burstTinted?.(bx, by - 16, 0xff7722, 14);
+
+          // Verifica se todos estão acesos simultaneamente
+          if (braziers.every((b) => b.timeLeft > 0)) {
+            this.triggerSolve("O Fogo Sagrado dos Braseiros", cx, cy, onSolve);
+          }
+        };
+
+        this.activeObjects.push(img, flame);
+        braziers.push(data);
+      });
+
+      // Loop de contagem regressiva dos braseiros
+      this.updateHandler = (time, delta) => {
+        if (this.isSolved) return;
+        const dt = delta / 1000;
+        for (const b of braziers) {
+          if (b.timeLeft > 0) {
+            b.timeLeft -= dt;
+            if (b.timeLeft <= 0) {
+              b.timeLeft = 0;
+              b.flame.setVisible(false);
+              S.effectsRef?.burstTinted?.(b.img.x, b.img.y - 16, 0x555555, 6);
             }
           }
         }
+      };
+
+      S.events.on("update", this.updateHandler);
+      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Acenda Todos os Braseiros Simultaneamente Antes que Apaguem!", "#ffd24a");
+    }
+
+    // =========================================================================
+    // 5. ENIGMA CANÔNICO DE RUNAS DA MEMÓRIA - SIMON SAYS (KITS.runes)
+    // =========================================================================
+    startRuneMemoryPuzzle(targetRoom, roomBounds, onSolve) {
+      this.destroyActive();
+      this.isSolved = false;
+      const S = this.scene;
+      initCanonicalPuzzleTextures(S);
+
+      const bounds = roomBounds || {
+        x: (S.player?.x || 400) - 160,
+        y: (S.player?.y || 400) - 120,
+        width: 320,
+        height: 240
+      };
+
+      const cx = bounds.x + bounds.width / 2;
+      const cy = bounds.y + bounds.height / 2;
+
+      // 4 Runas Celestiais com frequências harmônicas
+      const runes = [
+        { name: "Sol", glyph: 0, freq: 261.63, ox: -48, oy: -32, color: 0xffd24a },
+        { name: "Lua", glyph: 1, freq: 329.63, ox: 48, oy: -32, color: 0x8ae0ff },
+        { name: "Estrela", glyph: 2, freq: 392.0, ox: -48, oy: 32, color: 0xff88ff },
+        { name: "Olho", glyph: 5, freq: 523.25, ox: 48, oy: 32, color: 0x88ffaa }
+      ];
+
+      const sequence = [0, 1, 2, 0]; // 4 passos melódicos
+      let playerStep = 0;
+      let isPlayingSequence = true;
+
+      const runeObjects = runes.map((r, idx) => {
+        const rx = cx + r.ox;
+        const ry = cy + r.oy;
+
+        const plate = S.add.image(rx, ry, "pz-plate").setDepth(ry);
+        const glyph = S.add.image(rx, ry - 4, "pz-glyph-" + r.glyph).setDepth(ry + 1).setTint(r.color).setScale(1.1);
+
+        this.activeObjects.push(plate, glyph);
+
+        const flash = () => {
+          if (this.isDestroyed || !plate?.scene?.sys || !plate.active) return;
+          try { plate.setTexture("pz-plate-on"); } catch(_) { return; }
+          if (glyph?.scene?.sys && glyph.active) glyph.setScale(1.4);
+          playTone(S, r.freq, 0.4);
+          S.effectsRef?.burstTinted?.(rx, ry, r.color, 10);
+          const t = S.time.delayedCall(300, () => {
+            if (this.isDestroyed || !plate?.scene?.sys || !plate.active) return;
+            try { plate.setTexture("pz-plate"); } catch(_) {}
+            if (glyph?.scene?.sys && glyph.active) glyph.setScale(1.1);
+          });
+          this.activeTimers.push(t);
+        };
+
+        setInteractLabel(plate, () => (isPlayingSequence || this.isSolved ? null : `Tocar Runa (${r.name})`));
+
+        plate.interact = () => {
+          if (isPlayingSequence || this.isSolved) return;
+          flash();
+
+          if (sequence[playerStep] === idx) {
+            playerStep++;
+            if (playerStep === sequence.length) {
+              this.triggerSolve("A Melodia Rúnica Celestial", cx, cy, onSolve);
+            }
+          } else {
+            // Errou: reinicia sequência após aviso
+            isPlayingSequence = true;
+            S.time.delayedCall(400, () => {
+              S.game?.audioEngine?.sfx?.("sfx-event-refuse");
+              S.cameraSys?.shake?.(0.005, 180);
+              S.effectsRef?.floatText?.(cx, cy - 20, "Melodia Incorreta! Ouça Novamente...", "#e08a7a");
+              playerStep = 0;
+              S.time.delayedCall(1200, playPattern);
+            });
+          }
+        };
+
+        return { flash, plate, glyph };
+      });
+
+      // Toca a sequência harmônica do enigma
+      const playPattern = () => {
+        isPlayingSequence = true;
+        sequence.forEach((runeIdx, step) => {
+          const t = S.time.delayedCall(step * 550 + 400, () => {
+            if (this.isSolved || this.isDestroyed || !this.scene?.sys?.isActive?.()) return;
+            runeObjects[runeIdx]?.flash();
+            if (step === sequence.length - 1) {
+              const tEnd = S.time.delayedCall(400, () => {
+                isPlayingSequence = false;
+              });
+              this.activeTimers.push(tEnd);
+            }
+          });
+          this.activeTimers.push(t);
+        });
+      };
+
+      const startT = S.time.delayedCall(800, playPattern);
+      this.activeTimers.push(startT);
+      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Ouça a Sequência Musical e Repita os Signos!", "#ffd24a");
+    }
+
+    // Inicialização aleatória canônica (escolhe entre os 5 tipos canônicos)
+    startRandomPuzzle(targetRoom, roomBounds, onSolve) {
+      const types = [
+        "blocks",
+        "mirror",
+        "levers",
+        "braziers",
+        "runes"
+      ];
+      const pick = types[Math.floor(Math.random() * types.length)];
+      switch (pick) {
+        case "blocks":
+          return this.startBlocksPuzzle(targetRoom, roomBounds, onSolve);
+        case "mirror":
+          return this.startLaserPrismPuzzle(targetRoom, roomBounds, onSolve);
+        case "levers":
+          return this.startLeversPuzzle(targetRoom, roomBounds, onSolve);
+        case "braziers":
+          return this.startBraziersPuzzle(targetRoom, roomBounds, onSolve);
+        case "runes":
+        default:
+          return this.startRuneMemoryPuzzle(targetRoom, roomBounds, onSolve);
       }
     }
   }
 
+  // Exportação global
   window.AbyssPuzzleManager = AbyssPuzzleManager;
-  window.NightmareModifierSystem = NightmareModifierSystem;
 })();
