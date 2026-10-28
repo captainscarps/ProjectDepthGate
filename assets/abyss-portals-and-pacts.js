@@ -173,7 +173,7 @@
       this.onChoice = onChoiceCallback;
       this.selectedIdx = 0;
       this.root.setVisible(!0);
-      this.ui.game?.events?.emit("ui:inventory", !0);
+      
 
       const possiblePortals = [
         {
@@ -217,7 +217,7 @@
       if (!this.open) return;
       this.open = !1;
       this.root.setVisible(!1);
-      this.ui.game?.events?.emit("ui:inventory", !1);
+      
     }
 
     renderCards() {
