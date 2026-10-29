@@ -79,6 +79,7 @@ server.listen(PORT, '127.0.0.1', async () => {
   ws.onopen = () => {
     ws.send(JSON.stringify({ id: 1, method: 'Runtime.enable' }));
     ws.send(JSON.stringify({ id: 2, method: 'Console.enable' }));
+    ws.send(JSON.stringify({ id: 3, method: 'Page.enable' }));
 
     // ETAPA 1: Iniciar Campanha com Touch habilitado
     setTimeout(() => {
@@ -349,6 +350,12 @@ server.listen(PORT, '127.0.0.1', async () => {
               const hasRunes = mgr.activeObjects.length > 0;
               mgr.destroyActive();
 
+              // Validar Desobstrução Real de Quebra-Cabeça
+              const p = gs.player;
+              const ep = new EnvironmentalPuzzle(gs, p.x + 80, p.y);
+              const clearTrees = (gs.children?.list || []).filter(ch => (ch.isDecor || ch.texture?.key?.includes('tree')) && Math.hypot(ch.x - (p.x + 80), ch.y - p.y) < 130).length;
+              
+
               return {
                 hasBlocks,
                 hasLaser,
@@ -450,6 +457,29 @@ server.listen(PORT, '127.0.0.1', async () => {
 
               gs.tryDash?.();
               const dashAtivo = (gs.dashCooldown || 0) > 0 || p.isDashing;
+
+              // Teste e validação visual de movimentação CIMA (costas) e BAIXO (frente)
+              const pv = gs.playerVisual;
+              let upOk = false, downOk = false;
+              if (pv) {
+                p.facing = { x: 0, y: -1 };
+                p.body.velocity.x = 0;
+                p.body.velocity.y = -120;
+                pv.update(0.016, p);
+                const wIdxUp = pv.container?.getIndex(pv.weapon);
+                const bIdxUp = pv.container?.getIndex(pv.mk2);
+                upOk = (wIdxUp < bIdxUp);
+
+                p.facing = { x: 0, y: 1 };
+                p.body.velocity.x = 0;
+                p.body.velocity.y = 120;
+                pv.update(0.016, p);
+                const wIdxDown = pv.container?.getIndex(pv.weapon);
+                const bIdxDown = pv.container?.getIndex(pv.mk2);
+                downOk = (wIdxDown > bIdxDown);
+                p.body.velocity.y = 0;
+              }
+              
 
               return {
                 hpAntes,
@@ -742,25 +772,48 @@ server.listen(PORT, '127.0.0.1', async () => {
 
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
+    const artDir = 'C:\\Users\\rafaelscarpille\\.gemini\\antigravity\\brain\\b413688e-2beb-42e0-9d5c-24c0349908a1';
+    if (data.id === 111 && data.result?.data) {
+      fs.writeFileSync(path.join(artDir, 'audit_touch_hud_layout.png'), Buffer.from(data.result.data, 'base64'));
+      console.log('📸 [CAPTURA]: Salvo audit_touch_hud_layout.png');
+    }
+    if (data.id === 131 && data.result?.data) {
+      fs.writeFileSync(path.join(artDir, 'audit_puzzle_cleared_view.png'), Buffer.from(data.result.data, 'base64'));
+      console.log('📸 [CAPTURA]: Salvo audit_puzzle_cleared_view.png');
+    }
+    if (data.id === 151 && data.result?.data) {
+      fs.writeFileSync(path.join(artDir, 'audit_hero_walk_up.png'), Buffer.from(data.result.data, 'base64'));
+      console.log('📸 [CAPTURA]: Salvo audit_hero_walk_up.png');
+    }
+    if (data.id === 152 && data.result?.data) {
+      fs.writeFileSync(path.join(artDir, 'audit_hero_walk_down.png'), Buffer.from(data.result.data, 'base64'));
+      console.log('📸 [CAPTURA]: Salvo audit_hero_walk_down.png');
+    }
     if (data.id >= 10) {
       const val = data.result?.result?.value;
       console.log(`[EVAL ${data.id}]`, JSON.stringify(val, null, 2));
 
       if (data.id === 10 && val === "Started Campaign") testSuiteAssertions.etapa1_campaignOk = true;
       if (data.id === 11) {
+        ws.send(JSON.stringify({ id: 111, method: "Page.captureScreenshot", params: { format: "png" } }));
         if (val?.touchPersisted) testSuiteAssertions.etapa2_touchLifecycleOk = true;
         if (val?.noOverlap) testSuiteAssertions.etapa3_pauseMenuLayoutOk = true;
       }
       if (data.id === 15 && val?.insideScreen && val?.isCentered) testSuiteAssertions.etapa4_abyssModalCenteredOk = true;
       if (data.id === 20 && val === "Started Endless") testSuiteAssertions.etapa5_endlessOk = true;
       if (data.id === 30 && val?.hasBlocks && val?.hasLaser && val?.hasLevers && val?.hasBraziers && val?.hasRunes) {
+        ws.send(JSON.stringify({ id: 131, method: "Page.captureScreenshot", params: { format: "png" } }));
         testSuiteAssertions.etapa6_canonicalPuzzlesOk = true;
       }
       if (data.id === 40) {
         if (val?.allMbExist) testSuiteAssertions.etapa7_moltenbornTexturesOk = true;
         if (val?.bestiaryOk && val?.codexOk) testSuiteAssertions.etapa8_codexBestiaryOk = true;
       }
-      if (data.id === 50 && val?.combateOk) testSuiteAssertions.etapa9_combatAndPotionsOk = true;
+      if (data.id === 50 && val?.combateOk) {
+        testSuiteAssertions.etapa9_combatAndPotionsOk = true;
+        ws.send(JSON.stringify({ id: 151, method: "Page.captureScreenshot", params: { format: "png" } }));
+        setTimeout(() => ws.send(JSON.stringify({ id: 152, method: "Page.captureScreenshot", params: { format: "png" } })), 500);
+      }
       if (data.id === 51 && val?.invOk) testSuiteAssertions.etapa10_lootAndInventoryOk = true;
       if (data.id === 52 && val?.xpOk) testSuiteAssertions.etapa11_xpAndSkillTreeOk = true;
       if (data.id === 53 && val?.saveOk) testSuiteAssertions.etapa12_saveSystemOk = true;

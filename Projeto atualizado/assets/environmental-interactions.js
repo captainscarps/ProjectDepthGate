@@ -285,19 +285,79 @@ class EnvironmentalPuzzle {
     this.totems = [];
     this.colors = [0xff4444, 0x44ff44, 0x4488ff];
 
-    const radius = 28;
+    // Desobstrução garantida: remove árvores, rochas ou decorações que ocultem o quebra-cabeça
+    try {
+      const clearRadius = 140;
+      if (scene.dungeon && Array.isArray(scene.dungeon.objects)) {
+        scene.dungeon.objects = scene.dungeon.objects.filter(obj => {
+          if (!obj) return false;
+          const ox = obj.x ?? obj.pixelX ?? 0;
+          const oy = obj.y ?? obj.pixelY ?? 0;
+          if (Phaser.Math.Distance.Between(cx, cy, ox, oy) < clearRadius) {
+            try { obj.destroy?.(); } catch(_) {}
+            return false;
+          }
+          return true;
+        });
+      }
+      if (scene.children && Array.isArray(scene.children.list)) {
+        const toRemove = [];
+        for (const child of scene.children.list) {
+          if (child && (child.isDecor || child.texture?.key?.includes('tree') || child.texture?.key?.includes('rock') || child.texture?.key?.includes('decor') || child.texture?.key?.includes('foliage'))) {
+            if (Phaser.Math.Distance.Between(cx, cy, child.x || 0, child.y || 0) < clearRadius) {
+              toRemove.push(child);
+            }
+          }
+        }
+        toRemove.forEach(c => { try { c.destroy(); } catch(_) {} });
+      }
+    } catch (_) {}
+
+    // Piso rúnico sagrado e círculo místico: garante visibilidade cristalina mesmo em biomas densos
+    const floorSigil = scene.add.circle(cx, cy, 48, 0x141e2b, 0.75)
+      .setStrokeStyle(2.5, 0x55bbff, 0.85)
+      .setDepth(0.92);
+    const innerRing = scene.add.circle(cx, cy, 32, 0x1a2638, 0.6)
+      .setStrokeStyle(1.5, 0x99ddff, 0.7)
+      .setDepth(0.93);
+    const centerSigil = scene.add.polygon(cx, cy, [0, -12, 10, 0, 0, 12, -10, 0], 0x3388ff)
+      .setAlpha(0.6)
+      .setDepth(0.94);
+    scene.tweens.add({
+      targets: [floorSigil, innerRing],
+      scale: 1.06,
+      alpha: 0.9,
+      duration: 1800,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+
+    const radius = 32;
     for (let i = 0; i < 3; i++) {
       const angle = (i * Math.PI * 2) / 3 - Math.PI / 2;
       const tx = cx + Math.cos(angle) * radius;
       const ty = cy + Math.sin(angle) * radius;
 
-      const base = scene.add.rectangle(tx, ty, 14, 18, 0x26201a)
-        .setStrokeStyle(1, 0x4d3e2a)
-        .setDepth(ty);
+      // Base do Totem Rúnico com profundidade alta garantida
+      const base = scene.add.rectangle(tx, ty, 18, 24, 0x242d38)
+        .setStrokeStyle(2, 0x4a5d73)
+        .setDepth(ty + 50);
 
-      const crystal = scene.add.polygon(tx, ty - 12, [0, -6, 4, 0, 0, 6, -4, 0], this.colors[i])
-        .setAlpha(0.4)
-        .setDepth(ty + 1);
+      // Cristal Místico flutuante no topo do totem
+      const crystal = scene.add.polygon(tx, ty - 16, [0, -9, 6, 0, 0, 9, -6, 0], this.colors[i])
+        .setAlpha(0.6)
+        .setDepth(ty + 60);
+
+      // Brilho pulsante do cristal
+      scene.tweens.add({
+        targets: crystal,
+        y: ty - 19,
+        duration: 900 + i * 200,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
 
       this.totems.push({
         id: i,

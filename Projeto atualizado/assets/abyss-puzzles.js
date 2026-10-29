@@ -608,7 +608,33 @@
     // Cria o Círculo Rúnico no piso e a iluminação mágica: O puzzle JAMAIS fica escondido!
     spawnSigilFloor(cx, cy) {
       const S = this.scene;
-      // 1. Selo Rúnico no Chão
+      // Desobstrução garantida: remove árvores ou decorações num raio de 140px
+      try {
+        const clearRadius = 140;
+        if (S.dungeon && Array.isArray(S.dungeon.objects)) {
+          S.dungeon.objects = S.dungeon.objects.filter(obj => {
+            if (!obj) return false;
+            const ox = obj.x ?? obj.pixelX ?? 0;
+            const oy = obj.y ?? obj.pixelY ?? 0;
+            if (Phaser.Math.Distance.Between(cx, cy, ox, oy) < clearRadius) {
+              try { obj.destroy?.(); } catch(_) {}
+              return false;
+            }
+            return true;
+          });
+        }
+        if (S.children && Array.isArray(S.children.list)) {
+          const toRemove = [];
+          for (const child of S.children.list) {
+            if (child && (child.isDecor || child.texture?.key?.includes('tree') || child.texture?.key?.includes('rock') || child.texture?.key?.includes('foliage'))) {
+              if (Phaser.Math.Distance.Between(cx, cy, child.x || 0, child.y || 0) < clearRadius) {
+                toRemove.push(child);
+              }
+            }
+          }
+          toRemove.forEach(c => { try { c.destroy(); } catch(_) {} });
+        }
+      } catch (_) {}
       const floorSigil = S.add.image(cx, cy, "pz-sigil-floor").setDepth(cy - 120).setAlpha(0);
       S.tweens.add({
         targets: floorSigil,
