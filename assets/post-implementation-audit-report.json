@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-10-29T16:24:30.123Z",
+  "results": [
+    {
+      "id": "dir_up_real",
+      "description": "Movimento para cima com vista traseira (upA/upB) e arma nas costas",
+      "evidence": "audit_dir_up_real.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "dir_down_real",
+      "description": "Movimento para baixo com vista frontal e arma na frente do corpo",
+      "evidence": "audit_dir_down_real.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "dir_side_real",
+      "description": "Movimento lateral com flipX correto",
+      "evidence": "audit_dir_side_real.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "dir_diagonals_real",
+      "description": "Movimento diagonal preservando coerência visual",
+      "evidence": "audit_dir_diagonals_real.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "walk_run_transition",
+      "description": "Transição entre caminhada e corrida",
+      "evidence": "audit_walk_run_transition.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "attack_dash_action",
+      "description": "Ataque e Dash mantendo combate autoritativo e posições visuais",
+      "evidence": "audit_attack_dash_action.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "chest_single_open",
+      "description": "Abertura de baú e bloqueio de abertura duplicada",
+      "evidence": "audit_chest_single_open.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "lever_door_mechanism",
+      "description": "Alavanca mecânica acionando mecanismo real",
+      "evidence": "audit_lever_door_mechanism.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "trap_damage_cooldown",
+      "description": "Armadilha de espinhos com telégrafo e respeito a invuln",
+      "evidence": "audit_trap_damage_cooldown.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "puzzle_solve_reset",
+      "description": "Quebra-cabeça rúnico com sequência correta, incorreta e baú secreto",
+      "evidence": "audit_puzzle_solve_reset.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "class_mage",
+      "description": "Verificação direcional e layout da classe MAGE",
+      "evidence": "audit_class_mage.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "class_rogue",
+      "description": "Verificação direcional e layout da classe ROGUE",
+      "evidence": "audit_class_rogue.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "class_archer",
+      "description": "Verificação direcional e layout da classe ARCHER",
+      "evidence": "audit_class_archer.png",
+      "status": "APROVADO"
+    },
+    {
+      "id": "class_druid",
+      "description": "Verificação direcional e layout da classe DRUID",
+      "evidence": "audit_class_druid.png",
+      "status": "APROVADO"
+    }
+  ]
+}
