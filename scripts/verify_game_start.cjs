@@ -178,6 +178,7 @@ server.listen(PORT, '127.0.0.1', async () => {
               const afterDesiredVis = tc?.desiredVisible;
               const startBtnStillVis = tc?.startBtn?.parts?.[0]?.visible;
               const selectBtnStillVis = tc?.selectBtn?.parts?.[0]?.visible;
+              const minimapHiddenInTouch = (ui?.minimap?.panel?.visible === false && ui?.minimap?.map?.visible === false);
 
               return {
                 activeScenes: g.scene.getScenes(true).map(s => s.scene.key),
@@ -199,7 +200,7 @@ server.listen(PORT, '127.0.0.1', async () => {
                 afterDesiredVis,
                 startBtnStillVis,
                 selectBtnStillVis,
-                touchPersisted: (afterTouchVis === true && afterDesiredVis === true && startBtnStillVis === true)
+                touchPersisted: (afterTouchVis === true && afterDesiredVis === true && startBtnStillVis === true && minimapHiddenInTouch === true), minimapHiddenInTouch
               };
             })()
           `,
