@@ -3173,5 +3173,8 @@
   "assets/video/intro.mp4": "c727807fe4",
   "assets/video/intro.webm": "5581344c61",
   "assets/video/modo_infinito.mp4": "980b58c0d1",
-  "assets/video/modo_infinito.webm": "dd762598a1"
+  "assets/video/modo_infinito.webm": "dd762598a1",
+  "assets/animation-catalog.js": "bf14b349",
+  "assets/graphic-effects.js": "e26ca8b4",
+  "assets/visual-test-scene.js": "0eb84a03"
 }

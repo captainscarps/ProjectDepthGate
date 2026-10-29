@@ -88,10 +88,17 @@ server.listen(PORT, '127.0.0.1', async () => {
         method: 'Runtime.evaluate',
         params: {
           expression: `
-            (function() {
+            (async function() {
               const g = window.__DED_GAME;
               if (!g) return "NO GAME";
               try {
+                // Aguarda o boot da engine terminar (ao menos uma cena ativa)
+                let attempts = 0;
+                while ((!g.scene || g.scene.getScenes(true).length === 0) && attempts < 40) {
+                  await new Promise(r => setTimeout(r, 200));
+                  attempts++;
+                }
+
                 const s1 = JSON.parse(localStorage.getItem("dungeon-crawler:settings") || "{}");
                 s1.touchControls = "on";
                 localStorage.setItem("dungeon-crawler:settings", JSON.stringify(s1));
@@ -100,6 +107,7 @@ server.listen(PORT, '127.0.0.1', async () => {
                 s2.touchControls = "on";
                 localStorage.setItem("depthgate_settings", JSON.stringify(s2));
 
+                g.registry.set("prologue:pending", false);
                 g.scene.start("Game", {
                   heroClass: "WARRIOR",
                   classId: "WARRIOR",
@@ -113,6 +121,7 @@ server.listen(PORT, '127.0.0.1', async () => {
               }
             })()
           `,
+          awaitPromise: true,
           returnByValue: true
         }
       }));
@@ -126,8 +135,14 @@ server.listen(PORT, '127.0.0.1', async () => {
         method: 'Runtime.evaluate',
         params: {
           expression: `
-            (function() {
+            (async function() {
               const g = window.__DED_GAME;
+              let attempts = 0;
+              while ((!g.scene.isActive("Game") || !g.scene.getScene("Game")?.player) && attempts < 40) {
+                await new Promise(r => setTimeout(r, 200));
+                attempts++;
+              }
+
               const gs = g.scene.getScene("Game");
               const ui = g.scene.getScene("UI");
               const tc = ui?.touchControls;
@@ -164,6 +179,7 @@ server.listen(PORT, '127.0.0.1', async () => {
               const selectBtnStillVis = tc?.selectBtn?.parts?.[0]?.visible;
 
               return {
+                activeScenes: g.scene.getScenes(true).map(s => s.scene.key),
                 isActive: gs?.scene?.isActive(),
                 playerCreated: !!gs?.player,
                 dungeonCreated: !!gs?.dungeon,
@@ -186,10 +202,11 @@ server.listen(PORT, '127.0.0.1', async () => {
               };
             })()
           `,
+          awaitPromise: true,
           returnByValue: true
         }
       }));
-    }, 9500);
+    }, 10500);
 
     // ETAPA 4: Tela de Escolha de Destino do Abismo (Centralizada em 640x360)
     setTimeout(() => {
@@ -239,7 +256,7 @@ server.listen(PORT, '127.0.0.1', async () => {
           returnByValue: true
         }
       }));
-    }, 11500);
+    }, 12500);
 
     // ETAPA 5: Modo Infinito
     setTimeout(() => {
@@ -269,7 +286,7 @@ server.listen(PORT, '127.0.0.1', async () => {
           returnByValue: true
         }
       }));
-    }, 13500);
+    }, 14500);
 
     // ETAPA 5 (continuação): Estado da Cena Infinita
     setTimeout(() => {
