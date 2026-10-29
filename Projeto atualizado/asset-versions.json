@@ -1235,7 +1235,7 @@
   "assets/index-D6qIWtA7-p205.js": "a49bcb86a3",
   "assets/index-D6qIWtA7-p207.js": "bc8873a3d4",
   "assets/index-D6qIWtA7-p208.js": "ee599669fd",
-  "assets/index-D6qIWtA7-p209.js": "b66e4e701f",
+  "assets/index-D6qIWtA7-p209.js": "357a681a",
   "assets/index-D6qIWtA7.js": "b7016b953d",
   "assets/index-DaHXZXmy.js": "9de9a67862",
   "assets/index-DBRKqjQw.js": "0fa74418a1",
@@ -3176,5 +3176,6 @@
   "assets/video/modo_infinito.webm": "dd762598a1",
   "assets/animation-catalog.js": "bf14b349",
   "assets/graphic-effects.js": "e26ca8b4",
-  "assets/visual-test-scene.js": "0eb84a03"
+  "assets/visual-test-scene.js": "0eb84a03",
+  "assets/environmental-interactions.js": "03b7a7c5"
 }
