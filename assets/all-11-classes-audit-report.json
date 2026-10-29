@@ -1,0 +1,115 @@
+{
+  "timestamp": "2026-10-29T17:15:58.703Z",
+  "classes": [
+    {
+      "classId": "WARRIOR",
+      "name": "Guerreiro",
+      "evidence": "audit_class_warrior.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "BERSERKER",
+      "name": "Samurai",
+      "evidence": "audit_class_berserker.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "ARCHER",
+      "name": "Arqueiro",
+      "evidence": "audit_class_archer.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "MAGE",
+      "name": "Maga",
+      "evidence": "audit_class_mage.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "ROGUE",
+      "name": "Ladina",
+      "evidence": "audit_class_rogue.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "NECROMANCER",
+      "name": "Necromante",
+      "evidence": "audit_class_necromancer.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "HUNTER",
+      "name": "Caçador",
+      "evidence": "audit_class_hunter.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "SHADOW_ASSASSIN",
+      "name": "Assassino das Sombras",
+      "evidence": "audit_class_shadow_assassin.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "DRUID",
+      "name": "Druida",
+      "evidence": "audit_class_druid.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "WARLOCK",
+      "name": "Bruxo",
+      "evidence": "audit_class_warlock.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    },
+    {
+      "classId": "SHAMAN",
+      "name": "Xamã",
+      "evidence": "audit_class_shaman.png",
+      "depthUp": "SIM",
+      "depthDown": "SIM",
+      "flip": "SIM",
+      "texture": "pv-body",
+      "status": "APROVADO"
+    }
+  ]
+}
