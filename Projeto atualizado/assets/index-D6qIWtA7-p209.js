@@ -2990,11 +2990,27 @@ class Sd extends j.Scene{constructor(){super("Game")}create(){window.DepthGateUs
     this.time.delayedCall(450,()=>{
       if(this.scene.isActive()&&window.AbyssPuzzleManager){
         if(!this.__abyssPuzzles)this.__abyssPuzzles=new window.AbyssPuzzleManager(this);
-        this.__abyssPuzzles.startRandomPuzzle(r0,b,()=>{
+        const pzMgr=this.__abyssPuzzles;
+        pzMgr.startRandomPuzzle(r0,b,()=>{
           n.pathResolved=!0;
           In(this);
           this.scene.get("UI")?.refreshSkillsAlert?.();
         });
+        const curB=pzMgr.resolveBounds(b);
+        const pcx=curB.x+curB.width/2,pcy=curB.y+curB.height/2;
+        try{
+          this.game?.audioEngine?.sfx?.("sfx-secret-reveal");
+          this.game?.events?.emit("ui:banner","✦ CÂMARA DO ENIGMA ANCESTRAL ✦","#ffd24a");
+          if(this.cameras?.main&&Number.isFinite(pcx)&&Number.isFinite(pcy)){
+            this.cameras.main.pan(pcx,pcy,650,"Sine.easeInOut",false,(c,prog)=>{
+              if(prog>=1){
+                this.time.delayedCall(900,()=>{
+                  if(this.player&&this.cameras?.main)this.cameras.main.startFollow(this.player,true,0.1,0.1);
+                });
+              }
+            });
+          }
+        }catch(_){}
       }
     });
   }else if(nextP==="elite"){
