@@ -6,8 +6,10 @@
     {
       id: "eye_of_doom",
       name: "Olho da Perdição",
-      icon: "👁️",
-      color: "#ff4466",
+      icon: "✦",
+      iconTex: "icon-deadly-mark",
+      color: "#e05a4a",
+      accentHex: 0xe05a4a,
       boon: "+50% de Dano Crítico",
       curse: "Poções curam 40% a menos",
       mods: { critAdd: 50, potionPower: -0.4 }
@@ -15,8 +17,10 @@
     {
       id: "shadow_pact",
       name: "Pacto das Sombras",
-      icon: "🌑",
-      color: "#b055ff",
+      icon: "❖",
+      iconTex: "icon-shadow-step",
+      color: "#c9a0ff",
+      accentHex: 0xc9a0ff,
       boon: "Drops e Ouro coletados dobrados (+100%)",
       curse: "Inimigos movem-se 25% mais rápido",
       mods: { goldMult: 1.0, enemySpeedMult: 1.25 }
@@ -24,8 +28,10 @@
     {
       id: "glass_heart",
       name: "Coração de Vidro",
-      icon: "💎",
-      color: "#00e5ff",
+      icon: "❖",
+      iconTex: "icon-frozen-heart",
+      color: "#8ae0ff",
+      accentHex: 0x8ae0ff,
       boon: "Dano Total multiplicado por ×2.0",
       curse: "Vida máxima reduzida pela metade (-50%)",
       mods: { damageMult: 1.0, maxHpMult: 0.5 }
@@ -33,8 +39,10 @@
     {
       id: "vampiric_blade",
       name: "Lâmina Sôfrega",
-      icon: "🩸",
-      color: "#ff2233",
+      icon: "✦",
+      iconTex: "icon-bloodlust",
+      color: "#e04848",
+      accentHex: 0xe04848,
       boon: "Cada abate restaura +5% de vida máxima",
       curse: "Perde 1 de vida a cada 10s sem abater",
       mods: { killHealPct: 0.05, hungerTick: 10 }
@@ -42,8 +50,10 @@
     {
       id: "bloody_bulwark",
       name: "Muralha Sangrenta",
-      icon: "🛡️",
-      color: "#e6a100",
+      icon: "❖",
+      iconTex: "icon-shield-wall",
+      color: "#e8c872",
+      accentHex: 0xe8c872,
       boon: "+30 de Defesa física e mágica",
       curse: "Velocidade de movimento reduzida em -15%",
       mods: { defenseAdd: 30, speedMult: -0.15 }
@@ -52,23 +62,39 @@
 
   window.__ABYSS_PACTS = ABYSS_PACTS;
 
-  // Active pacts for current run
+  // Active pacts for current run (persisted inside endless:run for save/reload support)
   window.__getActivePacts = function(scene) {
     if (!scene) return [];
-    if (!scene.registry.has("endless:activePacts")) {
-      scene.registry.set("endless:activePacts", []);
+    const reg = scene.registry || scene.game?.registry;
+    const run = scene.endlessRun?.() || reg?.get?.("endless:run");
+    if (run) {
+      if (!Array.isArray(run.pacts)) {
+        const regPacts = reg?.get?.("endless:activePacts");
+        run.pacts = Array.isArray(regPacts) ? [...regPacts] : [];
+      }
+      reg?.set?.("endless:activePacts", run.pacts);
+      return run.pacts;
     }
-    return scene.registry.get("endless:activePacts");
+    if (!reg) return [];
+    if (!reg.has("endless:activePacts")) {
+      reg.set("endless:activePacts", []);
+    }
+    return reg.get("endless:activePacts");
   };
 
   window.__getAbyssPactModifiers = function(scene) {
-    if (!scene || scene.mode !== "endless") return {};
+    const isEndless = scene && (scene.mode === "endless" || scene.level?.endless || scene.game?.registry?.get("mode") === "endless" || !!scene.endlessRun?.());
+    if (!isEndless) return {};
     const pacts = window.__getActivePacts(scene);
     let damageMult = 0;
     let defenseAdd = 0;
     let critAdd = 0;
     let speedMult = 0;
     let goldMult = 0;
+    let potionPower = 0;
+    let maxHpAdd = 0;
+    let killHealPct = 0;
+    let enemySpeedMult = 1;
 
     for (const pactId of pacts) {
       const def = ABYSS_PACTS.find(p => p.id === pactId);
@@ -78,10 +104,17 @@
         if (def.mods.critAdd) critAdd += def.mods.critAdd;
         if (def.mods.speedMult) speedMult += def.mods.speedMult;
         if (def.mods.goldMult) goldMult += def.mods.goldMult;
+        if (def.mods.potionPower) potionPower += def.mods.potionPower;
+        if (def.mods.maxHpMult) {
+          const baseHp = scene.classDef?.stats?.maxHp || 6;
+          maxHpAdd -= Math.max(1, Math.floor(baseHp * (1 - def.mods.maxHpMult)));
+        }
+        if (def.mods.killHealPct) killHealPct += def.mods.killHealPct;
+        if (def.mods.enemySpeedMult) enemySpeedMult *= def.mods.enemySpeedMult;
       }
     }
 
-    return { damageMult, defenseAdd, critAdd, speedMult, goldMult };
+    return { damageMult, defenseAdd, critAdd, speedMult, goldMult, potionPower, maxHpAdd, killHealPct, enemySpeedMult };
   };
 
   function getViewport(scene) {
@@ -97,6 +130,59 @@
     }
     const h = 360;
     return { w, h, cx: Math.round(w / 2), cy: Math.round(h / 2) };
+  }
+
+  // Helper para desenhar moldura gótica/dark-fantasy ornamentada no padrão __ornatePanel do jogo
+  function drawOrnateCardBorder(g, cardW, cardH, isSel, mainColorHex, innerColorHex, rivetColorHex) {
+    const x = -cardW / 2;
+    const y = 0;
+    g.lineStyle(isSel ? 2.5 : 1.5, mainColorHex, isSel ? 1 : 0.85);
+    g.strokeRoundedRect(x, y, cardW, cardH, 8);
+    g.lineStyle(1, innerColorHex, isSel ? 0.75 : 0.35);
+    g.strokeRoundedRect(x + 4, y + 4, cardW - 8, cardH - 8, 6);
+
+    const gem = (gx, gy, col, r = 3.5) => {
+      g.fillStyle(col, isSel ? 1 : 0.7);
+      g.fillTriangle(gx, gy - r, gx + r, gy, gx, gy + r);
+      g.fillTriangle(gx, gy - r, gx - r, gy, gx, gy + r);
+    };
+    gem(0, y + 4, rivetColorHex, isSel ? 4.5 : 3.5);
+    for (const [rx, ry] of [
+      [x + 8, y + 8],
+      [x + cardW - 8, y + 8],
+      [x + 8, y + cardH - 8],
+      [x + cardW - 8, y + cardH - 8]
+    ]) {
+      gem(rx, ry, rivetColorHex, 3);
+    }
+  }
+
+  // Helper para criar medalhão com ícone pixel-art nativo do jogo
+  function addMedallionIcon(ui, container, y, iconTex, fallbackGlyph, accentHex, isSel) {
+    const medG = ui.add.graphics();
+    medG.fillStyle(isSel ? 0x1e160e : 0x120d09, 0.95);
+    medG.fillCircle(0, y, 18);
+    medG.lineStyle(isSel ? 2 : 1.2, isSel ? 0xffd24a : accentHex, isSel ? 1 : 0.75);
+    medG.strokeCircle(0, y, 18);
+    medG.lineStyle(1, 0x5a4628, 0.5);
+    medG.strokeCircle(0, y, 14);
+    container.add(medG);
+
+    if (iconTex && ui.textures?.exists(iconTex)) {
+      const img = ui.add.image(0, y, iconTex).setOrigin(0.5);
+      const maxDim = Math.max(img.width || 20, img.height || 20);
+      const scale = maxDim <= 24 ? 1.15 : 22 / maxDim;
+      img.setScale(scale);
+      container.add(img);
+    } else {
+      const iconT = ui.add.text(0, y, fallbackGlyph || "❖", {
+        fontFamily: "Georgia, 'Times New Roman', serif",
+        fontSize: "16px",
+        color: "#ffd24a",
+        fontStyle: "bold"
+      }).setOrigin(0.5);
+      container.add(iconT);
+    }
   }
 
   // --- 2. BRANCHING PORTALS UI (Escolha de Caminho entre Andares - 100% Fullscreen) ---
@@ -122,26 +208,31 @@
 
       this.root = i.add.container(0, 0).setDepth(910).setVisible(!1);
 
-      // Fundo infinito que cobre toda e qualquer resolução / tela cheia / ultrawide
-      this.backdrop = i.add.rectangle(cx, cy, Math.max(w * 4, 3840), Math.max(h * 4, 2160), 0x06040b, 0.95).setOrigin(0.5).setInteractive();
+      // Fundo dark-fantasy que cobre toda a resolução
+      this.backdrop = i.add.rectangle(cx, cy, Math.max(w * 4, 3840), Math.max(h * 4, 2160), 0x080604, 0.94).setOrigin(0.5).setInteractive();
       this.root.add(this.backdrop);
 
       this.frameG = i.add.graphics();
       this.root.add(this.frameG);
 
+      if (i.textures?.exists("ui-boss-emblem")) {
+        this.emblem = i.add.image(cx, Math.max(24, cy - 140), "ui-boss-emblem").setScale(0.58).setAlpha(0.45);
+        this.root.add(this.emblem);
+      }
+
       this.title = i.add.text(cx, Math.max(26, cy - 138), "ESCOLHA SEU CAMINHO NO ABISMO", {
-        fontFamily: "Cinzel, Georgia, serif",
+        fontFamily: "Georgia, 'Times New Roman', serif",
         fontSize: "17px",
-        color: "#ffd24a",
+        color: "#efe4c8",
         fontStyle: "bold",
-        stroke: "#000000",
+        stroke: "#0a0806",
         strokeThickness: 3
       }).setOrigin(0.5);
 
       this.subtitle = i.add.text(cx, Math.max(50, cy - 114), "Selecione o destino para a próxima descida nas profundezas", {
-        fontFamily: "sans-serif",
-        fontSize: "10px",
-        color: "#c2ab87"
+        fontFamily: "'Courier New', monospace",
+        fontSize: "9.5px",
+        color: "#b8a888"
       }).setOrigin(0.5);
 
       this.root.add([this.title, this.subtitle]);
@@ -149,16 +240,16 @@
       this.cardsContainer = i.add.container(0, 0);
       this.root.add(this.cardsContainer);
 
-      this.footerText = i.add.text(cx, Math.min(h - 22, cy + 146), "🎮 [D-Pad Esquerda/Direita] Navegar   [A / Enter] Entrar no Portal", {
-        fontFamily: "sans-serif",
-        fontSize: "10px",
-        color: "#ffd24a",
-        stroke: "#000000",
+      this.footerText = i.add.text(cx, Math.min(h - 22, cy + 146), "❖ [Setas / A-D / D-Pad] Navegar   ·   [Clique / Enter / E / (A)] Entrar no Portal", {
+        fontFamily: "'Courier New', monospace",
+        fontSize: "9.5px",
+        color: "#c9a24a",
+        fontStyle: "bold",
+        stroke: "#0a0806",
         strokeThickness: 2
       }).setOrigin(0.5);
       this.root.add(this.footerText);
 
-      // Redimensionamento responsivo automático em fullscreen / resize
       i.scale?.on("resize", () => {
         if (this.open) this.layout();
       });
@@ -168,6 +259,7 @@
       if (!this.root || !this.ui) return;
       const { w, h, cx, cy } = getViewport(this.ui);
       this.backdrop.setPosition(cx, cy).setSize(Math.max(w * 4, 3840), Math.max(h * 4, 2160));
+      if (this.emblem) this.emblem.setPosition(cx, Math.max(24, cy - 140));
       this.title.setPosition(cx, Math.max(26, cy - 138));
       this.subtitle.setPosition(cx, Math.max(50, cy - 114));
       this.footerText.setPosition(cx, Math.min(h - 22, cy + 146));
@@ -177,39 +269,48 @@
     show(nextDepth, onChoiceCallback) {
       this.build();
       this.open = !0;
+      this.openedAt = performance.now();
       this.onChoice = onChoiceCallback;
       this.selectedIdx = 0;
       this.root.setVisible(!0);
-      
+      this.ui.game?.events?.emit("ui:inventory", !0);
 
       const possiblePortals = [
         {
           type: "puzzle",
           title: "CÂMARA DO ENIGMA",
-          icon: "🧩",
-          badgeColor: "#00e5ff",
-          desc: "Um enigma ancestral de luz ou runas místicas.\n\n✨ Recompensa: +1 Ponto de Habilidade Extra e Baú de Relíquia garantido!"
+          icon: "❖",
+          iconTex: "icon-pz-lock_sigil",
+          badgeColor: "#8ae0ff",
+          accentHex: 0x5fc8b0,
+          desc: "Um enigma ancestral de luz ou runas místicas.\n\n✦ Recompensa: +1 Ponto de Habilidade Extra e Baú de Relíquia garantido."
         },
         {
           type: "elite",
           title: "COVIL DE ELITE",
-          icon: "💀",
-          badgeColor: "#ff4455",
-          desc: "Inimigos de elite coléricos com vida e agressividade aumentadas.\n\n🏆 Recompensa: Baú Lendário com alta chance das armas supremas!"
+          icon: "✦",
+          iconTex: "icon-skull-scepter",
+          badgeColor: "#e05a4a",
+          accentHex: 0xc84a3a,
+          desc: "Inimigos de elite coléricos com vida e agressividade aumentadas.\n\n✦ Recompensa: Baú Lendário com alta chance de armas supremas."
         },
         {
           type: "shop",
           title: "BAZAR & ALTAR",
-          icon: "🪙",
+          icon: "❖",
+          iconTex: "icon-gold",
           badgeColor: "#ffd24a",
-          desc: "Refúgio pacífico com o Mercador das Sombras.\n\n🔥 Fogueira restauradora e Altar de Purificação / Redistribuição de Pontos!"
+          accentHex: 0xc9a24a,
+          desc: "Refúgio pacífico com o Mercador das Sombras.\n\n✦ Braseiro restaurador (cura total + poção) e Fonte de Purificação (+1 Ponto)."
         },
         {
           type: "pact",
           title: "ALTAR DO PACTO",
-          icon: "🩸",
-          badgeColor: "#b055ff",
-          desc: "Comungue com entidades esquecidas do abismo.\n\n⚡ Recompensa: Escolha uma Relíquia Amaldiçoada com poderes devastadores!"
+          icon: "✦",
+          iconTex: "icon-demon-pact",
+          badgeColor: "#c9a0ff",
+          accentHex: 0x9a6ad8,
+          desc: "Comungue com entidades esquecidas do abismo.\n\n✦ Recompensa: Escolha um Pacto Abissal com bônus devastadores."
         }
       ];
 
@@ -224,7 +325,13 @@
       if (!this.open) return;
       this.open = !1;
       this.root.setVisible(!1);
-      
+      this.ui.game?.events?.emit("ui:inventory", !1);
+      const gs = this.gs();
+      if (gs) {
+        gs.uiOpen = !1;
+        gs.time.paused = !1;
+        gs.tweens?.resumeAll?.();
+      }
     }
 
     renderCards() {
@@ -243,73 +350,93 @@
 
         const cardC = this.ui.add.container(curX, cardY);
 
-        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, isSel ? 0x1b132c : 0x110b1a, 0.96);
+        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, isSel ? 0x1a140e : 0x110d09, 0.97);
+        cData.bg = { x: curX, y: cardY + cardH / 2, width: cardW, height: cardH };
         const borderG = this.ui.add.graphics();
 
-        if (isSel) {
-          borderG.lineStyle(2.5, 0xffd24a, 1);
-          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 8);
-          borderG.lineStyle(1, 0xffe680, 0.7);
-          borderG.strokeRoundedRect(-cardW / 2 + 3, 3, cardW - 6, cardH - 6, 6);
-        } else {
-          borderG.lineStyle(1.5, 0x483a5e, 0.85);
-          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 8);
-        }
+        drawOrnateCardBorder(
+          borderG,
+          cardW,
+          cardH,
+          isSel,
+          isSel ? 0xffd24a : 0x4a3b28,
+          isSel ? 0xc9a24a : 0x2c2218,
+          isSel ? 0xffd24a : (cData.accentHex || 0xc9a24a)
+        );
 
-        const iconT = this.ui.add.text(0, 32, cData.icon, {
-          fontSize: "28px"
-        }).setOrigin(0.5);
+        cardC.add([bg, borderG]);
+        addMedallionIcon(this.ui, cardC, 34, cData.iconTex, cData.icon, cData.accentHex || 0xc9a24a, isSel);
 
         const titleT = this.ui.add.text(0, 70, cData.title, {
-          fontFamily: "Cinzel, Georgia, serif",
+          fontFamily: "Georgia, 'Times New Roman', serif",
           fontSize: "11px",
-          color: isSel ? "#ffffff" : cData.badgeColor,
+          color: isSel ? "#efe4c8" : cData.badgeColor,
           fontStyle: "bold"
         }).setOrigin(0.5);
 
-        const descT = this.ui.add.text(0, 96, cData.desc, {
-          fontFamily: "sans-serif",
-          fontSize: "9px",
-          color: isSel ? "#f5f0e6" : "#baa892",
+        const descT = this.ui.add.text(0, 94, cData.desc, {
+          fontFamily: "Georgia, 'Times New Roman', serif",
+          fontSize: "9.5px",
+          color: isSel ? "#e8dcc4" : "#a8987e",
           lineSpacing: 3,
           wordWrap: { width: cardW - 24 }
         }).setOrigin(0.5, 0);
 
-        const btn = this.ui.add.rectangle(0, cardH - 22, cardW - 32, 24, isSel ? 0x7a4a1a : 0x241830).setInteractive({ useHandCursor: !0 });
+        const btn = this.ui.add.rectangle(0, cardH - 22, cardW - 32, 24, isSel ? 0x4a3418 : 0x1c150e).setInteractive({ useHandCursor: !0 });
+        const btnBorder = this.ui.add.graphics();
+        btnBorder.lineStyle(1, isSel ? 0xffd24a : 0x4a3b28, 0.9);
+        btnBorder.strokeRoundedRect(-(cardW - 32) / 2, cardH - 34, cardW - 32, 24, 4);
+
         const btnT = this.ui.add.text(0, cardH - 22, isSel ? "[ (A) ENTRAR ]" : "[ SELECIONAR ]", {
-          fontFamily: "sans-serif",
+          fontFamily: "'Courier New', monospace",
           fontSize: "9px",
-          color: isSel ? "#ffd24a" : "#8a7e6a",
+          color: isSel ? "#ffd24a" : "#8a7f66",
           fontStyle: "bold"
         }).setOrigin(0.5);
 
         const curIdx = idx;
-        bg.setInteractive({ useHandCursor: !0 }).on("pointerdown", () => {
-          this.selectedIdx = curIdx;
-          this.renderCards();
-          window.__triggerHaptic?.(30, 0.2);
-        });
+        bg.setInteractive({ useHandCursor: !0 })
+          .on("pointerover", () => {
+            if (this.selectedIdx !== curIdx) {
+              this.selectedIdx = curIdx;
+              this.renderCards();
+            }
+          })
+          .on("pointerdown", () => {
+            this.selectedIdx = curIdx;
+            this.confirmChoice(curIdx);
+          });
 
+        btn.on("pointerover", () => {
+          if (this.selectedIdx !== curIdx) {
+            this.selectedIdx = curIdx;
+            this.renderCards();
+          }
+        });
         btn.on("pointerdown", () => {
+          this.selectedIdx = curIdx;
           this.confirmChoice(curIdx);
         });
 
-        cardC.add([bg, borderG, iconT, titleT, descT, btn, btnT]);
+        cardC.add([titleT, descT, btn, btnBorder, btnT]);
         this.cardsContainer.add(cardC);
       }
     }
 
     confirmChoice(idx) {
-      const choice = this.cards[idx];
+      const choice = this.cards[idx] || this.cards[0];
+      const cb = this.onChoice;
+      this.onChoice = null;
       this.close();
       window.__triggerHaptic?.(120, 0.6);
-      if (typeof this.onChoice === "function") {
-        this.onChoice(choice.type);
+      if (typeof cb === "function" && choice) {
+        cb(choice.type);
       }
     }
 
     handleKey(key) {
       if (!this.open) return !1;
+      if (performance.now() - (this.openedAt || 0) < 160) return !0;
 
       if (key === "ArrowLeft" || key === "a" || key === "A" || key === "Left" || key === "LEFT") {
         if (this.selectedIdx > 0) {
@@ -327,7 +454,7 @@
         }
         return !0;
       }
-      if (key === "Enter" || key === " " || key === "Space" || key === "CONFIRM" || key === "z" || key === "Z") {
+      if (key === "Enter" || key === " " || key === "Space" || key === "CONFIRM" || key === "z" || key === "Z" || key === "e" || key === "E") {
         this.confirmChoice(this.selectedIdx);
         return !0;
       }
@@ -358,22 +485,27 @@
 
       this.root = i.add.container(0, 0).setDepth(920).setVisible(!1);
 
-      this.backdrop = i.add.rectangle(cx, cy, Math.max(w * 4, 3840), Math.max(h * 4, 2160), 0x050308, 0.96).setOrigin(0.5).setInteractive();
+      this.backdrop = i.add.rectangle(cx, cy, Math.max(w * 4, 3840), Math.max(h * 4, 2160), 0x080506, 0.95).setOrigin(0.5).setInteractive();
       this.root.add(this.backdrop);
 
+      if (i.textures?.exists("ui-boss-emblem")) {
+        this.emblem = i.add.image(cx, Math.max(24, cy - 140), "ui-boss-emblem").setScale(0.58).setAlpha(0.45);
+        this.root.add(this.emblem);
+      }
+
       this.title = i.add.text(cx, Math.max(26, cy - 138), "PACTO DAS PROFUNDEZAS", {
-        fontFamily: "Cinzel, Georgia, serif",
+        fontFamily: "Georgia, 'Times New Roman', serif",
         fontSize: "17px",
-        color: "#ff3355",
+        color: "#e05a4a",
         fontStyle: "bold",
-        stroke: "#000000",
+        stroke: "#0a0806",
         strokeThickness: 3
       }).setOrigin(0.5);
 
       this.subtitle = i.add.text(cx, Math.max(50, cy - 114), "Aceite um poder proibido... ao custo de uma terrível maldição", {
-        fontFamily: "sans-serif",
-        fontSize: "10px",
-        color: "#d8a4a4"
+        fontFamily: "'Courier New', monospace",
+        fontSize: "9.5px",
+        color: "#c8a49c"
       }).setOrigin(0.5);
 
       this.root.add([this.title, this.subtitle]);
@@ -381,13 +513,16 @@
       this.pactsContainer = i.add.container(0, 0);
       this.root.add(this.pactsContainer);
 
-      this.footerText = i.add.text(cx, Math.min(h - 22, cy + 146), "🎮 [D-Pad Esquerda/Direita] Selecionar   [A] Aceitar Pacto   [B / Esc] Recusar", {
-        fontFamily: "sans-serif",
-        fontSize: "10px",
-        color: "#ffd24a",
-        stroke: "#000000",
+      this.footerText = i.add.text(cx, Math.min(h - 22, cy + 146), "❖ [Setas / A-D] Selecionar   ·   [Clique / A / Enter] Aceitar Pacto   ·   [B / Esc] Recusar", {
+        fontFamily: "'Courier New', monospace",
+        fontSize: "9.5px",
+        color: "#c9a24a",
+        fontStyle: "bold",
+        stroke: "#0a0806",
         strokeThickness: 2
-      }).setOrigin(0.5);
+      }).setOrigin(0.5).setInteractive({ useHandCursor: !0 }).on("pointerdown", () => {
+        this.close();
+      });
       this.root.add(this.footerText);
 
       i.scale?.on("resize", () => {
@@ -399,6 +534,7 @@
       if (!this.root || !this.ui) return;
       const { w, h, cx, cy } = getViewport(this.ui);
       this.backdrop.setPosition(cx, cy).setSize(Math.max(w * 4, 3840), Math.max(h * 4, 2160));
+      if (this.emblem) this.emblem.setPosition(cx, Math.max(24, cy - 140));
       this.title.setPosition(cx, Math.max(26, cy - 138));
       this.subtitle.setPosition(cx, Math.max(50, cy - 114));
       this.footerText.setPosition(cx, Math.min(h - 22, cy + 146));
@@ -408,8 +544,10 @@
     show() {
       this.build();
       this.open = !0;
+      this.openedAt = performance.now();
       this.selectedIdx = 0;
       this.root.setVisible(!0);
+      this.ui.game?.events?.emit("ui:inventory", !0);
 
       const available = [...ABYSS_PACTS];
       Phaser.Utils.Array.Shuffle(available);
@@ -423,6 +561,13 @@
       if (!this.open) return;
       this.open = !1;
       this.root.setVisible(!1);
+      this.ui.game?.events?.emit("ui:inventory", !1);
+      const gs = this.ui.scene.get("Game");
+      if (gs) {
+        gs.uiOpen = !1;
+        gs.time.paused = !1;
+        gs.tweens?.resumeAll?.();
+      }
     }
 
     renderPacts() {
@@ -440,73 +585,113 @@
         const isSel = idx === this.selectedIdx;
 
         const cardC = this.ui.add.container(curX, cardY);
-        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, isSel ? 0x220e18 : 0x150910, 0.96);
+        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, isSel ? 0x1e1012 : 0x130a0c, 0.97);
+        pData.bg = { x: curX, y: cardY + cardH / 2, width: cardW, height: cardH };
         const borderG = this.ui.add.graphics();
 
-        if (isSel) {
-          borderG.lineStyle(2.5, 0xff3355, 1);
-          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 8);
-          borderG.lineStyle(1, 0xff8899, 0.7);
-          borderG.strokeRoundedRect(-cardW / 2 + 3, 3, cardW - 6, cardH - 6, 6);
-        } else {
-          borderG.lineStyle(1.5, 0x542337, 0.85);
-          borderG.strokeRoundedRect(-cardW / 2, 0, cardW, cardH, 8);
-        }
+        drawOrnateCardBorder(
+          borderG,
+          cardW,
+          cardH,
+          isSel,
+          isSel ? 0xe05a4a : 0x4e2628,
+          isSel ? 0xc9a24a : 0x2e1618,
+          isSel ? 0xe05a4a : (pData.accentHex || 0xc9a24a)
+        );
 
-        const iconT = this.ui.add.text(0, 30, pData.icon, { fontSize: "28px" }).setOrigin(0.5);
+        cardC.add([bg, borderG]);
+        addMedallionIcon(this.ui, cardC, 34, pData.iconTex, pData.icon, pData.accentHex || 0xe05a4a, isSel);
 
-        const titleT = this.ui.add.text(0, 66, pData.name.toUpperCase(), {
-          fontFamily: "Cinzel, Georgia, serif",
+        const titleT = this.ui.add.text(0, 68, pData.name.toUpperCase(), {
+          fontFamily: "Georgia, 'Times New Roman', serif",
           fontSize: "11px",
-          color: isSel ? "#ffffff" : pData.color,
+          color: isSel ? "#efe4c8" : pData.color,
           fontStyle: "bold"
         }).setOrigin(0.5);
 
-        const boonT = this.ui.add.text(0, 96, `✓ BÊNÇÃO:\n${pData.boon}`, {
-          fontFamily: "sans-serif", fontSize: "9px", color: "#55ff88", fontStyle: "bold", wordWrap: { width: cardW - 24 }, lineSpacing: 3
+        const boonT = this.ui.add.text(0, 94, `✦ BÊNÇÃO:\n${pData.boon}`, {
+          fontFamily: "Georgia, 'Times New Roman', serif",
+          fontSize: "9.5px",
+          color: "#8ae0b0",
+          fontStyle: "bold",
+          wordWrap: { width: cardW - 24 },
+          lineSpacing: 3
         }).setOrigin(0.5, 0);
 
-        const curseT = this.ui.add.text(0, 146, `✗ MALDIÇÃO:\n${pData.curse}`, {
-          fontFamily: "sans-serif", fontSize: "9px", color: "#ff5555", fontStyle: "bold", wordWrap: { width: cardW - 24 }, lineSpacing: 3
+        const curseT = this.ui.add.text(0, 144, `❖ MALDIÇÃO:\n${pData.curse}`, {
+          fontFamily: "Georgia, 'Times New Roman', serif",
+          fontSize: "9.5px",
+          color: "#e06a5a",
+          fontStyle: "bold",
+          wordWrap: { width: cardW - 24 },
+          lineSpacing: 3
         }).setOrigin(0.5, 0);
 
-        const btn = this.ui.add.rectangle(0, cardH - 22, cardW - 32, 24, isSel ? 0x7a1828 : 0x2a101c).setInteractive({ useHandCursor: !0 });
+        const btn = this.ui.add.rectangle(0, cardH - 22, cardW - 32, 24, isSel ? 0x581c20 : 0x220e12).setInteractive({ useHandCursor: !0 });
+        const btnBorder = this.ui.add.graphics();
+        btnBorder.lineStyle(1, isSel ? 0xe05a4a : 0x4e2628, 0.9);
+        btnBorder.strokeRoundedRect(-(cardW - 32) / 2, cardH - 34, cardW - 32, 24, 4);
+
         const btnT = this.ui.add.text(0, cardH - 22, isSel ? "[ ACEITAR PACTO ]" : "[ EXAMINAR ]", {
-          fontFamily: "sans-serif", fontSize: "9px", color: isSel ? "#ff8899" : "#a66a7a", fontStyle: "bold"
+          fontFamily: "'Courier New', monospace",
+          fontSize: "9px",
+          color: isSel ? "#ffd24a" : "#9e7a7a",
+          fontStyle: "bold"
         }).setOrigin(0.5);
 
         const curIdx = idx;
-        bg.setInteractive({ useHandCursor: !0 }).on("pointerdown", () => {
-          this.selectedIdx = curIdx;
-          this.renderPacts();
-          window.__triggerHaptic?.(30, 0.2);
-        });
+        bg.setInteractive({ useHandCursor: !0 })
+          .on("pointerover", () => {
+            if (this.selectedIdx !== curIdx) {
+              this.selectedIdx = curIdx;
+              this.renderPacts();
+            }
+          })
+          .on("pointerdown", () => {
+            this.selectedIdx = curIdx;
+            this.acceptPact(curIdx);
+          });
 
+        btn.on("pointerover", () => {
+          if (this.selectedIdx !== curIdx) {
+            this.selectedIdx = curIdx;
+            this.renderPacts();
+          }
+        });
         btn.on("pointerdown", () => {
+          this.selectedIdx = curIdx;
           this.acceptPact(curIdx);
         });
 
-        cardC.add([bg, borderG, iconT, titleT, boonT, curseT, btn, btnT]);
+        cardC.add([titleT, boonT, curseT, btn, btnBorder, btnT]);
         this.pactsContainer.add(cardC);
       }
     }
 
     acceptPact(idx) {
-      const chosen = this.pacts[idx];
+      const chosen = this.pacts[idx] || this.pacts[0];
       const g = this.ui.scene.get("Game");
-      if (g) {
+      this.close();
+      if (g && chosen) {
         const pacts = window.__getActivePacts(g);
         pacts.push(chosen.id);
+        const er = g.endlessRun?.();
+        if (er) er.pathResolved = !0;
         g.stats?.recompute();
+        if (g.player && g.player.hp > g.player.maxHp) {
+          g.player.hp = g.player.maxHp;
+        }
+        g.game?.events?.emit("hud:hp", g.player?.hp, g.player?.maxHp);
         g.game?.audioEngine?.sfx?.("sfx-boss-spawn");
         this.ui.game.events.emit("ui:banner", `PACTO ACEITO: ${chosen.name.toUpperCase()}!`, chosen.color);
+        g.requestSave?.(200);
       }
-      this.close();
       window.__triggerHaptic?.(200, 0.9);
     }
 
     handleKey(key) {
       if (!this.open) return !1;
+      if (performance.now() - (this.openedAt || 0) < 160) return !0;
 
       if (key === "ArrowLeft" || key === "a" || key === "A" || key === "Left" || key === "LEFT") {
         if (this.selectedIdx > 0) {
@@ -524,7 +709,7 @@
         }
         return !0;
       }
-      if (key === "Enter" || key === " " || key === "Space" || key === "CONFIRM" || key === "z" || key === "Z") {
+      if (key === "Enter" || key === " " || key === "Space" || key === "CONFIRM" || key === "z" || key === "Z" || key === "e" || key === "E") {
         this.acceptPact(this.selectedIdx);
         return !0;
       }
@@ -541,7 +726,8 @@
   // --- 4. BUILD VISUAL ELEMENTAL AURAS ---
   class BuildVisualAuras {
     static updatePlayerAura(scene) {
-      if (!scene || scene.mode !== "endless" || !scene.player) return;
+      const isEndless = scene && (scene.mode === "endless" || scene.level?.endless || scene.game?.registry?.get("mode") === "endless" || !!scene.endlessRun?.());
+      if (!isEndless || !scene.player) return;
       const skillsState = scene.registry?.get("endless:skills");
       if (!skillsState || !skillsState.chosenTree) return;
 

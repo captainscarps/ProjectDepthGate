@@ -391,6 +391,55 @@
       initCanonicalPuzzleTextures(scene);
     }
 
+    // Método update chamado a cada frame por Game.update(i, t)
+    update(dt) {
+      // Handler seguro para evitar TypeError em Game.update
+    }
+
+    resolveBounds(roomBounds) {
+      const S = this.scene;
+      if (
+        roomBounds &&
+        Number.isFinite(roomBounds.x) &&
+        Number.isFinite(roomBounds.y) &&
+        Number.isFinite(roomBounds.width) &&
+        Number.isFinite(roomBounds.height) &&
+        roomBounds.width > 0 &&
+        roomBounds.height > 0
+      ) {
+        return roomBounds;
+      }
+      const r0 = S?.roomManager?.rooms?.[0];
+      const rx = r0?.def?.rect;
+      const tw = S?.dungeon?.tileWidth || 32;
+      const th = S?.dungeon?.tileHeight || 32;
+      if (rx && Number.isFinite(rx.x) && Number.isFinite(rx.y)) {
+        return {
+          x: rx.x * tw,
+          y: rx.y * th,
+          width: rx.w * tw,
+          height: rx.h * th
+        };
+      }
+      const px = S?.player?.x || 400;
+      const py = S?.player?.y || 400;
+      return {
+        x: px - 144,
+        y: py - 112,
+        width: 288,
+        height: 224
+      };
+    }
+
+    registerObject(obj, interactive = false) {
+      if (!obj) return obj;
+      this.activeObjects.push(obj);
+      if (interactive && this.scene?.dungeon?.objects && !this.scene.dungeon.objects.includes(obj)) {
+        this.scene.dungeon.objects.push(obj);
+      }
+      return obj;
+    }
+
     destroyActive() {
       if (this.updateHandler) {
         this.scene?.events?.off("update", this.updateHandler);
@@ -400,8 +449,13 @@
         this.laserGraphics.destroy();
         this.laserGraphics = null;
       }
+      const dObjs = this.scene?.dungeon?.objects;
       for (const obj of this.activeObjects) {
         try {
+          if (Array.isArray(dObjs)) {
+            const idx = dObjs.indexOf(obj);
+            if (idx !== -1) dObjs.splice(idx, 1);
+          }
           if (obj?.body && obj.body.enable) obj.body.enable = false;
           obj?.destroy();
         } catch (_) {}
@@ -421,8 +475,16 @@
     spawnRewardChest(x, y, onSolve) {
       const scene = this.scene;
       const key = "chest-epic";
-      const chest = scene.add.image(x, y, key).setDepth(y).setScale(0.3).setAlpha(0);
+      // Evita spawnar exatamente em cima do herói
+      let spawnX = x;
+      let spawnY = y;
+      if (scene?.player && Phaser.Math.Distance.Between(scene.player.x, scene.player.y, spawnX, spawnY) < 24) {
+        spawnY -= 28;
+      }
+      const chest = scene.add.image(spawnX, spawnY, key).setDepth(spawnY).setScale(0.3).setAlpha(0);
       chest.opened = false;
+      chest.def = { tier: "EPIC", noMimic: true };
+      chest.tierKey = "epic";
 
       scene.tweens.add({
         targets: chest,
@@ -432,10 +494,10 @@
         ease: "Back.easeOut"
       });
 
-      scene.effectsRef?.burstTinted?.(x, y - 6, 0xffd24a, 24);
-      scene.effectsRef?.shockwaveRing?.(x, y, 32);
+      scene.effectsRef?.burstTinted?.(spawnX, spawnY - 6, 0xffd24a, 24);
+      scene.effectsRef?.shockwaveRing?.(spawnX, spawnY, 32);
 
-      setInteractLabel(chest, () => (!chest.opened ? "Abrir Baú do Enigma" : null));
+      setInteractLabel(chest, () => (!chest.opened ? "Abrir Baú do Enigma (Relíquia)" : null));
 
       chest.interact = () => {
         if (chest.opened) return;
@@ -449,27 +511,49 @@
             if (scene.textures.exists(key + "-open")) chest.setTexture(key + "-open");
           }
         });
-        scene.effectsRef?.burstTinted?.(x, y - 8, 0xffd24a, 20);
+        scene.effectsRef?.burstTinted?.(spawnX, spawnY - 8, 0xffd24a, 20);
         scene.game?.audioEngine?.sfx?.("sfx-chest-open");
         scene.lootSystem?.openChest?.(chest);
         if (onSolve) onSolve();
       };
 
-      this.activeObjects.push(chest);
+      this.registerObject(chest, true);
       return chest;
     }
 
-    // Finaliza qualquer enigma com feedback canônico
+    // Finaliza qualquer enigma com feedback canônico e recompensa prometida (+1 Ponto de Habilidade + Baú)
     triggerSolve(title, chestX, chestY, onSolve) {
       if (this.isSolved) return;
       this.isSolved = true;
 
       const scene = this.scene;
+      const b = this.resolveBounds(null);
+      const finalTitle = title || this.activePuzzle?.title || "Enigma Ancestral";
+      const finalX = Number.isFinite(chestX) ? chestX : (this.activePuzzle?.chestX ?? (b.x + b.width / 2));
+      const finalY = Number.isFinite(chestY) ? chestY : (this.activePuzzle?.chestY ?? (b.y + b.height / 2 - 22));
+      const finalCb = onSolve || this.activePuzzle?.onSolve;
+
       scene.game?.audioEngine?.sfx?.("sfx-secret-reveal");
       scene.cameraSys?.shake?.(0.005, 220);
-      scene.game?.events?.emit("ui:banner", `✨ ENIGMA RESOLVIDO: ${title}`, "#9ff0ff");
 
-      this.spawnRewardChest(chestX, chestY, onSolve);
+      // Concede +1 Ponto de Habilidade Extra e +150 XP conforme prometido no portal
+      try {
+        const curBonus = scene.registry?.get("endless:bonusSkillPoints") || 0;
+        scene.registry?.set("endless:bonusSkillPoints", curBonus + 1);
+        const er = scene.endlessRun?.();
+        if (er) {
+          er.bonusSkillPoints = (er.bonusSkillPoints || 0) + 1;
+          er.pathResolved = true;
+          er.bonusScore = (er.bonusScore || 0) + 350;
+          scene.updateEndlessScore?.();
+        }
+        scene.stats?.addXp?.(150);
+        scene.effectsRef?.floatText?.(scene.player?.x || finalX, (scene.player?.y || finalY) - 28, "+1 PONTO DE HABILIDADE & BAÚ ÉPICO!", "#00e5ff", 11);
+      } catch (_) {}
+
+      scene.game?.events?.emit("ui:banner", `✦ ENIGMA RESOLVIDO: ${finalTitle}`, "#9ff0ff");
+
+      this.spawnRewardChest(finalX, finalY, finalCb);
     }
 
     // =========================================================================
@@ -477,42 +561,86 @@
     // =========================================================================
     startBlocksPuzzle(targetRoom, roomBounds, onSolve) {
       this.destroyActive();
+      this.isDestroyed = false;
       this.isSolved = false;
+      this.activePuzzle = { type: "blocks" };
       const S = this.scene;
       initCanonicalPuzzleTextures(S);
 
-      const bounds = roomBounds || {
-        x: (S.player?.x || 400) - 160,
-        y: (S.player?.y || 400) - 120,
-        width: 320,
-        height: 240
-      };
-
+      const bounds = this.resolveBounds(roomBounds);
       const cx = bounds.x + bounds.width / 2;
       const cy = bounds.y + bounds.height / 2;
 
       // 1 Altar / Placa de Pressão
-      const plateX = cx + 64;
-      const plateY = cy - 24;
+      const plateX = cx + 48;
+      const plateY = cy + 20;
       const plate = S.add.image(plateX, plateY, "pz-plate").setDepth(plateY - 10);
-      this.activeObjects.push(plate);
+      this.registerObject(plate, false);
 
       // Bloco de Pedra Pesada Deslizante
-      const startX = cx - 64;
-      const startY = cy + 24;
+      const startX = cx - 48;
+      const startY = cy + 20;
       const stone = S.add.image(startX, startY, "pz-stone").setOrigin(0.5, 0.85).setDepth(startY);
       S.physics.add.existing(stone, false);
-      stone.body.setSize(26, 20);
-      stone.body.setOffset(3, 16);
+      stone.body.setSize(24, 18);
+      stone.body.setOffset(4, 18);
       stone.body.setImmovable(true);
-      if (S.solids) S.solids.add(stone);
-      this.activeObjects.push(stone);
+      if (S.dungeon?.solids) S.dungeon.solids.add(stone);
+
+      let plateActivated = false;
+
+      const pushStone = (dirX, dirY) => {
+        if (this.isSolved || stone.sliding) return;
+        stone.sliding = true;
+        S.game?.audioEngine?.sfx?.("sfx-door-open");
+
+        const targetX = Phaser.Math.Clamp(stone.x + dirX * 48, bounds.x + 28, bounds.x + bounds.width - 28);
+        const targetY = Phaser.Math.Clamp(stone.y + dirY * 48, bounds.y + 28, bounds.y + bounds.height - 28);
+
+        S.tweens.add({
+          targets: stone,
+          x: targetX,
+          y: targetY,
+          duration: 280,
+          ease: "Sine.easeOut",
+          onUpdate: () => {
+            stone.setDepth(stone.y);
+            if (stone.body) stone.body.updateFromGameObject?.();
+            if (!plateActivated && Phaser.Math.Distance.Between(stone.x, stone.y, plateX, plateY) < 24) {
+              plateActivated = true;
+              plate.setTexture("pz-plate-on");
+              S.effectsRef?.burstTinted?.(plateX, plateY, 0xffd24a, 20);
+              S.effectsRef?.shockwaveRing?.(plateX, plateY, 26);
+              this.triggerSolve("O Bloco Ancestral", cx, cy - 24, onSolve);
+            }
+          },
+          onComplete: () => {
+            stone.sliding = false;
+            if (!plateActivated && Phaser.Math.Distance.Between(stone.x, stone.y, plateX, plateY) < 24) {
+              plateActivated = true;
+              plate.setTexture("pz-plate-on");
+              this.triggerSolve("O Bloco Ancestral", cx, cy - 24, onSolve);
+            }
+          }
+        });
+      };
+
+      setInteractLabel(stone, () => (this.isSolved ? null : "Empurrar Monólito até o Selo"));
+      stone.interact = () => {
+        if (this.isSolved || stone.sliding) return;
+        const dx = plateX - stone.x;
+        const dy = plateY - stone.y;
+        const pushX = Math.abs(dx) >= Math.abs(dy) ? Math.sign(dx) : 0;
+        const pushY = pushX === 0 ? Math.sign(dy) : 0;
+        pushStone(pushX || 1, pushY);
+      };
+      this.registerObject(stone, true);
 
       // Altar de Recomeçar
       const resetX = cx;
-      const resetY = cy - 70;
+      const resetY = cy - 48;
       const resetAltar = S.add.image(resetX, resetY, "pz-reset").setOrigin(0.5, 0.85).setDepth(resetY);
-      setInteractLabel(resetAltar, () => "Reiniciar Posição da Pedra");
+      setInteractLabel(resetAltar, () => (this.isSolved ? null : "Reiniciar Posição da Pedra"));
       resetAltar.interact = () => {
         if (this.isSolved || stone.sliding) return;
         stone.setPosition(startX, startY);
@@ -520,55 +648,22 @@
         S.effectsRef?.burstTinted?.(startX, startY, 0x8ae0ff, 12);
         S.game?.audioEngine?.sfx?.("sfx-door-open");
       };
-      this.activeObjects.push(resetAltar);
+      this.registerObject(resetAltar, true);
 
-      let plateActivated = false;
-
-      // Mecânica de Empurrar o Bloco (Hero encosta e segura a direção)
+      // Mecânica de Empurrar o Bloco por contato contínuo
       let pushTimer = 0;
       this.updateHandler = () => {
         if (this.isSolved || !S.player || stone.sliding) return;
-
         const dist = Phaser.Math.Distance.Between(S.player.x, S.player.y, stone.x, stone.y);
         if (dist < 36) {
           pushTimer++;
-          if (pushTimer > 10) {
-            // Empurra na direção do herói
-            const dx = Math.sign(stone.x - S.player.x);
-            const dy = Math.sign(stone.y - S.player.y);
-            const pushX = Math.abs(dx) > Math.abs(dy) ? dx : 0;
-            const pushY = pushX === 0 ? dy : 0;
-
-            if (pushX !== 0 || pushY !== 0) {
-              stone.sliding = true;
-              pushTimer = 0;
-              S.game?.audioEngine?.sfx?.("sfx-door-open");
-
-              const targetX = Phaser.Math.Clamp(stone.x + pushX * 64, bounds.x + 32, bounds.x + bounds.width - 32);
-              const targetY = Phaser.Math.Clamp(stone.y + pushY * 64, bounds.y + 32, bounds.y + bounds.height - 32);
-
-              S.tweens.add({
-                targets: stone,
-                x: targetX,
-                y: targetY,
-                duration: 320,
-                ease: "Sine.easeOut",
-                onUpdate: () => {
-                  stone.setDepth(stone.y);
-                  // Verifica se chegou na placa de pressão
-                  if (!plateActivated && Phaser.Math.Distance.Between(stone.x, stone.y, plateX, plateY) < 22) {
-                    plateActivated = true;
-                    plate.setTexture("pz-plate-on");
-                    S.effectsRef?.burstTinted?.(plateX, plateY, 0xffd24a, 20);
-                    S.effectsRef?.shockwaveRing?.(plateX, plateY, 26);
-                    this.triggerSolve("O Bloco Ancestral", cx, cy + 20, onSolve);
-                  }
-                },
-                onComplete: () => {
-                  stone.sliding = false;
-                }
-              });
-            }
+          if (pushTimer > 8) {
+            const dx = stone.x - S.player.x;
+            const dy = stone.y - S.player.y;
+            const pushX = Math.abs(dx) >= Math.abs(dy) ? Math.sign(dx) : 0;
+            const pushY = pushX === 0 ? Math.sign(dy) : 0;
+            pushTimer = 0;
+            if (pushX !== 0 || pushY !== 0) pushStone(pushX, pushY);
           }
         } else {
           pushTimer = 0;
@@ -584,39 +679,37 @@
     // =========================================================================
     startLaserPrismPuzzle(targetRoom, roomBounds, onSolve) {
       this.destroyActive();
+      this.isDestroyed = false;
       this.isSolved = false;
+      this.activePuzzle = { type: "mirror" };
       const S = this.scene;
       initCanonicalPuzzleTextures(S);
 
-      const bounds = roomBounds || {
-        x: (S.player?.x || 400) - 160,
-        y: (S.player?.y || 400) - 120,
-        width: 320,
-        height: 240
-      };
-
+      const bounds = this.resolveBounds(roomBounds);
       const cx = bounds.x + bounds.width / 2;
       const cy = bounds.y + bounds.height / 2;
 
       // Emissor de Foco Solar
-      const emitterX = cx - 100;
-      const emitterY = cy;
+      const emitterX = cx - 72;
+      const emitterY = cy - 18;
       const emitterPost = S.add.image(emitterX, emitterY + 6, "pz-post").setDepth(emitterY);
       const emitterOrb = S.add.image(emitterX, emitterY - 8, "pz-orb").setDepth(emitterY + 1);
-      this.activeObjects.push(emitterPost, emitterOrb);
+      this.registerObject(emitterPost, false);
+      this.registerObject(emitterOrb, false);
 
       // Receptor de Energia Alvo
-      const targetX = cx + 100;
-      const targetY = cy;
+      const targetX = cx + 72;
+      const targetY = cy - 18;
       const targetPost = S.add.image(targetX, targetY + 6, "pz-post").setDepth(targetY);
       const targetOrb = S.add.image(targetX, targetY - 8, "pz-orb").setDepth(targetY + 1).setTint(0x777777);
-      this.activeObjects.push(targetPost, targetOrb);
+      this.registerObject(targetPost, false);
+      this.registerObject(targetOrb, false);
 
       // Dois Espelhos Giratórios
-      const m1X = cx - 30;
-      const m1Y = cy - 40;
-      const m2X = cx + 30;
-      const m2Y = cy + 40;
+      const m1X = cx - 28;
+      const m1Y = cy - 42;
+      const m2X = cx + 28;
+      const m2Y = cy + 28;
 
       const createMirror = (x, y, initialAngle) => {
         let angleState = initialAngle; // 0 ou 1
@@ -632,7 +725,7 @@
           updateLaserRay();
         };
 
-        this.activeObjects.push(mirror);
+        this.registerObject(mirror, true);
         return {
           getAngle: () => angleState,
           x,
@@ -667,7 +760,14 @@
           // Brilho do receptor
           targetOrb.clearTint();
           S.effectsRef?.burstTinted?.(targetX, targetY - 8, 0xffd24a, 24);
-          this.triggerSolve("O Foco dos Espelhos Ancestrais", cx, cy, onSolve);
+          this.triggerSolve("O Foco dos Espelhos Ancestrais", cx, cy - 22, onSolve);
+        } else if (a1 === 1) {
+          // Primeiro espelho alinhado, falta o segundo
+          this.laserGraphics.beginPath();
+          this.laserGraphics.moveTo(emitterX, emitterY - 8);
+          this.laserGraphics.lineTo(m1X, m1Y);
+          this.laserGraphics.lineTo(m2X, m2Y);
+          this.laserGraphics.strokePath();
         } else {
           // Feixe parcial
           this.laserGraphics.beginPath();
@@ -686,17 +786,13 @@
     // =========================================================================
     startLeversPuzzle(targetRoom, roomBounds, onSolve) {
       this.destroyActive();
+      this.isDestroyed = false;
       this.isSolved = false;
+      this.activePuzzle = { type: "levers" };
       const S = this.scene;
       initCanonicalPuzzleTextures(S);
 
-      const bounds = roomBounds || {
-        x: (S.player?.x || 400) - 160,
-        y: (S.player?.y || 400) - 120,
-        width: 320,
-        height: 240
-      };
-
+      const bounds = this.resolveBounds(roomBounds);
       const cx = bounds.x + bounds.width / 2;
       const cy = bounds.y + bounds.height / 2;
 
@@ -707,29 +803,24 @@
 
       // Lápide com Enigma
       const plaqueX = cx;
-      const plaqueY = cy - 50;
+      const plaqueY = cy - 42;
       const plaque = S.add.image(plaqueX, plaqueY, "pz-plaque").setOrigin(0.5, 1).setDepth(plaqueY);
-      setInteractLabel(plaque, () => "Ler a Lápide Ancestral");
+      setInteractLabel(plaque, () => "Ler Lápide: Lua -> Sol -> Estrela");
       plaque.interact = () => {
-        S.game?.events?.emit("story:show", {
-          title: "LÁPIDE DOS TRÊS SIGNOS",
-          lines: [
-            "\"A noite sussurra sob o véu da LUA;",
-            "O dia desperta na glória do SOL;",
-            "E a imensidão descansa sob a ESTRELA eterna.\""
-          ]
-        });
+        S.effectsRef?.floatText?.(plaqueX, plaqueY - 28, "1º Lua  ▸  2º Sol  ▸  3º Estrela", "#ffd24a", 10);
+        S.game?.events?.emit("ui:banner", "Lápide dos Signos: 1º LUA ▸ 2º SOL ▸ 3º ESTRELA", "#ffd24a");
       };
-      this.activeObjects.push(plaque);
+      this.registerObject(plaque, true);
 
       const levers = [];
       for (let i = 0; i < leverCount; i++) {
-        const lx = cx - 64 + i * 64;
-        const ly = cy + 30;
+        const lx = cx - 48 + i * 48;
+        const ly = cy + 28;
 
         const lev = S.add.image(lx, ly, "cx-lever-off").setOrigin(0.5, 0.75).setDepth(ly);
         const glyphImg = S.add.image(lx, ly - 28, "pz-glyph-" + i).setDepth(ly + 1).setTint(0xffd24a);
-        this.activeObjects.push(lev, glyphImg);
+        this.registerObject(lev, true);
+        this.registerObject(glyphImg, false);
 
         setInteractLabel(lev, () => (this.isSolved || currentStep.includes(i) ? null : `Puxar Alavanca (${GLYPH_NAMES[i][0]})`));
 
@@ -746,20 +837,20 @@
             S.time.delayedCall(450, () => {
               S.game?.audioEngine?.sfx?.("sfx-event-refuse");
               S.cameraSys?.shake?.(0.005, 180);
-              S.effectsRef?.floatText?.(cx, cy - 20, "Ordem Incorreta...", "#e08a7a");
+              S.effectsRef?.floatText?.(cx, cy - 20, "Ordem Incorreta (Lua ▸ Sol ▸ Estrela)!", "#e08a7a");
               currentStep = [];
               levers.forEach((l) => l.setTexture("cx-lever-off"));
             });
           } else if (currentStep.length === leverCount) {
             // Acertou todas as alavancas!
-            this.triggerSolve("O Selo das Alavancas", cx, cy + 80, onSolve);
+            this.triggerSolve("O Selo das Alavancas", cx, cy - 18, onSolve);
           }
         };
 
         levers.push(lev);
       }
 
-      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Descifre a Lápide e Puxe as Alavancas na Ordem", "#ffd24a");
+      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Puxe as Alavancas na Ordem (Lua ▸ Sol ▸ Estrela)", "#ffd24a");
     }
 
     // =========================================================================
@@ -767,29 +858,25 @@
     // =========================================================================
     startBraziersPuzzle(targetRoom, roomBounds, onSolve) {
       this.destroyActive();
+      this.isDestroyed = false;
       this.isSolved = false;
+      this.activePuzzle = { type: "braziers" };
       const S = this.scene;
       initCanonicalPuzzleTextures(S);
 
-      const bounds = roomBounds || {
-        x: (S.player?.x || 400) - 160,
-        y: (S.player?.y || 400) - 120,
-        width: 320,
-        height: 240
-      };
-
+      const bounds = this.resolveBounds(roomBounds);
       const cx = bounds.x + bounds.width / 2;
       const cy = bounds.y + bounds.height / 2;
 
       // 4 Braseiros dispostos nos cantos
       const offsets = [
-        [-60, -40],
-        [60, -40],
-        [-60, 40],
-        [60, 40]
+        [-48, -32],
+        [48, -32],
+        [-48, 32],
+        [48, 32]
       ];
 
-      const BURN_TIME = 8.5; // Segundos para cada braseiro
+      const BURN_TIME = 12.0; // Segundos para cada braseiro
       const braziers = [];
 
       offsets.forEach(([ox, oy], idx) => {
@@ -813,17 +900,18 @@
 
           // Verifica se todos estão acesos simultaneamente
           if (braziers.every((b) => b.timeLeft > 0)) {
-            this.triggerSolve("O Fogo Sagrado dos Braseiros", cx, cy, onSolve);
+            this.triggerSolve("O Fogo Sagrado dos Braseiros", cx, cy - 22, onSolve);
           }
         };
 
-        this.activeObjects.push(img, flame);
+        this.registerObject(img, true);
+        this.registerObject(flame, false);
         braziers.push(data);
       });
 
       // Loop de contagem regressiva dos braseiros
       this.updateHandler = (time, delta) => {
-        if (this.isSolved) return;
+        if (this.isSolved || S.uiOpen || S.time?.paused) return;
         const dt = delta / 1000;
         for (const b of braziers) {
           if (b.timeLeft > 0) {
@@ -838,7 +926,7 @@
       };
 
       S.events.on("update", this.updateHandler);
-      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Acenda Todos os Braseiros Simultaneamente Antes que Apaguem!", "#ffd24a");
+      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Acenda os 4 Braseiros Antes que Apaguem!", "#ffd24a");
     }
 
     // =========================================================================
@@ -846,31 +934,27 @@
     // =========================================================================
     startRuneMemoryPuzzle(targetRoom, roomBounds, onSolve) {
       this.destroyActive();
+      this.isDestroyed = false;
       this.isSolved = false;
+      this.activePuzzle = { type: "runes" };
       const S = this.scene;
       initCanonicalPuzzleTextures(S);
 
-      const bounds = roomBounds || {
-        x: (S.player?.x || 400) - 160,
-        y: (S.player?.y || 400) - 120,
-        width: 320,
-        height: 240
-      };
-
+      const bounds = this.resolveBounds(roomBounds);
       const cx = bounds.x + bounds.width / 2;
       const cy = bounds.y + bounds.height / 2;
 
       // 4 Runas Celestiais com frequências harmônicas
       const runes = [
-        { name: "Sol", glyph: 0, freq: 261.63, ox: -48, oy: -32, color: 0xffd24a },
-        { name: "Lua", glyph: 1, freq: 329.63, ox: 48, oy: -32, color: 0x8ae0ff },
-        { name: "Estrela", glyph: 2, freq: 392.0, ox: -48, oy: 32, color: 0xff88ff },
-        { name: "Olho", glyph: 5, freq: 523.25, ox: 48, oy: 32, color: 0x88ffaa }
+        { name: "1º Sol", glyph: 0, freq: 261.63, ox: -44, oy: -28, color: 0xffd24a },
+        { name: "2º Lua", glyph: 1, freq: 329.63, ox: 44, oy: -28, color: 0x8ae0ff },
+        { name: "3º Estrela", glyph: 2, freq: 392.0, ox: -44, oy: 28, color: 0xff88ff },
+        { name: "Olho", glyph: 5, freq: 523.25, ox: 44, oy: 28, color: 0x88ffaa }
       ];
 
-      const sequence = [0, 1, 2, 0]; // 4 passos melódicos
+      const sequence = [0, 1, 2, 0]; // 4 passos melódicos: Sol -> Lua -> Estrela -> Sol
       let playerStep = 0;
-      let isPlayingSequence = true;
+      let isPlayingSequence = false;
 
       const runeObjects = runes.map((r, idx) => {
         const rx = cx + r.ox;
@@ -879,7 +963,8 @@
         const plate = S.add.image(rx, ry, "pz-plate").setDepth(ry);
         const glyph = S.add.image(rx, ry - 4, "pz-glyph-" + r.glyph).setDepth(ry + 1).setTint(r.color).setScale(1.1);
 
-        this.activeObjects.push(plate, glyph);
+        this.registerObject(plate, true);
+        this.registerObject(glyph, false);
 
         const flash = () => {
           if (this.isDestroyed || !plate?.scene?.sys || !plate.active) return;
@@ -904,7 +989,7 @@
           if (sequence[playerStep] === idx) {
             playerStep++;
             if (playerStep === sequence.length) {
-              this.triggerSolve("A Melodia Rúnica Celestial", cx, cy, onSolve);
+              this.triggerSolve("A Melodia Rúnica Celestial", cx, cy - 22, onSolve);
             }
           } else {
             // Errou: reinicia sequência após aviso
@@ -912,9 +997,9 @@
             S.time.delayedCall(400, () => {
               S.game?.audioEngine?.sfx?.("sfx-event-refuse");
               S.cameraSys?.shake?.(0.005, 180);
-              S.effectsRef?.floatText?.(cx, cy - 20, "Melodia Incorreta! Ouça Novamente...", "#e08a7a");
+              S.effectsRef?.floatText?.(cx, cy - 20, "Melodia Incorreta! (Sol ▸ Lua ▸ Estrela ▸ Sol)", "#e08a7a");
               playerStep = 0;
-              S.time.delayedCall(1200, playPattern);
+              S.time.delayedCall(900, playPattern);
             });
           }
         };
@@ -922,15 +1007,26 @@
         return { flash, plate, glyph };
       });
 
+      // Pedestal de repetição da melodia
+      const hintAltar = S.add.image(cx, cy - 46, "pz-reset").setOrigin(0.5, 0.85).setDepth(cy - 46);
+      setInteractLabel(hintAltar, () => (this.isSolved ? null : "Ouvir Melodia Rúnica (Sol ▸ Lua ▸ Estrela ▸ Sol)"));
+      hintAltar.interact = () => {
+        if (this.isSolved || isPlayingSequence) return;
+        playerStep = 0;
+        playPattern();
+      };
+      this.registerObject(hintAltar, true);
+
       // Toca a sequência harmônica do enigma
       const playPattern = () => {
+        if (this.isSolved || this.isDestroyed) return;
         isPlayingSequence = true;
         sequence.forEach((runeIdx, step) => {
-          const t = S.time.delayedCall(step * 550 + 400, () => {
+          const t = S.time.delayedCall(step * 520 + 250, () => {
             if (this.isSolved || this.isDestroyed || !this.scene?.sys?.isActive?.()) return;
             runeObjects[runeIdx]?.flash();
             if (step === sequence.length - 1) {
-              const tEnd = S.time.delayedCall(400, () => {
+              const tEnd = S.time.delayedCall(350, () => {
                 isPlayingSequence = false;
               });
               this.activeTimers.push(tEnd);
@@ -940,9 +1036,9 @@
         });
       };
 
-      const startT = S.time.delayedCall(800, playPattern);
+      const startT = S.time.delayedCall(950, playPattern);
       this.activeTimers.push(startT);
-      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Ouça a Sequência Musical e Repita os Signos!", "#ffd24a");
+      S.game?.events?.emit("ui:banner", "Enigma Ancestral: Repita a Melodia (Sol ▸ Lua ▸ Estrela ▸ Sol)", "#ffd24a");
     }
 
     // Inicialização aleatória canônica (escolhe entre os 5 tipos canônicos)

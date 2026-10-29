@@ -123,14 +123,36 @@
       70%, 100% { transform: rotate(90deg); }
     }
   </style>
-  <script src="./assets/user-auth.js?v=5.14"></script>
+  <script>
+    (function() {
+      try {
+        if ("caches" in window) {
+          caches.open("ded-assets-v1").then(function(c) {
+            c.keys().then(function(reqs) {
+              reqs.forEach(function(q) {
+                if (q.url && (q.url.indexOf(".js") !== -1 || q.url.indexOf(".mjs") !== -1)) {
+                  c.delete(q);
+                }
+              });
+            });
+          }).catch(function() {});
+        }
+        if ("serviceWorker" in navigator && navigator.serviceWorker.getRegistrations) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            regs.forEach(function(r) { try { r.update(); } catch(e) {} });
+          }).catch(function() {});
+        }
+      } catch(e) {}
+    })();
+  </script>
+  <script src="./assets/user-auth.js?v=5.19"></script>
   <script src="./assets/howler.min.js"></script>
   <script src="./assets/tone.min.js"></script>
-  <script src="./assets/abyss-puzzles.js?v=5.14"></script>
-  <script src="./assets/abyss-portals-and-pacts.js?v=5.14"></script>
-  <script src="./assets/hall-of-fame-ui.js?v=5.14"></script>
-<script src="./assets/network-coop.js?v=5.14"></script>
-  <script type="module" crossorigin src="./assets/index-D6qIWtA7-p209.js?v=5.14"></script>
+  <script src="./assets/abyss-puzzles.js?v=5.19"></script>
+  <script src="./assets/abyss-portals-and-pacts.js?v=5.19"></script>
+  <script src="./assets/hall-of-fame-ui.js?v=5.19"></script>
+  <script src="./assets/network-coop.js?v=5.19"></script>
+  <script type="module" crossorigin src="./assets/index-D6qIWtA7-p209.js?v=5.19"></script>
 </head>
 <body>
   <div id="game"></div>

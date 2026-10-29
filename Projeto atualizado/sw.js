@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v5.27.0-endless-original-skills";
+const CACHE = "ded-web-v5.28.0-endless-destiny-fix";
 /* Imagens, sons e dados ficam num cache que NÃO é apagado a cada versão. Ao ativar uma versão nova,
    o asset-versions.json (gerado por scripts/build_asset_versions.py antes de publicar) é comparado com o
    anterior e só os arquivos que mudaram são apagados (e baixados de novo quando o jogo pedir).
@@ -29,8 +29,8 @@ self.addEventListener("activate", (e) => {
             reqs.map((q) => {
               if (q.url === vk) return null;
               const p = relOf(q.url);
-              // sem lista anterior: guarda só o que bate com a lista nova; com lista: apaga o que mudou/sumiu
-              if (pv ? nv[p] !== pv[p] : !(p in nv)) return ac.delete(q);
+              // scripts nunca devem ficar presos em ASSETS; apaga também o que mudou/sumiu
+              if (p.endsWith(".js") || p.endsWith(".mjs") || (pv ? nv[p] !== pv[p] : !(p in nv))) return ac.delete(q);
               return null;
             })
           );
@@ -50,7 +50,7 @@ self.addEventListener("fetch", (e) => {
   if (path.match(/\.(mp4|webm)$/) || req.headers.has("range")) return;
   // sinalização de rede, ranking online e a lista de versões sempre direto da rede
   if (path.includes("/api/") || path.endsWith("online-config.json") || path.endsWith("asset-versions.json")) return;
-  const isDynamic = req.mode === "navigate" || path.endsWith("/index.html") || path.endsWith("/sw.js") || path.includes("index-") || path.includes("network-coop") || path.includes("user-auth");
+  const isDynamic = req.mode === "navigate" || path.endsWith("/index.html") || path.endsWith("/sw.js") || path.endsWith(".js") || path.endsWith(".mjs") || path.includes("index-") || path.includes("network-coop") || path.includes("user-auth") || path.includes("abyss-") || path.includes("hall-of-fame");
   if (isDynamic) {
     // Página principal e scripts: sempre da rede (cópia guardada só se estiver offline).
     // Atenção: um pedido de navegação não pode ser repassado com opções extras —
