@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
+  <script>
+    /* Bloqueio preventivo de divisão de tela (Edge Split Screen / atalhos indesejados de browser) */
+    (function() {
+      window.addEventListener("keydown", function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+          if (e.code === "Digit2" || e.key === "2" || e.keyCode === 50 ||
+              e.code === "Digit1" || e.code === "Digit3" || e.code === "Digit4" ||
+              e.code === "KeyS" || e.code === "KeyD" || e.code === "KeyA" || e.code === "KeyW" ||
+              e.code === "KeyE" || e.code === "KeyQ" || e.code === "Space") {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return false;
+          }
+        }
+        if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.code && e.code.startsWith("Digit")) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.code === "ArrowLeft" || e.code === "ArrowRight")) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if (e.key === "Tab" && (!document.activeElement || (document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA"))) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if (e.key === "F1" || e.key === "F3" || e.key === "F7") {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { capture: true, passive: false });
+
+      window.addEventListener("pointerdown", function() {
+        const c = document.querySelector("#game canvas");
+        if (c && document.activeElement !== c) {
+          try { c.focus(); } catch(err) {}
+        }
+      }, { passive: true });
+    })();
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <title>DEPTHGATE</title>
+  <meta name="theme-color" content="#0a0806" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0a0806;
+      overflow: hidden;
+    }
+    #game {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none; /* toque nunca vira scroll/zoom do navegador */
+    }
+    #game canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      touch-action: none;
+    }
+    /* Portrait em dispositivos touch: pedir landscape (jogo é 16:9).
+       Exibição controlada por JS (main.js pausa o loop); classe .visible liga. */
+    #rotate-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99;
+      background: radial-gradient(ellipse at center, #171009 0%, #0a0806 70%);
+      color: #c9a24a;
+      font-family: Georgia, 'Times New Roman', serif;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    #rotate-overlay.visible { display: flex; }
+    #rotate-overlay .phone {
+      width: 46px; height: 78px;
+      border: 3px solid #c9a24a; border-radius: 8px;
+      position: relative;
+      animation: ded-rotate 2.6s ease-in-out infinite;
+      box-shadow: 0 0 24px rgba(201, 162, 74, 0.25);
+    }
+    #rotate-overlay .phone::after {
+      content: ""; position: absolute; left: 50%; bottom: 5px;
+      width: 12px; height: 3px; margin-left: -6px;
+      background: #c9a24a; border-radius: 2px;
+    }
+    #rotate-overlay .title {
+      font-size: 22px; font-weight: bold; letter-spacing: 3px;
+      color: #e8d9a0; text-shadow: 0 0 14px rgba(201, 162, 74, 0.5);
+    }
+    #rotate-overlay .msg { font-size: 17px; font-weight: bold; letter-spacing: 2px; }
+    #rotate-overlay .sub { font-size: 12px; color: #8a7f66; font-family: 'Courier New', monospace; }
+    @keyframes ded-rotate {
+      0%, 45% { transform: rotate(0deg); }
+      70%, 100% { transform: rotate(90deg); }
+    }
+  </style>
+  <script>
+    (function() {
+      try {
+        if ("caches" in window) {
+          caches.open("ded-assets-v1").then(function(c) {
+            c.keys().then(function(reqs) {
+              reqs.forEach(function(q) {
+                if (q.url && (q.url.indexOf(".js") !== -1 || q.url.indexOf(".mjs") !== -1)) {
+                  c.delete(q);
+                }
+              });
+            });
+          }).catch(function() {});
+        }
+        if ("serviceWorker" in navigator && navigator.serviceWorker.getRegistrations) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            regs.forEach(function(r) { try { r.update(); } catch(e) {} });
+          }).catch(function() {});
+        }
+      } catch(e) {}
+    })();
+  </script>
+  <script src="./assets/user-auth.js?v=5.19"></script>
+  <script src="./assets/howler.min.js"></script>
+  <script src="./assets/tone.min.js"></script>
+  <script src="./assets/abyss-puzzles.js?v=5.19"></script>
+  <script src="./assets/abyss-portals-and-pacts.js?v=5.19"></script>
+  <script src="./assets/hall-of-fame-ui.js?v=5.19"></script>
+  <script src="./assets/network-coop.js?v=5.19"></script>
+  <script type="module" crossorigin src="./assets/index-D6qIWtA7-p209.js?v=5.19"></script>
+</head>
+<body>
+  <div id="game"></div>
+  <div id="rotate-overlay">
+    <div class="phone"><div class="screen"></div></div>
+    <div class="title">DEPTHGATE</div>
+    <div class="msg">VIRE O DISPOSITIVO</div>
+    <div class="sub">Este jogo foi projetado para jogar na horizontal.</div>
+  </div>
+
+  <script>
+    (function() {
+      const btn = document.getElementById("fs-btn");
+      const iconEnter = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>';
+      const iconExit = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>';
+
+      function isFs() {
+        return !!(
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.mozFullScreenElement ||
+          document.msFullscreenElement ||
+          (window.__DED_GAME && window.__DED_GAME.scale && window.__DED_GAME.scale.isFullscreen)
+        );
+      }
+
+      function updateIcon() {
+        if (!btn) return;
+        const active = isFs();
+        btn.innerHTML = active ? iconExit : iconEnter;
+        btn.title = active ? "Sair da Tela Cheia" : "Tela Cheia (Clique sem F11)";
+        setTimeout(function() {
+          window.dispatchEvent(new Event("resize"));
+          if (window.__DED_GAME && window.__DED_GAME.scale) {
+            try { window.__DED_GAME.scale.refresh(); } catch(e) {}
+          }
+        }, 60);
+      }
+
+      function setFsPref(val) {
+        try {
+          localStorage.setItem("depthgate:fullscreen", val ? "true" : "false");
+          const s = JSON.parse(localStorage.getItem("dungeon-crawler:settings") || "{}");
+          s.fullscreen = !!val;
+          localStorage.setItem("dungeon-crawler:settings", JSON.stringify(s));
+        } catch(e) {}
+      }
+
+      function enterFs() {
+        setFsPref(true);
+        const el = document.documentElement || document.body;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (req) {
+          try {
+            const p = req.call(el, { navigationUI: "hide" });
+            if (p && typeof p.then === "function") {
+              p.then(updateIcon).catch(function() {
+                try {
+                  const p2 = req.call(el);
+                  if (p2 && typeof p2.then === "function") p2.then(updateIcon).catch(phaserFallback);
+                  else updateIcon();
+                } catch(e) { phaserFallback(); }
+              });
+              return;
+            }
+            updateIcon();
+            return;
+          } catch(e) {
+            try {
+              const p2 = req.call(el);
+              if (p2 && typeof p2.then === "function") p2.then(updateIcon).catch(phaserFallback);
+              else updateIcon();
+              return;
+            } catch(e2) {
+              phaserFallback();
+            }
+          }
+        } else {
+          phaserFallback();
+        }
+      }
+
+      function phaserFallback() {
+        try {
+          if (window.__DED_GAME && window.__DED_GAME.scale) {
+            window.__DED_GAME.scale.startFullscreen();
+          }
+        } catch(e) {}
+        updateIcon();
+      }
+
+      function exitFs() {
+        setFsPref(false);
+        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        if (exit) {
+          try {
+            const p = exit.call(document);
+            if (p && typeof p.then === "function") p.then(updateIcon).catch(function() {});
+          } catch(e) {}
+        }
+        try {
+          if (window.__DED_GAME && window.__DED_GAME.scale && window.__DED_GAME.scale.isFullscreen) {
+            window.__DED_GAME.scale.stopFullscreen();
+          }
+        } catch(e) {}
+        updateIcon();
+      }
+
+      function toggleFs() {
+        if (isFs()) {
+          exitFs();
+        } else {
+          enterFs();
+        }
+      }
+
+      window.__toggleFullscreen = toggleFs;
+      window.__enterFs = enterFs;
+      window.__exitFs = exitFs;
+      window.__isFs = isFs;
+
+      // Persistência ao atualizar (F5 / reload): só sai se o usuário desabilitar explicitamente
+      const savedFs = (function() {
+        try {
+          if (localStorage.getItem("depthgate:fullscreen") === "true") return true;
+          const s = JSON.parse(localStorage.getItem("dungeon-crawler:settings") || "{}");
+          return s.fullscreen === true;
+        } catch(e) { return false; }
+      })();
+
+      if (savedFs) {
+        enterFs();
+        function resumeFs() {
+          if (localStorage.getItem("depthgate:fullscreen") === "true" && !isFs()) {
+            enterFs();
+          }
+          window.removeEventListener("pointerdown", resumeFs, true);
+          window.removeEventListener("keydown", resumeFs, true);
+          window.removeEventListener("touchend", resumeFs, true);
+        }
+        window.addEventListener("pointerdown", resumeFs, true);
+        window.addEventListener("keydown", resumeFs, true);
+        window.addEventListener("touchend", resumeFs, true);
+      }
+
+      if (btn) {
+        let lastClick = 0;
+        function onAction(e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          const now = Date.now();
+          if (now - lastClick < 300) return;
+          lastClick = now;
+          toggleFs();
+        }
+
+        btn.addEventListener("click", onAction);
+        btn.addEventListener("pointerdown", function(e) { e.stopPropagation(); });
+        document.addEventListener("fullscreenchange", updateIcon);
+        document.addEventListener("webkitfullscreenchange", updateIcon);
+        document.addEventListener("mozfullscreenchange", updateIcon);
+        document.addEventListener("MSFullscreenChange", updateIcon);
+      }
+    })();
+  </script>
+</body>
+</html>
