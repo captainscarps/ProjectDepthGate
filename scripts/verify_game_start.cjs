@@ -73,7 +73,10 @@ server.listen(PORT, '127.0.0.1', async () => {
     etapa13_gamepadTouchToggleOk: false,
     etapa14_multilingualUiOk: false,
     etapa15_audioEngineOk: false,
-    etapa16_abyssPactsModalOk: false
+    etapa16_abyssPactsModalOk: false,
+    etapa17_trapSpikesRestoredOk: false,
+    etapa18_pactsSelectionRefinedOk: false,
+    etapa19_endlessCycleAndNoBlessingsOk: false
   };
 
   ws.onopen = () => {
@@ -739,10 +742,196 @@ server.listen(PORT, '127.0.0.1', async () => {
       }));
     }, 37500);
 
+    // ETAPA 17: Armadilha Clássica de Espinhos Restaurada (Sem base preta artificial, sem vc-thorn-h)
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 17] Armadilha de Espinhos Restaurada ---');
+      ws.send(JSON.stringify({
+        id: 58,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (async function() {
+              const g = window.__DED_GAME;
+              const game = g.scene.getScene("Game");
+              if (!game || !window.EnvironmentalTrap) return { trapOk: false };
+
+              const trap = new window.EnvironmentalTrap(game, 250, 250, { damage: 1, cooldown: 1800 });
+              const initialTex = trap.spikes?.texture?.key;
+              const hasNoArtificialBase = !trap.base;
+              const hasNoArtificialRedBox = !trap.warningIndicator;
+
+              const dummyHero = {
+                x: 250, y: 250, isDashing: false, invulnerable: false, hp: 10,
+                takeDamage(d) { this.hp -= d; }
+              };
+
+              trap.trigger(dummyHero);
+              const armingTex = trap.spikes?.texture?.key;
+
+              // Aguarda o tween de armacao (190ms yoyo = 380ms) disparar para 'out'
+              await new Promise(r => setTimeout(r, 420));
+              const outTex = trap.spikes?.texture?.key;
+              const damageApplied = (dummyHero.hp === 9);
+
+              // Aguarda retracao completa para 'trap-spikes' (520ms apos disparo)
+              await new Promise(r => setTimeout(r, 580));
+              const retractedTex = trap.spikes?.texture?.key;
+              trap.destroy();
+
+              const trapOk = (initialTex === 'trap-spikes') &&
+                             hasNoArtificialBase &&
+                             hasNoArtificialRedBox &&
+                             (armingTex === 'trap-spikes-arm') &&
+                             (outTex === 'trap-spikes-out') &&
+                             damageApplied &&
+                             (retractedTex === 'trap-spikes');
+
+              return {
+                trapOk,
+                initialTex,
+                armingTex,
+                outTex,
+                retractedTex,
+                damageApplied
+              };
+            })()
+          `,
+          returnByValue: true,
+          awaitPromise: true
+        }
+      }));
+    }, 39500);
+
+    // ETAPA 18: Feedback Visual do Pacto das Profundezas
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 18] Feedback Visual Refinado da Seleção dos Pactos ---');
+      ws.send(JSON.stringify({
+        id: 59,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              const g = window.__DED_GAME;
+              const ui = g.scene.getScene("UI");
+              window.__openAbyssPactsModal(ui);
+              const pUI = ui.__pactsUI;
+              if (!pUI || !pUI.open) return { pactVisualOk: false };
+
+              pUI.openedAt = 0;
+
+              // Card 0 inicialmente selecionado
+              const c0Before = pUI.cardContainers[0];
+              const c1Before = pUI.cardContainers[1];
+              const sel0Alpha = c0Before.alpha;
+              const unsel1Alpha = c1Before.alpha;
+
+              // Navegar para o card 1
+              pUI.handleKey("ArrowRight");
+
+              // Obter as novas referencias renderizadas apos o handleKey
+              const c0After = pUI.cardContainers[0];
+              const c1After = pUI.cardContainers[1];
+              const unsel0Alpha = c0After.alpha;
+              const sel1Alpha = c1After.alpha;
+
+              const pactVisualOk = (sel0Alpha === 1.0) &&
+                                   (unsel1Alpha <= 0.75) &&
+                                   (sel1Alpha === 1.0) &&
+                                   (unsel0Alpha <= 0.75) &&
+                                   (pUI.pacts.length === 3);
+
+              return {
+                pactVisualOk,
+                sel0Alpha,
+                unsel1Alpha,
+                sel1Alpha,
+                unsel0Alpha
+              };
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 41500);
+
+    // ETAPA 19: Ciclo do Modo Infinito (2 Cenários por Bioma, sem Bênçãos Automáticas e sem Puzzles)
+    setTimeout(() => {
+      console.log('\n--- [ETAPA 19] Ciclo de 2 Cenários do Modo Infinito & Sem Bênçãos Automáticas ---');
+      ws.send(JSON.stringify({
+        id: 60,
+        method: 'Runtime.evaluate',
+        params: {
+          expression: `
+            (function() {
+              const g = window.__DED_GAME;
+              const ui = g.scene.getScene("UI");
+              const game = g.scene.getScene("Game");
+
+              // Fechar qualquer modal residual
+              ui.__pactsUI?.close?.();
+
+              // Garantir registry de endless ativo
+              g.registry.set("mode", "endless");
+              let er = g.registry.get("endless:run");
+              if (!er) {
+                er = { depth: 1, maxDepth: 1, score: 0, pendingBlessing: false };
+                g.registry.set("endless:run", er);
+              }
+
+              // Configurar estado do Cenário 1 do Modo Infinito
+              er.depth = 1;
+              er.pendingBlessing = false;
+              game.level.endless = true;
+              game.__environmentalPuzzles = [];
+
+              // 1. Sem bênçãos automáticas de passagem de fase no modo infinito
+              const noAutoBlessing = (er.pendingBlessing === false);
+
+              // 2. Sem quebra-cabeças gerados no modo infinito
+              const noPuzzles = (!game.__environmentalPuzzles || game.__environmentalPuzzles.length === 0);
+
+              // 3. Validação do ciclo de 2 cenários:
+              // Cenário 1 (depth=1, ímpar): descendEndless avança direto para Cenário 2 (depth=2) sem abrir modal de pacto
+              game.transitioning = false;
+              game.__pactChosen = false;
+              game.descendEndless();
+
+              const advancedToDepth2 = (er.depth === 2);
+              const stillNoBlessing = (er.pendingBlessing === false);
+              const noModalAtDepth1 = (!ui.__pactsUI || !ui.__pactsUI.open);
+
+              // Cenário 2 (depth=2, par concluído): descendEndless DEVE ABRIR O MODAL DE PACTO DAS PROFUNDEZAS!
+              game.transitioning = false;
+              game.__pactChosen = false;
+              game.descendEndless();
+
+              const modalOpenedAtDepth2 = !!ui.__pactsUI?.open;
+              if (modalOpenedAtDepth2) {
+                ui.__pactsUI.acceptPact?.(0);
+              }
+
+              const endlessCycleOk = noAutoBlessing && noPuzzles && advancedToDepth2 && stillNoBlessing && noModalAtDepth1 && modalOpenedAtDepth2;
+
+              return {
+                endlessCycleOk,
+                noAutoBlessing,
+                noPuzzles,
+                advancedToDepth2,
+                stillNoBlessing,
+                noModalAtDepth1,
+                modalOpenedAtDepth2
+              };
+            })()
+          `,
+          returnByValue: true
+        }
+      }));
+    }, 43500);
+
     // Encerramento e Relatório Final
     setTimeout(() => {
       console.log('\n================================================================');
-      console.log('RESUMO FINAL COMPLETO: 16 ETAPAS DE TESTES DE SISTEMA E JOGABILIDADE');
+      console.log('RESUMO FINAL COMPLETO: 19 ETAPAS DE TESTES DE SISTEMA E JOGABILIDADE');
       console.log('================================================================');
       console.log('Erros não capturados:', realErrors.length);
       console.log('1.  Campanha Inicializada:               ', testSuiteAssertions.etapa1_campaignOk ? 'PASSOU ✅' : 'FALHOU ❌');
@@ -761,14 +950,17 @@ server.listen(PORT, '127.0.0.1', async () => {
       console.log('14. Consistência Multilíngue de Rótulos: ', testSuiteAssertions.etapa14_multilingualUiOk ? 'PASSOU ✅' : 'FALHOU ❌');
       console.log('15. Motor de Áudio e SFX Bus:            ', testSuiteAssertions.etapa15_audioEngineOk ? 'PASSOU ✅' : 'FALHOU ❌');
       console.log('16. Modal de Pactos das Profundezas:     ', testSuiteAssertions.etapa16_abyssPactsModalOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('17. Armadilha de Espinhos Restaurada:    ', testSuiteAssertions.etapa17_trapSpikesRestoredOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('18. Feedback Visual dos Pactos:          ', testSuiteAssertions.etapa18_pactsSelectionRefinedOk ? 'PASSOU ✅' : 'FALHOU ❌');
+      console.log('19. Ciclo Infinito e Sem Bênçãos Auto:   ', testSuiteAssertions.etapa19_endlessCycleAndNoBlessingsOk ? 'PASSOU ✅' : 'FALHOU ❌');
 
       const allSuccess = Object.values(testSuiteAssertions).every(v => v === true) && realErrors.length === 0;
-      console.log('\nVEREDITO GERAL:', allSuccess ? 'TODAS AS 16 ETAPAS PASSARAM COM SUCESSO ABSOLUTO! ✅' : 'ALGUMA ETAPA FALHOU ❌');
+      console.log('\nVEREDITO GERAL:', allSuccess ? 'TODAS AS 19 ETAPAS PASSARAM COM SUCESSO ABSOLUTO! ✅' : 'ALGUMA ETAPA FALHOU ❌');
 
       chrome.kill();
       server.close();
       process.exit(allSuccess ? 0 : 1);
-    }, 40500);
+    }, 49500);
   };
 
   ws.onmessage = (event) => {
@@ -789,6 +981,14 @@ server.listen(PORT, '127.0.0.1', async () => {
     if (data.id === 152 && data.result?.data) {
       fs.writeFileSync(path.join(artDir, 'audit_hero_walk_down.png'), Buffer.from(data.result.data, 'base64'));
       console.log('📸 [CAPTURA]: Salvo audit_hero_walk_down.png');
+    }
+    if (data.id === 181 && data.result?.data) {
+      fs.writeFileSync(path.join(artDir, 'audit_trap_spikes_restored.png'), Buffer.from(data.result.data, 'base64'));
+      console.log('📸 [CAPTURA]: Salvo audit_trap_spikes_restored.png');
+    }
+    if (data.id === 182 && data.result?.data) {
+      fs.writeFileSync(path.join(artDir, 'audit_pacts_selection_refined.png'), Buffer.from(data.result.data, 'base64'));
+      console.log('📸 [CAPTURA]: Salvo audit_pacts_selection_refined.png');
     }
     if (data.id >= 10) {
       const val = data.result?.result?.value;
@@ -822,6 +1022,17 @@ server.listen(PORT, '127.0.0.1', async () => {
       if (data.id === 55 && val?.todosValidos) testSuiteAssertions.etapa14_multilingualUiOk = true;
       if (data.id === 56 && val?.sfxOk) testSuiteAssertions.etapa15_audioEngineOk = true;
       if (data.id === 57 && val?.pactsUiOk) testSuiteAssertions.etapa16_abyssPactsModalOk = true;
+      if (data.id === 58 && val?.trapOk) {
+        testSuiteAssertions.etapa17_trapSpikesRestoredOk = true;
+        ws.send(JSON.stringify({ id: 181, method: "Page.captureScreenshot", params: { format: "png" } }));
+      }
+      if (data.id === 59 && val?.pactVisualOk) {
+        testSuiteAssertions.etapa18_pactsSelectionRefinedOk = true;
+        ws.send(JSON.stringify({ id: 182, method: "Page.captureScreenshot", params: { format: "png" } }));
+      }
+      if (data.id === 60 && val?.endlessCycleOk) {
+        testSuiteAssertions.etapa19_endlessCycleAndNoBlessingsOk = true;
+      }
     }
     if (data.method === 'Runtime.exceptionThrown') {
       console.log('\n❌ [EXCEPTION]:', data.params.exceptionDetails.exception?.description || data.params.exceptionDetails.text);

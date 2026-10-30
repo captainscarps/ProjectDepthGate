@@ -199,44 +199,51 @@ class EnvironmentalTrap {
     this.x = x;
     this.y = y;
     this.damage = options.damage || 1;
-    this.cooldown = options.cooldown || 1800;
+    this.cooldown = options.cooldown || 2000;
     this.active = true;
     this.canTrigger = true;
-    this.radius = options.radius || 18;
+    this.state = 'idle';
+    this.radius = options.radius || 16;
 
-    this.base = scene.add.rectangle(x, y, 22, 22, 0x1c1714)
-      .setStrokeStyle(1, 0x3d3028)
-      .setDepth(1.05);
-
-    this.spikes = scene.add.image(x, y, scene.textures.exists('vc-thorn-h') ? 'vc-thorn-h' : 'trap-spikes')
-      .setDepth(1.1)
-      .setScale(0.85)
-      .setVisible(false);
-
-    this.warningIndicator = scene.add.rectangle(x, y, 20, 20, 0xff3311, 0)
-      .setDepth(1.08);
+    // Modelo original classico de espinhos do DepthGate: placa plana 'trap-spikes' em repouso
+    this.spikes = scene.add.sprite(x, y, 'trap-spikes')
+      .setDepth(1.05)
+      .setAlpha(0.85);
   }
 
   trigger(player) {
-    if (!this.canTrigger || !this.active) return false;
+    if (!this.canTrigger || !this.active || this.state !== 'idle') return false;
     this.canTrigger = false;
+    this.state = 'arming';
 
-    // Telégrafo de aviso (pulso vermelho rápido 150ms)
+    // 1. Armacao: pontas de aco surgindo ('trap-spikes-arm') com faiscas
+    if (this.scene.textures.exists('trap-spikes-arm')) {
+      this.spikes.setTexture('trap-spikes-arm');
+    }
+    this.scene.effects?.burstTinted?.(this.x, this.y, 0x908069, 3);
+
     this.scene.tweens.add({
-      targets: this.warningIndicator,
-      fillAlpha: 0.45,
-      duration: 150,
+      targets: this.spikes,
+      alpha: 1,
+      duration: 190,
       yoyo: true,
       onComplete: () => {
-        // Disparo das pontas
-        this.spikes.setVisible(true);
-        if (this.scene.game?.audioEngine?.sfx) {
+        if (!this.active || !this.spikes?.active) return;
+        // 2. Disparo: espinhos afiados saltados para fora ('trap-spikes-out') com som e dano
+        this.state = 'out';
+        if (this.scene.textures.exists('trap-spikes-out')) {
+          this.spikes.setTexture('trap-spikes-out').setAlpha(1);
+        }
+
+        if (this.scene.audioRef?.play) {
+          this.scene.audioRef.play('sfx-door-locked');
+        } else if (this.scene.game?.audioEngine?.sfx) {
           this.scene.game.audioEngine.sfx('sfx-spikes-trigger');
         } else if (this.scene.sound) {
           this.scene.sound.play('sfx-spikes-trigger');
         }
 
-        // Aplicação de dano autoritativo se o jogador ainda estiver sobre a armadilha
+        // Dano no jogador
         if (player && this.isPlayerOver(player)) {
           if (!player.isDashing && !player.invulnerable) {
             if (typeof player.takeDamage === 'function') {
@@ -248,10 +255,27 @@ class EnvironmentalTrap {
           }
         }
 
-        // Retração das pontas e cooldown
-        this.scene.time.delayedCall(500, () => {
-          this.spikes.setVisible(false);
-          this.scene.time.delayedCall(this.cooldown - 500, () => {
+        // Dano colateral em monstros
+        if (this.scene.enemies?.getChildren) {
+          for (const enemy of this.scene.enemies.getChildren()) {
+            if (enemy.active && !enemy.dead && this.isEnemyOver(enemy)) {
+              if (typeof enemy.takeDamage === 'function') {
+                enemy.takeDamage(this.damage * 2, false);
+              }
+            }
+          }
+        }
+
+        // 3. Retracao completa: volta para 'trap-spikes' (espinhos recolhem totalmente para a placa)
+        this.scene.time.delayedCall(520, () => {
+          if (!this.active || !this.spikes?.active) return;
+          this.state = 'retracting';
+          if (this.scene.textures.exists('trap-spikes')) {
+            this.spikes.setTexture('trap-spikes').setAlpha(0.85);
+          }
+
+          this.scene.time.delayedCall(Math.max(600, this.cooldown - 900), () => {
+            this.state = 'idle';
             this.canTrigger = true;
           });
         });
@@ -267,16 +291,23 @@ class EnvironmentalTrap {
     return dist <= this.radius;
   }
 
+  isEnemyOver(enemy) {
+    if (!enemy) return false;
+    const dist = Phaser.Math.Distance.Between(this.x, this.y, enemy.x, enemy.y);
+    return dist <= this.radius + 4;
+  }
+
   destroy() {
-    if (this.base?.active) this.base.destroy();
+    this.active = false;
     if (this.spikes?.active) this.spikes.destroy();
-    if (this.warningIndicator?.active) this.warningIndicator.destroy();
   }
 }
 
 class EnvironmentalPuzzle {
   constructor(scene, cx, cy, options = {}) {
     this.scene = scene;
+    const isEndless = scene && (scene.isEndless || scene.level?.endless || scene.mode === "endless" || scene.game?.registry?.get("mode") === "endless" || !!scene.endlessRun?.());
+    if (isEndless) { this.active = false; this.totems = []; return; }
     this.cx = cx;
     this.cy = cy;
     this.expectedSequence = options.sequence || [0, 1, 2];
@@ -509,7 +540,8 @@ class ProceduralEnvironmentManager {
         }
       }
 
-      if (rect.w >= 8 && rect.h >= 8 && scene.__environmentalPuzzles.length === 0 && roomIdx > 0) {
+      const isEndless = scene && (scene.isEndless || scene.level?.endless || scene.mode === "endless" || scene.game?.registry?.get("mode") === "endless" || !!scene.endlessRun?.());
+      if (!isEndless && rect.w >= 8 && rect.h >= 8 && scene.__environmentalPuzzles.length === 0 && roomIdx > 0) {
         const pc = Math.floor(rect.x + rect.w / 2);
         const pr = Math.floor(rect.y + rect.h / 2);
         if (!dungeon.isWallTile(pc, pr)) {

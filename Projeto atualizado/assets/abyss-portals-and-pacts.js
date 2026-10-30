@@ -136,28 +136,62 @@
   function drawOrnateCardBorder(g, cardW, cardH, isSel, mainColorHex, innerColorHex, rivetColorHex) {
     const x = -cardW / 2;
     const y = 0;
-    g.lineStyle(isSel ? 2.5 : 1.5, mainColorHex, isSel ? 1 : 0.85);
-    g.strokeRoundedRect(x, y, cardW, cardH, 8);
-    g.lineStyle(1, innerColorHex, isSel ? 0.75 : 0.35);
-    g.strokeRoundedRect(x + 4, y + 4, cardW - 8, cardH - 8, 6);
+
+    if (isSel) {
+      // Borda luminosa externa de destaque com reflexo dourado/rubi
+      g.lineStyle(4, 0xffd24a, 0.35);
+      g.strokeRoundedRect(x - 1, y - 1, cardW + 2, cardH + 2, 9);
+
+      g.lineStyle(2.5, 0xffe070, 1);
+      g.strokeRoundedRect(x, y, cardW, cardH, 8);
+
+      // Linha interna acentuada com a cor tematica
+      g.lineStyle(1.4, mainColorHex || 0xe05a4a, 0.9);
+      g.strokeRoundedRect(x + 4, y + 4, cardW - 8, cardH - 8, 6);
+
+      // Reflexo / brilho sutil no topo do card (highlight metalico)
+      g.lineStyle(2, 0xffffff, 0.7);
+      g.beginPath();
+      g.moveTo(x + 24, y + 1);
+      g.lineTo(x + cardW - 24, y + 1);
+      g.strokePath();
+
+      // Reflexo secundario sutil na borda interna superior
+      g.lineStyle(1, 0xffea9f, 0.5);
+      g.beginPath();
+      g.moveTo(x + 28, y + 5);
+      g.lineTo(x + cardW - 28, y + 5);
+      g.strokePath();
+    } else {
+      // Card nao selecionado: moldura sobria e discreta
+      g.lineStyle(1.5, 0x3d1c1e, 0.65);
+      g.strokeRoundedRect(x, y, cardW, cardH, 8);
+      g.lineStyle(1, 0x220e10, 0.4);
+      g.strokeRoundedRect(x + 4, y + 4, cardW - 8, cardH - 8, 6);
+    }
 
     const gem = (gx, gy, col, r = 3.5) => {
-      g.fillStyle(col, isSel ? 1 : 0.7);
+      g.fillStyle(col, isSel ? 1 : 0.6);
       g.fillTriangle(gx, gy - r, gx + r, gy, gx, gy + r);
       g.fillTriangle(gx, gy - r, gx - r, gy, gx, gy + r);
+      if (isSel) {
+        g.fillStyle(0xffffff, 0.8);
+        g.fillCircle(gx, gy, 1.2);
+      }
     };
-    gem(0, y + 4, rivetColorHex, isSel ? 4.5 : 3.5);
+
+    // Gemas nos cantos e centro superior
+    gem(0, y + 4, isSel ? 0xffe488 : rivetColorHex, isSel ? 5 : 3.5);
     for (const [rx, ry] of [
       [x + 8, y + 8],
       [x + cardW - 8, y + 8],
       [x + 8, y + cardH - 8],
       [x + cardW - 8, y + cardH - 8]
     ]) {
-      gem(rx, ry, rivetColorHex, 3);
+      gem(rx, ry, isSel ? 0xffd24a : rivetColorHex, isSel ? 3.5 : 2.8);
     }
   }
 
-  // Helper para criar medalhão com ícone pixel-art nativo do jogo
   function addMedallionIcon(ui, container, y, iconTex, fallbackGlyph, accentHex, isSel) {
     const medG = ui.add.graphics();
     medG.fillStyle(isSel ? 0x1e160e : 0x120d09, 0.95);
@@ -577,15 +611,30 @@
       const gap = 20;
       const totalW = this.pacts.length * cardW + (this.pacts.length - 1) * gap;
       const startX = cx - totalW / 2 + cardW / 2;
-      const cardY = cy - cardH / 2 + 6;
+      const cardBaseY = cy - cardH / 2 + 6;
+
+      this.cardContainers = [];
 
       for (let idx = 0; idx < this.pacts.length; idx++) {
         const pData = this.pacts[idx];
         const curX = startX + idx * (cardW + gap);
         const isSel = idx === this.selectedIdx;
 
+        // Elevacao discreta do card selecionado
+        const cardY = isSel ? cardBaseY - 6 : cardBaseY;
         const cardC = this.ui.add.container(curX, cardY);
-        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, isSel ? 0x1e1012 : 0x130a0c, 0.97);
+        cardC.setScale(isSel ? 1.02 : 0.98);
+        cardC.setAlpha(isSel ? 1.0 : 0.72);
+        this.cardContainers.push(cardC);
+
+        // Fundo com tom tematico enriquecido se selecionado
+        const bgFillColor = isSel ? (pData.accentHex ? Phaser.Display.Color.Interpolate.ColorWithColor(
+          Phaser.Display.Color.ValueToColor(0x221014),
+          Phaser.Display.Color.ValueToColor(pData.accentHex),
+          100, 22
+        ).color : 0x241216) : 0x120a0c;
+
+        const bg = this.ui.add.rectangle(0, cardH / 2, cardW, cardH, bgFillColor, isSel ? 0.98 : 0.94);
         pData.bg = { x: curX, y: cardY + cardH / 2, width: cardW, height: cardH };
         const borderG = this.ui.add.graphics();
 
@@ -594,25 +643,27 @@
           cardW,
           cardH,
           isSel,
-          isSel ? 0xe05a4a : 0x4e2628,
-          isSel ? 0xc9a24a : 0x2e1618,
-          isSel ? 0xe05a4a : (pData.accentHex || 0xc9a24a)
+          isSel ? (pData.accentHex || 0xe05a4a) : 0x4e2628,
+          isSel ? 0xffd24a : 0x2e1618,
+          isSel ? 0xffd24a : (pData.accentHex || 0xc9a24a)
         );
 
         cardC.add([bg, borderG]);
-        addMedallionIcon(this.ui, cardC, 34, pData.iconTex, pData.icon, pData.accentHex || 0xe05a4a, isSel);
+        addMedallionIcon(this.ui, cardC, 34, pData.iconTex, pData.icon, isSel ? 0xffd24a : (pData.accentHex || 0xe05a4a), isSel);
 
         const titleT = this.ui.add.text(0, 68, pData.name.toUpperCase(), {
           fontFamily: "Georgia, 'Times New Roman', serif",
           fontSize: "11px",
-          color: isSel ? "#efe4c8" : pData.color,
-          fontStyle: "bold"
+          color: isSel ? "#fff0c0" : pData.color,
+          fontStyle: "bold",
+          stroke: isSel ? "#421014" : "#000000",
+          strokeThickness: isSel ? 2 : 1
         }).setOrigin(0.5);
 
         const boonT = this.ui.add.text(0, 94, `✦ BÊNÇÃO:\n${pData.boon}`, {
           fontFamily: "Georgia, 'Times New Roman', serif",
           fontSize: "9.5px",
-          color: "#8ae0b0",
+          color: isSel ? "#9cf5c2" : "#8ae0b0",
           fontStyle: "bold",
           wordWrap: { width: cardW - 24 },
           lineSpacing: 3
@@ -621,21 +672,23 @@
         const curseT = this.ui.add.text(0, 144, `❖ MALDIÇÃO:\n${pData.curse}`, {
           fontFamily: "Georgia, 'Times New Roman', serif",
           fontSize: "9.5px",
-          color: "#e06a5a",
+          color: isSel ? "#ff8272" : "#e06a5a",
           fontStyle: "bold",
           wordWrap: { width: cardW - 24 },
           lineSpacing: 3
         }).setOrigin(0.5, 0);
 
-        const btn = this.ui.add.rectangle(0, cardH - 22, cardW - 32, 24, isSel ? 0x581c20 : 0x220e12).setInteractive({ useHandCursor: !0 });
+        // Botao de acao inferior
+        const btnFill = isSel ? 0x6e2228 : 0x220e12;
+        const btn = this.ui.add.rectangle(0, cardH - 22, cardW - 32, 24, btnFill).setInteractive({ useHandCursor: !0 });
         const btnBorder = this.ui.add.graphics();
-        btnBorder.lineStyle(1, isSel ? 0xe05a4a : 0x4e2628, 0.9);
+        btnBorder.lineStyle(isSel ? 1.5 : 1, isSel ? 0xffd24a : 0x4e2628, 0.95);
         btnBorder.strokeRoundedRect(-(cardW - 32) / 2, cardH - 34, cardW - 32, 24, 4);
 
-        const btnT = this.ui.add.text(0, cardH - 22, isSel ? "[ ACEITAR PACTO ]" : "[ EXAMINAR ]", {
+        const btnT = this.ui.add.text(0, cardH - 22, isSel ? "✦ ACEITAR PACTO ✦" : "[ EXAMINAR ]", {
           fontFamily: "'Courier New', monospace",
-          fontSize: "9px",
-          color: isSel ? "#ffd24a" : "#9e7a7a",
+          fontSize: isSel ? "9.5px" : "9px",
+          color: isSel ? "#ffe488" : "#9e7a7a",
           fontStyle: "bold"
         }).setOrigin(0.5);
 
@@ -645,6 +698,7 @@
             if (this.selectedIdx !== curIdx) {
               this.selectedIdx = curIdx;
               this.renderPacts();
+              window.__triggerHaptic?.(25, 0.2);
             }
           })
           .on("pointerdown", () => {
@@ -656,6 +710,7 @@
           if (this.selectedIdx !== curIdx) {
             this.selectedIdx = curIdx;
             this.renderPacts();
+            window.__triggerHaptic?.(25, 0.2);
           }
         });
         btn.on("pointerdown", () => {
@@ -669,24 +724,55 @@
     }
 
     acceptPact(idx) {
+      if (this.accepting) return;
+      this.accepting = !0;
+
       const chosen = this.pacts[idx] || this.pacts[0];
       const g = this.ui.scene.get("Game");
-      this.close();
-      if (g && chosen) {
-        const pacts = window.__getActivePacts(g);
-        pacts.push(chosen.id);
-        const er = g.endlessRun?.();
-        if (er) er.pathResolved = !0;
-        g.stats?.recompute();
-        if (g.player && g.player.hp > g.player.maxHp) {
-          g.player.hp = g.player.maxHp;
-        }
-        g.game?.events?.emit("hud:hp", g.player?.hp, g.player?.maxHp);
-        g.game?.audioEngine?.sfx?.("sfx-boss-spawn");
-        this.ui.game.events.emit("ui:banner", `PACTO ACEITO: ${chosen.name.toUpperCase()}!`, chosen.color);
-        g.requestSave?.(200);
+      const targetCard = this.cardContainers?.[idx];
+
+      // Feedback visual claro ao confirmar a escolha
+      if (targetCard) {
+        this.ui.tweens.add({
+          targets: targetCard,
+          scale: 1.08,
+          alpha: 1,
+          duration: 120,
+          yoyo: !0
+        });
       }
+
+      if (this.ui.effects?.burstTinted && targetCard) {
+        this.ui.effects.burstTinted(targetCard.x, targetCard.y + 60, 0xffd24a, 14);
+      }
+
       window.__triggerHaptic?.(200, 0.9);
+
+      this.ui.time.delayedCall(160, () => {
+        this.accepting = !1;
+        this.close();
+
+        if (g && chosen) {
+          const pacts = window.__getActivePacts(g);
+          pacts.push(chosen.id);
+          const er = g.endlessRun?.();
+          if (er) er.pathResolved = !0;
+          g.stats?.recompute();
+          if (g.player && g.player.hp > g.player.maxHp) {
+            g.player.hp = g.player.maxHp;
+          }
+          g.game?.events?.emit("hud:hp", g.player?.hp, g.player?.maxHp);
+          g.game?.audioEngine?.sfx?.("sfx-boss-spawn");
+          this.ui.game.events.emit("ui:banner", `PACTO ACEITO: ${chosen.name.toUpperCase()}!`, chosen.color);
+          g.requestSave?.(200);
+
+          if (typeof this.onPactAccepted === 'function') {
+            const cb = this.onPactAccepted;
+            this.onPactAccepted = null;
+            cb(chosen);
+          }
+        }
+      });
     }
 
     handleKey(key) {
@@ -772,11 +858,12 @@
     uiScene.__portalChoiceUI.show(nextDepth, callback);
   };
 
-  window.__openAbyssPactsModal = function(uiScene) {
+  window.__openAbyssPactsModal = function(uiScene, onAccepted) {
     if (!uiScene) return;
     if (!uiScene.__pactsUI) {
       uiScene.__pactsUI = new AbyssPactsUI(uiScene);
     }
+    uiScene.__pactsUI.onPactAccepted = onAccepted || null;
     uiScene.__pactsUI.show();
   };
 })();
