@@ -8750,8 +8750,8 @@ window.__dubPrefetch=function(list){try{const run=()=>{const c=ctxOf();if(!c)ret
 __dubHas=function(t){if(natOf(t))return!0;const id=__DUB.m?.k?.[__dubH(t)];return!!(id&&__DUB.m.d[id])};
 window.__dub=__dub;window.__dubHas=__dubHas;
 })();
-/* por enquanto a dublagem é só em inglês (o português volta quando as vozes brasileiras estiverem aprovadas) */
-__dubLang=function(){return"en"};
+/* Dublagem em Português (PT-BR) ativada com as novas vozes neurais da Guardiã, Narrador e Rei */
+__dubLang=function(){try{const s=Kt?.()||{};if(s.voiceLang)return s.voiceLang;const l=s.lang||localStorage.getItem("depthgate_lang")||"pt";return l.startsWith("pt")?"pt":"en"}catch(e){return"pt"}};
 
 /*__VWA__*//*__LAZYMAP__*/
 const __LZ_RE=/^(vcb|dsb|bqb|rib|mtb|gsb|frb|frt|rfb|cab)-\d+-\d+$|^gsb-ext$/;window.__LAZY=window.__LAZY||[];
