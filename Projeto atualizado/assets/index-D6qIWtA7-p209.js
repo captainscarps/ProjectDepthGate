@@ -11080,9 +11080,11 @@ function __spOpts(S, lv) {
 function __spName(id) { const d = Ye[id]; try { return St(`abn.${id}`, d?.name ?? id) } catch (e) { return d?.name ?? id } }
 function __spDesc(id) { const d = Ye[id]; try { return St(`abd.${id}`, d?.desc ?? "") } catch (e) { return d?.desc ?? "" } }
 /* saves antigos: o que já estava liberado conta como a escolha daquele nível */
-function __spMigrate(S) {
+function __spMigrate(S, old) {
   const P = __spSt(S), un = S.skillState.unlocked ?? [];
-  for (const lv of Ne) if (P[lv] == null && lv > 1) { const o = __spOpts(S, lv).find(id => un.includes(id)); o && (P[lv] = o) }
+  for (const lv of Ne) if (P[lv] == null && (lv > 1 || old)) { const o = __spOpts(S, lv).find(id => un.includes(id)); o && (P[lv] = o) }
+  /* graus de Pesadelo já passados em saves sem registro não voltam a perguntar */
+  if (old && P.nm == null) { const st = __etSt(S); P.nm = Object.values(st?.r ?? {}).length ? (S.stats?.nm | 0) : 0 }
 }
 function __spPending(S) {
   const P = __spSt(S), lvl = S.stats?.level ?? 1, out = [];
@@ -11236,7 +11238,13 @@ function __spCheck(S, delay = 0) {
   const C0 = Sd.prototype.create;
   Sd.prototype.create = function (...a) {
     const r = C0.apply(this, a);
-    try { if (this.skillState) { __spSt(this); __spMigrate(this); __spCheck(this, 2600); this.game.events.on("rpg:levelup", this.__spLv = () => __spCheck(this, 700)); this.events.once("shutdown", () => this.game.events.off("rpg:levelup", this.__spLv)) } } catch (e) { console.warn("[skill-picks] init", e) }
+    try { if (this.skillState) {
+      /* o jogo remonta skillState só com liberadas/equipadas ao trocar de área: as escolhas vêm do save/carry */
+      const d = a[0] ?? {}, src = d.carry?.skills ?? d.restore?.player?.skills ?? d.restoreEndless?.player?.skills;
+      if (src?.pick && typeof src.pick === "object") this.skillState.pick = JSON.parse(JSON.stringify(src.pick));
+      __spSt(this); __spMigrate(this, !!src);
+      const U0 = this.scene.get("UI"), PP = U0 && U0.__etp instanceof __SPPanel ? U0.__etp : null;
+      if (PP) { PP.root?.destroy(!0); PP.root = null; PP.cards = null; PP.open = !1; PP.queue = []; clearTimeout(PP.__t) } __spCheck(this, 2600); this.game.events.on("rpg:levelup", this.__spLv = () => __spCheck(this, 700)); this.events.once("shutdown", () => this.game.events.off("rpg:levelup", this.__spLv)) } } catch (e) { console.warn("[skill-picks] init", e) }
     return r;
   };
   const X0 = Eh.prototype.addXp;
