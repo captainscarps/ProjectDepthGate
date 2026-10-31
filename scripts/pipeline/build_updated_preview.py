@@ -35,7 +35,8 @@ VOICE_MAP = {
     "guardia": "Aoede",
     "cine-✦ A GUARDIÃ ✦": "Aoede",
     "rei": "Fenrir",
-    "rei-corrupt": "Fenrir"
+    "rei-corrupt": "Fenrir",
+    "hero-SHAMAN": "Kore"
 }
 
 samples = []
@@ -62,6 +63,7 @@ with open(os.path.join(ROOT, "scripts", "ready_samples.json"), "w", encoding="ut
     json.dump(samples, f, indent=2, ensure_ascii=False)
 
 categories = {
+    "hero-SHAMAN": "🏹 Araí, a Xamã (Voz: Kore - Tupi / Nheengatu)",
     "guardia": "✦ A Guardiã Ancestral (Voz: Aoede - Refinada)",
     "rei": "👑 O Rei Caído (Voz: Fenrir - Solene)",
     "rei-corrupt": "💀 O Rei Corrompido / Chefe (Voz: Fenrir Gutural)",
@@ -176,6 +178,7 @@ full_html = f"""<!DOCTYPE html>
             align-items: center;
             justify-content: space-between;
         }}
+        .title-hero-SHAMAN {{ color: #5ae08a; }}
         .title-guardia {{ color: #72b5f5; }}
         .title-rei {{ color: #ffd24a; }}
         .title-rei-corrupt {{ color: #e05a5a; }}
