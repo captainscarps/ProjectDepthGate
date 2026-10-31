@@ -11151,12 +11151,17 @@ const __HDIRS={warrior:{t:[0],n:[7,8,7,8]}};
  const key=`${this.animPrefix}-dirs`;if(!this.scene.textures.exists(key)){this.__hd=null;return r}
  const busy=this.attackState==="attack"||(t?.dashTimer??0)>0||this.castTimer>0||this.hurtAnimT>0||!!t?.guarding;if(busy){return r}
  const vx=t?.body?.velocity.x??0,vy=t?.body?.velocity.y??0,sp=Math.hypot(vx,vy),C=this.container;
- if(sp>20){const ax=Math.abs(vx)/sp,ay=Math.abs(vy)/sp;
-  if(ay<.38){this.__hd=null;return r}                              /* lado: desenho original */
-  const diag=ax>=.38,row=vy>0?(diag?2:0):(diag?3:1),sg=diag?(vx<0?-1:1):1;this.__hd={row,sg}}
+ if(sp>20){const ax=Math.abs(vx)/sp,ay=Math.abs(vy)/sp,pr=this.__hd?.row,h=.07;
+  /* troca de direção com folga, para não ficar piscando entre perfil/diagonal/frente no analógico */
+  const side=pr==null?ay<.38:ay<.38-h,dg=pr===2||pr===3?ax>=.38-h:ax>=.38+h;
+  if(side){this.__hd=null;return r}
+  const row=vy>0?(dg?2:0):(dg?3:1),sg=dg?(vx<0?-1:1):1;row!==pr&&(this.__hdD=0);this.__hd={row,sg}}
  else if(!this.__hd)return r;
- const{row,sg}=this.__hd,run=sp>230;sp>20?(this.__hdD=(this.__hdD??0)+sp*i):(this.__hdD=0);/* o passo acompanha a distância andada (o pé não escorrega) */const N=__HDIRS[this.animPrefix.replace(/^mk4b-|-t\d$/g,"")]?.n?.[row]??6,fr=sp>20?row*9+1+Math.floor(this.__hdD/(run?11:8)*(N/6))%N:row*9;
- m.anims.stop();m.setTexture(key,fr);this.lastSideSign=sg;C.setScale(sg*Math.abs(C.scaleX),C.scaleY);
- sp>20&&(this.__hdS=(this.__hdS??0)+i)>(run?.2:.28)&&(this.__hdS=0,this.scene.effectsRef?.burstTinted(t.x+(Math.random()<.5?-4:4),t.y+12,9076582,2))}catch(e){}return r}}
+ const{row,sg}=this.__hd,run=sp>230,N=__HDIRS[this.animPrefix.replace(/^mk4b-|-t\d$/g,"")]?.n?.[row]??6;
+ /* um quadro a cada ~11 px andados (~14 quadros/s na velocidade normal); o desenho já tem o sobe-e-desce do corpo */
+ sp>20?(this.__hdD=(this.__hdD??0)+sp*i):(this.__hdD=0);const k=Math.floor(this.__hdD/(run?14:11))%N,fr=sp>20?row*9+1+k:row*9;
+ m.anims.stop();m.setTexture(key,fr);m.y=0;this.lastSideSign=sg;C.setScale(sg*Math.abs(C.scaleX),C.scaleY);
+ /* poeira no momento em que o pé toca o chão (quadro 1 e metade do ciclo) */
+ if(sp>20&&k!==this.__hdK&&(k===0||k===Math.round(N/2)))this.scene.effectsRef?.burstTinted(t.x+(k?4:-4),t.y+12,9076582,2);this.__hdK=sp>20?k:-1}catch(e){}return r}}
 
 /*__HERODIRS__*/
