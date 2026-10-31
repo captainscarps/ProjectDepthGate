@@ -11148,10 +11148,12 @@ const __HART=["warrior","berserker","archer","rogue","mage","shaman","hunter","d
 {const R0=bl.prototype.refreshDetails;bl.prototype.refreshDetails=function(){const r=R0.apply(this,arguments);try{const cls=fe[this.selected],k=`hero-art-${String(cls).toLowerCase()}`,lk=!this.__ok(cls);
  if(!this.textures.exists(k)){this.__art?.setVisible(!1);return r}
  this.hero?.setVisible(!1);this.__heroT?.forEach?.(q=>q.remove?.());
- const H=226,X=318,Y=294;let a=this.__art;if(!a||!a.active){a=this.__art=this.add.image(X,Y,k).setOrigin(.5,1).setDepth(3)}
+ const H=226,h=this.hero,X=h?h.x:318,Y=(h?h.y:288)+6;let a=this.__art;if(!a||!a.active){a=this.__art=this.add.image(X,Y,k).setOrigin(.5,1).setDepth(3);a.__dy=0;
+  /* segue o sprite original, que o layout (ex.: celular) reposiciona */
+  this.events.on("update",()=>{const hh=this.hero;if(a.active&&hh){a.x=hh.x;a.y=hh.y+6+a.__dy}})}
  const changed=this.__artK!==k||this.__artL!==lk;this.__artK=k;this.__artL=lk;
  a.setTexture(k).setVisible(!0);const s=H/a.height;a.__s=s;lk?a.setTint(1379848).setAlpha(.92):a.clearTint();
- if(changed){this.tweens.killTweensOf(a);a.setScale(s*.96).setAlpha(0).setPosition(X,Y+10);
-  this.tweens.add({targets:a,alpha:lk?.92:1,y:Y,scale:s,duration:320,ease:"Cubic.easeOut",onComplete:()=>{lk||this.tweens.add({targets:a,scaleY:s*1.012,y:Y-1,duration:1600,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"})}})}}catch(e){}return r}}
+ if(changed){this.tweens.killTweensOf(a);a.setScale(s*.96).setAlpha(0);a.__dy=10;
+  this.tweens.add({targets:a,alpha:lk?.92:1,__dy:0,scale:s,duration:320,ease:"Cubic.easeOut",onComplete:()=>{lk||this.tweens.add({targets:a,scaleY:s*1.012,__dy:-1,duration:1600,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"})}})}}catch(e){}return r}}
 
 /*__HEROART__*/
