@@ -1,6 +1,6 @@
 """
 Heróis andando para cima, para baixo e nas diagonais (folhas *-dirs.png geradas em scripts/hero_dirs/).
-Código em scripts/source/hero-dirs.js. Re-executável.
+Código em scripts/source/hero-dirs.js. Re-executável. "--remover" desliga.
 """
 import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -11,8 +11,10 @@ s = open(BUNDLE, encoding="utf-8").read()
 T = "/*__HERODIRS__*/"
 while T in s:
     a = s.index(T); b = s.index(T, a + 1); s = s[:a] + s[b + len(T):]
-s = s + T + "\n" + SRC + "\n" + T
+import sys
+if "--remover" not in sys.argv:  # com --remover só tira o bloco do jogo (os heróis voltam ao perfil em todas as direções)
+    s = s + T + "\n" + SRC + "\n" + T
 for p in (BUNDLE, MIRROR):
     if os.path.isdir(os.path.dirname(p)):
         open(p, "w", encoding="utf-8").write(s)
-print("direções dos heróis aplicadas")
+print("direções dos heróis", "removidas" if "--remover" in sys.argv else "aplicadas")
