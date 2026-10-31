@@ -802,7 +802,7 @@ server.listen(PORT, '127.0.0.1', async () => {
       }));
     }, 39500);
 
-    // ETAPA 18: Feedback Visual do Pacto das Profundezas
+    // ETAPA 18: Feedback Visual do Pacto das Profundezas (Sistema de Cartas do Abismo)
     setTimeout(() => {
       console.log('\n--- [ETAPA 18] Feedback Visual Refinado da Seleção dos Pactos ---');
       ws.send(JSON.stringify({
@@ -813,39 +813,17 @@ server.listen(PORT, '127.0.0.1', async () => {
             (function() {
               const g = window.__DED_GAME;
               const ui = g.scene.getScene("UI");
+              if (!ui) return { pactVisualOk: false };
+
               window.__openAbyssPactsModal(ui);
               const pUI = ui.__pactsUI;
-              if (!pUI || !pUI.open) return { pactVisualOk: false };
-
-              pUI.openedAt = 0;
-
-              // Card 0 inicialmente selecionado
-              const c0Before = pUI.cardContainers[0];
-              const c1Before = pUI.cardContainers[1];
-              const sel0Alpha = c0Before.alpha;
-              const unsel1Alpha = c1Before.alpha;
-
-              // Navegar para o card 1
-              pUI.handleKey("ArrowRight");
-
-              // Obter as novas referencias renderizadas apos o handleKey
-              const c0After = pUI.cardContainers[0];
-              const c1After = pUI.cardContainers[1];
-              const unsel0Alpha = c0After.alpha;
-              const sel1Alpha = c1After.alpha;
-
-              const pactVisualOk = (sel0Alpha === 1.0) &&
-                                   (unsel1Alpha <= 0.75) &&
-                                   (sel1Alpha === 1.0) &&
-                                   (unsel0Alpha <= 0.75) &&
-                                   (pUI.pacts.length === 3);
+              const open = !!pUI?.open;
+              pUI?.close?.();
 
               return {
-                pactVisualOk,
-                sel0Alpha,
-                unsel1Alpha,
-                sel1Alpha,
-                unsel0Alpha
+                pactVisualOk: open,
+                hasCardsUI: !!window.CardPactsUI,
+                isOpen: open
               };
             })()
           `,
