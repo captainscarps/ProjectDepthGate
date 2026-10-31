@@ -1,4 +1,4 @@
-/* ══ Heróis andando para cima, para baixo e nas diagonais ═══════════════════════════════════════════════════
+/* ══ Heróis andando para cima e para baixo ═══════════════════════════════════════════════════
    Folha extra "<classe>-pack-t<n>-dirs.png" (128×128 por quadro), 4 linhas × c colunas (13 na versão atual; 9 nas antigas):
    linha 0 de frente (descendo), 1 de costas (subindo), 2 diagonal de frente (↘), 3 diagonal de costas (↗);
    coluna 0 parado, colunas 1… caminhada (n[linha] quadros: 6 na 1ª versão, 8 no prompt v2). As diagonais para a esquerda usam o espelho.
@@ -12,8 +12,9 @@ const __HDIRS={warrior:{t:[0],n:[10,10,9,10],c:13}};
  const vx=t?.body?.velocity.x??0,vy=t?.body?.velocity.y??0,sp=Math.hypot(vx,vy),C=this.container;
  if(sp>20){const ax=Math.abs(vx)/sp,ay=Math.abs(vy)/sp,pr=this.__hd?.row,h=.07;
   /* troca de direção com folga, para não ficar piscando entre perfil/diagonal/frente no analógico */
-  const side=pr==null?ay<.38:ay<.38-h,dg=pr===2||pr===3?ax>=.38-h:ax>=.38+h;
-  if(side){this.__hd=null;return r}
+  /* só para cima e para baixo: na diagonal e de lado fica o desenho de perfil original */
+  const vert=pr==null?ax<.38:ax<.38+h,dg=!1;
+  if(!vert){this.__hd=null;return r}
   const row=vy>0?(dg?2:0):(dg?3:1),sg=dg?(vx<0?-1:1):(this.lastSideSign??1);row!==pr&&(this.__hdD=0);this.__hd={row,sg}}
  else if(!this.__hd)return r;
  const{row,sg}=this.__hd,run=sp>230,CF=__HDIRS[this.animPrefix.replace(/^mk4b-|-t\d$/g,"")],N=CF?.n?.[row]??6,NC=CF?.c??9;
