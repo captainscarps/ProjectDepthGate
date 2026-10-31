@@ -17,6 +17,8 @@ fg=~bg
 fg[:, :148]=False
 # limpa ruído
 fg=ndimage.binary_opening(fg,iterations=1)
+# corta a franja clara que o fundo deixa na borda do desenho
+fg=ndimage.binary_erosion(fg,iterations=2)
 fl,fn=ndimage.label(ndimage.binary_dilation(fg,iterations=4))
 objs=ndimage.find_objects(fl)
 sprites=[]

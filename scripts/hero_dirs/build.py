@@ -33,7 +33,7 @@ for (y0,x0,y1,x1,k) in S:
 def place(out):
     a=out[...,3]>0;ys,xs=np.where(a);
     top,bot=ys.min(),ys.max();h=bot-top+1
-    band=a[top+int(h*.25):top+int(h*.6)];cx=np.where(band.any(0))[0];cxm=(cx.min()+cx.max())/2
+    band=a[top:top+int(h*.2)];cx=np.where(band.any(0))[0];cxm=(cx.min()+cx.max())/2
     cell=np.zeros((128,128,4),np.uint8);ox=int(round(64-cxm));oy=118-bot
     H,W=a.shape
     for y in range(H):
@@ -48,7 +48,7 @@ def outline(cell):
     nb=np.zeros_like(a)
     for dy,dx in((1,0),(-1,0),(0,1),(0,-1)):nb|=~np.roll(np.roll(a,dy,0),dx,1)
     edge=a&nb;lum=cell[...,:3].astype(int).sum(2)
-    m=edge&(lum>3*150);cell[m,:3]=dark
+    m=edge&(lum>3*128);cell[m,:3]=dark
     return cell
 sheet=Image.new('RGBA',(128*7,128*4),(0,0,0,0))
 for i,c in enumerate(cells):

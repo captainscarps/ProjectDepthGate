@@ -11155,7 +11155,7 @@ const __HDIRS={warrior:[0]};
   if(ay<.38){this.__hd=null;return r}                              /* lado: desenho original */
   const diag=ax>=.38,row=vy>0?(diag?2:0):(diag?3:1),sg=diag?(vx<0?-1:1):1;this.__hd={row,sg}}
  else if(!this.__hd)return r;
- const{row,sg}=this.__hd,run=sp>230,fr=sp>20?row*7+1+Math.floor(this.t*(run?13:10))%6:row*7;
+ const{row,sg}=this.__hd,run=sp>230;sp>20?(this.__hdD=(this.__hdD??0)+sp*i):(this.__hdD=0);/* o passo acompanha a distância andada (o pé não escorrega) */const fr=sp>20?row*7+1+Math.floor(this.__hdD/(run?11:8))%6:row*7;
  m.anims.stop();m.setTexture(key,fr);this.lastSideSign=sg;C.setScale(sg*Math.abs(C.scaleX),C.scaleY);
  sp>20&&(this.__hdS=(this.__hdS??0)+i)>(run?.2:.28)&&(this.__hdS=0,this.scene.effectsRef?.burstTinted(t.x+(Math.random()<.5?-4:4),t.y+12,9076582,2))}catch(e){}return r}}
 
