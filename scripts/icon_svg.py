@@ -742,14 +742,14 @@ def razor(I):
     weapon_group(I, f, 1.0)
 
 
-def scythe(I, shaft="darkwood", blade_mat="darksteel", glow="#5affb0"):
+def scythe(I, shaft="darkwood", blade_mat="darksteel", glow="#5affb0", angle=15, scale=.72, dy=12):
     def f(I):
         I.body.append(f'<rect x="-4" y="-66" width="8" height="140" rx="4" fill="{I.metal(shaft)}" stroke="{OUT}" stroke-width="3"/>')
         d = "M2 -64 C-26 -80 -64 -70 -78 -44 C-58 -60 -30 -62 -6 -48Z"
         I.body.append(f'<path d="{d}" fill="{I.metal(blade_mat)}" stroke="{OUT}" stroke-width="3" stroke-linejoin="round"/>')
         I.body.append(f'<path d="M-76 -46 C-60 -66 -30 -72 -2 -62" stroke="{glow}" stroke-width="2.4" fill="none"/>')
         I.body.append(f'<circle cx="0" cy="-58" r="6" fill="{I.rad(list(GEM["soul"]), .4, .35, .7)}" stroke="{OUT}" stroke-width="2"/>')
-    weapon_group(I, f, .95, angle=30)
+    weapon_group(I, f, scale, angle=angle, dx=6, dy=dy)
 
 
 def totem(I):
@@ -761,3 +761,70 @@ def totem(I):
     I.body.append('<path d="M52 88 L76 88 L70 104 L58 104Z" fill="#c83a2a" stroke="#0b0d13" stroke-width="2"/>')
     for k in (-1, 1):
         I.body.append(f'<path d="M{64+k*24} 24 L{64+k*40} 10 L{64+k*30} 34Z" fill="#c83a2a" stroke="#0b0d13" stroke-width="2"/>')
+
+
+# ───────────── itens das Árvores do Modo Infinito ─────────────
+def whistle(I):
+    """Apito do Lobo: apito de osso num cordão de couro, com duas presas penduradas"""
+    for d in ("M26 12 Q30 50 50 66", "M102 12 Q98 48 82 62"):
+        I.body.append(f'<path d="{d}" fill="none" stroke="{OUT}" stroke-width="6"/><path d="{d}" fill="none" stroke="{MAT["leather"][1]}" stroke-width="3"/>')
+    I.body.append(f'<g transform="rotate(-16 66 80)"><rect x="28" y="68" width="78" height="24" rx="11" fill="{I.metal("bone", True)}" stroke="{OUT}" stroke-width="3.2"/>'
+                  f'<rect x="28" y="68" width="16" height="24" rx="8" fill="{MAT["bone"][2]}" stroke="{OUT}" stroke-width="2.6"/>'
+                  f'<path d="M98 72 L112 76 L112 84 L98 88Z" fill="{I.metal("bone", True)}" stroke="{OUT}" stroke-width="2.6" stroke-linejoin="round"/>'
+                  + "".join(f'<circle cx="{x}" cy="80" r="3.6" fill="{OUT}"/>' for x in (58, 72, 86)) +
+                  f'<path d="M48 72 Q70 69 94 72" stroke="#fff" stroke-opacity=".65" stroke-width="2.2" fill="none"/>'
+                  f'<rect x="62" y="66" width="7" height="28" fill="{MAT["leather"][1]}" stroke="{OUT}" stroke-width="2"/></g>')
+    for (x, y, a) in ((54, 100, -12), (72, 104, 10)):
+        I.body.append(f'<path d="M{x-5} {y} Q{x} {y+22} {x+6} {y}Z" transform="rotate({a} {x} {y})" fill="{I.metal("bone", True)}" stroke="{OUT}" stroke-width="2.4" stroke-linejoin="round"/>')
+
+
+def maraca(I):
+    """Maracá Sagrado: cabaça pintada com urucum e jenipapo, cabo de madeira e penas no topo"""
+    before = len(I.body)
+    _maraca(I)
+    parts = I.body[before:]
+    del I.body[before:]
+    I.body.append('<g transform="translate(6 14) scale(.9)">' + "".join(parts) + "</g>")
+
+
+def _maraca(I):
+    I.body.append(f'<rect x="58" y="72" width="12" height="46" rx="5" fill="{I.metal("darkwood")}" stroke="{OUT}" stroke-width="3"/>')
+    for y in (80, 100):
+        I.body.append(f'<rect x="56" y="{y}" width="16" height="5" rx="2" fill="{MAT["cloth_red"][1]}" stroke="{OUT}" stroke-width="1.8"/>')
+    I.body.append(f'<ellipse cx="64" cy="50" rx="30" ry="32" fill="{I.rad(["#f3d28a", "#c08a3a", "#5e3a12"], .38, .32, .78)}" stroke="{OUT}" stroke-width="3.4"/>')
+    I.body.append(f'<path d="M38 50 Q64 62 90 50" stroke="{MAT["cloth_red"][1]}" stroke-width="4" fill="none"/>')
+    I.body.append(f'<path d="M40 40 Q64 50 88 40" stroke="#1a1410" stroke-width="2.4" fill="none" stroke-dasharray="5 3"/>')
+    for x in (50, 64, 78):
+        I.body.append(f'<path d="M{x-5} 62 L{x} 70 L{x+5} 62" stroke="#1a1410" stroke-width="2.2" fill="none"/>')
+    I.body.append('<ellipse cx="54" cy="36" rx="7" ry="10" fill="#fff" opacity=".35"/>')
+    for (dx, col) in ((-10, "#e8382a"), (0, "#ffd23a"), (10, "#3a9aff")):
+        I.body.append(f'<path d="M64 20 Q{64+dx*1.6} 0 {64+dx*2.4} -2 Q{64+dx*1.2} 10 64 20Z" fill="{col}" stroke="{OUT}" stroke-width="2"/>')
+
+
+def blowgun(I):
+    """Zarabatana: tubo comprido de taboca com amarrações e um dardo de curare"""
+    def f(I):
+        I.body.append(f'<rect x="-5" y="-74" width="10" height="150" rx="5" fill="{I.metal("wood")}" stroke="{OUT}" stroke-width="3"/>')
+        for y in (-58, -20, 22, 58):
+            I.body.append(f'<rect x="-7" y="{y}" width="14" height="6" rx="2" fill="{MAT["greenleather"][1]}" stroke="{OUT}" stroke-width="2"/>')
+        I.body.append(f'<rect x="-7" y="-78" width="14" height="8" rx="3" fill="{I.metal("bone", True)}" stroke="{OUT}" stroke-width="2.4"/>')
+        I.body.append('<path d="M-2 -70 L-2 70" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>')
+        I.body.append(f'<path d="M18 -40 L18 10" stroke="{OUT}" stroke-width="5"/><path d="M18 -40 L18 10" stroke="#e8e0c8" stroke-width="2.4"/>'
+                      f'<path d="M18 -48 L22 -38 L14 -38Z" fill="{GEM["emerald"][1]}" stroke="{OUT}" stroke-width="1.8"/><path d="M12 6 L18 16 L24 6Z" fill="#e8382a" stroke="{OUT}" stroke-width="1.6"/>')
+    weapon_group(I, f, .95, angle=40)
+
+
+def sickle(I):
+    """Foice de Ouro: a lâmina curva dos druidas, que corta o visco"""
+    def f(I):
+        I.body.append(f'<rect x="-5" y="-4" width="10" height="70" rx="5" fill="{I.metal("darkwood")}" stroke="{OUT}" stroke-width="3"/>')
+        for y in (10, 30, 50):
+            I.body.append(f'<rect x="-6" y="{y}" width="12" height="4" rx="2" fill="{MAT["leather"][1]}" stroke="{OUT}" stroke-width="1.6"/>')
+        d = "M2 -2 C40 -12 52 -56 22 -80 C34 -54 24 -26 -4 -14Z"
+        I.body.append(f'<path d="{d}" fill="{I.metal("gold")}" stroke="{OUT}" stroke-width="3" stroke-linejoin="round"/>')
+        I.body.append('<path d="M24 -76 C44 -52 34 -20 6 -8" stroke="#fff" stroke-opacity=".75" stroke-width="2.2" fill="none"/>')
+        I.body.append(f'<circle cx="0" cy="-6" r="5" fill="{I.rad(list(GEM["emerald"]), .4, .35, .7)}" stroke="{OUT}" stroke-width="2"/>')
+        for (x, y) in ((-16, -40), (-24, -30), (-12, -28)):
+            I.body.append(f'<circle cx="{x}" cy="{y}" r="4" fill="#f4f8ea" stroke="{OUT}" stroke-width="1.6"/>')
+        I.body.append(f'<path d="M-16 -40 L-4 -14 M-24 -30 L-4 -14 M-12 -28 L-4 -14" stroke="{MAT["jade"][1]}" stroke-width="2"/>')
+    weapon_group(I, f, 1.0, angle=20)
