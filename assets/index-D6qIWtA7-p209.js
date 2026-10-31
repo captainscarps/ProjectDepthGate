@@ -11144,7 +11144,7 @@ setTimeout(()=>{try{const F1=__openForge;__openForge=function(inv){try{const S=i
    linha 0 de frente (descendo), 1 de costas (subindo), 2 diagonal de frente (↘), 3 diagonal de costas (↗);
    coluna 0 parado, colunas 1… caminhada (n[linha] quadros: 6 na 1ª versão, 8 no prompt v2). As diagonais para a esquerda usam o espelho.
    Ataque, esquiva, magia, dano, guarda e morte continuam com o desenho de perfil. */
-const __HDIRS={warrior:{t:[0],n:[6,6,8,6]}};
+const __HDIRS={warrior:{t:[0],n:[7,8,7,8]}};
 {const P0=bo.prototype.preload;bo.prototype.preload=function(){const r=P0.apply(this,arguments);try{const L=this.load,op=L.path;L.setPath("");
  for(const[c,o]of Object.entries(__HDIRS))for(const t of o.t){const k=`mk4b-${c}-t${t}-dirs`;this.textures.exists(k)||L.spritesheet(k,`assets/pixel-art/characters/${c}-pack-t${t}-dirs.png`,{frameWidth:128,frameHeight:128})}L.setPath(op)}catch(e){}return r}}
 {const U0=Qe.prototype.update;Qe.prototype.update=function(i,t){const r=U0.apply(this,arguments);try{const m=this.mk2;if(!m||this.deadPose||window.__noHeroDirs)return r;
