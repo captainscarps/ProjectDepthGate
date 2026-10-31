@@ -26,6 +26,9 @@ W, H = COLS * T, ROWS * T
 CH = 512
 rnd = random.Random(23)
 nrs = np.random.RandomState(23)
+# MP: visual do pacote Magmatic Planet (scripts/volcano_mp.py); o mapa e os dados da lava não mudam,
+# e os adereços soltos (vc-*.png) do jogo não são regravados.
+MP = os.environ.get("VC_OLD") != "1"
 BAY = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]) / 16. - .5
 
 ROCK = [(14, 13, 16), (22, 20, 24), (31, 28, 31), (41, 37, 39), (53, 47, 47), (67, 59, 57), (83, 73, 68), (102, 90, 82), (124, 110, 98)]
@@ -437,26 +440,32 @@ PROPS["vc-sulfur"] = sulfur(41)
 PROPS["vc-stump"] = stump(42)
 PROPS["vc-lavapool"] = lava_pool(43)
 PROPS["vc-lavapool2"] = lava_pool(44, 34, 18)
-os.makedirs(OUT, exist_ok=True)
-for k, im in PROPS.items():
-    im.save(os.path.join(OUT, k + ".png"))
-barrier(True).save(os.path.join(OUT, "vc-thorn-h.png"))
-barrier(False).save(os.path.join(OUT, "vc-thorn-v.png"))
-fx_streak((255, 226, 150), 48, 6).save(os.path.join(OUT, "vc-fx-streak.png"))
-fx_streak((255, 130, 40), 26, 3).save(os.path.join(OUT, "vc-fx-streak2.png"))
-fx_bubble().save(os.path.join(OUT, "vc-fx-bubble.png"))
-for k in range(3):                      # placas de crosta que derivam com a correnteza
-    w0, h0 = [9, 7, 12][k], [5, 4, 6][k]
-    yy0, xx0 = np.mgrid[0:h0, 0:w0]
-    rr0 = 1 + (vnoise(h0, w0, 2, 500 + k) - .5) * .6
-    m0 = ((xx0 - w0 / 2 + .5) / (w0 / 2)) ** 2 + ((yy0 - h0 / 2 + .5) / (h0 / 2)) ** 2 < rr0
-    a0 = np.zeros((h0, w0, 4), np.uint8)
-    a0[..., :3] = FACE[1]
-    a0[m0 & (yy0 < h0 / 2), :3] = FACE[3]
-    a0[..., 3] = m0 * 255
-    e0 = m0 & ~ndimage.binary_erosion(m0)
-    a0[e0, :3] = (200, 70, 18)
-    Image.fromarray(a0).save(os.path.join(OUT, f"vc-fx-crust{k + 1}.png"))
+if not MP:
+    os.makedirs(OUT, exist_ok=True)
+    for k, im in PROPS.items():
+        im.save(os.path.join(OUT, k + ".png"))
+    barrier(True).save(os.path.join(OUT, "vc-thorn-h.png"))
+    barrier(False).save(os.path.join(OUT, "vc-thorn-v.png"))
+    fx_streak((255, 226, 150), 48, 6).save(os.path.join(OUT, "vc-fx-streak.png"))
+    fx_streak((255, 130, 40), 26, 3).save(os.path.join(OUT, "vc-fx-streak2.png"))
+    fx_bubble().save(os.path.join(OUT, "vc-fx-bubble.png"))
+    for k in range(3):                      # placas de crosta que derivam com a correnteza
+        w0, h0 = [9, 7, 12][k], [5, 4, 6][k]
+        yy0, xx0 = np.mgrid[0:h0, 0:w0]
+        rr0 = 1 + (vnoise(h0, w0, 2, 500 + k) - .5) * .6
+        m0 = ((xx0 - w0 / 2 + .5) / (w0 / 2)) ** 2 + ((yy0 - h0 / 2 + .5) / (h0 / 2)) ** 2 < rr0
+        a0 = np.zeros((h0, w0, 4), np.uint8)
+        a0[..., :3] = FACE[1]
+        a0[m0 & (yy0 < h0 / 2), :3] = FACE[3]
+        a0[..., 3] = m0 * 255
+        e0 = m0 & ~ndimage.binary_erosion(m0)
+        a0[e0, :3] = (200, 70, 18)
+        Image.fromarray(a0).save(os.path.join(OUT, f"vc-fx-crust{k + 1}.png"))
+else:
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import volcano_mp
+    PROPS.update(volcano_mp.props())
 
 # ═════════════════════════════ layout ═════════════════════════════
 R = lambda x, y, w, h: {"x": x, "y": y, "w": w, "h": h}
@@ -987,6 +996,9 @@ rimS = ndimage.binary_dilation(STR, iterations=3) & FLOOR & ~STR
 img[rimS] = img[rimS] * .45 + np.array(FACE[0]) * .55
 rimS1 = ndimage.binary_dilation(STR, iterations=1) & FLOOR & ~STR
 img[rimS1] = (140, 40, 14)
+if MP:
+    img = volcano_mp.repaint(img, dict(FLOOR=FLOOR, TOP=TOP, FM=FM, FC=FC, LV=LV, STR=STR, BRp=BRp, PM=PM, foot=foot))
+    hotc = np.zeros_like(hotc)
 emis = LV | hotc | STR
 canvas = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGB").convert("RGBA")
 
@@ -1047,6 +1059,8 @@ for _ in range(7000):
         place(k, x, y, False)
 # miudezas no chão
 small = [boulder(200 + i, 8 + i % 3 * 2, 6 + i % 2 * 2) for i in range(6)]
+if MP:
+    small = volcano_mp.small_rocks()
 for _ in range(170):
     im = rnd.choice(small)
     x, y = rnd.randrange(W - 40), rnd.randrange(H - 40)
@@ -1068,10 +1082,11 @@ for _ in range(60):
     if not STR[y, x] and FLOOR[y, x] and walk[y // T, x // T] and distLV[y, x] > 40 and free((x - 11, y - 6, x + 11, y + 6), 2):
         occ.append((x - 11, y - 6, x + 11, y + 6))
         VENTS.append([int(x), int(y)])
-        canvas.alpha_composite(PROPS["vc-vent"], (x - 11, y - 6))
+        vp = PROPS["vc-vent"]
+        canvas.alpha_composite(vp, (x - vp.width // 2, y - vp.height // 2))
         canvas.alpha_composite(steam, (x - 17, y - 52))
         sp = PROPS["vc-sulfur"]
-        canvas.alpha_composite(sp, (x - 18, y + 2))
+        canvas.alpha_composite(sp, (x - 18, y + 2) if not MP else (x - vp.width // 2 - sp.width // 2, y + 2))
 
 # ═════════════════════════════ luz ═════════════════════════════
 print("iluminando…")
@@ -1156,7 +1171,7 @@ for x, y, k in front:
     prev.alpha_composite(im, (x - im.width // 2, y - im.height))
 prev.resize((W // 2, H // 2), Image.LANCZOS).convert("RGB").save(os.path.join(ROOT, "scripts", "volcano_preview.png"))
 prev.convert("RGB").save(os.path.join(ROOT, "scripts", "volcano_full.png"))
-json.dump({"world": {"cols": COLS, "rows": ROWS}, "rooms": rooms_out, "corridors": corridors, "doors": doors, "spawn": SPAWN,
+MP or json.dump({"world": {"cols": COLS, "rows": ROWS}, "rooms": rooms_out, "corridors": corridors, "doors": doors, "spawn": SPAWN,
            "props": sorted(PROPS) + ["vc-thorn-h", "vc-thorn-v", "vc-fx-streak", "vc-fx-streak2", "vc-fx-crust1", "vc-fx-crust2", "vc-fx-crust3"]},
           open(os.path.join(ROOT, "scripts", "volcano_level.json"), "w"), ensure_ascii=False, indent=1)
 print("ok", len(front), "props na borda", len(corridors), "corredores")
