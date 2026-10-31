@@ -9,7 +9,7 @@ import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BUNDLE = os.path.join(ROOT, "assets", "index-D6qIWtA7-p209.js")
 MIRROR = os.path.join(ROOT, "Projeto atualizado", "assets", "index-D6qIWtA7-p209.js")
-PARTS = ["et-data.js", "et-engine.js", "et-abilities.js", "et-hooks.js", "et-items.js", "et-ui.js"]
+PARTS = ["et-data.js", "et-engine.js", "et-abilities.js", "et-hooks.js", "et-items.js", "skill-picks.js"]
 SRC = "\n".join(open(os.path.join(ROOT, "scripts", "source", p), encoding="utf-8").read() for p in PARTS)
 s = open(BUNDLE, encoding="utf-8").read()
 T = "/*__ENDLESSTREES__*/"

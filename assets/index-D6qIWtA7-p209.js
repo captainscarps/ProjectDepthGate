@@ -10068,7 +10068,85 @@ try{__GHUB0.splice(3,0,...__GHUBHELP)}catch(e){}
   if(Math.hypot(S.player.x-g.x,S.player.y-g.y)<110){S.events.off("update",U);__stFlag(S,"gHubHelp",!0);__gSay(S,__GHUBHELP)}};
  S.events.on("update",U);S.events.once("shutdown",()=>S.events.off("update",U))}}catch(e){}return r}}
 
-/*__GMEM__*//*__ENDLESSTREES__*/
+/*__GMEM__*//*__HEROART__*/
+/* ══ Arte dos heróis na escolha de personagem ═══════════════════════════════════════════════════════════════
+   Ilustração sem fundo (assets/images/heroes/hero-art-<classe>.png) no lugar do sprite no centro da tela.
+   Entra deslizando e com um respiro leve; herói bloqueado aparece como silhueta escura. */
+const __HART=["warrior","berserker","archer","rogue","mage","shaman","hunter","druid","necromancer"];
+{const P0=bo.prototype.preload;bo.prototype.preload=function(){const r=P0.apply(this,arguments);try{const L=this.load,op=L.path;L.setPath("");
+ for(const c of __HART){const k=`hero-art-${c}`;this.textures.exists(k)||L.image(k,`assets/images/heroes/${k}.png`)}L.setPath(op)}catch(e){}return r}}
+{const R0=bl.prototype.refreshDetails;bl.prototype.refreshDetails=function(){const r=R0.apply(this,arguments);try{const cls=fe[this.selected],k=`hero-art-${String(cls).toLowerCase()}`,lk=!this.__ok(cls);
+ if(!this.textures.exists(k)){this.__art?.setVisible(!1);return r}
+ this.hero?.setVisible(!1);this.__heroT?.forEach?.(q=>q.remove?.());
+ const H=226,h=this.hero,X=h?h.x:318,Y=(h?h.y:288)+6;let a=this.__art;if(!a||!a.active){a=this.__art=this.add.image(X,Y,k).setOrigin(.5,1).setDepth(3);a.__dy=0;
+  /* segue o sprite original, que o layout (ex.: celular) reposiciona */
+  this.events.on("update",()=>{const hh=this.hero;if(a.active&&hh){a.x=hh.x;a.y=hh.y+6+a.__dy}})}
+ const changed=this.__artK!==k||this.__artL!==lk;this.__artK=k;this.__artL=lk;
+ a.setTexture(k).setVisible(!0);const s=H/a.height;a.__s=s;lk?a.setTint(1379848).setAlpha(.92):a.clearTint();
+ if(changed){this.tweens.killTweensOf(a);a.setScale(s*.96).setAlpha(0);a.__dy=10;
+  this.tweens.add({targets:a,alpha:lk?.92:1,__dy:0,scale:s,duration:320,ease:"Cubic.easeOut",onComplete:()=>{lk||this.tweens.add({targets:a,scaleY:s*1.012,__dy:-1,duration:1600,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"})}})}}catch(e){}return r}}
+
+/*__HEROART__*//*__PCARDS__*/
+try{window.__L3G=(a,b,c)=>__L3(a,b,c)}catch(e){}
+/*__PCARDS__*//*__CASTLE2__*/
+try{window.__goLevelG=__goLevel}catch(e){}
+/*__CASTLE2__*//*__BKFIX__*/
+/* Bestiário: correções (scripts/patch_bestiary_fix.py) */
+try{window.__bestiaryOpenG=__bestiaryOpen}catch(e){}
+{
+  const P = __BookScene.prototype;
+  // registros sem nome travavam a virada de página (run(...).toUpperCase de undefined)
+  const R0 = P.render;
+  P.render = function () {
+    for (const e of this.E || []) if (e?.d && !e.d.name) {
+      const pretty = String(e.k || "?").toLowerCase().split("_").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
+      let n = null; try { n = St(`enemy.${e.k}`, null) } catch (_) {}
+      e.d = { ...e.d, name: n || pretty };
+    }
+    return R0.apply(this, arguments);
+  };
+  // texto mais arejado: mais espaço entre linhas e letra um pouco maior nos parágrafos
+  const T0 = P.T;
+  P.T = function (c, x, y, s, size = 9, color, o = {}) {
+    const multi = !!o.ww || /\n/.test(String(s ?? ""));
+    const q = { ...o, ls: (o.ls ?? 2) + (multi ? 3 : 1) };
+    if (multi && size < 9.5) size += .5;
+    return T0.call(this, c, x, y, s ?? "", size, color, q);
+  };
+}
+{
+  // índice: com muitos nomes, duas colunas por página e linhas legíveis (antes as linhas se sobrepunham)
+  const P = __BookScene.prototype, I0 = P.pageIndex;
+  P.pageIndex = function (c, X, PW, a, b, head) {
+    const n = b - a;
+    if (n <= 16) return I0.apply(this, arguments);
+    let y = 44;
+    if (head) { this.T(c, X + PW / 2, y, head, 11, __BK_RED, { ox: .5, st: "bold" }); this.orn(c, X + PW / 2, y + 20, 50); }
+    y += 32;
+    const rows = Math.ceil(n / 2), step = Math.min(17, (306 - y) / rows), CW = (PW - 6) / 2;
+    for (let i = a; i < b; i++) {
+      const j = i - a, col = Math.floor(j / rows), yy = Math.round(y + (j % rows) * step);
+      const e = this.E[i], num = e.boss ? i - this.nC + 1 : i + 1;
+      let name = `${String(num).padStart(2, "0")} ${e.d.name}`;
+      const sel = (this.spread === 1 || this.spread === 2) && i === this.sel;
+      const x0 = X + col * (CW + 6);
+      const t = this.T(c, x0 + 4, yy, name, 8, __BK_INK, { st: sel ? "bold" : "normal" });
+      while (t.width > CW - 22 && name.length > 6) { name = name.slice(0, -2); t.setText(name + "…") }
+      const p = this.T(c, x0 + CW - 2, yy, String(2 * (this.FRONT + i) + 1), 8, __BK_FAINT, { ox: 1 });
+      sel && (() => { const g = this.add.graphics(); g.fillStyle(7999252, .14).fillRect(x0, yy - 2, CW, 12); c.add(g); c.sendToBack(g) })();
+      const z = this.add.zone(x0 + CW / 2, yy + 5, CW, Math.max(11, step)).setInteractive({ useHandCursor: !0 });
+      z.on("pointerdown", () => this.go(this.FRONT + i)); z.on("pointerover", () => t.setColor(__BK_RED)); z.on("pointerout", () => t.setColor(__BK_INK));
+      c.add(z);
+    }
+  };
+}
+{
+  // tabelas auxiliares que não são criaturas (ex.: "anims") não entram no livro
+  const B0 = __bkEntries;
+  __bkEntries = function () { return B0().filter(e => e.boss || (e.d && typeof e.d === "object" && e.d.maxHp && e.d.texture)) };
+}
+
+/*__BKFIX__*//*__ENDLESSTREES__*/
 /* ══ Árvores de Habilidades do Modo Infinito · dados ══════════════════════════════════════════════════════
    Cada herói escolhe no nível 3 entre a árvore defensiva (d) e a ofensiva (a); a outra fica trancada até o fim da run.
    Nó: id, t (p passiva · a ativa · u aprimora · s sinergia · top topo, escolha 1 · nm pesadelo), m (graus), w (família de
@@ -10343,17 +10421,17 @@ DRUID:{
 const __ETIDX={};for(const[c,T]of Object.entries(__ET))for(const k of["d","a"])for(const n of T[k].nodes)__ETIDX[n.id]={n,c,k};
 const __ETTYPE={p:["Passiva","Passive","Pasiva"],a:["Ativa","Active","Activa"],u:["Aprimora","Upgrade","Mejora"],s:["Sinergia","Synergy","Sinergia"],top:["Topo · escolha 1","Peak · pick 1","Cima · elige 1"],nm:["Pesadelo","Nightmare","Pesadilla"]};
 
-/* ══ Árvores do Modo Infinito · motor ═══════════════════════════════════════════════════════════════════════
+/* ══ Habilidades extras e passivas (antigo motor das árvores) · motor ═══════════════════════════════════════════════════════════════════════
    Estado em S.skillState.et = {tree:null|"d"|"a", r:{nó:grau}} (vai junto no save e no carry entre andares).
    R(S,id) devolve o grau ativo do nó (0 se não comprado, se for de outra árvore ou se falta a arma exigida). */
 const __etL=a=>Array.isArray(a)?__L3(a[0],a[1]??a[0],a[2]??a[1]??a[0]):a;
 const __etGS=()=>{try{return typeof __etCurS!=="undefined"&&__etCurS?.sys?.isActive?.()?__etCurS:null}catch(e){return null}};
-function __etOn(S){try{return!!S&&!!S.skillState&&!!S.classDef&&!!__ET[S.classDef.id]&&!!S.endlessRun?.()}catch(e){return!1}}
-function __etSt(S){const k=S?.skillState;if(!k)return null;if(!k.et||typeof k.et!=="object")k.et={tree:null,r:{}};k.et.r=k.et.r||{};return k.et}
-function __etTree(S){const st=__etSt(S);return st?.tree?__ET[S.classDef.id]?.[st.tree]??null:null}
-function __etRaw(S,id){const st=__etSt(S),x=__ETIDX[id];if(!st||!x||!st.tree||x.c!==S.classDef.id||x.k!==st.tree)return 0;return st.r[id]|0}
+function __etOn(S){try{return!!S&&!!S.skillState&&!!S.classDef&&!!__ET[S.classDef.id]}catch(e){return!1}}
+function __etSt(S){const k=S?.skillState;if(!k)return null;if(!k.et||typeof k.et!=="object")k.et={tree:"mix",r:{}};k.et.r=k.et.r||{};k.et.tree="mix";return k.et}
+function __etTree(S){const T=__ET[S?.classDef?.id];return T?{n:T.d.n,nodes:[...T.d.nodes,...T.a.nodes]}:null}
+function __etRaw(S,id){const st=__etSt(S),x=__ETIDX[id];if(!st||!x||x.c!==S.classDef.id)return 0;return st.r[id]|0}
 function __etWeapon(S){return S?.inventory?.equipment?.weapon??null}
-function __etHas(S,fam){const F=__ETFAM[fam];if(!F)return!0;const eq=S?.inventory?.equipment;if(!eq)return!1;
+function __etHas(S,fam){return!0;const F=__ETFAM[fam];if(!F)return!0;const eq=S?.inventory?.equipment;if(!eq)return!1;
  if(F.slot)return!!eq[F.slot];if(F.form)return S.__form?.type===F.form&&!S.__etBearOn;if(F.acc)return F.acc.includes(eq.accessory1?.id)||F.acc.includes(eq.accessory2?.id);
  const w=eq.weapon;if(!w)return!1;if(F.ids)return F.ids.includes(w.id);const del=(oe[w.visualKey??w.id]??oe[w.id])?.delivery;
  if(F.melee)return del==="melee";if(F.ranged)return w.id==="blowgun"||del==="arrow";return!0}
@@ -10664,14 +10742,8 @@ function __etInit(S,data){const src=data?.carry?.skills??data?.restore?.player?.
  const up=(t,dm)=>{try{__etTick(S,Math.min(.1,dm/1e3))}catch(x){S.__etErr||(S.__etErr=1,console.warn("[et] tick",x))}},pu=()=>{try{__etPost(S)}catch(x){}};
  S.events.on("update",up);S.events.on("postupdate",pu);
  S.events.once("shutdown",()=>{G.off("enemy:died",onDie);G.off("room:cleared",onRoom);G.off("rpg:levelup",onLv);S.events.off("update",up);S.events.off("postupdate",pu);__etCurS===S&&(__etCurS=null)});
- __etMaybeChoose(S,2600)}
-function __etOnLevel(S,lv){const st=__etSt(S);if(lv>=3&&!st.tree){__etMaybeChoose(S,900);return}
- if(st.tree&&lv>=3&&lv<=15)S.time.delayedCall(1300,()=>S.game.events.emit("ui:banner",__L3("+1 ponto na Árvore do Infinito","+1 Endless Tree point","+1 punto en el Árbol del Infinito"),"#ffc14d"));
- S.scene.get("UI")?.refreshSkillsAlert?.()}
-/* abre a escolha das árvores quando o herói chega ao nível 3 (tenta de novo se outra janela estiver aberta) */
-function __etMaybeChoose(S,delay){if(S.__etChooseT)return;S.__etChooseT=1;const tryOpen=()=>{S.__etChooseT=0;if(!S.sys?.isActive?.()||!__etOn(S))return;const st=__etSt(S);if(st.tree||(S.stats.level??1)<3)return;
- const U=S.scene.get("UI"),busy=S.state!=="playing"||S.uiOpen||S.player?.dead||!U||U.result?.isVisible?.()||U.pauseMenu?.open||U.shopUI?.open||U.storyPanel?.visible||U.blessingPanel?.visible||U.eventPanel?.visible||U.__etp?.open;
- if(busy){S.__etChooseT=1;setTimeout(tryOpen,1500);return}__etUI(U).show("choose")};setTimeout(tryOpen,delay)}
+ }
+function __etOnLevel(S,lv){}
 /* ── atributos (passivas de crítico, velocidade, vida, mana) ─────────────────────────────────────────────── */
 {const RC0=Eh.prototype.recompute;Eh.prototype.recompute=function(){const r=RC0.apply(this,arguments),S=this.scene;try{if(!__etOn(S)||!__etSt(S).tree)return r;const i=this.total;
  i.critChance=(i.critChance??0)+4*R(S,"wa_fio")+5*R(S,"ba_afi")+4*R(S,"ma_prec")+5*R(S,"ra_gc")+5*R(S,"ha_olho")+5*R(S,"sa_fio")+5*R(S,"da_garr");
@@ -10918,7 +10990,6 @@ function __etTick(S,dt){if(!__etOn(S))return;const st=__etSt(S),P=S.player;if(!s
  if(S.__etCoord&&now>=S.__etCoord.until)S.__etCoord=null;if(S.__etDM&&(now>=S.__etDM.until||!__etAlive(S.__etDM.t)))S.__etDM=null;
  if(S.__etBA>0&&now>=(S.__etBAU??0))S.__etBA=0;if(S.__etSh?.length){for(const s of S.__etSh)s.until<=now&&s.amt>0&&s.renew>0&&(s.amt=0,__etShieldBreak(S,s));S.__etSh=S.__etSh.filter(s=>s.until>now&&s.amt>0||s.__pend)}
  const sp=S.__etSpec;if(sp&&now>=sp.until){S.__etSpec=null;P.setAlpha?.(1);try{S.playerVisual?.clearTintAll?.()}catch(e){}if(sp.k>=3){P.hp=Math.max(P.hp,Math.round(P.maxHp*.3));S.game.events.emit("hud:hp",P.hp,P.maxHp);__etFlash(S,P.x,P.y,5963696,60);S.effects.floatText(P.x,P.y-34,__L3("DE VOLTA","BACK FROM THE GRAVE","DE VUELTA"),"#5affb0",12)}else{P.hp=0;sp.D0.call(P);return}}
- const nm=S.stats.nm|0;if(nm>(S.__etNmSeen|0)){S.__etNmSeen=nm;S.time.delayedCall(1800,()=>S.game.events.emit("ui:banner",__L3("+1 ponto de Pesadelo na Árvore do Infinito","+1 Nightmare point on the Endless Tree","+1 punto de Pesadilla en el Árbol del Infinito"),"#ff7a5a"));S.scene.get("UI")?.refreshSkillsAlert?.()}
  __etDraw(S)}
 function __etPost(S){const P=S.player,now=S.time.now;if(!P?.body||!__etOn(S))return;if(now<(S.__etLockU??0)||now<(S.__etIceU??0))P.setVelocity(0,0)}
 function __etReflect(S,p,col){p.hostile=!1;p.dir={x:-p.dir.x,y:-p.dir.y};p.damage=S.stats.rollAbilityDamage(1.4,S.classDef.basicProjectile?.damageType??"physical").amount;p.traveled=0;p.maxDist=Math.max(p.maxDist||0,260);p.noFalloff=!0;
@@ -10941,7 +11012,7 @@ function __etDraw(S){const P=S.player,now=S.time.now;let g=S.__etOv;if(!g||!g.ac
  const co=S.__etCoord;if(co&&__etAlive(co.t)){const t=co.t,r=12+Math.sin(T*8)*2;g.lineStyle(2,16765514,.9).strokeCircle(t.x,t.y-8,r).lineBetween(t.x-r-5,t.y-8,t.x-r+4,t.y-8).lineBetween(t.x+r-4,t.y-8,t.x+r+5,t.y-8).lineBetween(t.x,t.y-8-r-5,t.x,t.y-8-r+4).lineBetween(t.x,t.y-8+r-4,t.x,t.y-8+r+5)}
  if(now<(S.__etHowlU??0)){const w=__etWolf(S);w&&g.lineStyle(2,12640767,.6).strokeCircle(w.x,w.y-6,14+Math.sin(T*6)*2)}}
 /* acesso para testes automatizados */
-window.__dgET={R,buy:__etBuy,choose:__etChoose,st:__etSt,ui:__etUI,ET:__ET,free:__etFree,why:__etWhyNot,equip:__etEquip};
+window.__dgET={R,buy:__etBuy,choose:__etChoose,st:__etSt,ET:__ET,free:__etFree,why:__etWhyNot,equip:__etEquip};
 
 /* ══ Árvores do Modo Infinito · itens novos ═════════════════════════════════════════════════════════════════
    Apito do Lobo (Kael), Maracá Sagrado e Zarabatana (Araí), Foice de Ouro (Tharion), dois cajados de osso e uma
@@ -10970,250 +11041,224 @@ function __etItemFams(it){const f=[];for(const[k,F]of Object.entries(__ETFAM)){i
   let n=0;for(const k of sides)for(const q of T[k].nodes)fams.includes(q.w)&&n++;if(n>0){d0=it.desc;mod=!0;it.desc=(d0?d0+"\n":"")+"★ "+(st.tree?__L3(`Ativa ${n} habilidades da sua árvore`,`Powers ${n} skills of your tree`,`Activa ${n} habilidades de tu árbol`):__L3(`Ativa ${n} habilidades das Árvores do Infinito`,`Powers ${n} Endless Tree skills`,`Activa ${n} habilidades de los Árboles del Infinito`))}}}}catch(e){}
  try{return T0.apply(this,arguments)}finally{if(it&&mod)it.desc=d0}}}
 
-/* ══ Árvores do Modo Infinito · tela ════════════════════════════════════════════════════════════════════════
-   Escolha no nível 3 (duas cartas com prévia animada) e a árvore em si: nós com formato por tipo, ligações que
-   acendem, pulso nos nós disponíveis, explosão ao aprender, espaços de habilidade. Teclado, gamepad, toque e mouse. */
-function __etUI(U){return U.__etp??(U.__etp=new __ETPanel(U))}
-const __ETC={bg:0x12151c,card:0x1b1f28,card2:0x232833,line:0xffffff,amber:0xffc14d,amber2:0xffd27a,red:0xe08a7a,nm:0xff5a4a,green:0x8ae0b0};
-class __ETPanel{
- constructor(U){this.ui=U;this.open=!1;this.built=!1;this.mode="tree";this.side="d";this.sel=0;this.cs=0;this.slotMode=!1;this.slotSel=0;this.confirm=!1;this.nodeUi=[];this.t=0;this.anim=[]}
- gs(){return this.ui.scene.get("Game")}
- tx(x,y,s,o={}){const t=this.ui.add.text(x,y,s,{fontFamily:typeof __UC_F!=="undefined"?__UC_F:"sans-serif",fontSize:(o.sz??10)+"px",fontStyle:o.b===!1?"normal":"bold",color:o.c??"#ffffff",lineSpacing:o.ls??2,align:o.al??"left",...(o.w?{wordWrap:{width:o.w}}:{})});t.setOrigin(o.ox??0,o.oy??0);return t}
- btn(x,y,s,cb,o={}){const t=this.tx(x,y,s,{sz:o.sz??10,ox:o.ox??.5,oy:.5,c:o.p?"#16130c":"#ffffff"});t.setPadding(o.px??12,6,o.px??12,6).setBackgroundColor(o.p?"#ffc14d":"rgba(255,255,255,0.10)").setInteractive({useHandCursor:!0});
-  const bg=o.p?"#ffc14d":"rgba(255,255,255,0.10)",hv=o.p?"#ffd27a":"rgba(255,255,255,0.22)";t.on("pointerover",()=>t.setBackgroundColor(hv));t.on("pointerout",()=>t.setBackgroundColor(t.__bg??bg));t.on("pointerdown",()=>{this.ui.game.inputManager?.markTouchConsumed?.();cb()});try{Gt(t,8,6)}catch(e){}return t}
- build(){this.built=!0;const U=this.ui,ox=Math.round((_-640)/2);this.root=U.add.container(ox,0).setDepth(772).setVisible(!1);
-  const dim=U.add.rectangle(_/2-ox,st/2,_*1.4,st*1.4,328450,.84).setInteractive();this.root.add(dim);
-  this.cardG=U.add.graphics();this.root.add(this.cardG);
-  this.title=this.tx(30,18,"",{sz:14});this.sub=this.tx(30,36,"",{sz:9,c:"#ffc14d"});this.root.add([this.title,this.sub]);
-  this.tabG=U.add.graphics();this.root.add(this.tabG);this.tabs=["d","a"].map((k,n)=>{const t=this.tx(0,0,"",{sz:10,ox:.5,oy:.5});t.setInteractive({useHandCursor:!0});t.on("pointerdown",()=>{this.mode==="tree"&&(this.side=k,this.sel=0,this.slotMode=!1,this.buildTree(),this.refresh())});this.root.add(t);return t});
-  this.clsBtn=this.btn(538,25,"",()=>this.toClass(),{sz:9,px:10});this.root.add(this.clsBtn);
-  const cl=this.btn(606,25,"✕",()=>this.close(),{sz:13,px:9});this.root.add(cl);
-  this.linesG=U.add.graphics();this.nodesG=U.add.graphics();this.fxG=U.add.graphics();this.iconL=U.add.container(0,0);this.labL=U.add.container(0,0);this.root.add([this.linesG,this.nodesG,this.iconL,this.fxG,this.labL]);
-  this.lockC=U.add.container(0,0).setVisible(!1);const lg=U.add.graphics();lg.fillStyle(0x0b0d12,.72).fillRoundedRect(22,54,372,292,12);this.lockC.add([lg,this.tx(208,190,"🔒",{sz:28,ox:.5,oy:.5}),this.tx(208,224,"",{sz:11,ox:.5,oy:.5,c:"#e08a7a"})]);this.root.add(this.lockC);
-  /* cartão de informação */
-  this.infoG=U.add.graphics();this.root.add(this.infoG);
-  this.iName=this.tx(414,64,"",{sz:13,w:190});this.iType=this.tx(414,0,"",{sz:8,c:"#16130c"});this.iType.setPadding(6,2,6,2).setBackgroundColor("#ffc14d");
-  this.iPips=U.add.graphics();this.iReq=this.tx(414,0,"",{sz:9,c:"#e08a7a",w:190});this.iDesc=this.tx(414,0,"",{sz:10,b:!1,c:"#d8dce4",w:192,ls:3});this.iWhy=this.tx(414,0,"",{sz:8,c:"#9aa3b2",w:192});
-  this.root.add([this.iName,this.iType,this.iPips,this.iReq,this.iDesc,this.iWhy]);
-  this.buyBtn=this.btn(508,258,"",()=>this.buy(),{p:!0,sz:10});this.root.add(this.buyBtn);
-  this.slotT=this.tx(414,280,"",{sz:8,c:"#9aa3b2"});this.root.add(this.slotT);this.slotG=U.add.graphics();this.root.add(this.slotG);this.slotUi=[];
-  for(let k=0;k<4;k++){const x=432+k*46,y=312,im=U.add.image(x,y,"icon-sword").setVisible(!1),n=this.tx(x-15,y-15,`${k+1}`,{sz:7,c:"#9aa3b2"}),z=U.add.zone(x,y,40,40).setInteractive({useHandCursor:!0});
-   z.on("pointerdown",()=>{this.slotSel=k;this.equipSel()});z.on("pointerover",()=>{this.slotMode&&(this.slotSel=k,this.refresh())});this.root.add([im,n,z]);this.slotUi.push({x,y,im,n,z})}
-  this.hint=this.tx(508,342,"",{sz:7,ox:.5,oy:1,c:"#7d8696",w:196,al:"center"});this.root.add(this.hint);
-  this.ptsT=this.tx(30,56,"",{sz:9,c:"#c4cad4"});this.root.add(this.ptsT);
-  /* escolha */
-  this.chC=U.add.container(0,0).setVisible(!1);this.root.add(this.chC);
-  this.cfC=U.add.container(0,0).setVisible(!1).setDepth(5);this.root.add(this.cfC);
-  U.events.on("update",(t,d)=>{try{this.open&&this.frame(d/1e3)}catch(e){}});
-  U.events.once("shutdown",()=>{U.__etp=null})}
- show(mode){const S=this.gs();if(!S||!__etOn(S)||S.state!=="playing")return;this.built||this.build();const st=__etSt(S);
-  if(!st.tree&&(S.stats.level??1)>=3)mode="choose";if(!st.tree&&mode!=="choose")mode="choose";
-  this.mode=mode??"tree";this.side=st.tree??"d";this.sel=0;this.cs=0;this.slotMode=!1;this.confirm=!1;this.open=!0;this.root.setVisible(!0);
-  this.ui.skillTree?.open&&this.ui.skillTree.close();this.ui.inventoryUI?.open&&this.ui.inventoryUI.close();
-  this.ui.game.events.emit("ui:inventory",!0);this.ui.game.audioEngine?.sfx?.("sfx-ui-open");
-  this.root.setAlpha(0);this.ui.tweens.add({targets:this.root,alpha:1,duration:160});
-  this.mode==="choose"?this.buildChoose():this.buildTree(!0);this.refresh()}
- close(){if(!this.open)return;this.open=!1;this.confirm=!1;this.cfC?.setVisible(!1);this.root.setVisible(!1);this.ui.game.events.emit("ui:inventory",!1);this.ui.game.audioEngine?.sfx?.("sfx-ui-close");this.ui.refreshSkillsAlert?.()}
- toClass(){const S=this.gs();if(!__etSt(S)?.tree&&this.mode==="choose")return;this.close();this.ui.time.delayedCall(30,()=>{try{this.ui.skillTree.show()}catch(e){}})}
- tree(){const S=this.gs();return __ET[S.classDef.id]?.[this.side]}
- pos(n){return{x:208+n.x*64,y:n.t==="nm"?330:92+n.y*42}}
- /* ── árvore ─────────────────────────────────────────────────────────────────────────────────────────── */
- buildTree(pop){const U=this.ui;this.chC.setVisible(!1);this.iconL.removeAll(!0);this.labL.removeAll(!0);this.nodeUi=[];const T=this.tree();if(!T)return;
-  T.nodes.forEach((n,k)=>{const p=this.pos(n),ic=U.textures.exists(n.ic)?n.ic:"icon-sword",im=U.add.image(p.x,p.y,ic);const s=20/Math.max(im.width,im.height);im.setScale(s);im.__s=s;
-   const wb=n.w&&U.textures.exists(__ETFAM[n.w].ic)?U.add.image(p.x-13,p.y+12,__ETFAM[n.w].ic):null;wb&&wb.setScale(9/Math.max(wb.width,wb.height));const z=U.add.zone(p.x,p.y,36,36).setInteractive({useHandCursor:!0});z.on("pointerdown",()=>{if(this.mode!=="tree")return;this.ui.game.inputManager?.markTouchConsumed?.();this.sel===k&&!this.slotMode?this.buy():(this.sel=k,this.slotMode=!1,this.refresh())});
-   z.on("pointerover",()=>{this.mode==="tree"&&!this.slotMode&&this.sel!==k&&(this.sel=k,this.refresh())});this.iconL.add([im,z]);wb&&this.iconL.add(wb);this.nodeUi.push({n,...p,im,z,k,wb});
-   if(pop){im.setScale(0);this.ui.tweens.add({targets:im,scale:s,duration:260,delay:60+(n.t==="nm"?6:n.y)*55+Math.abs(n.x)*18,ease:"Back.easeOut"})}});
-  this.labL.add(this.tx(30,330,__L3("PESADELO","NIGHTMARE","PESADILLA"),{sz:7,oy:.5,c:"#ff7a6a"}));pop&&(this.revealT=0)}
- refresh(){if(!this.built||!this.open)return;const S=this.gs();if(!S)return;const st=__etSt(S),C=this.ui.classDef??null,cls=S.classDef.id,TT=__ET[cls];
-  const g=this.cardG.clear();g.fillStyle(__ETC.bg,.98).fillRoundedRect(14,8,612,346,16).lineStyle(1.5,0xffffff,.13).strokeRoundedRect(14.5,8.5,611,345,16);
-  this.title.setText(__L3("ÁRVORE DO INFINITO","ENDLESS TREE","ÁRBOL DEL INFINITO")+"  ·  "+W(`class.${cls}`));
-  this.clsBtn.setText(__L3("CLASSE","CLASS","CLASE")+(this.ui.game.inputManager?.device==="gamepad"?"  Ⓨ":"  [T]"));this.clsBtn.setX(this.mode==="choose"?9e3:500);
-  const tg=this.tabG.clear();
-  if(this.mode==="choose"){this.sub.setText(__L3("Nível 3: escolha a sua árvore. A outra fica trancada até o fim da run.","Level 3: choose your tree. The other one stays locked until the run ends.","Nivel 3: elige tu árbol. El otro queda bloqueado hasta el final de la partida."));
-   for(const t of this.tabs)t.setVisible(!1);for(const o of[this.linesG,this.nodesG,this.iconL,this.labL,this.infoG,this.iName,this.iType,this.iPips,this.iReq,this.iDesc,this.iWhy,this.buyBtn,this.slotT,this.slotG,this.ptsT,this.lockC])o.setVisible(!1);for(const s of this.slotUi)s.im.setVisible(!1),s.n.setVisible(!1),s.z.setVisible(!1);
-   this.refreshChoose();this.hint.setText(this.hintTxt());return}
-  for(const o of[this.linesG,this.nodesG,this.iconL,this.labL,this.infoG,this.iName,this.iType,this.iPips,this.iReq,this.iDesc,this.iWhy,this.ptsT])o.setVisible(!0);
-  const T=TT[this.side];this.sub.setText(`${__etL(T.n)}  ·  ${__L3("formato","shape","forma")} ${__etL(__ETSHAPE[T.sh])}  ·  ${__etL(T.s)}`);
-  ["d","a"].forEach((k,n)=>{const t=this.tabs[n],on=k===this.side,lock=st.tree&&st.tree!==k;t.setVisible(!0).setText((k==="d"?__L3("DEFESA","DEFENSE","DEFENSA"):__L3("ATAQUE","ATTACK","ATAQUE"))+(lock?"  🔒":""));t.setPosition(300+n*84,25).setColor(on?"#16130c":lock?"#7d8696":"#c4cad4");
-   on&&tg.fillStyle(__ETC.amber,1).fillRoundedRect(t.x-t.width/2-12,13,t.width+24,24,12);!on&&tg.fillStyle(0xffffff,.07).fillRoundedRect(t.x-t.width/2-12,13,t.width+24,24,12)});
-  const locked=st.tree!==this.side;this.lockC.setVisible(locked);locked&&this.lockC.list[2].setText(__L3("Trancada nesta run — só leitura","Locked for this run — read only","Bloqueado en esta partida — solo lectura"));
-  const fr=__etFree(S,!1),fn=__etFree(S,!0);this.ptsT.setText(`${__L3("Pontos","Points","Puntos")} ${Math.max(0,fr)}/${__etPts(S)}`+(__etNmPts(S)>0?`  ·  ${__L3("Pesadelo","Nightmare","Pesadilla")} ${Math.max(0,fn)}/${__etNmPts(S)}`:""));
-  this.drawTree();this.refreshInfo();this.hint.setText(this.hintTxt())}
- rank(n){return __etSt(this.gs()).r[n.id]|0}
- nstate(n){const S=this.gs(),st=__etSt(S),r=st.r[n.id]|0;if(st.tree!==this.side)return"locked";if(r>=n.m)return"max";if(r>0)return __etWhyNot(S,n.id,this.side)?"own":"ownup";return __etWhyNot(S,n.id,this.side)?"no":"avail"}
- drawTree(){const S=this.gs(),T=this.tree(),lg=this.linesG.clear(),ng=this.nodesG.clear(),by={};for(const u of this.nodeUi)by[u.n.id]=u;
-  /* ligações */
-  for(const u of this.nodeUi)for(const q of u.n.req){if(q.startsWith("ab:"))continue;const ids=q.startsWith("any:")?q.slice(4).split("|"):[q.split(":")[0]];for(const id of ids){const a=by[id];if(!a)continue;
-   const on=this.rank(a.n)>0&&this.rank(u.n)>0,half=this.rank(a.n)>0,dx=u.x-a.x,dy=u.y-a.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l,x0=a.x+ux*19,y0=a.y+uy*19,x1=u.x-ux*19,y1=u.y-uy*19;
-   q.startsWith("any:")?lg.lineStyle(on?2.5:1.5,on?__ETC.amber:0xffffff,on?.9:half?.35:.14):lg.lineStyle(on?3:2,on?__ETC.amber:0xffffff,on?.95:half?.4:.16);lg.lineBetween(x0,y0,x1,y1);u.__lk=u.__lk??[];}}
-  for(const u of this.nodeUi){const n=u.n,s=this.nstate(n),sel=u.k===this.sel,r=this.rank(n),miss=r>0&&n.w&&!__etHas(S,n.w),x=u.x,y=u.y;
-   const fill=s==="max"||s==="own"||s==="ownup"?(n.t==="nm"?0x3a1a18:0x2e2616):s==="avail"?__ETC.card2:0x15181f,bord=n.t==="nm"?__ETC.nm:s==="max"?__ETC.amber:s==="own"||s==="ownup"?__ETC.amber2:s==="avail"?0xffffff:0x5a6170,ba=s==="no"||s==="locked"?.45:1;
-   const shape=(gg,rr)=>{if(n.t==="a"){gg.fillCircle(x,y,rr);return"c"}const pts=n.t==="s"?6:n.t==="top"?8:4,off=pts===4?0:pts===6?Math.PI/6:Math.PI/8,P=[];for(let k=0;k<pts;k++){const a=off+k*6.283/pts-Math.PI/2;P.push({x:x+Math.cos(a)*rr,y:y+Math.sin(a)*rr})}gg.fillPoints(P,!0);return P};
-   ng.fillStyle(0,.35);shape(ng,n.t==="a"?17:19);ng.fillStyle(fill,1);const P=shape(ng,n.t==="a"?15:17);ng.lineStyle(sel?3:n.t==="top"?2.5:2,sel?__ETC.amber:bord,sel?1:ba);P==="c"?ng.strokeCircle(x,y,15):ng.strokePoints(P,!0,!0);
-   n.t==="u"&&(ng.fillStyle(__ETC.amber,1).fillCircle(x+12,y-12,5),ng.lineStyle(1.5,0x16130c,1).lineBetween(x+9.5,y-12,x+14.5,y-12).lineBetween(x+12,y-14.5,x+12,y-9.5));
-   n.t==="top"&&ng.fillStyle(__ETC.amber,.9).fillTriangle(x-5,y-21,x,y-26,x+5,y-21);
-   for(let k=0;k<n.m;k++){const px=x-(n.m-1)*3.5+k*7,py=y+19;ng.fillStyle(k<r?(n.t==="nm"?__ETC.nm:__ETC.amber):0x3a404c,1).fillCircle(px,py,2.2)}
-   if(n.w){const has=__etHas(S,n.w);ng.fillStyle(has?0x1b2a22:0x3a1a18,1).fillCircle(x-13,y+12,6.5).lineStyle(1.2,has?0x8ae0b0:__ETC.red,1).strokeCircle(x-13,y+12,6.5);u.wb&&u.wb.setAlpha(has?1:.8)[has?"clearTint":"setTint"](16747386)}
-   u.im.setAlpha(s==="no"||s==="locked"?.38:miss?.55:1);(s==="no"||s==="locked"||miss)?u.im.setTint(miss?13417386:8421504):u.im.clearTint()}}
- /* animações contínuas: pulso nos disponíveis, luz correndo nas ligações acesas, anel no selecionado */
- frame(dt){this.t+=dt;const g=this.fxG.clear();if(this.mode==="choose"){this.frameChoose(g);return}const S=this.gs();if(!S)return;const by={};for(const u of this.nodeUi)by[u.n.id]=u;
-  for(const u of this.nodeUi){const s=this.nstate(u.n);if(s==="avail"||s==="ownup"){const p=.5+Math.sin(this.t*4+u.k)*.5;g.lineStyle(2,u.n.t==="nm"?__ETC.nm:__ETC.amber,.15+.45*p).strokeCircle(u.x,u.y,22+p*3)}
-   for(const q of u.n.req){if(q.startsWith("ab:"))continue;for(const id of(q.startsWith("any:")?q.slice(4).split("|"):[q.split(":")[0]])){const a=by[id];if(!a||!(this.rank(a.n)>0&&this.rank(u.n)>0))continue;
-    const f=(this.t*.8+u.k*.17)%1,dx=u.x-a.x,dy=u.y-a.y;g.fillStyle(0xfff1c4,.9).fillCircle(a.x+dx*f,a.y+dy*f,2.2).fillStyle(__ETC.amber,.35).fillCircle(a.x+dx*f,a.y+dy*f,4.5)}}}
-  const u=this.nodeUi[this.sel];if(u&&!this.slotMode){const a=this.t*2.4;g.lineStyle(2,0xffffff,.85);for(let k=0;k<4;k++){g.beginPath();g.arc(u.x,u.y,25,a+k*1.571,a+k*1.571+.7);g.strokePath()}}
-  if(this.slotMode){const s=this.slotUi[this.slotSel],p=.5+Math.sin(this.t*6)*.5;s&&g.lineStyle(2,__ETC.amber,.4+.5*p).strokeRoundedRect(s.x-21,s.y-21,42,42,9)}
-  for(let k=this.anim.length-1;k>=0;k--){const A=this.anim[k];A.t+=dt;const f=A.t/A.d;if(f>=1){this.anim.splice(k,1);continue}A.f(g,f)}}
- refreshInfo(){const S=this.gs(),u=this.nodeUi[this.sel],ig=this.infoG.clear();ig.fillStyle(__ETC.card,.96).fillRoundedRect(402,52,212,294,12).lineStyle(1,0xffffff,.1).strokeRoundedRect(402.5,52.5,211,293,12);
-  if(!u)return;const n=u.n,r=this.rank(n),why=__etWhyNot(S,n.id,this.side);this.iName.setText(__etL(n.n));let y=64+this.iName.height+6;
-  const typ=__etL(__ETTYPE[n.t])+(n.m>1&&n.t!=="top"?"  "+["I","I–II","I–III","I–IV","I–V"][n.m-1]:"");this.iType.setText(typ).setPosition(414,y).setBackgroundColor(n.t==="nm"?"#ff7a6a":n.t==="a"?"#8ae0b0":"#ffc14d");
-  const pg=this.iPips.clear();for(let k=0;k<n.m;k++)pg.fillStyle(k<r?(n.t==="nm"?__ETC.nm:__ETC.amber):0x3a404c,1).fillRoundedRect(414+this.iType.width+10+k*12,y+3,9,6,3);y+=this.iType.height+6;
-  if(n.w){const has=__etHas(S,n.w);this.iReq.setText(__L3("Requer: ","Requires: ","Requiere: ")+__etL(__ETFAM[n.w].n)+(has?"  ✓":__L3("  (não equipado)","  (not equipped)","  (no equipado)"))).setColor(has?"#8ae0b0":"#e08a7a").setPosition(414,y).setVisible(!0);y+=this.iReq.height+5}else this.iReq.setVisible(!1);
-  this.iDesc.setText(__etL(n.d)).setPosition(414,y);y+=this.iDesc.height+6;
-  const locked=__etSt(S).tree!==this.side;this.iWhy.setText(locked?__L3("Árvore trancada nesta run","Tree locked for this run","Árbol bloqueado en esta partida"):r>=n.m?__L3("Grau máximo","Max rank","Grado máximo"):why??(n.t==="nm"?__L3("Custa 1 ponto de Pesadelo","Costs 1 Nightmare point","Cuesta 1 punto de Pesadilla"):__L3("Custa 1 ponto","Costs 1 point","Cuesta 1 punto"))).setPosition(414,Math.min(y,244)).setColor(why&&!locked&&r<n.m?"#e08a7a":"#9aa3b2");
-  const can=!why&&!locked;this.buyBtn.setVisible(can).setText(r>0?__L3("MELHORAR","UPGRADE","MEJORAR")+` ${__roman(r+1)}`:__L3("APRENDER","LEARN","APRENDER")).setY(Math.min(y+this.iWhy.height+20,266));
-  const act=n.ab&&r>0,eq=S.skillState.equipped;this.slotT.setVisible(!!act).setText(this.slotMode?__L3("Escolha o espaço  ◀ ▶  e confirme","Pick a slot  ◀ ▶  and confirm","Elige un espacio  ◀ ▶  y confirma"):__L3("Toque num espaço para equipar","Tap a slot to equip","Toca un espacio para equipar"));
-  const sg=this.slotG.clear();this.slotUi.forEach((s,k)=>{s.im.setVisible(!!act&&!!eq[k]);s.n.setVisible(!!act);s.z.setVisible(!!act);if(!act)return;const id=eq[k],me=id===n.ab;
-   sg.fillStyle(me?0x2e2616:0x15181f,1).fillRoundedRect(s.x-19,s.y-19,38,38,8).lineStyle(me?2:1,me?__ETC.amber:0xffffff,me?1:.15).strokeRoundedRect(s.x-19,s.y-19,38,38,8);
-   if(id&&Ye[id]){const ic=this.ui.textures.exists(Ye[id].icon)?Ye[id].icon:"icon-sword";s.im.setTexture(ic);s.im.setScale(24/Math.max(s.im.width,s.im.height))}})}
- hintTxt(){const pad=this.ui.game.inputManager?.device==="gamepad",touch=this.ui.game.inputManager?.device==="touch";if(touch)return"";
-  if(this.mode==="choose")return pad?__L3("◀ ▶ escolher · Ⓐ confirmar","◀ ▶ choose · Ⓐ confirm","◀ ▶ elegir · Ⓐ confirmar"):__L3("← → escolher · Enter confirmar","← → choose · Enter confirm","← → elegir · Enter confirmar");
-  return pad?__L3("✥ mover · Ⓐ aprender/equipar · LB/RB trocar árvore · Ⓨ árvore da classe · Ⓑ fechar","✥ move · Ⓐ learn/equip · LB/RB switch tree · Ⓨ class tree · Ⓑ close","✥ mover · Ⓐ aprender/equipar · LB/RB cambiar árbol · Ⓨ árbol de clase · Ⓑ cerrar")
-   :__L3("Setas mover · Enter aprender/equipar · Q/E trocar árvore · T árvore da classe · Esc fechar","Arrows move · Enter learn/equip · Q/E switch tree · T class tree · Esc close","Flechas mover · Enter aprender/equipar · Q/E cambiar árbol · T árbol de clase · Esc cerrar")}
- buy(){const S=this.gs(),u=this.nodeUi[this.sel];if(!u)return;const n=u.n,r=this.rank(n);
-  if(r>0&&n.ab&&(r>=n.m||__etWhyNot(S,n.id,this.side))){this.slotMode=!0;this.slotSel=Math.max(0,S.skillState.equipped.indexOf(n.ab));this.refresh();return}
-  if(!__etBuy(S,n.id)){this.ui.game.audioEngine?.sfx?.("sfx-event-refuse")||S.audioRef?.play("sfx-event-refuse");this.shake(u);return}
-  S.audioRef?.play("sfx-ability-ready");this.burst(u);this.refresh();this.ui.refreshSkillsAlert?.()}
- shake(u){this.ui.tweens.add({targets:u.im,x:u.x+4,duration:40,yoyo:!0,repeat:2,onComplete:()=>u.im.setX(u.x)})}
- burst(u){const U=this.ui,c=u.n.t==="nm"?__ETC.nm:__ETC.amber,l=U.add.image(u.x,u.y,"light").setTint(c).setBlendMode(j.BlendModes.ADD).setScale(.05).setAlpha(.95);this.root.add(l);U.tweens.add({targets:l,scale:.42,alpha:0,duration:520,ease:"Cubic.easeOut",onComplete:()=>l.destroy()});
-  U.tweens.add({targets:u.im,scale:u.im.__s*1.45,duration:120,yoyo:!0,ease:"Quad.easeOut"});
-  this.anim.push({t:0,d:.55,f:(g,f)=>{g.lineStyle(3*(1-f),c,1-f).strokeCircle(u.x,u.y,20+f*34);for(let k=0;k<8;k++){const a=k*.785+f;g.fillStyle(0xfff1c4,1-f).fillCircle(u.x+Math.cos(a)*(16+f*40),u.y+Math.sin(a)*(16+f*40),2*(1-f)+.5)}}});
-  const by={};for(const q of this.nodeUi)by[q.n.id]=q;for(const q of u.n.req){if(q.startsWith("ab:"))continue;for(const id of(q.startsWith("any:")?q.slice(4).split("|"):[q.split(":")[0]])){const a=by[id];if(!a||!(this.rank(a.n)>0))continue;
-   this.anim.push({t:0,d:.35,f:(g,f)=>{g.lineStyle(4,0xfff1c4,.9).lineBetween(a.x,a.y,a.x+(u.x-a.x)*f,a.y+(u.y-a.y)*f)}})}}
-  const t=this.tx(u.x,u.y-26,"+1",{sz:11,ox:.5,oy:.5,c:"#ffe08a"});this.root.add(t);U.tweens.add({targets:t,y:u.y-46,alpha:0,duration:700,onComplete:()=>t.destroy()})}
- equipSel(){const S=this.gs(),u=this.nodeUi[this.sel];if(!u?.n.ab||this.rank(u.n)<=0)return;__etEquip(S,u.n.ab,this.slotSel);S.audioRef?.play("sfx-class-select");this.slotMode=!1;
-  const s=this.slotUi[this.slotSel];this.anim.push({t:0,d:.4,f:(g,f)=>g.lineStyle(3*(1-f),__ETC.amber,1-f).strokeRoundedRect(s.x-20-f*8,s.y-20-f*8,40+f*16,40+f*16,10)});this.refresh()}
- nav(dir){const L=this.nodeUi,c=L[this.sel];if(!c)return;let best=null,bs=1e9;for(const u of L){if(u===c)continue;const dx=u.x-c.x,dy=u.y-c.y,p=dir==="L"?-dx:dir==="R"?dx:dir==="U"?-dy:dy,q=dir==="L"||dir==="R"?Math.abs(dy):Math.abs(dx);if(p<=4)continue;const sc=p+q*2.2;sc<bs&&(bs=sc,best=u)}
-  best&&(this.sel=best.k,this.ui.game.audioEngine?.sfx?.("sfx-ui-move"),this.refresh())}
- handleKey(k){if(!this.open)return!1;if(this.confirm)return this.confirmKey(k),!0;
-  if(this.mode==="choose"){if(k==="ArrowLeft"||k==="ArrowRight"||k==="q"||k==="e"){this.cs=1-this.cs;this.ui.game.audioEngine?.sfx?.("sfx-ui-move");this.refresh()}else if(k==="Enter"||k===" ")this.askChoose(this.cs);else if(k==="Escape"){this.close()}return!0}
-  if(this.slotMode){if(k==="ArrowLeft")this.slotSel=(this.slotSel+3)%4,this.refresh();else if(k==="ArrowRight")this.slotSel=(this.slotSel+1)%4,this.refresh();else if(k==="Enter"||k===" ")this.equipSel();else if(k==="Escape"||k==="Backspace")this.slotMode=!1,this.refresh();return!0}
-  if(k==="ArrowLeft")this.nav("L");else if(k==="ArrowRight")this.nav("R");else if(k==="ArrowUp")this.nav("U");else if(k==="ArrowDown")this.nav("D");
-  else if(k==="Enter"||k===" ")this.buy();else if(k==="q"||k==="Q"||k==="e"||k==="E"){this.side=this.side==="d"?"a":"d";this.sel=0;this.buildTree(!0);this.refresh();this.ui.game.audioEngine?.sfx?.("sfx-ui-move")}
-  else if(k==="t"||k==="T")this.toClass();else if(k==="Escape"||k==="Backspace")this.close();else return!1;return!0}
- /* ── escolha no nível 3 ─────────────────────────────────────────────────────────────────────────────── */
- buildChoose(){const U=this.ui,S=this.gs(),cls=S.classDef.id,C=this.chC;C.removeAll(!0);C.setVisible(!0);this.chCards=[];
-  ["d","a"].forEach((k,i)=>{const T=__ET[cls][k],x=32+i*292,y=60,w=276,h=262,c=U.add.container(x,y+30).setAlpha(0),g=U.add.graphics();c.add(g);
-   c.add(this.tx(18,14,k==="d"?__L3("DEFESA","DEFENSE","DEFENSA"):__L3("ATAQUE","ATTACK","ATAQUE"),{sz:9,c:"#ffc14d"}));c.add(this.tx(18,28,__etL(T.n),{sz:15,w:w-36}));
-   c.add(this.tx(18,50,__L3("formato ","shape ","forma ")+__etL(__ETSHAPE[T.sh]),{sz:8,c:"#9aa3b2"}));c.add(this.tx(18,64,__etL(T.s),{sz:9,b:!1,c:"#d8dce4",w:w-36,ls:3}));
-   const pv=U.add.graphics();c.add(pv);const ics=[];for(const n of T.nodes){if(n.t==="nm")continue;const px=w/2+n.x*44,py=112+n.y*22,im=U.add.image(px,py,U.textures.exists(n.ic)?n.ic:"icon-sword");im.setScale(12/Math.max(im.width,im.height)).setAlpha(.9);c.add(im);ics.push({n,x:px,y:py,im})}
-   const b=this.btn(w/2,h-22,__L3("ESCOLHER","CHOOSE","ELEGIR"),()=>{this.cs=i;this.askChoose(i)},{p:!0,sz:11});c.add(b);
-   const z=U.add.zone(w/2,h/2-20,w,h-50).setInteractive({useHandCursor:!0});z.on("pointerover",()=>{this.cs!==i&&(this.cs=i,this.refresh())});z.on("pointerdown",()=>{this.ui.game.inputManager?.markTouchConsumed?.();this.cs===i?this.askChoose(i):(this.cs=i,this.refresh())});c.addAt(z,1);
-   C.add(c);this.chCards.push({c,g,pv,ics,w,h,T,k});U.tweens.add({targets:c,y,alpha:1,duration:340,delay:80+i*110,ease:"Cubic.easeOut"})})}
- refreshChoose(){const S=this.gs();for(const[i,o]of this.chCards.entries()){const s=i===this.cs,g=o.g.clear();g.fillStyle(s?__ETC.card2:0x161a22,.98).fillRoundedRect(0,0,o.w,o.h,14).lineStyle(s?2.5:1,s?__ETC.amber:0xffffff,s?1:.12).strokeRoundedRect(.5,.5,o.w-1,o.h-1,14);
-   const pv=o.pv.clear(),by={};for(const q of o.ics)by[q.n.id]=q;for(const q of o.ics)for(const r of q.n.req){if(r.startsWith("ab:"))continue;for(const id of(r.startsWith("any:")?r.slice(4).split("|"):[r.split(":")[0]])){const a=by[id];a&&pv.lineStyle(1.5,s?__ETC.amber:0xffffff,s?.55:.2).lineBetween(a.x,a.y,q.x,q.y)}}
-   for(const q of o.ics){pv.fillStyle(0x0f1218,1).fillCircle(q.x,q.y,8).lineStyle(1,s?__ETC.amber2:0xffffff,s?.9:.25).strokeCircle(q.x,q.y,8)}o.c.setScale(s?1:.97)}}
- frameChoose(g){if(!this.chCards)return;const o=this.chCards[this.cs];if(!o)return;const p=.5+Math.sin(this.t*3.2)*.5,x=o.c.x,y=o.c.y;g.lineStyle(3,__ETC.amber,.12+.25*p).strokeRoundedRect(x-4,y-4,o.w+8,o.h+8,17);
-  const f=(this.t*.35)%1;for(const q of o.ics){const k=(q.y-112)/120;Math.abs(k-f)<.08&&g.fillStyle(0xfff1c4,.9*(1-Math.abs(k-f)/.08)).fillCircle(x+q.x,y+q.y,3)}
-  for(let k=this.anim.length-1;k>=0;k--){const A=this.anim[k];A.t+=.016;const ff=A.t/A.d;if(ff>=1){this.anim.splice(k,1);continue}A.f(g,ff)}}
- askChoose(i){const U=this.ui,S=this.gs(),T=__ET[S.classDef.id][i===0?"d":"a"],C=this.cfC;C.removeAll(!0);this.confirm=!0;this.cfSel=0;const g=U.add.graphics();g.fillStyle(0,.55).fillRect(-200,-50,1040,460).fillStyle(__ETC.bg,1).fillRoundedRect(150,110,340,140,14).lineStyle(2,__ETC.amber,1).strokeRoundedRect(150.5,110.5,339,139,14);
-  C.add(g);C.add(this.tx(320,134,__L3("Escolher ","Choose ","¿Elegir ")+__etL(T.n)+"?",{sz:13,ox:.5,w:300,al:"center"}));C.add(this.tx(320,170,__L3("A outra árvore fica trancada para este herói até o fim da run.","The other tree stays locked for this hero until the run ends.","El otro árbol queda bloqueado para este héroe hasta el final de la partida."),{sz:9,b:!1,c:"#c4cad4",ox:.5,w:300,al:"center"}));
-  this.cfB=[this.btn(262,222,__L3("CONFIRMAR","CONFIRM","CONFIRMAR"),()=>this.doChoose(i),{p:!0,sz:10}),this.btn(386,222,__L3("VOLTAR","BACK","VOLVER"),()=>{this.confirm=!1;C.setVisible(!1)},{sz:10})];C.add(this.cfB);
-  C.setVisible(!0).setAlpha(0);U.tweens.add({targets:C,alpha:1,duration:140});this.refreshConfirm()}
- refreshConfirm(){this.cfB?.forEach((b,k)=>{const on=k===this.cfSel;b.__bg=k===0?(on?"#ffd27a":"#c99a3a"):(on?"rgba(255,255,255,0.28)":"rgba(255,255,255,0.10)");b.setBackgroundColor(b.__bg)})}
- confirmKey(k){if(k==="ArrowLeft"||k==="ArrowRight")this.cfSel=1-this.cfSel,this.refreshConfirm();else if(k==="Enter"||k===" ")this.cfSel===0?this.doChoose(this.cs):(this.confirm=!1,this.cfC.setVisible(!1));else if(k==="Escape"||k==="Backspace")this.confirm=!1,this.cfC.setVisible(!1)}
- doChoose(i){const S=this.gs(),side=i===0?"d":"a";if(!__etChoose(S,side))return;this.confirm=!1;this.cfC.setVisible(!1);const U=this.ui,me=this.chCards[i],ot=this.chCards[1-i];
-  S.audioRef?.play("sfx-ability-ready");U.game.audioEngine?.stinger?.("level_up");U.cameras.main.flash(180,255,210,120);
-  U.tweens.add({targets:me.c,scale:1.06,duration:180,yoyo:!0,ease:"Quad.easeOut"});U.tweens.add({targets:ot.c,alpha:.25,duration:300});
-  const lk=this.tx(ot.c.x+ot.w/2,ot.c.y+40,"🔒",{sz:30,ox:.5,oy:.5});lk.setAlpha(0);this.chC.add(lk);U.tweens.add({targets:lk,y:ot.c.y+ot.h/2-10,alpha:1,duration:420,ease:"Bounce.easeOut"});
-  const l=U.add.image(me.c.x+me.w/2,me.c.y+me.h/2,"light").setTint(__ETC.amber).setBlendMode(j.BlendModes.ADD).setScale(.1).setAlpha(.9);this.root.add(l);U.tweens.add({targets:l,scale:1.4,alpha:0,duration:700,onComplete:()=>l.destroy()});
-  U.time.delayedCall(820,()=>{if(!this.open)return;this.mode="tree";this.side=side;this.sel=0;this.chC.setVisible(!1);this.buildTree(!0);this.refresh();S.game.events.emit("ui:banner",__L3("Árvore escolhida: ","Tree chosen: ","Árbol elegido: ")+__etL(__ET[S.classDef.id][side].n),"#ffc14d")})}}
-/* ── entradas: botão de habilidades do HUD, teclado/gamepad, aba Habilidades do inventário ─────────────── */
-{const O0=Vd.prototype.onSkillsOpen;Vd.prototype.onSkillsOpen=function(){try{const S=this.scene.get("Game");if(__etOn(S)&&(S.stats.level??1)>=3&&!(this.result?.isVisible?.()||this.pauseMenu?.open||this.shopUI?.open||this.storyPanel?.visible||this.blessingPanel?.visible)){
- const P=__etUI(this);if(P.open){P.close();return}if(this.skillTree?.open){this.skillTree.close();return}P.show();return}}catch(e){}return O0.apply(this,arguments)}}
-{const A0=Vd.prototype.refreshSkillsAlert;Vd.prototype.refreshSkillsAlert=function(){const r=A0.apply(this,arguments);try{const S=this.scene.get("Game");if(__etOn(S)&&(S.stats.level??1)>=3){const st=__etSt(S);(!st.tree||__etFree(S,!1)>0||__etFree(S,!0)>0)&&this.hud?.setSkillsAlert?.(!0)}}catch(e){}return r}}
-{const H0=Rd.prototype.handleKey;Rd.prototype.handleKey=function(k){if(this.open&&!this.__emb&&(k==="t"||k==="T")){const S=this.gs();if(__etOn(S)&&(S.stats.level??1)>=3){this.close();this.ui.time.delayedCall(30,()=>__etUI(this.ui).show());return!0}}return H0.apply(this,arguments)}}
-{const B0=Rd.prototype.build;Rd.prototype.build=function(){const r=B0.apply(this,arguments);try{const i=this.ui,t=i.add.text(470,312,"",{fontFamily:typeof __UC_F!=="undefined"?__UC_F:"sans-serif",fontSize:"9px",fontStyle:"bold",color:"#16130c"}).setOrigin(.5).setPadding(10,5,10,5).setBackgroundColor("#ffc14d").setInteractive({useHandCursor:!0}).setVisible(!1);
- t.on("pointerdown",()=>{const S=this.gs();if(!__etOn(S))return;this.__emb?this.ui.inventoryUI?.close?.():this.close();this.ui.time.delayedCall(40,()=>__etUI(this.ui).show())});this.root.add(t);this.__etBtn=t}catch(e){}return r}}
-{const F0=Rd.prototype.refresh;Rd.prototype.refresh=function(){const r=F0.apply(this,arguments);try{const b=this.__etBtn;if(b){const S=this.gs(),on=__etOn(S)&&(S.stats.level??1)>=3;b.setVisible(!!on&&this.open);on&&b.setText("★ "+__L3("ÁRVORE DO INFINITO","ENDLESS TREE","ÁRBOL DEL INFINITO")+(this.ui.game.inputManager?.device==="gamepad"?"  Ⓨ":"  [T]"));this.root.bringToTop(b)}}catch(e){}return r}}
-/* no inventário, Y/T na aba Habilidades abre a árvore do infinito (nas outras abas continua abrindo a forja) */
-setTimeout(()=>{try{const F1=__openForge;__openForge=function(inv){try{const S=inv?.gs?.();if(inv?.__logicalTab===4&&__etOn(S)&&(S.stats.level??1)>=3){inv.close();inv.ui.time.delayedCall(40,()=>__etUI(inv.ui).show());return}}catch(e){}return F1.apply(this,arguments)}}catch(e){}},0);
-
-/*__ENDLESSTREES__*//*__HEROART__*/
-/* ══ Arte dos heróis na escolha de personagem ═══════════════════════════════════════════════════════════════
-   Ilustração sem fundo (assets/images/heroes/hero-art-<classe>.png) no lugar do sprite no centro da tela.
-   Entra deslizando e com um respiro leve; herói bloqueado aparece como silhueta escura. */
-const __HART=["warrior","berserker","archer","rogue","mage","shaman","hunter","druid","necromancer"];
-{const P0=bo.prototype.preload;bo.prototype.preload=function(){const r=P0.apply(this,arguments);try{const L=this.load,op=L.path;L.setPath("");
- for(const c of __HART){const k=`hero-art-${c}`;this.textures.exists(k)||L.image(k,`assets/images/heroes/${k}.png`)}L.setPath(op)}catch(e){}return r}}
-{const R0=bl.prototype.refreshDetails;bl.prototype.refreshDetails=function(){const r=R0.apply(this,arguments);try{const cls=fe[this.selected],k=`hero-art-${String(cls).toLowerCase()}`,lk=!this.__ok(cls);
- if(!this.textures.exists(k)){this.__art?.setVisible(!1);return r}
- this.hero?.setVisible(!1);this.__heroT?.forEach?.(q=>q.remove?.());
- const H=226,h=this.hero,X=h?h.x:318,Y=(h?h.y:288)+6;let a=this.__art;if(!a||!a.active){a=this.__art=this.add.image(X,Y,k).setOrigin(.5,1).setDepth(3);a.__dy=0;
-  /* segue o sprite original, que o layout (ex.: celular) reposiciona */
-  this.events.on("update",()=>{const hh=this.hero;if(a.active&&hh){a.x=hh.x;a.y=hh.y+6+a.__dy}})}
- const changed=this.__artK!==k||this.__artL!==lk;this.__artK=k;this.__artL=lk;
- a.setTexture(k).setVisible(!0);const s=H/a.height;a.__s=s;lk?a.setTint(1379848).setAlpha(.92):a.clearTint();
- if(changed){this.tweens.killTweensOf(a);a.setScale(s*.96).setAlpha(0);a.__dy=10;
-  this.tweens.add({targets:a,alpha:lk?.92:1,__dy:0,scale:s,duration:320,ease:"Cubic.easeOut",onComplete:()=>{lk||this.tweens.add({targets:a,scaleY:s*1.012,__dy:-1,duration:1600,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"})}})}}catch(e){}return r}}
-
-/*__HEROART__*//*__PCARDS__*/
-try{window.__L3G=(a,b,c)=>__L3(a,b,c)}catch(e){}
-/*__PCARDS__*//*__CASTLE2__*/
-try{window.__goLevelG=__goLevel}catch(e){}
-/*__CASTLE2__*//*__BKFIX__*/
-/* Bestiário: correções (scripts/patch_bestiary_fix.py) */
-try{window.__bestiaryOpenG=__bestiaryOpen}catch(e){}
-{
-  const P = __BookScene.prototype;
-  // registros sem nome travavam a virada de página (run(...).toUpperCase de undefined)
-  const R0 = P.render;
-  P.render = function () {
-    for (const e of this.E || []) if (e?.d && !e.d.name) {
-      const pretty = String(e.k || "?").toLowerCase().split("_").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
-      let n = null; try { n = St(`enemy.${e.k}`, null) } catch (_) {}
-      e.d = { ...e.d, name: n || pretty };
-    }
-    return R0.apply(this, arguments);
-  };
-  // texto mais arejado: mais espaço entre linhas e letra um pouco maior nos parágrafos
-  const T0 = P.T;
-  P.T = function (c, x, y, s, size = 9, color, o = {}) {
-    const multi = !!o.ww || /\n/.test(String(s ?? ""));
-    const q = { ...o, ls: (o.ls ?? 2) + (multi ? 3 : 1) };
-    if (multi && size < 9.5) size += .5;
-    return T0.call(this, c, x, y, s ?? "", size, color, q);
-  };
+/* ══ Escolha de habilidades por nível (campanha e Modo Infinito) ═══════════════════════════════════════════════
+   Nos níveis 1, 5, 10 e 15 o jogo pausa e mostra as habilidades daquele nível — as da classe e uma extra.
+   O herói fica com UMA; as outras ficam fechadas até o fim da run/campanha. Nos graus de Pesadelo
+   (Modo Infinito, depois do nível 15) a escolha é entre passivas. Estado em S.skillState.pick. */
+const __SPX = {
+  WARRIOR: { 1: "ET_CHARGE", 5: "ET_CLAN_CRY", 10: "ET_SPIN", 15: "ET_AEGIS" },
+  BERSERKER: { 1: "ET_TSUBAME", 5: "ET_PARRY", 10: "ET_QUAKE", 15: "ET_IRON_WALL" },
+  ARCHER: { 1: "ET_CHARGED", 5: "ET_BACKFLIP", 10: "ET_FENCE", 15: "ET_ARROW_STORM" },
+  MAGE: { 1: "ET_ICE_COMET", 5: "ET_SUN_MIRROR", 10: "ET_ICE_PRISON", 15: "ET_STARFALL" },
+  ROGUE: { 1: "ET_DEATH_MARK", 5: "ET_ROLL", 10: "ET_TOXIC_SMOKE", 15: "ET_BLADE_DANCE" },
+  NECROMANCER: { 1: "ET_PLAGUE", 5: "ET_BONE_ARMOR", 10: "ET_REAP", 15: "ET_BONE_STORM" },
+  HUNTER: { 1: "ET_DOUBLE_SHOT", 5: "ET_CAMPFIRE", 10: "ET_COORD", 15: "ET_PROTECT_HOWL" },
+  SHAMAN: { 1: "ET_DART_HAIL", 5: "ET_BARK", 10: "ET_WAR_DANCE", 15: "ET_JAGUAR" },
+  DRUID: { 1: "ET_BLOOD_HOWL", 5: "ET_OAK_RING", 10: "ET_MISTLETOE", 15: "ET_BEAR" },
+};
+/* três habilidades novas para quem tinha só três extras */
+for (const [id, o, n, d] of [
+  ["ET_ARROW_STORM", { type: "multi-projectile", damageType: "physical", cost: 30, cooldown: 12, damageMult: 1, count: 9, spread: .15, projectile: { texture: "proj-arrow", speed: 470, maxDist: 300, tint: 16769354 }, icon: "icon-volley", sound: "sfx-archer-multishot", tint: 16769354 },
+    ["Tempestade de Flechas", "Arrow Storm", "Tormenta de Flechas"], ["Nove flechas num leque largo; recarga 12 s", "Nine arrows in a wide fan; cooldown 12 s", "Nueve flechas en un abanico amplio; recarga 12 s"]],
+  ["ET_STARFALL", { type: "projectile", damageType: "magical", cost: 35, cooldown: 14, damageMult: 3.2, projectile: { texture: "proj-bolt", speed: 300, maxDist: 320, tint: 16748330, explosion: { radius: 92 } }, icon: "icon-holy-nova", sound: "sfx-mage-fireball", tint: 16748330 },
+    ["Estrela Cadente", "Falling Star", "Estrella Fugaz"], ["Uma estrela de fogo que explode numa área grande; recarga 14 s", "A fiery star that explodes over a wide area; cooldown 14 s", "Una estrella de fuego que estalla en un área grande; recarga 14 s"]],
+  ["ET_BONE_STORM", { type: "multi-projectile", damageType: "magical", cost: 30, cooldown: 12, damageMult: .9, count: 12, spread: .5236, projectile: { texture: "proj-bolt", speed: 380, maxDist: 240, tint: 14215368 }, icon: "icon-skeleton-army", sound: "sfx-mage-arcane-blast", tint: 14215368 },
+    ["Tempestade de Ossos", "Bone Storm", "Tormenta de Huesos"], ["Doze lascas de osso em todas as direções; recarga 12 s", "Twelve bone shards in every direction; cooldown 12 s", "Doce astillas de hueso en todas direcciones; recarga 12 s"]],
+]) {
+  Ye[id] = { id, ...o, get name() { return __etL(n) }, get desc() { return __etL(d) } };
+  _s[`abn.${id}`] = n[1]; Io[`abn.${id}`] = n[2]; _s[`abd.${id}`] = d[1]; Io[`abd.${id}`] = d[2];
 }
-{
-  // índice: com muitos nomes, duas colunas por página e linhas legíveis (antes as linhas se sobrepunham)
-  const P = __BookScene.prototype, I0 = P.pageIndex;
-  P.pageIndex = function (c, X, PW, a, b, head) {
-    const n = b - a;
-    if (n <= 16) return I0.apply(this, arguments);
-    let y = 44;
-    if (head) { this.T(c, X + PW / 2, y, head, 11, __BK_RED, { ox: .5, st: "bold" }); this.orn(c, X + PW / 2, y + 20, 50); }
-    y += 32;
-    const rows = Math.ceil(n / 2), step = Math.min(17, (306 - y) / rows), CW = (PW - 6) / 2;
-    for (let i = a; i < b; i++) {
-      const j = i - a, col = Math.floor(j / rows), yy = Math.round(y + (j % rows) * step);
-      const e = this.E[i], num = e.boss ? i - this.nC + 1 : i + 1;
-      let name = `${String(num).padStart(2, "0")} ${e.d.name}`;
-      const sel = (this.spread === 1 || this.spread === 2) && i === this.sel;
-      const x0 = X + col * (CW + 6);
-      const t = this.T(c, x0 + 4, yy, name, 8, __BK_INK, { st: sel ? "bold" : "normal" });
-      while (t.width > CW - 22 && name.length > 6) { name = name.slice(0, -2); t.setText(name + "…") }
-      const p = this.T(c, x0 + CW - 2, yy, String(2 * (this.FRONT + i) + 1), 8, __BK_FAINT, { ox: 1 });
-      sel && (() => { const g = this.add.graphics(); g.fillStyle(7999252, .14).fillRect(x0, yy - 2, CW, 12); c.add(g); c.sendToBack(g) })();
-      const z = this.add.zone(x0 + CW / 2, yy + 5, CW, Math.max(11, step)).setInteractive({ useHandCursor: !0 });
-      z.on("pointerdown", () => this.go(this.FRONT + i)); z.on("pointerover", () => t.setColor(__BK_RED)); z.on("pointerout", () => t.setColor(__BK_INK));
+const __SP_ETNODE = {};
+for (const [id, nid] of __ETABD) __SP_ETNODE[id] = nid;
+
+function __spSt(S) { const k = S?.skillState; if (!k) return null; k.pick = k.pick && typeof k.pick === "object" ? k.pick : {}; return k.pick }
+function __spOpts(S, lv) {
+  const c = S.classDef.id, o = [...(Ps[c]?.[lv] ?? [])], x = __SPX[c]?.[lv];
+  x && o.push(x);
+  return o.filter(id => Ye[id]);
+}
+function __spName(id) { const d = Ye[id]; try { return St(`abn.${id}`, d?.name ?? id) } catch (e) { return d?.name ?? id } }
+function __spDesc(id) { const d = Ye[id]; try { return St(`abd.${id}`, d?.desc ?? "") } catch (e) { return d?.desc ?? "" } }
+/* saves antigos: o que já estava liberado conta como a escolha daquele nível */
+function __spMigrate(S) {
+  const P = __spSt(S), un = S.skillState.unlocked ?? [];
+  for (const lv of Ne) if (P[lv] == null && lv > 1) { const o = __spOpts(S, lv).find(id => un.includes(id)); o && (P[lv] = o) }
+}
+function __spPending(S) {
+  const P = __spSt(S), lvl = S.stats?.level ?? 1, out = [];
+  for (const lv of Ne) if (lv <= lvl && P[lv] == null && __spOpts(S, lv).length) out.push({ kind: "lv", lv });
+  const nm = S.stats?.nm | 0, done = P.nm | 0;
+  for (let k = done; k < nm; k++) out.push({ kind: "nm", g: k + 1 });
+  return out;
+}
+function __spPassives(S) {
+  const T = __ET[S.classDef.id]; if (!T) return [];
+  const st = __etSt(S), un = S.skillState.unlocked ?? [];
+  /* só passivas que fazem sentido com as habilidades escolhidas */
+  const okReq = q => {
+    if (q.startsWith("ab:")) return un.includes(q.slice(3));
+    const ids = q.startsWith("any:") ? q.slice(4).split("|") : [q.split(":")[0]];
+    return ids.some(id => { const n = __ETIDX[id]?.n; if (!n) return !0; if (n.ab) return (st.r[id] | 0) > 0; return (n.req || []).every(okReq) });
+  };
+  const all = [...T.d.nodes, ...T.a.nodes].filter(n => (n.t === "p" || n.t === "top" || n.t === "nm") && !n.ab && (st.r[n.id] | 0) < n.m && (n.req || []).every(okReq));
+  for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [all[i], all[j]] = [all[j], all[i]] }
+  return all.slice(0, 3);
+}
+function __spApply(S, q, choice) {
+  const P = __spSt(S), k = S.skillState, st = __etSt(S);
+  if (q.kind === "nm") {
+    st.r[choice] = (st.r[choice] | 0) + 1; P.nm = (P.nm | 0) + 1;
+  } else {
+    P[q.lv] = choice;
+    const others = __spOpts(S, q.lv).filter(id => id !== choice);
+    let slot = -1;
+    for (const o of others) {
+      const u = k.unlocked.indexOf(o); u >= 0 && k.unlocked.splice(u, 1);
+      const e = k.equipped.indexOf(o); e >= 0 && (k.equipped[e] = null, slot < 0 && (slot = e));
+    }
+    k.unlocked.includes(choice) || k.unlocked.push(choice);
+    __SP_ETNODE[choice] && (st.r[__SP_ETNODE[choice]] = Math.max(1, st.r[__SP_ETNODE[choice]] | 0));
+    if (!k.equipped.includes(choice)) { const e = slot >= 0 ? slot : k.equipped.findIndex(o => o == null); e >= 0 && (k.equipped[e] = choice) }
+    S.abilities.setEquipped(k.equipped);
+    S.game.events.emit("skills:unlocked", choice);
+  }
+  S.stats.recompute(); __etPersist(S);
+}
+
+/* ── janela de escolha (usa o mesmo caminho de teclado/controle que já existia: U.__etp) ── */
+class __SPPanel {
+  constructor(U) { this.U = U; this.open = !1; this.queue = []; this.sel = 0 }
+  gs() { return this.U.scene.get("Game") }
+  push(q) { if (!this.queue.some(o => o.kind === q.kind && o.lv === q.lv && o.g === q.g)) this.queue.push(q); this.tryShow() }
+  busy() {
+    const S = this.gs(), U = this.U;
+    return !S?.sys?.isActive?.() || S.state !== "playing" || S.player?.dead || S.transitioning || U.result?.isVisible?.() || U.pauseMenu?.open || U.shopUI?.open ||
+      U.storyPanel?.visible || U.blessingPanel?.visible || U.eventPanel?.visible || U.inventoryUI?.open || U.__pactsUI?.open || U.skillTree?.open ||
+      (typeof window.__castleMapOpen === "function" && window.__castleMapOpen()) || (S.uiOpen && !this.open);
+  }
+  tryShow() {
+    if (this.open || !this.queue.length) return;
+    if (this.busy()) { clearTimeout(this.__t); this.__t = setTimeout(() => this.tryShow(), 900); return }
+    this.show(this.queue.shift());
+  }
+  show(q) {
+    const S = this.gs(), U = this.U;
+    const opts = q.kind === "nm" ? __spPassives(S).map(n => ({ id: n.id, n: __etL(n.n), d: __etL(n.d), ic: n.ic, tag: __L3("PASSIVA", "PASSIVE", "PASIVA"), grade: (__etSt(S).r[n.id] | 0) + 1, m: n.m }))
+      : __spOpts(S, q.lv).map(id => ({ id, n: __spName(id), d: __spDesc(id), ic: Ye[id].icon, tag: __SP_ETNODE[id] || /^ET_/.test(id) ? __L3("NOVA", "NEW", "NUEVA") : __L3("DA CLASSE", "CLASS", "DE CLASE"), cost: Ye[id].cost, cd: Ye[id].cooldown }));
+    if (!opts.length) { if (q.kind === "nm") { __spSt(S).nm = (__spSt(S).nm | 0) + 1; __etPersist(S) } return this.tryShow() }
+    this.q = q; this.opts = opts; this.sel = 0; this.open = !0; this.at = performance.now();
+    this.__paused = !S.uiOpen; S.uiOpen = !0; S.time.paused = !0; S.physics?.pause?.(); S.tweens?.pauseAll?.();
+    U.game.events.emit("ui:inventory", !0);
+    S.audioRef?.play?.("sfx-ability-ready");
+    this.draw();
+  }
+  draw() {
+    const U = this.U, q = this.q, n = this.opts.length;
+    this.root?.destroy(!0);
+    const W = typeof _ !== "undefined" ? _ : 640, cx = Math.round(W / 2);
+    const R = this.root = U.add.container(0, 0).setDepth(950);
+    const dim = U.add.rectangle(cx, 180, 4000, 2400, 393738, .9).setInteractive(); R.add(dim);
+    const F = "Georgia, 'Times New Roman', serif";
+    const title = q.kind === "nm" ? `${__L3("PESADELO", "NIGHTMARE", "PESADILLA")} ${__roman ? __roman(q.g) : q.g}` : `${__L3("NÍVEL", "LEVEL", "NIVEL")} ${q.lv}`;
+    R.add(U.add.text(cx, 30, title, { fontFamily: F, fontSize: "20px", fontStyle: "bold", color: "#ffd24a", stroke: "#0a0806", strokeThickness: 4 }).setOrigin(.5));
+    R.add(U.add.text(cx, 56, q.kind === "nm" ? __L3("Escolha UMA passiva — ela fica até o fim da run", "Choose ONE passive — it stays until the end of the run", "Elige UNA pasiva — se queda hasta el final de la partida")
+      : __L3("Escolha UMA habilidade — as outras deste nível ficam fechadas", "Choose ONE skill — the others of this level stay locked", "Elige UNA habilidad — las demás de este nivel quedan cerradas"),
+      { fontFamily: F, fontSize: "11px", fontStyle: "italic", color: "#e8dcc0" }).setOrigin(.5));
+    const cw = Math.min(176, (W - 40) / n - 12), gap = 12, x0 = cx - (n * cw + (n - 1) * gap) / 2 + cw / 2;
+    this.cards = this.opts.map((o, i) => {
+      const x = x0 + i * (cw + gap), y = 184, c = U.add.container(x, y);
+      const g = U.add.graphics(); c.add(g);
+      const ic = U.textures.exists(o.ic) ? U.add.image(0, -66, o.ic).setScale(1.6) : U.add.text(0, -66, "✦", { fontSize: "26px", color: "#ffd24a" }).setOrigin(.5);
+      const tag = U.add.text(0, -98, o.tag, { fontFamily: F, fontSize: "8px", fontStyle: "bold", color: o.tag === __L3("NOVA", "NEW", "NUEVA") ? "#8ae0ff" : "#c9a24a" }).setOrigin(.5);
+      const nm = U.add.text(0, -36, o.n, { fontFamily: F, fontSize: "12.5px", fontStyle: "bold", color: "#ffe9b0", align: "center", wordWrap: { width: cw - 16 } }).setOrigin(.5, 0);
+      const meta = o.grade ? `${__L3("Grau", "Rank", "Grado")} ${o.grade}/${o.m}` : [o.cost ? `${o.cost} ${__L3("de recurso", "resource", "de recurso")}` : null, o.cd ? `${__L3("recarga", "cooldown", "recarga")} ${Math.round(o.cd)} s` : null].filter(Boolean).join("  ·  ");
+      const mt = U.add.text(0, nm.y + nm.height + 4, meta, { fontFamily: F, fontSize: "9px", color: "#a89880", align: "center" }).setOrigin(.5, 0);
+      const ds = U.add.text(0, mt.y + mt.height + 8, o.d, { fontFamily: F, fontSize: "10px", color: "#e8dcc0", align: "center", lineSpacing: 4, wordWrap: { width: cw - 18 } }).setOrigin(.5, 0);
+      c.add([ic, tag, nm, mt, ds]);
+      const z = U.add.zone(0, 0, cw, 240).setInteractive({ useHandCursor: !0 });
+      z.on("pointerover", () => this.select(i)); z.on("pointerdown", () => { this.select(i); this.choose() });
       c.add(z);
-    }
+      c.__g = g; c.__w = cw;
+      c.setAlpha(0).setY(y + 20);
+      U.tweens.add({ targets: c, alpha: 1, y, duration: 260, delay: 80 * i, ease: "Back.easeOut" });
+      R.add(c); return c;
+    });
+    R.add(U.add.text(cx, 340, __L3("◀ ▶ escolher   ·   Enter / A / toque: confirmar", "◀ ▶ choose   ·   Enter / A / tap: confirm", "◀ ▶ elegir   ·   Enter / A / toque: confirmar"), { fontFamily: F, fontSize: "10px", color: "#c9a24a" }).setOrigin(.5));
+    this.select(0);
+  }
+  select(i) {
+    this.sel = i;
+    (this.cards || []).forEach((c, k) => {
+      const on = k === i, g = c.__g, w = c.__w;
+      g.clear(); g.fillStyle(on ? 2763306 : 1315601, .96).fillRoundedRect(-w / 2, -116, w, 240, 8);
+      g.lineStyle(on ? 2 : 1, on ? 16765514 : 5917740, 1).strokeRoundedRect(-w / 2, -116, w, 240, 8);
+      c.setScale(on ? 1.04 : 1);
+    });
+  }
+  choose() {
+    if (!this.open || performance.now() - this.at < 350) return;
+    const S = this.gs(), o = this.opts[this.sel], c = this.cards[this.sel], U = this.U;
+    __spApply(S, this.q, o.id);
+    U.tweens.add({ targets: c, scale: 1.15, duration: 140, yoyo: !0 });
+    this.cards.forEach((k, i) => i !== this.sel && U.tweens.add({ targets: k, alpha: .25, duration: 200 }));
+    S.audioRef?.play?.("sfx-event-accept");
+    U.game.events.emit("ui:banner", `${o.n.toUpperCase()}`, "#ffd24a");
+    this.open = !1;
+    setTimeout(() => this.close(), 420);
+  }
+  close() {
+    const S = this.gs(), U = this.U;
+    this.root?.destroy(!0); this.root = null; this.cards = null;
+    if (S && this.__paused && !this.queue.length) { S.uiOpen = !1; S.time.paused = !1; S.physics?.resume?.(); S.tweens?.resumeAll?.() }
+    !this.queue.length && U.game.events.emit("ui:inventory", !1);
+    this.open = !1;
+    if (this.queue.length) { this.__paused && (S.uiOpen = !1); setTimeout(() => this.tryShow(), 120) }
+  }
+  handleKey(k) {
+    if (!this.open) return !1;
+    if (["ArrowLeft", "a", "A", "Left", "LEFT"].includes(k)) { this.sel > 0 && this.select(this.sel - 1); return !0 }
+    if (["ArrowRight", "d", "D", "Right", "RIGHT"].includes(k)) { this.sel < this.opts.length - 1 && this.select(this.sel + 1); return !0 }
+    if (["Enter", " ", "Space", "CONFIRM", "z", "Z", "e", "E"].includes(k)) { this.choose(); return !0 }
+    return !0;
+  }
+}
+function __spUI(U) { return U.__etp instanceof __SPPanel ? U.__etp : (U.__etp = new __SPPanel(U)) }
+function __spCheck(S, delay = 0) {
+  try {
+    if (!S?.skillState || !S.classDef || S.isRift) return;
+    const U = S.scene.get("UI"); if (!U) return;
+    const P = __spUI(U);
+    setTimeout(() => { if (!S.sys?.isActive?.()) return; for (const q of __spPending(S)) P.push(q) }, delay);
+  } catch (e) { console.warn("[skill-picks]", e) }
+}
+/* ganchos: ao entrar na fase, ao subir de nível e ao ganhar grau de Pesadelo */
+{
+  const C0 = Sd.prototype.create;
+  Sd.prototype.create = function (...a) {
+    const r = C0.apply(this, a);
+    try { if (this.skillState) { __spSt(this); __spMigrate(this); __spCheck(this, 2600); this.game.events.on("rpg:levelup", this.__spLv = () => __spCheck(this, 700)); this.events.once("shutdown", () => this.game.events.off("rpg:levelup", this.__spLv)) } } catch (e) { console.warn("[skill-picks] init", e) }
+    return r;
+  };
+  const X0 = Eh.prototype.addXp;
+  Eh.prototype.addXp = function (i) {
+    const S = this.scene, n0 = this.nm | 0, r = X0.apply(this, arguments);
+    try { (this.nm | 0) > n0 && (S.__etNmSeen = this.nm | 0, __spCheck(S, 1600)) } catch (e) {}
+    return r;
   };
 }
+/* árvore da classe (aba Habilidades): mostra a escolhida; o resto fica fechado; nada se libera por ali */
 {
-  // tabelas auxiliares que não são criaturas (ex.: "anims") não entram no livro
-  const B0 = __bkEntries;
-  __bkEntries = function () { return B0().filter(e => e.boss || (e.d && typeof e.d === "object" && e.d.maxHp && e.d.texture)) };
+  Rd.prototype.nodes = function () {
+    const S = this.gs(), P = __spSt(S) || {}, t = [], ey = { 1: 86, 5: 148, 10: 210, 15: 272 };
+    for (const lv of Ne) {
+      const o = P[lv] ? [P[lv]] : __spOpts(S, lv);
+      o.forEach((id, n) => t.push({ id, level: lv, x: o.length === 1 ? 190 : o.length === 2 ? 130 + n * 120 : 100 + n * 90, y: ey[lv] }));
+    }
+    return t;
+  };
+  Rd.prototype.stateOf = function (id, lv) { const S = this.gs(); return S.skillState.unlocked.includes(id) ? "unlocked" : "locked" };
+  Rd.prototype.unlockSelected = function () {};
 }
+window.__dgSP = { opts: __spOpts, pending: __spPending, ui: __spUI, check: __spCheck, X: __SPX };
 
-/*__BKFIX__*/
+/*__ENDLESSTREES__*/

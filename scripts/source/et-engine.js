@@ -1,14 +1,14 @@
-/* ══ Árvores do Modo Infinito · motor ═══════════════════════════════════════════════════════════════════════
+/* ══ Habilidades extras e passivas (antigo motor das árvores) · motor ═══════════════════════════════════════════════════════════════════════
    Estado em S.skillState.et = {tree:null|"d"|"a", r:{nó:grau}} (vai junto no save e no carry entre andares).
    R(S,id) devolve o grau ativo do nó (0 se não comprado, se for de outra árvore ou se falta a arma exigida). */
 const __etL=a=>Array.isArray(a)?__L3(a[0],a[1]??a[0],a[2]??a[1]??a[0]):a;
 const __etGS=()=>{try{return typeof __etCurS!=="undefined"&&__etCurS?.sys?.isActive?.()?__etCurS:null}catch(e){return null}};
-function __etOn(S){try{return!!S&&!!S.skillState&&!!S.classDef&&!!__ET[S.classDef.id]&&!!S.endlessRun?.()}catch(e){return!1}}
-function __etSt(S){const k=S?.skillState;if(!k)return null;if(!k.et||typeof k.et!=="object")k.et={tree:null,r:{}};k.et.r=k.et.r||{};return k.et}
-function __etTree(S){const st=__etSt(S);return st?.tree?__ET[S.classDef.id]?.[st.tree]??null:null}
-function __etRaw(S,id){const st=__etSt(S),x=__ETIDX[id];if(!st||!x||!st.tree||x.c!==S.classDef.id||x.k!==st.tree)return 0;return st.r[id]|0}
+function __etOn(S){try{return!!S&&!!S.skillState&&!!S.classDef&&!!__ET[S.classDef.id]}catch(e){return!1}}
+function __etSt(S){const k=S?.skillState;if(!k)return null;if(!k.et||typeof k.et!=="object")k.et={tree:"mix",r:{}};k.et.r=k.et.r||{};k.et.tree="mix";return k.et}
+function __etTree(S){const T=__ET[S?.classDef?.id];return T?{n:T.d.n,nodes:[...T.d.nodes,...T.a.nodes]}:null}
+function __etRaw(S,id){const st=__etSt(S),x=__ETIDX[id];if(!st||!x||x.c!==S.classDef.id)return 0;return st.r[id]|0}
 function __etWeapon(S){return S?.inventory?.equipment?.weapon??null}
-function __etHas(S,fam){const F=__ETFAM[fam];if(!F)return!0;const eq=S?.inventory?.equipment;if(!eq)return!1;
+function __etHas(S,fam){return!0;const F=__ETFAM[fam];if(!F)return!0;const eq=S?.inventory?.equipment;if(!eq)return!1;
  if(F.slot)return!!eq[F.slot];if(F.form)return S.__form?.type===F.form&&!S.__etBearOn;if(F.acc)return F.acc.includes(eq.accessory1?.id)||F.acc.includes(eq.accessory2?.id);
  const w=eq.weapon;if(!w)return!1;if(F.ids)return F.ids.includes(w.id);const del=(oe[w.visualKey??w.id]??oe[w.id])?.delivery;
  if(F.melee)return del==="melee";if(F.ranged)return w.id==="blowgun"||del==="arrow";return!0}

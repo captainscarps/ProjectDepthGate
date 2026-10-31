@@ -11,14 +11,8 @@ function __etInit(S,data){const src=data?.carry?.skills??data?.restore?.player?.
  const up=(t,dm)=>{try{__etTick(S,Math.min(.1,dm/1e3))}catch(x){S.__etErr||(S.__etErr=1,console.warn("[et] tick",x))}},pu=()=>{try{__etPost(S)}catch(x){}};
  S.events.on("update",up);S.events.on("postupdate",pu);
  S.events.once("shutdown",()=>{G.off("enemy:died",onDie);G.off("room:cleared",onRoom);G.off("rpg:levelup",onLv);S.events.off("update",up);S.events.off("postupdate",pu);__etCurS===S&&(__etCurS=null)});
- __etMaybeChoose(S,2600)}
-function __etOnLevel(S,lv){const st=__etSt(S);if(lv>=3&&!st.tree){__etMaybeChoose(S,900);return}
- if(st.tree&&lv>=3&&lv<=15)S.time.delayedCall(1300,()=>S.game.events.emit("ui:banner",__L3("+1 ponto na Árvore do Infinito","+1 Endless Tree point","+1 punto en el Árbol del Infinito"),"#ffc14d"));
- S.scene.get("UI")?.refreshSkillsAlert?.()}
-/* abre a escolha das árvores quando o herói chega ao nível 3 (tenta de novo se outra janela estiver aberta) */
-function __etMaybeChoose(S,delay){if(S.__etChooseT)return;S.__etChooseT=1;const tryOpen=()=>{S.__etChooseT=0;if(!S.sys?.isActive?.()||!__etOn(S))return;const st=__etSt(S);if(st.tree||(S.stats.level??1)<3)return;
- const U=S.scene.get("UI"),busy=S.state!=="playing"||S.uiOpen||S.player?.dead||!U||U.result?.isVisible?.()||U.pauseMenu?.open||U.shopUI?.open||U.storyPanel?.visible||U.blessingPanel?.visible||U.eventPanel?.visible||U.__etp?.open;
- if(busy){S.__etChooseT=1;setTimeout(tryOpen,1500);return}__etUI(U).show("choose")};setTimeout(tryOpen,delay)}
+ }
+function __etOnLevel(S,lv){}
 /* ── atributos (passivas de crítico, velocidade, vida, mana) ─────────────────────────────────────────────── */
 {const RC0=Eh.prototype.recompute;Eh.prototype.recompute=function(){const r=RC0.apply(this,arguments),S=this.scene;try{if(!__etOn(S)||!__etSt(S).tree)return r;const i=this.total;
  i.critChance=(i.critChance??0)+4*R(S,"wa_fio")+5*R(S,"ba_afi")+4*R(S,"ma_prec")+5*R(S,"ra_gc")+5*R(S,"ha_olho")+5*R(S,"sa_fio")+5*R(S,"da_garr");
@@ -265,7 +259,6 @@ function __etTick(S,dt){if(!__etOn(S))return;const st=__etSt(S),P=S.player;if(!s
  if(S.__etCoord&&now>=S.__etCoord.until)S.__etCoord=null;if(S.__etDM&&(now>=S.__etDM.until||!__etAlive(S.__etDM.t)))S.__etDM=null;
  if(S.__etBA>0&&now>=(S.__etBAU??0))S.__etBA=0;if(S.__etSh?.length){for(const s of S.__etSh)s.until<=now&&s.amt>0&&s.renew>0&&(s.amt=0,__etShieldBreak(S,s));S.__etSh=S.__etSh.filter(s=>s.until>now&&s.amt>0||s.__pend)}
  const sp=S.__etSpec;if(sp&&now>=sp.until){S.__etSpec=null;P.setAlpha?.(1);try{S.playerVisual?.clearTintAll?.()}catch(e){}if(sp.k>=3){P.hp=Math.max(P.hp,Math.round(P.maxHp*.3));S.game.events.emit("hud:hp",P.hp,P.maxHp);__etFlash(S,P.x,P.y,5963696,60);S.effects.floatText(P.x,P.y-34,__L3("DE VOLTA","BACK FROM THE GRAVE","DE VUELTA"),"#5affb0",12)}else{P.hp=0;sp.D0.call(P);return}}
- const nm=S.stats.nm|0;if(nm>(S.__etNmSeen|0)){S.__etNmSeen=nm;S.time.delayedCall(1800,()=>S.game.events.emit("ui:banner",__L3("+1 ponto de Pesadelo na Árvore do Infinito","+1 Nightmare point on the Endless Tree","+1 punto de Pesadilla en el Árbol del Infinito"),"#ff7a5a"));S.scene.get("UI")?.refreshSkillsAlert?.()}
  __etDraw(S)}
 function __etPost(S){const P=S.player,now=S.time.now;if(!P?.body||!__etOn(S))return;if(now<(S.__etLockU??0)||now<(S.__etIceU??0))P.setVelocity(0,0)}
 function __etReflect(S,p,col){p.hostile=!1;p.dir={x:-p.dir.x,y:-p.dir.y};p.damage=S.stats.rollAbilityDamage(1.4,S.classDef.basicProjectile?.damageType??"physical").amount;p.traveled=0;p.maxDist=Math.max(p.maxDist||0,260);p.noFalloff=!0;
@@ -288,4 +281,4 @@ function __etDraw(S){const P=S.player,now=S.time.now;let g=S.__etOv;if(!g||!g.ac
  const co=S.__etCoord;if(co&&__etAlive(co.t)){const t=co.t,r=12+Math.sin(T*8)*2;g.lineStyle(2,16765514,.9).strokeCircle(t.x,t.y-8,r).lineBetween(t.x-r-5,t.y-8,t.x-r+4,t.y-8).lineBetween(t.x+r-4,t.y-8,t.x+r+5,t.y-8).lineBetween(t.x,t.y-8-r-5,t.x,t.y-8-r+4).lineBetween(t.x,t.y-8+r-4,t.x,t.y-8+r+5)}
  if(now<(S.__etHowlU??0)){const w=__etWolf(S);w&&g.lineStyle(2,12640767,.6).strokeCircle(w.x,w.y-6,14+Math.sin(T*6)*2)}}
 /* acesso para testes automatizados */
-window.__dgET={R,buy:__etBuy,choose:__etChoose,st:__etSt,ui:__etUI,ET:__ET,free:__etFree,why:__etWhyNot,equip:__etEquip};
+window.__dgET={R,buy:__etBuy,choose:__etChoose,st:__etSt,ET:__ET,free:__etFree,why:__etWhyNot,equip:__etEquip};
