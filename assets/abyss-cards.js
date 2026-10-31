@@ -65,6 +65,7 @@
       const old = Array.isArray(run.pacts) ? run.pacts : (scene.game?.registry?.get("endless:activePacts") || []);
       run.cards = [...new Set(old.map((id) => OLD[id] || (BY[id] ? id : null)).filter(Boolean))].slice(0, HAND_MAX);
     }
+    for (let i = run.cards.length - 1; i >= 0; i--) if (!BY[run.cards[i]]) run.cards.splice(i, 1);
     run.pacts = run.cards;
     return run.cards;
   }
@@ -292,7 +293,7 @@
       ui.__cardHud.__sig = "";
     }
     const box = ui.__cardHud, h = hand(g);
-    const busy = ui.__pactsUI?.open;
+    const busy = ui.__pactsUI?.open || ui.inventoryUI?.open;
     box.setVisible(h.length > 0 && !busy);
     const { cx } = view(ui);
     box.setPosition(cx, ui.bossBar?.visible ? 44 : 4);
@@ -679,6 +680,61 @@
       return true;
     }
   }
+
+
+  // ───────────────────────── inventário: aba "Deck do Pacto" ─────────────────────────
+  window.__invDeckTab = function (C, on) {
+    const ui = C?.ui;
+    if (!ui) return;
+    if (!on) { C.__deck?.setVisible(false); return; }
+    ensureTextures(ui, () => {
+      if (C.__logicalTab !== 3 || C.open === false) return;
+      if (!C.__deck || !C.__deck.scene) { C.__deck = ui.add.container(0, 0); C.root.add(C.__deck); }
+      const D = C.__deck;
+      D.removeAll(true);
+      D.setVisible(true);
+      C.root.bringToTop(D);
+      C.closeBtn && C.root.bringToTop(C.closeBtn);
+      const g = C.gs?.() || ui.scene.get("Game"), h = hand(g);
+      const voidEye = h.includes("l3"), eternal = h.includes("l4");
+      D.add(ui.add.text(320, 64, T("CARTAS ATIVAS", "ACTIVE CARDS", "CARTAS ACTIVAS") + `   ${h.length}/${HAND_MAX}`, { fontFamily: FONT, fontSize: "12px", color: "#e8d4a8" }).setOrigin(.5));
+      if (!h.length) {
+        D.add(ui.add.text(320, 190, T("Nenhuma carta ainda.\n\nComungue no Altar do Pacto para tirar cartas.", "No cards yet.\n\nCommune at the Pact Altar to draw cards.", "Aún no hay cartas.\n\nComulga en el Altar del Pacto para sacar cartas."),
+          { fontFamily: FONT, fontSize: "11px", color: "#a89880", align: "center" }).setOrigin(.5));
+      }
+      const S = .56, step = 92;
+      for (let i = 0; i < HAND_MAX; i++) {
+        const x = 320 + (i - (HAND_MAX - 1) / 2) * step, y = 192, id = h[i];
+        if (!id) {
+          if (h.length) {
+            D.add(ui.add.rectangle(x, y, 156 * S - 6, 236 * S - 6, 0x000000, .3).setStrokeStyle(1, 0x5a4636, .8));
+            D.add(ui.add.text(x, y, T("VAZIO", "EMPTY", "VACÍO"), { fontFamily: FONT, fontSize: "9px", color: "#5a4a3c" }).setOrigin(.5));
+          }
+          continue;
+        }
+        const c = makeCard(ui, id, S);
+        setFace(c, true);
+        c.setPosition(x, y);
+        D.add(c);
+        const t = BY[id].type;
+        if ((t === "m" && voidEye) || (t === "p" && eternal)) {
+          const stamp = ui.add.text(x, y - 28, t === "m" ? T("ANULADA", "CANCELLED", "ANULADA") : T("SEM CUSTO", "NO COST", "SIN COSTE"),
+            { fontFamily: FONT, fontSize: "10px", color: "#ffd24a", backgroundColor: "#1a1008", padding: { x: 4, y: 2 } }).setOrigin(.5);
+          if (t === "m") c.inner.list.forEach((o) => o.setTint?.(0x8a8a8a));
+          D.add(stamp);
+          c.__stamp = stamp;
+        }
+        c.hit.on("pointerover", () => { D.bringToTop(c); c.__stamp && D.bringToTop(c.__stamp); ui.tweens.add({ targets: c, scale: S * 1.45, y: y - 12, duration: 140, ease: "Quad.easeOut" }); });
+        c.hit.on("pointerout", () => ui.tweens.add({ targets: c, scale: S, y, duration: 140, ease: "Quad.easeOut" }));
+      }
+      const cnt = { b: 0, p: 0, m: 0, l: 0 };
+      h.forEach((id) => cnt[BY[id].type]++);
+      const parts = ["b", "p", "m", "l"].map((k) => `${T(TYPE[k].pt, TYPE[k].en)} ${cnt[k]}`);
+      D.add(ui.add.text(320, 300, parts.join("   ·   "), { fontFamily: FONT, fontSize: "10px", color: "#a89880" }).setOrigin(.5));
+      D.add(ui.add.text(320, 316, T("▲ ganha   ▼ perde   ·   passe o dedo/mouse numa carta para ampliar", "▲ gain   ▼ lose   ·   hover/touch a card to enlarge", "▲ gana   ▼ pierde   ·   pasa el dedo/ratón por una carta para ampliarla"),
+        { fontFamily: FONT, fontSize: "9px", color: "#7a6a58" }).setOrigin(.5));
+    });
+  };
 
   function roll(h) {
     const out = [];

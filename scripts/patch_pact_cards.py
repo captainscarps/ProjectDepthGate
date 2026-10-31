@@ -27,6 +27,11 @@ REPS = [
     ("goldMult:(t.goldMult??0)+(pct.goldMult??0)}}getBlessingBonus",
      "goldMult:(t.goldMult??0)+(pct.goldMult??0),critMultAdd:(pct.critMultAdd??0)}}getBlessingBonus"),
     ("i.critChance+=t.critAdd??0,", "i.critChance+=t.critAdd??0,i.critMult=(i.critMult??1.5)+(t.critMultAdd??0),"),
+    # inventário do modo infinito: a aba Crônicas vira "Deck do Pacto" (cartas ativas, desenhadas por abyss-cards.js)
+    ('_isEndless?__L3(["EQUIPAMENTO","ATRIBUTOS","CRÔNICAS","HABILIDADES","POÇÕES"],["EQUIPMENT","ATTRIBUTES","CHRONICLES","SKILLS","POTIONS"],["EQUIPO","ATRIBUTOS","CRÓNICAS","HABILIDADES","POCIONES"])',
+     '_isEndless?__L3(["EQUIPAMENTO","ATRIBUTOS","DECK DO PACTO","HABILIDADES","POÇÕES"],["EQUIPMENT","ATTRIBUTES","PACT DECK","SKILLS","POTIONS"],["EQUIPO","ATRIBUTOS","MAZO DEL PACTO","HABILIDADES","POCIONES"])'),
+    ("C.__big.setVisible(!eq&&logicalTab<4);",
+     "C.__big.setVisible(!eq&&logicalTab<4&&!(_isEndless&&logicalTab===3));try{window.__invDeckTab?.(C,!!(_isEndless&&logicalTab===3))}catch(e){}"),
 ]
 for old, new in REPS:
     assert s.count(old) == 1, old
