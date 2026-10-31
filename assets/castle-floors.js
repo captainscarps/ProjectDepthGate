@@ -48,6 +48,7 @@
     const rooms = F.rooms.map((r) => {
       const q = JSON.parse(JSON.stringify(r));
       if (cleared.has(q.id)) { q.enemies = []; if (q.boss) delete q.boss; }
+      if (q.nameI18n) q.name = L(q.nameI18n);
       return q;
     });
     const sp = (arrive && F.arrive?.[arrive]) || F.spawn;
@@ -89,7 +90,7 @@
       setTimeout(go, 0);
     };
     d.__c2drawn = false;
-    ensure(d, [...chunkKeys(F), ...CF], draw);
+    ensure(d, [...chunkKeys(F), ...CF, ...(DATA.props || [])], draw);
     // os outros andares vêm em segundo plano
     setTimeout(() => { if (d.sys?.isActive?.()) for (const id of Object.keys(DATA.floors)) if (id !== F.id) ensure(d, chunkKeys(DATA.floors[id]), () => {}); }, 4000);
     return true;
@@ -162,10 +163,19 @@
         g.__c2.items.push({ id: it.id, gl });
       } catch (e) {}
     }
+    // adereços do andar (mesas, estátuas, colunas…): profundidade pela base e colisão só no pé
+    for (const p of F.props || []) {
+      if (!g.textures.exists(p.t)) continue;
+      const im = g.add.image(p.x, p.y, p.t).setOrigin(.5, 1).setDepth(p.y);
+      if (p.b) {
+        const b = D.solids.create(p.x, p.y - p.b[1] / 2, "light").setVisible(false).setDisplaySize(p.b[0], p.b[1]);
+        b.refreshBody?.();
+      }
+    }
     // livros de registro: salvar e descansar
     for (const sv of F.saves) {
       const x = sv.col * TS + 16, y = sv.row * TS + 16;
-      const book = D.solids.create(x, y, "cx-lectern");
+      const book = D.solids.create(x, y, g.textures.exists("cf-p-lectern") ? "cf-p-lectern" : "cx-lectern");
       book.setDepth(y + 8);
       book.refreshBody?.();
       const gl = g.add.image(x, y - 6, "light").setBlendMode(1).setTint(0x7fe8a0).setScale(.2).setAlpha(.35).setDepth(y + 9);
@@ -304,7 +314,7 @@
       const done = (s.cleared[F.id] || []).includes(q.id) || !(q.enemies?.length || q.boss);
       rect(q.rect, done ? 0x3e6a8a : 0x8a3a30, .9, 0xd8c0a0);
       const z = u.add.zone(ox + (q.rect.x + q.rect.w / 2) * sc, oy + (q.rect.y + q.rect.h / 2) * sc, q.rect.w * sc, q.rect.h * sc).setInteractive({ useHandCursor: true });
-      z.on("pointerdown", () => { label?.setText(q.name + (done ? "" : T("  · inimigos", "  · enemies", "  · enemigos"))); });
+      z.on("pointerdown", () => { label?.setText(L(q.nameI18n || q.name) + (done ? "" : T("  · inimigos", "  · enemies", "  · enemigos"))); });
       R.add(z);
     });
     // portas, escadas, chaves, livros
@@ -329,7 +339,7 @@
       R.add(me);
       u.tweens.add({ targets: me, scale: 1.6, alpha: .4, duration: 600, yoyo: true, repeat: -1 });
     }
-    label = u.add.text(ox, AY + AH + 6, here ? here.name : "", { fontFamily: FONT, fontSize: "11px", color: "#e8d4a8" });
+    label = u.add.text(ox, AY + AH + 6, here ? L(here.nameI18n || here.name) : "", { fontFamily: FONT, fontSize: "11px", color: "#e8d4a8" });
     R.add(label);
     // painel: legenda e itens-chave
     const PX = w - 166, PY = 58;
