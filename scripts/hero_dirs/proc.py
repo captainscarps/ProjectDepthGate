@@ -9,6 +9,9 @@ im=np.array(Image.open(D+'src.png').convert('RGB')).astype(int)
 H,W,_=im.shape
 mn=im.min(2);mx=im.max(2)
 bgc=(mn>188)&((mx-mn)<28)
+# fundo magenta (#FF00FF) ou verde (#00FF00) liso, pedido no prompt v2
+bgc|=(im[...,0]>170)&(im[...,2]>170)&(im[...,1]<110)
+bgc|=(im[...,1]>170)&(im[...,0]<110)&(im[...,2]<110)
 # flood fill do fundo a partir das bordas e da coluna de rótulos
 lab,n=ndimage.label(bgc)
 edge=set(np.unique(np.concatenate([lab[0],lab[-1],lab[:,0],lab[:,-1]])))-{0}
