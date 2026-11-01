@@ -12649,11 +12649,26 @@ try { window.__dgEly = (S) => __guardFight(S.scene.get("UI"), S, () => {}) } cat
 
 /* ══ Cemitério dos Esquecidos ══
    Cenário com os ladrilhos do pack "Graveyard" (assets/pixel-art/endless/gyt-atlas.*, scripts/build_graveyard_tiles.py):
-   chão de grama, platôs com penhasco de terra, bordas de cerca-viva, calçamento de pedra nos corredores,
-   árvores secas, lápides, lanternas e forcas animadas.
+   clareiras de grama de contorno orgânico (sem lados retos) dentro da mata escura, trilhas de pedra quebrada,
+   terra revirada, árvores secas, lápides, lanternas e forcas animadas, e névoa densa em camadas que se move.
    Inimigos do cemitério (gw-*): as folhas trazem 8 direções paradas, não passos. Antes a animação "andar"
    girava o boneco pelas 8 direções. Agora cada um olha para onde anda, com passada, respiro, bote e golpe. */
 let __gyN = 0;
+/* textura de névoa: ruído de valor fractal, repetível nas bordas (256 px, períodos 4/8/16/32) */
+function __gyFogTex(S) {
+  if (S.textures.exists("gy-fog")) return;
+  const N = 256, cv = S.textures.createCanvas("gy-fog", N, N), x = cv.getContext(), im = x.createImageData(N, N), O = im.data;
+  const h = (a, b, p) => { a = ((a % p) + p) % p; b = ((b % p) + p) % p; let q = Math.imul(a * 73856093 ^ b * 19349663 ^ p * 83492791, 1274126177); q ^= q >>> 15; return ((Math.imul(q, 2246822519) >>> 0) % 10007) / 10007 };
+  const vn = (u, v, p) => { const i = Math.floor(u), j = Math.floor(v), fx = u - i, fy = v - j, a = fx * fx * (3 - 2 * fx), b = fy * fy * (3 - 2 * fy), A = h(i, j, p), B = h(i + 1, j, p), C = h(i, j + 1, p), D = h(i + 1, j + 1, p); return A + (B - A) * a + (C - A) * b + (A - B - C + D) * a * b };
+  for (let y = 0; y < N; y++) for (let X = 0; X < N; X++) {
+    let f = 0, w = .5, t = 0;
+    for (const p of [4, 8, 16, 32]) { f += vn(X / N * p, y / N * p, p) * w; t += w; w *= .55 }
+    f /= t;
+    const a = Math.max(0, Math.min(1, (f - .36) * 2.6)), i = (y * N + X) * 4;
+    O[i] = O[i + 1] = O[i + 2] = 255; O[i + 3] = Math.pow(a, 1.35) * 255;
+  }
+  x.putImageData(im, 0, 0); cv.refresh();
+}
 function __gyBake(B) {
   const S = B.scene, M = S.cache.json.get("gyt-atlas");
   if (!M || !S.textures.exists("gyt-atlas")) return !1;
@@ -12669,39 +12684,47 @@ function __gyBake(B) {
   const dist = new Int16Array(C * R).fill(99), q = [];
   for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (F(c, r)) dist[r * C + c] = 0, q.push(c, r);
   for (let i = 0; i < q.length; i += 2) { const c = q[i], r = q[i + 1], d = dist[r * C + c]; for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const x = c + dc, y = r + dr; if (x < 0 || y < 0 || x >= C || y >= R || dist[y * C + x] <= d + 1) continue; dist[y * C + x] = d + 1; q.push(x, y) } }
-  // corredores com calçamento
-  const path = new Uint8Array(C * R);
-  for (const k of B.level.corridors || []) for (let y = k.y; y < k.y + k.h; y++) for (let x = k.x; x < k.x + k.w; x++) if (F(x, y)) path[y * C + x] = 1;
-  g.fillStyle = "#0e1612"; g.fillRect(0, 0, C * T, R * T);
-  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
-    const d = dist[r * C + c];
-    if (d === 0) { put(path[r * C + c] ? "stone" : rnd() < .012 ? "patch" : "grass", c, r); continue }
-    if (d > 7) continue;
-    // platô: grama alta; bordas conforme o chão vizinho
-    const below = F(c, r + 1), below2 = F(c, r + 2), below3 = F(c, r + 3), above = F(c, r - 1), above2 = F(c, r - 2), left = F(c - 1, r), right = F(c + 1, r);
-    if (below) put("cliff3", c, r);
-    else if (below2 && Wl(c, r + 1)) put("cliff2", c, r);
-    else if (below3 && Wl(c, r + 1) && Wl(c, r + 2)) put("cliff1", c, r);
-    else {
-      put("grass", c, r);
-      if (above) { g.drawImage(src, ...pick(M.t.edgeTop), T, T, c * T, r * T, T, T) }
-      else if (above2 && Wl(c, r - 1)) put("edgeTop2", c, r);
-      else if (right) put("sideR", c, r);
-      else if (left) put("sideL", c, r);
-      else if (d >= 3) put("dark", c, r);
+  // ── chão orgânico: nada de lados retos. A borda entre clareira e mata é um campo suave (bilinear dos ladrilhos)
+  //    torcido por ruído; as cores vêm dos ladrilhos do pack (grama, mata escura, calçamento, terra revirada).
+  const W0 = C * T, H0 = R * T;
+  const ac = document.createElement("canvas"); ac.width = src.width; ac.height = src.height;
+  const acx = ac.getContext("2d"); acx.drawImage(src, 0, 0); const AD = acx.getImageData(0, 0, ac.width, ac.height).data, AW = ac.width;
+  const seedI = sd | 0, hash = (x, y) => { let h = (x * 374761393 + y * 668265263 + seedI) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296 };
+  const vn = (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), A = hash(xi, yi), Bq = hash(xi + 1, yi), Cq = hash(xi, yi + 1), Dq = hash(xi + 1, yi + 1); return A + (Bq - A) * u + (Cq - A) * v + (A - Bq - Cq + Dq) * u * v };
+  const ff = new Float32Array(C * R), pf = new Float32Array(C * R);
+  for (let k = 0; k < C * R; k++) ff[k] = dist[k] === 0 ? 1 : 0;
+  for (const k of B.level.corridors || []) for (let y = k.y; y < k.y + k.h; y++) for (let x = k.x; x < k.x + k.w; x++) if (F(x, y)) pf[y * C + x] = 1;
+  const bil = (A, x, y) => { x = x / T - .5; y = y / T - .5; const x0 = Math.max(0, Math.min(C - 1, Math.floor(x))), y0 = Math.max(0, Math.min(R - 1, Math.floor(y))), x1 = Math.min(C - 1, x0 + 1), y1 = Math.min(R - 1, y0 + 1), fx = Math.max(0, Math.min(1, x - x0)), fy = Math.max(0, Math.min(1, y - y0)); return (A[y0 * C + x0] * (1 - fx) + A[y0 * C + x1] * fx) * (1 - fy) + (A[y1 * C + x0] * (1 - fx) + A[y1 * C + x1] * fx) * fy };
+  const df = new Float32Array(C * R); for (let k = 0; k < C * R; k++) df[k] = Math.min(dist[k], 9);
+  const px = (p, x, y) => ((p[1] + y) * AW + p[0] + x) * 4;
+  const G1 = px(M.t.grass[0], 6, 6), G2 = px(M.t.dark[0], 6, 6);
+  const grass = [AD[G1], AD[G1 + 1], AD[G1 + 2]], dark = [AD[G2], AD[G2 + 1], AD[G2 + 2]];
+  const stoneT = M.t.stone, dirtT = [1, 2, 5, 6].map((i) => M.t.cliff2[i]).filter(Boolean);
+  const img = g.createImageData(W0, H0), O = img.data;
+  for (let cy = 0; cy < H0; cy += 2) for (let cx = 0; cx < W0; cx += 2) {
+    const n = vn(cx / 46, cy / 46) * .55 + vn(cx / 17, cy / 17) * .3 + vn(cx / 6, cy / 6) * .15;
+    const fv = bil(ff, cx, cy) + (n - .5) * .78;
+    const tc = cx >> 5, tr = cy >> 5, lx = cx & 31, ly = cy & 31;
+    let kind = 0, tile = null, m = 1, e = 1;
+    if (fv > .5) {
+      const pv = bil(pf, cx, cy) + (vn(cx / 13 + 91, cy / 13) - .5) * .8, gap = vn(cx / 5 + 7, cy / 5 + 3), dirt = vn(cx / 30 + 50, cy / 30 + 50);
+      if (pv > .56 && gap > .22) { kind = 1; tile = stoneT[(hash(tc, tr) * stoneT.length) | 0]; m = .82 + n * .3 }
+      else if (dirt > .83 && pv < .4) { kind = 1; tile = dirtT[(hash(tc + 3, tr) * dirtT.length) | 0]; m = .72 + n * .25 }
+      else { kind = 0; m = .8 + n * .32 + (hash(cx, cy) < .05 ? .14 : hash(cy, cx) < .05 ? -.12 : 0) }
+      if (fv < .64) e = .72 + (fv - .5) * 2; // sombra suave na beirada da clareira
+    } else {
+      kind = 2; const d = bil(df, cx, cy); m = (.62 + n * .38) * Math.max(.1, 1 - Math.max(0, d - .55) * .26) * (fv > .4 && hash(cx + 1, cy) < .35 ? 1.18 : 1);
+    }
+    for (let k = 0; k < 4; k++) {
+      const dx = k & 1, dy = k >> 1, i = ((cy + dy) * W0 + cx + dx) * 4;
+      let r, gg, b;
+      if (kind === 1) { const q = px(tile, lx + dx, ly + dy); r = AD[q]; gg = AD[q + 1]; b = AD[q + 2] }
+      else if (kind === 0) { r = grass[0]; gg = grass[1]; b = grass[2] }
+      else { r = dark[0]; gg = dark[1]; b = dark[2] }
+      const f = m * e; O[i] = r * f; O[i + 1] = gg * f; O[i + 2] = b * f; O[i + 3] = 255;
     }
   }
-  // escurece o platô longe das salas com gradiente suave (mapa pequeno ampliado com suavização)
-  const sh = document.createElement("canvas"); sh.width = C; sh.height = R;
-  const sg = sh.getContext("2d"), id = sg.createImageData(C, R);
-  for (let k = 0; k < C * R; k++) { const d = dist[k]; id.data[k * 4] = 6; id.data[k * 4 + 1] = 10; id.data[k * 4 + 2] = 8; id.data[k * 4 + 3] = d <= 1 ? 0 : Math.min(235, (d - 1) * 46) }
-  sg.putImageData(id, 0, 0);
-  g.imageSmoothingEnabled = !0; g.imageSmoothingQuality = "high"; g.drawImage(sh, 0, 0, C, R, 0, 0, C * T, R * T); g.imageSmoothingEnabled = !1;
-  // sombra ao pé dos penhascos
-  for (let r = 1; r < R; r++) for (let c = 0; c < C; c++) {
-    if (!F(c, r) || F(c, r - 1)) continue;
-    const q2 = g.createLinearGradient(0, r * T, 0, r * T + 12); q2.addColorStop(0, "rgba(0,0,0,.42)"); q2.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = q2; g.fillRect(c * T, r * T, T, 12);
-  }
+  g.putImageData(img, 0, 0);
   tx.refresh();
   S.add.image(0, 0, key).setOrigin(0).setDepth(-2);
   B.groundLayer?.setVisible(!1); B.wallLayer?.setVisible(!1);
@@ -12714,11 +12737,11 @@ function __gyBake(B) {
   for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
     const d = dist[r * C + c];
     if (d < 1 || d > 3) continue;
-    if (F(c, r + 1) || F(c, r + 2)) continue; // não cobre o penhasco
+    if (F(c, r - 1)) continue; // não cobre a beira da clareira
     const gk = (c >> 1) + "," + (r >> 1);
     if (grid.has(gk)) continue;
     const roll = rnd();
-    if (roll < .34 && trees.length) { grid.add(gk); const x = c * T + 16 + (rnd() - .5) * 10, y = (r + 1) * T; list.push(S.add.image(x, y, pick(trees)).setOrigin(.5, 1).setDepth(y).setTint(0xc8d0c8)) }
+    if (roll < .42 && trees.length) { grid.add(gk); const x = c * T + 16 + (rnd() - .5) * 10, y = (r + 1) * T; list.push(S.add.image(x, y, pick(trees)).setOrigin(.5, 1).setDepth(y).setTint(0xc8d0c8)) }
     else if (roll < .5 && stones.length) { grid.add(gk); const x = c * T + 16, y = (r + 1) * T - 4; list.push(S.add.image(x, y, pick(stones)).setOrigin(.5, 1).setDepth(y)) }
     else if (roll < .58 && fences.length && d === 1) { const x = c * T + 16, y = (r + 1) * T - 6; list.push(S.add.image(x, y, pick(fences)).setOrigin(.5, 1).setDepth(y)) }
   }
@@ -12741,8 +12764,13 @@ function __gyBake(B) {
       if (kind !== "gallows" && S.textures.exists("light")) { const gl = S.add.image(x + 9, y - 34, "light").setBlendMode(j.BlendModes.ADD).setTint(0xffc46a).setScale(.22).setAlpha(.45).setDepth(y + 1); S.tweens.add({ targets: gl, alpha: .25, duration: 700 + rnd() * 500, yoyo: !0, repeat: -1 }); B.lightSources?.push?.({ x: x + 9, y: y - 34, type: "CANDLE" }) }
     }
   }
-  // névoa rasteira
-  for (let k = 0; k < 5; k++) { const x = rnd() * C * T, y = rnd() * R * T, f = S.add.image(x, y, "light").setScale(2.6 + rnd() * 2).setTint(9076904).setAlpha(.09).setDepth(8999); S.tweens.add({ targets: f, x: x + 180, duration: 18e3 + rnd() * 8e3, yoyo: !0, repeat: -1, ease: "Sine.easeInOut" }) }
+  // névoa densa: duas camadas de ruído fractal repetível, uma rasteira (abaixo dos personagens) e uma fina por cima
+  __gyFogTex(S);
+  const fogA = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.9).setAlpha(.62).setTint(0xc9d4cc).setTileScale(2.2);
+  const fogB = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(8990).setAlpha(.2).setTint(0xaebbb3).setTileScale(3.4);
+  const fogC = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.95).setAlpha(.34).setTint(0xdfe6e0).setTileScale(1.3).setFlipY(!0);
+  const drift = (t, dms) => { const k = dms / 1000; fogA.tilePositionX += 5.5 * k; fogA.tilePositionY += 1.2 * k; fogB.tilePositionX -= 3.2 * k; fogB.tilePositionY += .8 * k; fogC.tilePositionX += 9 * k; fogC.tilePositionY -= 1.6 * k; fogA.setAlpha(.56 + Math.sin(t / 5200) * .07); fogB.setAlpha(.18 + Math.sin(t / 7300 + 1) * .05) };
+  S.events.on("update", drift); S.events.once("shutdown", () => S.events.off("update", drift));
   // só desenha o que está perto da câmera
   let lc = 0; const cull = () => { const now = S.time.now; if (now - lc < 90) return; lc = now; const v = S.cameras.main.worldView, x1 = v.x - 140, x2 = v.right + 140, y1 = v.y - 160, y2 = v.bottom + 160; for (const o of list) o.active && o.setVisible(o.x >= x1 && o.x <= x2 && o.y >= y1 && o.y <= y2) };
   S.events.on("update", cull); S.events.once("shutdown", () => S.events.off("update", cull));
@@ -12811,5 +12839,7 @@ function __gyBake(B) {
 }
 /* no cemitério, só os mortos-vivos do próprio cemitério */
 try { for (const [k, g] of Object.entries(ga)) if (k !== "GRAVEYARD" && g.biomes?.includes("graveyard")) g.biomes = g.biomes.filter((b) => b !== "graveyard") } catch (e) {}
+/* placas quadradas de estrada soltas no chão destoam do contorno orgânico: fora da decoração do cemitério */
+try { if (ed.graveyard) ed.graveyard.flat = ed.graveyard.flat.filter((k) => !/^gy-road/.test(k)) } catch (e) {}
 
 /*__ENDLESSTREES__*/
