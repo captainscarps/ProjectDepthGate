@@ -53,31 +53,94 @@ const __BX = {
   },
 };
 {
-  /* avisos no chão: brilho do elemento crescendo por baixo do desenho */
-  const sh0 = (S, x, y, r, ms, col, al = .45) => {
-    if (!S.textures.exists("light")) return null;
-    const g = S.add.image(x, y, "light").setBlendMode(j.BlendModes.ADD).setTint(col).setScale(r / 70).setAlpha(0).setDepth(29);
-    S.tweens.add({ targets: g, alpha: al, duration: ms * .9, ease: "Quad.easeIn" });
-    S.time.delayedCall(ms + 40, () => g.active && S.tweens.add({ targets: g, alpha: 0, scale: g.scale * 1.3, duration: 180, onComplete: () => g.destroy() }));
-    return g;
+  /* avisos no chão: em vez de linhas retas, mancha de energia com borda irregular que vai enchendo,
+     rachaduras abrindo, partículas do elemento na borda e brilho no chão */
+  const texs = (S) => {
+    __FX.tex(S);
+    if (S.textures.exists("fx2-disc")) return;
+    const mkN = (k, W, H, shape) => {
+      const t = S.textures.createCanvas(k, W, H), g = t.getContext(), img = g.createImageData(W, H), d = img.data;
+      const nz = (x, y) => { const v = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453; return v - Math.floor(v) };
+      const sm = (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, a = nz(xi, yi), b = nz(xi + 1, yi), c = nz(xi, yi + 1), e = nz(xi + 1, yi + 1), u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf); return a + (b - a) * u + (c - a) * v + (a - b - c + e) * u * v };
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        const q = shape(x / W * 2 - 1, y / H * 2 - 1), n = sm(x / 9, y / 9) * .6 + sm(x / 4, y / 4) * .4, edge = q + (n - .5) * .34;
+        let al = 0;
+        if (edge < 1) { const rim = Math.max(0, 1 - Math.abs(edge - .9) / .1); al = (.22 + edge * .35) * (.75 + n * .5) + rim * .7 }
+        const i = (y * W + x) * 4; d[i] = d[i + 1] = d[i + 2] = 255; d[i + 3] = Math.min(255, al * 255);
+      }
+      g.putImageData(img, 0, 0); t.refresh();
+    };
+    mkN("fx2-disc", 128, 128, (u, v) => Math.hypot(u, v));
+    mkN("fx2-lane", 160, 64, (u, v) => Math.sqrt(Math.pow(Math.abs(u), 6) + v * v));
+  };
+  const elOf = (S, col) => { const b = S.boss; return b && !b.dead && b.active ? __bossEl(b) : (__fxElOf({ tint: col }) ?? "fire") };
+  const crackLines = (S, x, y, len, rot, n, col, depth) => {
+    const g = S.add.graphics().setDepth(depth).setBlendMode(j.BlendModes.ADD), L = [];
+    for (let k = 0; k < n; k++) { let a = rot + (k / n) * 6.28 + Math.random() * .5, px = 0, py = 0; const pts = [[0, 0]]; for (let s = 0; s < 5; s++) { a += (Math.random() - .5) * .8; px += Math.cos(a) * len / 5; py += Math.sin(a) * len / 5 * .75; pts.push([px, py]) } L.push(pts) }
+    return { g, draw(t, al) { g.clear(); for (const pts of L) { const m = Math.max(1, Math.floor(pts.length * t)); g.lineStyle(2, col, al); g.beginPath(); g.moveTo(x + pts[0][0], y + pts[0][1]); for (let i = 1; i <= m && i < pts.length; i++) g.lineTo(x + pts[i][0], y + pts[i][1]); g.strokePath() } } };
+  };
+  const rimEmit = (S, el, src, depth, freq) => {
+    if (!__FX.ok()) return null;
+    const P = __FX.PAL[el], tx = el === "fire" ? "fx2-flame" : el === "ice" ? "fx2-flake" : el === "poison" || el === "nature" ? "fx2-bubble" : "fx2-dot";
+    try {
+      const e = S.add.particles(0, 0, tx, { emitZone: { type: "random", source: src }, frequency: freq / __FX.q, lifespan: { min: 300, max: 650 }, speed: { min: 6, max: 24 }, angle: { min: 250, max: 290 }, scale: { start: .6, end: .1 }, alpha: { start: .75, end: 0 }, tint: [P.mid, P.out, P.light], gravityY: el === "fire" ? -60 : el === "ice" ? 10 : -20, blendMode: "ADD" }).setDepth(depth);
+      __FX.live++; return e;
+    } catch (err) { return null }
+  };
+  const run = (S, ms, parts, onTick, cb) => {
+    let done = !1;
+    const end = (fire) => { if (done) return; done = !0; tw.stop(); for (const p of parts) { if (!p) continue; if (p.stop && p.type === "ParticleEmitter") { p.stop(); S.time.delayedCall(700, () => { __FX.live--; p.destroy() }) } else p.destroy?.() } fire && cb?.() };
+    const tick = (t) => { try { onTick(t) } catch (e) { tick.e || console.warn("[telegraph] tick", e?.message); tick.e = 1 } }, o = { t: 0 }, tw = S.tweens.add({ targets: o, t: 1, duration: ms, onUpdate: () => tick(o.t), onComplete: () => end(!0) });
+    tick(0);
+    return { cancel: () => end(!1) };
   };
   const CI0 = Gh.prototype.circle, RE0 = Gh.prototype.rect;
-  Gh.prototype.circle = function (x, y, r, ms, col, cb) {
-    const S = this.scene, h = CI0.apply(this, arguments);
-    try {
-      const g = sh0(S, x, y, r, ms, col), b = S.boss, atk = b && !b.dead ? b.currentAttack : null;
-      if (atk === "FIRE_METEOR") S.time.delayedCall(ms * .35, () => __BX.fall(S, x, y, ms * .65, "fire", "meteor"));
-      else if (atk === "ICE_SHARDS") S.time.delayedCall(ms * .4, () => __BX.fall(S, x, y, ms * .6, "ice", "ice"));
-      else if (atk === "ROCKS") S.time.delayedCall(ms * .4, () => __BX.fall(S, x, y, ms * .6, "fire", "rock"));
-      if (g && h?.cancel) { const c0 = h.cancel; h.cancel = () => { g.destroy(); c0() } }
-    } catch (e) {}
-    return h;
+  Gh.prototype.circle = function (x, y, r, ms, col, cb) { try { return CIRC.apply(this, arguments) } catch (e) { console.warn("[telegraph]", e); return CI0.apply(this, arguments) } };
+  Gh.prototype.rect = function (x, y, w, h, rot, ms, col, cb) { try { return RECT.apply(this, arguments) } catch (e) { console.warn("[telegraph]", e); return RE0.apply(this, arguments) } };
+  const CIRC = function (x, y, r, ms, col, cb) {
+    const S = this.scene;
+    texs(S);
+    const el = elOf(S, col), P = __FX.PAL[el], dp = 29;
+    const base = S.add.image(x, y, "fx2-disc").setTint(P.deep).setAlpha(.5).setDepth(dp).setDisplaySize(r * 2.1, r * 1.5).setRotation(Math.random() * 6.28);
+    const fill = S.add.image(x, y, "fx2-disc").setTint(P.out).setBlendMode(j.BlendModes.ADD).setDepth(dp + .1).setRotation(Math.random() * 6.28);
+    const glow = S.textures.exists("light") ? S.add.image(x, y, "light").setTint(P.light).setBlendMode(j.BlendModes.ADD).setDepth(dp + .2).setScale(r / 80) : null;
+    const cr = crackLines(S, x, y, r * .95, Math.random() * 6.28, 6, P.mid, dp + .15);
+    const em = rimEmit(S, el, new j.Geom.Ellipse(0, 0, 0, 0), dp + .3, Math.max(14, 900 / r));
+    const zone = em ? new j.Geom.Ellipse(x, y, r * 2, r * 1.45) : null;
+    if (em) em.clearEmitZones(), em.addEmitZone({ type: "edge", source: zone, quantity: 32 });
+    const b = S.boss, atk = b && !b.dead ? b.currentAttack : null;
+    if (atk === "FIRE_METEOR") S.time.delayedCall(ms * .35, () => __BX.fall(S, x, y, ms * .65, "fire", "meteor"));
+    else if (atk === "ICE_SHARDS") S.time.delayedCall(ms * .4, () => __BX.fall(S, x, y, ms * .6, "ice", "ice"));
+    else if (atk === "ROCKS") S.time.delayedCall(ms * .4, () => __BX.fall(S, x, y, ms * .6, "fire", "rock"));
+    return run(S, ms, [base, fill, glow, cr.g, em], (t) => {
+      const pul = .85 + Math.sin(t * 40) * .15 * t;
+      fill.setDisplaySize(r * 2.1 * t, r * 1.5 * t).setAlpha((.25 + t * .5) * pul);
+      base.setAlpha(.35 + t * .3);
+      glow && glow.setAlpha(t * .45 * pul);
+      cr.draw(t, .35 + t * .55);
+    }, cb);
   };
-  Gh.prototype.rect = function (x, y, w, hh, rot, ms, col, cb) {
-    const S = this.scene, h = RE0.apply(this, arguments);
-    try { const g = sh0(S, x, y, Math.max(w, hh) * .6, ms, col, .22); g && g.setScale(w / 150, hh / 150).setRotation(rot); if (g && h?.cancel) { const c0 = h.cancel; h.cancel = () => { g.destroy(); c0() } } } catch (e) {}
-    return h;
+  const RECT = function (x, y, w, h, rot, ms, col, cb) {
+    const S = this.scene;
+    texs(S);
+    const el = elOf(S, col), P = __FX.PAL[el], dp = 29, cs = Math.cos(rot), sn = Math.sin(rot);
+    const x0 = x - cs * w / 2, y0 = y - sn * w / 2;
+    const base = S.add.image(x, y, "fx2-lane").setTint(P.deep).setAlpha(.5).setDepth(dp).setDisplaySize(w * 1.04, h * 1.25).setRotation(rot);
+    const fill = S.add.image(x0, y0, "fx2-lane").setOrigin(0, .5).setTint(P.out).setBlendMode(j.BlendModes.ADD).setDepth(dp + .1).setRotation(rot);
+    const glow = S.textures.exists("light") ? S.add.image(x, y, "light").setTint(P.light).setBlendMode(j.BlendModes.ADD).setDepth(dp + .2).setRotation(rot).setScale(w / 160, h / 110) : null;
+    const cr = crackLines(S, x0 + cs * 8, y0 + sn * 8, w * .9, rot, 1, P.mid, dp + .15);
+    const cr2 = crackLines(S, x, y, Math.min(w, h) * .5, rot, 4, P.mid, dp + .15);
+    const em = rimEmit(S, el, new j.Geom.Rectangle(0, 0, 1, 1), dp + .3, Math.max(12, 1600 / w));
+    if (em) { const pts = []; for (let k = 0; k < 24; k++) { const u = (k / 23 - .5) * w, side = k % 2 ? 1 : -1; pts.push({ x: x + cs * u - sn * side * h / 2, y: y + sn * u + cs * side * h / 2 }) } em.clearEmitZones(), em.addEmitZone({ type: "random", source: { getRandomPoint: (pt) => { const q = pts[Math.random() * pts.length | 0]; pt.x = q.x + (Math.random() - .5) * 6; pt.y = q.y + (Math.random() - .5) * 6; return pt } } }) }
+    return run(S, ms, [base, fill, glow, cr.g, cr2.g, em], (t) => {
+      const pul = .85 + Math.sin(t * 40) * .15 * t;
+      fill.setDisplaySize(Math.max(1, w * t), h * 1.1).setAlpha((.25 + t * .5) * pul);
+      base.setAlpha(.35 + t * .3);
+      glow && glow.setAlpha(t * .3 * pul);
+      cr.draw(t, .3 + t * .6); cr2.draw(t, .25 + t * .5);
+    }, cb);
   };
+  Gh.prototype.line = function () { return this.rect.apply(this, arguments) };
 }
 {
   const P = hh.prototype, W = (name, fn) => { const f0 = P[name]; if (typeof f0 !== "function") return; P[name] = function () { const alive = !this.dead, S = this.scene; S.__fxBossEl = __bossEl(this); let r; try { r = f0.apply(this, arguments) } finally { S.__fxBossEl = null } try { alive && fn.apply(this, arguments) } catch (e) { console.warn("[boss-fx]", name, e) } return r } };
