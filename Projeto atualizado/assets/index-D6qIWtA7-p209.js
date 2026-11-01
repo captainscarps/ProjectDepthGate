@@ -12734,6 +12734,30 @@ function __gyBake(B) {
   const ex = (k) => S.textures.exists(k), trees = ["gy-tree1", "gy-tree2", "gy-tree3", "gy-tree4", "gy-tree5", "gy-tree6", "gy-tree7", "gy-tree8", "gy-tree9", "gy-tree10"].filter(ex);
   const stones = Array.from({ length: 31 }, (_, i) => "gy-statue" + (i + 1)).filter(ex), fences = Array.from({ length: 10 }, (_, i) => "gy-fence" + (i + 1)).filter(ex);
   const grid = new Set(), list = [];
+  // mausoléus e criptas na mata, de frente para as clareiras (só onde caibem inteiros sobre a mata)
+  {
+    const kinds = [["gyt-maus", 4, 7, 2], ["gy-decor1", 3, 3, 1], ["gy-decor2", 2, 3, 1]].filter((k) => ex(k[0]));
+    const placed = [], maxN = Math.max(2, Math.round((B.level.rooms || []).length * .7));
+    const fits = (c0, r1, w, h) => { for (let r = r1 - h + 1; r <= r1; r++) for (let c = c0; c < c0 + w; c++) if (c < 0 || r < 0 || c >= C || r >= R || F(c, r)) return !1; return !0 };
+    const cand = [];
+    for (let r = 2; r < R - 2; r++) for (let c = 1; c < C - 4; c++) if (!F(c, r) && (F(c + 1, r + 1) || F(c + 1, r + 2)) && !F(c + 1, r)) cand.push([c, r]);
+    for (let k = cand.length - 1; k > 0; k--) { const j2 = rnd() * (k + 1) | 0; [cand[k], cand[j2]] = [cand[j2], cand[k]] }
+    for (const [c, r] of cand) {
+      if (placed.length >= maxN) break;
+      const nBig = placed.filter((q) => q.big).length, order = kinds.filter((k) => k[3] === 2 ? nBig < Math.ceil(maxN * .6) : rnd() < .5);
+      let kd = null, c0 = 0;
+      for (const k of order) { const cc = c - (k[1] >> 1) + 1; if (fits(cc, r, k[1], k[2]) && !placed.some((q) => Math.abs(q.c - cc) < 8 && Math.abs(q.r - r) < 8)) { kd = k; c0 = cc; break } }
+      if (!kd) continue;
+      const [tk, w, h, big] = kd;
+      const x = (c0 + w / 2) * T, y = (r + 1) * T - 2;
+      const sh2 = S.add.ellipse(x + 6, y - 2, w * T * 1.05, 18, 0, .38).setDepth(.5);
+      const o = S.add.image(x, y, tk).setOrigin(.5, 1).setDepth(y).setTint(0xdfe3dd).setFlipX(rnd() < .5);
+      list.push(o, sh2);
+      if (big === 2 && S.textures.exists("light")) { const gl = S.add.image(x + (o.flipX ? 16 : -16), y - 30, "light").setBlendMode(j.BlendModes.ADD).setTint(0x9fc4ff).setScale(.2).setAlpha(.18).setDepth(y + 1); S.tweens.add({ targets: gl, alpha: .08, duration: 1600 + rnd() * 900, yoyo: !0, repeat: -1 }); list.push(gl) }
+      placed.push({ c: c0, r, big: big === 2 });
+      for (let rr = r - h; rr <= r + 1; rr++) for (let cc = c0 - 1; cc <= c0 + w; cc++) grid.add((cc >> 1) + "," + (rr >> 1));
+    }
+  }
   for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
     const d = dist[r * C + c];
     if (d < 1 || d > 3) continue;
@@ -12785,7 +12809,7 @@ function __gyBake(B) {
   const P0 = bo.prototype.preload;
   bo.prototype.preload = function () {
     const r = P0.apply(this, arguments);
-    try { const L = this.load, op = L.path; L.setPath(""); this.textures.exists("gyt-atlas") || L.image("gyt-atlas", "assets/pixel-art/endless/gyt-atlas.png"); L.json("gyt-atlas", "assets/pixel-art/endless/gyt-atlas.json"); L.setPath(op) } catch (e) {}
+    try { const L = this.load, op = L.path; L.setPath(""); this.textures.exists("gyt-atlas") || L.image("gyt-atlas", "assets/pixel-art/endless/gyt-atlas.png"); this.textures.exists("gyt-maus") || L.image("gyt-maus", "assets/pixel-art/endless/gyt-maus.png"); L.json("gyt-atlas", "assets/pixel-art/endless/gyt-atlas.json"); L.setPath(op) } catch (e) {}
     return r;
   };
 }

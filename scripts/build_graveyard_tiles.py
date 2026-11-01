@@ -44,7 +44,44 @@ def main():
             os.makedirs(d, exist_ok=True)
             sheet.save(os.path.join(d, "gyt-atlas.png"), optimize=True)
             json.dump(meta, open(os.path.join(d, "gyt-atlas.json"), "w"), separators=(",", ":"))
-    print("atlas", sheet.size, len(ids), "ladrilhos")
+    maus = mausoleum()
+    for base in (ROOT, os.path.join(ROOT, "Projeto atualizado")):
+        d = os.path.join(base, "assets", "pixel-art", "endless")
+        if os.path.isdir(d):
+            maus.save(os.path.join(d, "gyt-maus.png"), optimize=True)
+    print("atlas", sheet.size, len(ids), "ladrilhos; mausoléu", maus.size)
+
+
+def mausoleum():
+    """Mausoléu montado pelo autor do pack em GraveyardTileset.png (metade direita, sem a grama de baixo),
+    com porta de ferro em arco, degrau e musgo na base."""
+    from PIL import ImageDraw
+    t = Image.open(os.path.join(PACK, "1 Tiles", "GraveyardTileset.png")).convert("RGBA")
+    m = t.crop((128, 0, 256, 224))
+    d = ImageDraw.Draw(m)
+    cx, w, top, bot = 48, 30, 168, 222
+    frame, dark, iron = (104, 98, 92, 255), (22, 20, 26, 255), (92, 96, 104, 255)
+    # moldura de pedra e vão escuro em arco
+    d.rectangle((cx - w // 2 - 4, top - 2, cx + w // 2 + 3, bot), fill=frame)
+    d.ellipse((cx - w // 2 - 4, top - 14, cx + w // 2 + 3, top + 12), fill=frame)
+    d.rectangle((cx - w // 2, top, cx + w // 2 - 1, bot), fill=dark)
+    d.ellipse((cx - w // 2, top - 10, cx + w // 2 - 1, top + 10), fill=dark)
+    for x in range(cx - w // 2 + 3, cx + w // 2 - 1, 5):
+        d.line((x, top - 6 if abs(x - cx) < 9 else top - 2, x, bot), fill=iron)
+    d.line((cx - w // 2, top + 18, cx + w // 2 - 1, top + 18), fill=iron)
+    d.line((cx - w // 2, top + 36, cx + w // 2 - 1, top + 36), fill=iron)
+    d.rectangle((cx - 2, top + 24, cx + 1, top + 28), fill=(150, 130, 70, 255))
+    # degrau
+    d.rectangle((cx - w // 2 - 8, bot - 2, cx + w // 2 + 7, bot + 1), fill=(150, 142, 132, 255))
+    # musgo na base
+    import random
+    rnd = random.Random(7)
+    for x in range(0, 128):
+        h = rnd.choice([0, 0, 1, 2, 3, 4])
+        for y in range(224 - h, 224):
+            if m.getpixel((x, y))[3] > 0 and not (cx - w // 2 - 8 <= x <= cx + w // 2 + 7):
+                m.putpixel((x, y), (92, 128, 84, 255) if rnd.random() < .7 else (70, 104, 66, 255))
+    return m
 
 
 if __name__ == "__main__":
