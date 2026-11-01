@@ -11,6 +11,8 @@ const __FX = {
     shadow: { core: 0xe6c8ff, mid: 0x9050c8, out: 0x40186a, deep: 0x12061e, smoke: 0x1a0e24, light: 0x8a4ad0 },
     holy: { core: 0xffffff, mid: 0xfff2b0, out: 0xffc94a, deep: 0xb07a18, smoke: 0xfff4d0, light: 0xffe08a },
     lightning: { core: 0xffffff, mid: 0xd4ecff, out: 0x74a8ff, deep: 0x2a4ab0, smoke: 0xbcd8ff, light: 0xa8ccff },
+    nature: { core: 0xf2ffd8, mid: 0x9ade60, out: 0x48a03e, deep: 0x1c4a1c, smoke: 0x6a8a4a, light: 0xa6e47a },
+    steel: { core: 0xffffff, mid: 0xfff0c8, out: 0xd8b878, deep: 0x7a6040, smoke: 0x9a8a78, light: 0xffe6b0 },
   },
   ok() { return this.live < this.CAP },
   n(k) { return Math.max(1, Math.round(k * this.q)) },
@@ -158,7 +160,9 @@ function __fxElOf(o = {}) {
   const s = `${o.texture ?? ""} ${o.id ?? ""} ${o.name ?? ""}`.toLowerCase();
   if (/fire|flame|ember|meteor|lava|magma|inferno|pyre|burn|blaze|dragon_heart|sun_mirror|solar/.test(s)) return "fire";
   if (/ice|frost|frozen|snow|comet|glacial|winter|boreal|chill|blizzard|starfall/.test(s)) return "ice";
+  if (/root|thorn|nature|wild|vine|entangl|leaf|oak|mistletoe|bark/.test(s)) return "nature";
   if (/poison|venom|plague|toxic|acid|dart|blowgun/.test(s)) return "poison";
+  if (/consecra|judg|smite|aegis|guardian|kiai|iron_skin|shield/.test(s)) return "holy";
   if (/thunder|lightning|shock|storm|tupa|spark/.test(s)) return "lightning";
   if (/shadow|dark|void|soul|bone|skull|necro|grave|crypt|marrow|grim|curse|abyss/.test(s)) return "shadow";
   if (/holy|light|divine|bless|heal/.test(s)) return "holy";
@@ -180,8 +184,9 @@ function __fxQuality(S) {
     let el = null;
     try {
       const ab = c.__fxAb && c.time.now < c.__fxAb.until ? c.__fxAb.def : null;
-      if (!ab && !o.hostile && o.texture === "proj-bolt") el = __fxWeaponEl(c.inventory?.equipment?.weapon) ?? "arcane";
-      else el = __fxElOf({ ...o, id: ab?.id, name: ab?.name, damageType: o.damageType ?? ab?.damageType });
+      // tiro comum de cajado/bastão: sem brilho nem rastro — só o impacto do elemento
+      if (!ab && !o.hostile && o.texture === "proj-bolt") { img.__fxEl = __fxElOf({ status: o.status, id: c.inventory?.equipment?.weapon?.id, tint: o.tint === 9089279 ? 0 : o.tint }) ?? "arcane"; img.__fxBare = 1; return }
+      el = __fxElOf({ ...o, id: ab?.id, name: ab?.name, damageType: o.damageType ?? ab?.damageType });
       // flecha comum sem cor nem estado continua só flecha
       if (el && /arrow|dart/.test(o.texture || "") && !o.status && (!o.tint || o.tint === 0xffffff)) el = null;
     } catch (e) {}
@@ -191,6 +196,8 @@ function __fxQuality(S) {
     if (/bolt|orb/.test(o.texture || "")) img.setScale((img.scaleX || 1) * 1.25);
     __FX.follow(c, img, el, { size: big, core: !0, lightScale: o.hostile ? .1 : .13, lightAlpha: .6 });
   };
+  const SPW = Kh.prototype.spawn;
+  Kh.prototype.spawn = function () { const p = SPW.apply(this, arguments); try { p?.img?.__fxBare && (p.trailTimer = 1e9) } catch (e) {} return p };
   const IM0 = Kh.prototype.impact;
   Kh.prototype.impact = function (i, t, e) {
     try { const el = t?.img?.__fxEl; el && __FX.impact(this.scene, t.x, t.y, el, t.explosion ? 2.2 : e ? 1.1 : .8) } catch (err) {}
@@ -199,8 +206,21 @@ function __fxQuality(S) {
   // qual habilidade está saindo agora (para dar o elemento certo ao projétil dela)
   const EX1 = Yh.prototype.execute;
   Yh.prototype.execute = function (d) {
-    try { d && (this.scene.__fxAb = { def: d, until: this.scene.time.now + 900 }) } catch (e) {}
-    return EX1.apply(this, arguments);
+    const S = this.scene;
+    try { d && (S.__fxAb = { def: d, el: __fxElOf({ id: d.id, name: d.name, tint: d.tint, damageType: d.damageType }), until: S.time.now + (d.type === "telegraph-aoe" ? 2800 : 900) }) } catch (e) {}
+    const r = EX1.apply(this, arguments);
+    try {
+      if (d && !/^ET_/.test(d.id) && S.player && !S.player.dead) {
+        const el = S.__fxAb.el, P = S.player, H = P.displayHeight ?? 32;
+        if (d.type === "buff") {
+          const h = __FX.follow(S, P, el ?? "holy", { size: .8, oy: -H * .3, zone: { w: 22, h: H * .7 }, lightScale: .12, lightAlpha: .35 });
+          h?.ems.forEach((e) => { e.frequency = e.frequency * 2 });
+          S.time.delayedCall(Math.max(1500, (d.duration ?? 4) * 1e3), () => h?.stop());
+          __FX.impact(S, P.x, P.y - H * .3, el ?? "holy", 1.1);
+        } else if (d.type === "aoe-self") __FX.impact(S, P.x, P.y - 6, el ?? "steel", Math.min(2.6, Math.max(1, (d.radius ?? 70) / 45)));
+      }
+    } catch (e) {}
+    return r;
   };
 }
 
@@ -231,8 +251,9 @@ function __fxQuality(S) {
 }
 
 /* ─── arma equipada com elemento: brilho na arma e golpe com rastro do elemento ─── */
+function __fxIsStaff(it) { if (!it) return !1; const k = it.visualKey ?? it.id; return /staff|scepter|wand/.test(`${it.id} ${k}`) || oe[k]?.delivery === "bolt" }
 function __fxWeaponEl(it) {
-  if (!it) return null;
+  if (!it || __fxIsStaff(it)) return null;
   const el = __fxElOf({ status: it.status, id: it.id, name: "" });
   if (el) return el;
   const md = it.stats?.magicDamage ?? 0;
@@ -286,6 +307,47 @@ function __fxWeaponEl(it) {
         };
       }
     } catch (e) { console.warn("[fx]", e) }
+    return r;
+  };
+}
+
+/* bastões e cajados: sem arco de corte, sem brilho na ponta — só o impacto */
+{
+  const WM0 = window.__weaponMeleeFx;
+  if (typeof WM0 === "function") window.__weaponMeleeFx = function (cb, key) { if (/staff|scepter|wand/.test(String(key || ""))) return; return WM0.apply(this, arguments) };
+  const C1 = Sd.prototype.create;
+  Sd.prototype.create = function () {
+    const r = C1.apply(this, arguments);
+    try {
+      const S = this, PU = () => { const v = S.playerVisual; if (v && __fxIsStaff(S.inventory?.equipment?.weapon)) { v.castGlow?.visible && v.castGlow.setVisible(!1); v.weaponGlow?.visible && v.weaponGlow.setVisible(!1) } };
+      S.events.on("postupdate", PU);
+      S.events.once("shutdown", () => S.events.off("postupdate", PU));
+    } catch (e) {}
+    return r;
+  };
+}
+
+/* ondas de choque e cortes com a cor do elemento de quem atacou (antes: sempre anel roxo) */
+function __fxCtxEl(S) {
+  if (S.__fxBossEl) return { el: S.__fxBossEl, ab: !1 };
+  const a = S.__fxAb;
+  if (a && S.time.now < a.until) return { el: a.el ?? "steel", ab: !/^ET_/.test(a.def?.id || "") };
+  return null;
+}
+{
+  const SW0 = fh.prototype.shockwaveRing;
+  fh.prototype.shockwaveRing = function (x, y, r) {
+    const S = this.scene, c = __fxCtxEl(S);
+    if (!c || !__FX.PAL[c.el]) return SW0.apply(this, arguments);
+    const P = __FX.PAL[c.el], g = S.add.graphics().setDepth(940), o = { r: 12, a: .9 };
+    S.tweens.add({ targets: o, r, a: 0, duration: 340, onUpdate: () => { g.clear(); g.lineStyle(4, P.out, o.a).strokeCircle(x, y, o.r); g.lineStyle(2, P.mid, o.a).strokeCircle(x, y, o.r * .8) }, onComplete: () => g.destroy() });
+    this.burstTinted(x, y, P.mid, 10);
+    c.ab && __FX.impact(S, x, y, c.el, Math.min(2.6, Math.max(.9, r / 45)));
+  };
+  const SL0 = fh.prototype.slash;
+  fh.prototype.slash = function (x, y, rot, col) {
+    const r = SL0.apply(this, arguments);
+    try { const S = this.scene, c = __fxCtxEl(S); c?.ab && __FX.impact(S, x, y, c.el, .9) } catch (e) {}
     return r;
   };
 }
