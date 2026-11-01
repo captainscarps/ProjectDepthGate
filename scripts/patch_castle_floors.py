@@ -34,6 +34,9 @@ REPS = [
     ('crystal_vulcao:{name:"Cristal de Magma"', ITEMS + 'crystal_vulcao:{name:"Cristal de Magma"'),
     # trocar de andar não repete a abertura da fase
     ("const s=!n&&!this.restoreData?gs(this.levelId):null;", "const s=!n&&!this.restoreData&&!i.castleFloor?gs(this.levelId):null;"),
+    # cada andar é uma fase própria: limpar as salas de um andar não encerra a campanha — só a Sala do Trono
+    ("if(!this.__lvDone&&(this.clearedCount===this.totalCombatRooms||i.hasBoss||i.def?.boss||__cdLevelDone(this,i))&&(this.__lvDone=!0))",
+     "if(!this.__lvDone&&(this.scene.level.castle2?!!(i.hasBoss||i.def?.boss):(this.clearedCount===this.totalCombatRooms||i.hasBoss||i.def?.boss||__cdLevelDone(this,i)))&&(this.__lvDone=!0))"),
 ]
 for old, new in REPS:
     assert s.count(old) == 1, old
