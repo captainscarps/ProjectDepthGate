@@ -11830,7 +11830,7 @@ const __FX = {
     } else {
       // arcano, sombra, sagrado
       const tx = el === "holy" ? "fx2-star" : "fx2-dot";
-      this.em(S, tx, { speed: { min: 50 * s, max: 160 * s }, angle: { min: 0, max: 360 }, lifespan: { min: 260, max: 560 }, scale: { start: .9 * s, end: 0 }, alpha: { start: .7, end: 0 }, tint: [P.mid, P.out, P.deep], blendMode: "ADD" }, 12 * s, x, y, d);
+      this.em(S, tx, { speed: { min: 50 * s, max: 160 * s }, angle: { min: 0, max: 360 }, lifespan: { min: 260, max: 560 }, scale: { start: Math.min(1, .55 * s), end: 0 }, alpha: { start: .7, end: 0 }, tint: [P.mid, P.out, P.deep], blendMode: "ADD" }, 8 * s, x, y, d);
       this.em(S, "fx2-smoke", { speed: { min: 8, max: 36 }, angle: { min: 0, max: 360 }, lifespan: { min: 500, max: 900 }, scale: { start: .4 * s, end: 1.2 * s }, alpha: { start: el === "shadow" ? .7 : .4, end: 0 }, tint: el === "shadow" ? P.deep : P.smoke, blendMode: el === "shadow" ? "NORMAL" : "ADD" }, 3 * s, x, y, d - 1);
       this.ring(S, x, y, P.mid, 20 * s, 320, d);
     }
@@ -12087,6 +12087,64 @@ function __fxCtxEl(S) {
   };
 }
 
+/* ─── habilidades restantes: raios, teleporte, marcas, fumaça, invocações, transformação, repulsão ─── */
+{
+  const P = Yh.prototype, el0 = (S, d, dflt) => __fxElOf({ id: d?.id, name: d?.name, tint: d?.tint ?? d?.color, damageType: d?.damageType }) ?? dflt;
+  const W = (name, pre, post) => { const f0 = P[name]; if (typeof f0 !== "function") return; P[name] = function (d) { let ctx = null; try { ctx = pre?.call(this, d) } catch (e) {} const r = f0.apply(this, arguments); try { post.call(this, d, ctx) } catch (e) { console.warn("[fx]", name, e) } return r } };
+  W("execBeam", null, function (d) {
+    const S = this.scene, Pl = S.player, f = this.facingDir(), el = el0(S, d, "arcane"), Pa = __FX.PAL[el], L = d.length ?? 200;
+    const x1 = Pl.x + f.x * 10, y1 = Pl.y - 6 + f.y * 10, x2 = Pl.x + f.x * L, y2 = Pl.y - 6 + f.y * L, g = S.add.graphics().setBlendMode(j.BlendModes.ADD).setDepth(Pl.y + 42), w = (d.width ?? 20);
+    const draw = (a) => { g.clear(); for (const [lw, c, al] of [[w * 1.1, Pa.deep, .35], [w * .6, Pa.out, .6], [w * .28, Pa.mid, .9], [2, 0xffffff, 1]]) { g.lineStyle(lw * (.6 + a * .4), c, al * a); g.lineBetween(x1, y1, x2, y2) } };
+    draw(1);
+    S.tweens.addCounter({ from: 1, to: 0, duration: 340, onUpdate: (tw) => draw(tw.getValue()), onComplete: () => g.destroy() });
+    for (let k = 1; k <= 6; k++) { const t = k / 6; __FX.em(S, el === "fire" ? "fx2-flame" : "fx2-dot", { speed: { min: 10, max: 60 }, angle: { min: 0, max: 360 }, lifespan: { min: 200, max: 420 }, scale: { start: .7, end: 0 }, alpha: { start: .8, end: 0 }, tint: [Pa.mid, Pa.out], blendMode: "ADD" }, 4, x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, Pl.y + 43) }
+    __FX.glow(S, x1, y1, Pa.light, .3, 260, .8); __FX.impact(S, x2, y2, el, 1);
+  });
+  W("execBlink", function () { const p = this.scene.player; return { x: p.x, y: p.y } }, function (d, c) {
+    const S = this.scene, p = S.player, el = el0(S, d, "shadow");
+    if (!c) return;
+    __FX.impact(S, c.x, c.y - 8, el, 1); __FX.impact(S, p.x, p.y - 8, el, 1);
+    __FX.em(S, "fx2-smoke", { speed: { min: 6, max: 30 }, angle: { min: 0, max: 360 }, lifespan: { min: 500, max: 900 }, scale: { start: .5, end: 1.3 }, alpha: { start: .6, end: 0 }, tint: __FX.PAL[el].deep }, 6, c.x, c.y - 4, c.y + 30);
+    const n = 6; for (let k = 1; k < n; k++) { const t = k / n; S.time.delayedCall(k * 18, () => __FX.em(S, "fx2-dot", { speed: { min: 2, max: 16 }, lifespan: { min: 200, max: 360 }, scale: { start: .7, end: 0 }, alpha: { start: .7, end: 0 }, tint: [__FX.PAL[el].mid, __FX.PAL[el].out], blendMode: "ADD" }, 3, c.x + (p.x - c.x) * t, c.y - 8 + (p.y - c.y) * t, p.y + 40)) }
+  });
+  W("execMark", null, function (d) {
+    const S = this.scene, now = S.time.now, el = el0(S, d, "shadow");
+    for (const e of S.combat.getTargets()) {
+      if (!(e.markedUntil > now) || e.__fxMarkT === e.markedUntil) continue;
+      e.__fxMarkT = e.markedUntil;
+      e.__fxMark?.stop();
+      const h = __FX.follow(S, e, el, { size: .7, oy: -(e.displayHeight ?? 24) * .55, zone: { w: 18, h: 6 }, lightScale: .08, lightAlpha: .5 });
+      e.__fxMark = h;
+      S.time.delayedCall(Math.max(1000, (e.markedUntil - now)), () => { h?.stop(); if (e.__fxMark === h) e.__fxMark = null });
+    }
+  });
+  W("execSmoke", null, function (d) {
+    const S = this.scene, z = S.smokeZone; if (!z || !__FX.ok()) return;
+    __FX.tex(S);
+    const em = S.add.particles(0, 0, "fx2-smoke", { emitZone: { type: "random", source: new j.Geom.Ellipse(z.x, z.y, z.radius * 1.6, z.radius * 1.1) }, frequency: 45 / __FX.q, lifespan: { min: 1400, max: 2200 }, speed: { min: 2, max: 12 }, scale: { start: 1.1, end: 2.4 }, alpha: { start: .55, end: 0 }, tint: [0x4a4a52, 0x5a5662, 0x3a3842], rotate: { min: 0, max: 360 } }).setDepth(z.y + 60);
+    __FX.live++;
+    S.time.delayedCall((d.duration ?? 4) * 1e3, () => { em.stop(); S.time.delayedCall(2300, () => { __FX.live--; em.destroy() }) });
+  });
+  const summon = function (d, before) {
+    const S = this.scene, el = el0(S, d, /SKELETON|DEMON|ARMY/.test(d?.id || "") ? "shadow" : "nature"), list = (S.minions ?? []).filter((m) => m && !before.has(m));
+    for (const m of list) {
+      const x = m.x, y = m.y;
+      __FX.impact(S, x, y - 6, el, 1.1);
+      __FX.ring(S, x, y + 4, __FX.PAL[el].mid, 26, 420, y + 2);
+      __FX.em(S, "fx2-smoke", { speed: { min: 8, max: 30 }, angle: { min: 200, max: 340 }, lifespan: { min: 500, max: 900 }, scale: { start: .5, end: 1.2 }, alpha: { start: .55, end: 0 }, tint: __FX.PAL[el].deep }, 5, x, y, y + 30);
+    }
+  };
+  const snap = function () { return new Set(this.scene.minions ?? []) };
+  for (const n of ["execSummon", "execMultiSummon", "execEagle"]) W(n, snap, summon);
+  W("execShapeshift", null, function (d) {
+    const S = this.scene, p = S.player, el = /LOBISOMEM|WEREWOLF/.test(d?.id || "") ? "shadow" : "nature";
+    __FX.impact(S, p.x, p.y - 10, el, 2); __FX.ring(S, p.x, p.y, __FX.PAL[el].mid, 60, 500);
+    __FX.em(S, "fx2-smoke", { speed: { min: 20, max: 70 }, angle: { min: 0, max: 360 }, lifespan: { min: 600, max: 1000 }, scale: { start: .6, end: 1.6 }, alpha: { start: .6, end: 0 }, tint: 0x6a5a4a }, 10, p.x, p.y, p.y + 30);
+    try { S.cameras.main.flash(140, 60, 90, 40) } catch (e) {}
+  });
+  W("execAoeStatus", null, function (d) { const S = this.scene, p = S.player, el = el0(S, d, "arcane"); __FX.impact(S, p.x, p.y - 6, el, Math.min(2.4, (d.radius ?? 70) / 40)) });
+}
+
 /* ══ Chefes: ataques com peso ══
    - aviso no chão com brilho que cresce até o golpe
    - meteoros, estacas de gelo e pedras caindo de verdade antes do impacto
@@ -12304,6 +12362,81 @@ const __BX = {
     for (let k = 0; k < 4; k++) S.time.delayedCall(250 + k * 260, () => __FX.impact(S, this.x + (Math.random() - .5) * 60, this.y - this.displayHeight * .3 + (Math.random() - .5) * 40, el, 2));
     S.time.delayedCall(1400, () => { __FX.impact(S, this.x, this.y - this.displayHeight * .3, el, 3.4); __BX.flash(S, __FX.PAL[el].core, 300, .5); __BX.dust(S, this.x, this.y, 70, 0x8a7a66, 20) });
   });
+}
+
+/* ══ Golpe exclusivo de cada chefe, pelo elemento dele ══
+   fogo: pilares de lava em linha · gelo: anel de estacas · sombra: foice cruzada · veneno: poças tóxicas
+   natureza: espinhos · arcano: runas em pentagrama · sagrado: colunas de luz · raio: correntes elétricas
+   A cada ~11 s (7 s na segunda fase), quando o chefe está perseguindo. */
+const __SIGN = {
+  fire: ["PILARES DE LAVA", "LAVA PILLARS", "PILARES DE LAVA"], ice: ["PRISÃO DE ESTACAS", "SPIKE PRISON", "PRISIÓN DE ESTACAS"],
+  shadow: ["FOICE SOMBRIA", "SHADOW SCYTHE", "GUADAÑA SOMBRÍA"], poison: ["POÇAS TÓXICAS", "TOXIC POOLS", "CHARCOS TÓXICOS"],
+  nature: ["ESPINHOS DA TERRA", "EARTH THORNS", "ESPINAS DE LA TIERRA"], arcane: ["PENTAGRAMA ARCANO", "ARCANE PENTAGRAM", "PENTAGRAMA ARCANO"],
+  holy: ["COLUNAS DE LUZ", "PILLARS OF LIGHT", "COLUMNAS DE LUZ"], lightning: ["CORRENTES DO TROVÃO", "THUNDER CHAINS", "CADENAS DEL TRUENO"],
+  steel: ["PISÃO SÍSMICO", "SEISMIC STOMP", "PISOTÓN SÍSMICO"],
+};
+function __sigSpikes(S, x, y, r, tint) {
+  for (let k = 0; k < 4; k++) {
+    const a = k / 4 * 6.28 + Math.random() * .8, px = x + Math.cos(a) * r * .35, py = y + Math.sin(a) * r * .25, sp = S.add.image(px, py + 10, "fx2-shard").setTint(tint).setScale(1.5, 0).setOrigin(.5, 1).setDepth(py + 5);
+    S.tweens.add({ targets: sp, scaleY: 2.4 + Math.random(), y: py, duration: 110, ease: "Back.easeOut", onComplete: () => S.tweens.add({ targets: sp, alpha: 0, delay: 650, duration: 280, onComplete: () => sp.destroy() }) });
+  }
+}
+function __sigColumn(S, x, y, el) {
+  const Pa = __FX.PAL[el];
+  if (S.textures.exists("light")) { const c = S.add.image(x, y - 70, "light").setBlendMode(j.BlendModes.ADD).setTint(Pa.light).setScale(.25, 1.6).setAlpha(.9).setDepth(y + 60); S.tweens.add({ targets: c, scaleX: .05, alpha: 0, duration: 520, ease: "Quad.easeIn", onComplete: () => c.destroy() }) }
+  __FX.em(S, el === "fire" ? "fx2-flame" : el === "holy" ? "fx2-star" : "fx2-dot", { speed: { min: 120, max: 260 }, angle: { min: 262, max: 278 }, lifespan: { min: 300, max: 600 }, scale: { start: .9, end: .2 }, alpha: { start: .85, end: 0 }, tint: [Pa.mid, Pa.out, Pa.core], blendMode: "ADD", gravityY: 60 }, 16, x, y, y + 61);
+}
+{
+  const P = hh.prototype, U0 = P.update;
+  P.update = function (dt, pl) {
+    try {
+      if (!this.dead && !this.fleeing && this.scene?.state === "playing" && this.currentAttack !== "SIGNATURE") {
+        this.__sigT = (this.__sigT ?? 5 + Math.random() * 3) - dt;
+        const p = this.scene.player;
+        if (this.__sigT <= 0 && !this.flying && this.state_ === "chase" && p && !p.dead && Math.hypot(p.x - this.x, p.y - this.y) < 430) { this.__sigT = (this.phase >= 2 ? 7 : 11) + Math.random() * 3; __bossSignature(this) }
+      }
+    } catch (e) { console.warn("[boss-sig]", e) }
+    return U0.apply(this, arguments);
+  };
+}
+function __bossSignature(b) {
+  const S = b.scene, p = S.player, el = __bossEl(b), Pa = __FX.PAL[el], T = S.telegraphs;
+  const base = Math.max(2, ...Object.values(b.data_.attacks || {}).map((a) => a?.damage ?? 0)), dmg = b.scaledDamage(Math.max(2, Math.round(base * .8)));
+  b.state_ = "telegraph"; b.currentAttack = "SIGNATURE"; b.setVelocity(0, 0);
+  let pending = 0;
+  const done = () => { if (--pending <= 0 && !b.dead && b.currentAttack === "SIGNATURE") b.recover(900) };
+  const hitC = (x, y, r) => { if (b.dead || p.dead || !S.damageSystem.circleHit(x, y, r, p.x, p.y, p.body.width / 2)) return; const l = Math.hypot(p.x - x, p.y - y) || 1; b.hitPlayer(dmg, { x: (p.x - x) / l, y: (p.y - y) / l }) };
+  const hitR = (cx, cy, w, h, rot) => { if (b.dead || p.dead || !S.damageSystem.rectHit(cx, cy, w, h, rot, p.x, p.y)) return; const l = Math.hypot(p.x - b.x, p.y - b.y) || 1; b.hitPlayer(dmg, { x: (p.x - b.x) / l, y: (p.y - b.y) / l }) };
+  const circ = (x, y, r, ms, delay, fx) => { pending++; S.time.delayedCall(delay, () => { if (b.dead) return done(); T.circle(x, y, r, ms, Pa.out, () => { if (!b.dead) { S.__fxBossEl = el; try { fx(x, y, r); hitC(x, y, r) } finally { S.__fxBossEl = null } } done() }) }) };
+  const lane = (cx, cy, w, h, rot, ms, delay, fx) => { pending++; S.time.delayedCall(delay, () => { if (b.dead) return done(); T.rect(cx, cy, w, h, rot, ms, Pa.out, () => { if (!b.dead) { fx(cx, cy, w, h, rot); hitR(cx, cy, w, h, rot) } done() }) }) };
+  // nome do golpe sobre o chefe
+  try { const nm = __SIGN[el] ?? __SIGN.steel, t = typeof window.__L3G === "function" ? window.__L3G(nm[0], nm[1], nm[2]) : nm[0]; S.effects.floatText(b.x, b.y - b.displayHeight * .7, t, "#" + Pa.mid.toString(16).padStart(6, "0"), 11) } catch (e) {}
+  S.audioRef?.play?.("sfx-boss-attack");
+  const dx = p.x - b.x, dy = p.y - b.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, ang = Math.atan2(uy, ux);
+  if (el === "fire") {
+    for (let k = 0; k < 6; k++) circ(b.x + ux * (50 + k * 46), b.y + uy * (50 + k * 46), 30, 760, k * 130, (x, y) => { __FX.impact(S, x, y, "fire", 1.5); __sigColumn(S, x, y, "fire"); __BX.scorch(S, x, y, 30); __BX.stop(S, 30) });
+  } else if (el === "ice") {
+    for (let k = 0; k < 8; k++) { const a = k / 8 * 6.28; circ(p.x + Math.cos(a) * 74, p.y + Math.sin(a) * 52, 26, 900, 0, (x, y, r) => { __FX.impact(S, x, y, "ice", 1.2); __sigSpikes(S, x, y, r, 0xd8f2ff) }) }
+    circ(p.x, p.y, 30, 1250, 0, (x, y, r) => { __FX.impact(S, x, y, "ice", 1.8); __sigSpikes(S, x, y, r * 1.4, 0xd8f2ff) });
+  } else if (el === "shadow") {
+    for (const s of [-1, 1]) lane(p.x, p.y, 380, 44, ang + s * .78, 880, s > 0 ? 160 : 0, (cx, cy, w, h, rot) => {
+      const c = Math.cos(rot), n = Math.sin(rot);
+      for (let k = -2; k <= 2; k++) __FX.impact(S, cx + c * k * w * .2, cy + n * k * w * .2, "shadow", .9);
+      __FX.bolt(S, cx - c * w / 2, cy - n * w / 2, cx + c * w / 2, cy + n * w / 2, Pa.mid, 220); __BX.flash(S, Pa.out, 120, .2);
+    });
+  } else if (el === "poison" || el === "nature") {
+    for (let k = 0; k < 6; k++) { const a = Math.random() * 6.28, d = k === 0 ? 0 : 40 + Math.random() * 70; circ(p.x + Math.cos(a) * d, p.y + Math.sin(a) * d * .75, 30, 820, k * 110, (x, y, r) => { __FX.impact(S, x, y, el, 1.4); el === "nature" ? __sigSpikes(S, x, y, r, 0x5a8a3a) : __BX.dust(S, x, y, 16, 0x5a8a3a, 6) }) }
+  } else if (el === "arcane") {
+    for (let k = 0; k < 5; k++) { const a = k / 5 * 6.28 - 1.57; circ(p.x + Math.cos(a) * 80, p.y + Math.sin(a) * 58, 28, 1000, 0, (x, y) => __FX.impact(S, x, y, "arcane", 1.5)) }
+    circ(p.x, p.y, 34, 1300, 0, (x, y) => { __FX.impact(S, x, y, "arcane", 2.2); __BX.flash(S, Pa.out, 140, .25) });
+  } else if (el === "holy") {
+    for (let k = 0; k < 4; k++) S.time.delayedCall(k * 320, () => { if (!b.dead) circ(p.x, p.y, 32, 700, 0, (x, y) => { __sigColumn(S, x, y, "holy"); __FX.impact(S, x, y, "holy", 1.4) }) }), pending++;
+    S.time.delayedCall(4 * 320 + 10, () => { pending -= 4; pending <= 0 && done() });
+  } else if (el === "lightning") {
+    for (let k = -1; k <= 1; k++) { const a = ang + k * .38, len = 340; lane(b.x + Math.cos(a) * len / 2, b.y + Math.sin(a) * len / 2, len, 30, a, 680, Math.abs(k) * 120, (cx, cy, w, h, rot) => { const c = Math.cos(rot), n = Math.sin(rot); for (let q = 0; q < 2; q++) __FX.bolt(S, cx - c * w / 2, cy - n * w / 2, cx + c * w / 2, cy + n * w / 2, Pa.out, 240); __FX.impact(S, cx + c * w / 2, cy + n * w / 2, "lightning", 1.2) }) }
+  } else {
+    for (let k = 0; k < 3; k++) circ(b.x, b.y, 70 + k * 45, 700, k * 260, (x, y, r) => { __BX.dust(S, x, y, r * .6, 0x8a7a66, 14); __BX.crack(S, x, y, r * .7); __BX.stop(S, 40) });
+  }
 }
 
 /*__ENDLESSTREES__*/

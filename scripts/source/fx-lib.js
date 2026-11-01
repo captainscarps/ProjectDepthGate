@@ -95,7 +95,7 @@ const __FX = {
     } else {
       // arcano, sombra, sagrado
       const tx = el === "holy" ? "fx2-star" : "fx2-dot";
-      this.em(S, tx, { speed: { min: 50 * s, max: 160 * s }, angle: { min: 0, max: 360 }, lifespan: { min: 260, max: 560 }, scale: { start: .9 * s, end: 0 }, alpha: { start: .7, end: 0 }, tint: [P.mid, P.out, P.deep], blendMode: "ADD" }, 12 * s, x, y, d);
+      this.em(S, tx, { speed: { min: 50 * s, max: 160 * s }, angle: { min: 0, max: 360 }, lifespan: { min: 260, max: 560 }, scale: { start: Math.min(1, .55 * s), end: 0 }, alpha: { start: .7, end: 0 }, tint: [P.mid, P.out, P.deep], blendMode: "ADD" }, 8 * s, x, y, d);
       this.em(S, "fx2-smoke", { speed: { min: 8, max: 36 }, angle: { min: 0, max: 360 }, lifespan: { min: 500, max: 900 }, scale: { start: .4 * s, end: 1.2 * s }, alpha: { start: el === "shadow" ? .7 : .4, end: 0 }, tint: el === "shadow" ? P.deep : P.smoke, blendMode: el === "shadow" ? "NORMAL" : "ADD" }, 3 * s, x, y, d - 1);
       this.ring(S, x, y, P.mid, 20 * s, 320, d);
     }
@@ -350,4 +350,62 @@ function __fxCtxEl(S) {
     try { const S = this.scene, c = __fxCtxEl(S); c?.ab && __FX.impact(S, x, y, c.el, .9) } catch (e) {}
     return r;
   };
+}
+
+/* ─── habilidades restantes: raios, teleporte, marcas, fumaça, invocações, transformação, repulsão ─── */
+{
+  const P = Yh.prototype, el0 = (S, d, dflt) => __fxElOf({ id: d?.id, name: d?.name, tint: d?.tint ?? d?.color, damageType: d?.damageType }) ?? dflt;
+  const W = (name, pre, post) => { const f0 = P[name]; if (typeof f0 !== "function") return; P[name] = function (d) { let ctx = null; try { ctx = pre?.call(this, d) } catch (e) {} const r = f0.apply(this, arguments); try { post.call(this, d, ctx) } catch (e) { console.warn("[fx]", name, e) } return r } };
+  W("execBeam", null, function (d) {
+    const S = this.scene, Pl = S.player, f = this.facingDir(), el = el0(S, d, "arcane"), Pa = __FX.PAL[el], L = d.length ?? 200;
+    const x1 = Pl.x + f.x * 10, y1 = Pl.y - 6 + f.y * 10, x2 = Pl.x + f.x * L, y2 = Pl.y - 6 + f.y * L, g = S.add.graphics().setBlendMode(j.BlendModes.ADD).setDepth(Pl.y + 42), w = (d.width ?? 20);
+    const draw = (a) => { g.clear(); for (const [lw, c, al] of [[w * 1.1, Pa.deep, .35], [w * .6, Pa.out, .6], [w * .28, Pa.mid, .9], [2, 0xffffff, 1]]) { g.lineStyle(lw * (.6 + a * .4), c, al * a); g.lineBetween(x1, y1, x2, y2) } };
+    draw(1);
+    S.tweens.addCounter({ from: 1, to: 0, duration: 340, onUpdate: (tw) => draw(tw.getValue()), onComplete: () => g.destroy() });
+    for (let k = 1; k <= 6; k++) { const t = k / 6; __FX.em(S, el === "fire" ? "fx2-flame" : "fx2-dot", { speed: { min: 10, max: 60 }, angle: { min: 0, max: 360 }, lifespan: { min: 200, max: 420 }, scale: { start: .7, end: 0 }, alpha: { start: .8, end: 0 }, tint: [Pa.mid, Pa.out], blendMode: "ADD" }, 4, x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, Pl.y + 43) }
+    __FX.glow(S, x1, y1, Pa.light, .3, 260, .8); __FX.impact(S, x2, y2, el, 1);
+  });
+  W("execBlink", function () { const p = this.scene.player; return { x: p.x, y: p.y } }, function (d, c) {
+    const S = this.scene, p = S.player, el = el0(S, d, "shadow");
+    if (!c) return;
+    __FX.impact(S, c.x, c.y - 8, el, 1); __FX.impact(S, p.x, p.y - 8, el, 1);
+    __FX.em(S, "fx2-smoke", { speed: { min: 6, max: 30 }, angle: { min: 0, max: 360 }, lifespan: { min: 500, max: 900 }, scale: { start: .5, end: 1.3 }, alpha: { start: .6, end: 0 }, tint: __FX.PAL[el].deep }, 6, c.x, c.y - 4, c.y + 30);
+    const n = 6; for (let k = 1; k < n; k++) { const t = k / n; S.time.delayedCall(k * 18, () => __FX.em(S, "fx2-dot", { speed: { min: 2, max: 16 }, lifespan: { min: 200, max: 360 }, scale: { start: .7, end: 0 }, alpha: { start: .7, end: 0 }, tint: [__FX.PAL[el].mid, __FX.PAL[el].out], blendMode: "ADD" }, 3, c.x + (p.x - c.x) * t, c.y - 8 + (p.y - c.y) * t, p.y + 40)) }
+  });
+  W("execMark", null, function (d) {
+    const S = this.scene, now = S.time.now, el = el0(S, d, "shadow");
+    for (const e of S.combat.getTargets()) {
+      if (!(e.markedUntil > now) || e.__fxMarkT === e.markedUntil) continue;
+      e.__fxMarkT = e.markedUntil;
+      e.__fxMark?.stop();
+      const h = __FX.follow(S, e, el, { size: .7, oy: -(e.displayHeight ?? 24) * .55, zone: { w: 18, h: 6 }, lightScale: .08, lightAlpha: .5 });
+      e.__fxMark = h;
+      S.time.delayedCall(Math.max(1000, (e.markedUntil - now)), () => { h?.stop(); if (e.__fxMark === h) e.__fxMark = null });
+    }
+  });
+  W("execSmoke", null, function (d) {
+    const S = this.scene, z = S.smokeZone; if (!z || !__FX.ok()) return;
+    __FX.tex(S);
+    const em = S.add.particles(0, 0, "fx2-smoke", { emitZone: { type: "random", source: new j.Geom.Ellipse(z.x, z.y, z.radius * 1.6, z.radius * 1.1) }, frequency: 45 / __FX.q, lifespan: { min: 1400, max: 2200 }, speed: { min: 2, max: 12 }, scale: { start: 1.1, end: 2.4 }, alpha: { start: .55, end: 0 }, tint: [0x4a4a52, 0x5a5662, 0x3a3842], rotate: { min: 0, max: 360 } }).setDepth(z.y + 60);
+    __FX.live++;
+    S.time.delayedCall((d.duration ?? 4) * 1e3, () => { em.stop(); S.time.delayedCall(2300, () => { __FX.live--; em.destroy() }) });
+  });
+  const summon = function (d, before) {
+    const S = this.scene, el = el0(S, d, /SKELETON|DEMON|ARMY/.test(d?.id || "") ? "shadow" : "nature"), list = (S.minions ?? []).filter((m) => m && !before.has(m));
+    for (const m of list) {
+      const x = m.x, y = m.y;
+      __FX.impact(S, x, y - 6, el, 1.1);
+      __FX.ring(S, x, y + 4, __FX.PAL[el].mid, 26, 420, y + 2);
+      __FX.em(S, "fx2-smoke", { speed: { min: 8, max: 30 }, angle: { min: 200, max: 340 }, lifespan: { min: 500, max: 900 }, scale: { start: .5, end: 1.2 }, alpha: { start: .55, end: 0 }, tint: __FX.PAL[el].deep }, 5, x, y, y + 30);
+    }
+  };
+  const snap = function () { return new Set(this.scene.minions ?? []) };
+  for (const n of ["execSummon", "execMultiSummon", "execEagle"]) W(n, snap, summon);
+  W("execShapeshift", null, function (d) {
+    const S = this.scene, p = S.player, el = /LOBISOMEM|WEREWOLF/.test(d?.id || "") ? "shadow" : "nature";
+    __FX.impact(S, p.x, p.y - 10, el, 2); __FX.ring(S, p.x, p.y, __FX.PAL[el].mid, 60, 500);
+    __FX.em(S, "fx2-smoke", { speed: { min: 20, max: 70 }, angle: { min: 0, max: 360 }, lifespan: { min: 600, max: 1000 }, scale: { start: .6, end: 1.6 }, alpha: { start: .6, end: 0 }, tint: 0x6a5a4a }, 10, p.x, p.y, p.y + 30);
+    try { S.cameras.main.flash(140, 60, 90, 40) } catch (e) {}
+  });
+  W("execAoeStatus", null, function (d) { const S = this.scene, p = S.player, el = el0(S, d, "arcane"); __FX.impact(S, p.x, p.y - 6, el, Math.min(2.4, (d.radius ?? 70) / 40)) });
 }
