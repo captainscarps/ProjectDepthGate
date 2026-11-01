@@ -12048,8 +12048,16 @@ function __fxWeaponEl(it) {
 
 /* bastões e cajados: sem arco de corte, sem brilho na ponta — só o impacto */
 {
-  const WM0 = window.__weaponMeleeFx;
-  if (typeof WM0 === "function") window.__weaponMeleeFx = function (cb, key) { if (/staff|scepter|wand/.test(String(key || ""))) return; return WM0.apply(this, arguments) };
+  /* golpe corpo a corpo: sem os arcos/círculos desenhados (escalavam a partir do canto do mapa e saíam voando
+     pela tela); fica só o risco curto do corte no ponto do golpe — e nada nos bastões */
+  window.__weaponMeleeFx = function (cb, key, def, dir, ang, arc, mx, my) {
+    try {
+      if (/staff|scepter|wand/.test(String(key || ""))) return !0;
+      const k = String(key || "").toLowerCase(), col = /frost|glacial|winter|boreal/.test(k) ? 0x9fe6ff : /dragon|inferno|flame|ember|molten/.test(k) ? 0xffa060 : 0xfff2d0;
+      cb.effects?.slash?.(mx, my, ang, col);
+    } catch (e) {}
+    return !0;
+  };
   const C1 = Sd.prototype.create;
   Sd.prototype.create = function () {
     const r = C1.apply(this, arguments);
