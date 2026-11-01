@@ -2206,7 +2206,7 @@ for(const r of rooms){for(const d of r.decor)busy.add(d.col+","+d.row);for(const
 const place=(r,fx,fy)=>{const q=r.rect,tx=q.x+1+Math.round(fx*Math.max(0,q.w-3)),ty=q.y+1+Math.round(fy*Math.max(0,q.h-3));for(let rad=0;rad<6;rad++)for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){if(Math.max(Math.abs(dx),Math.abs(dy))!==rad)continue;const x=tx+dx,y=ty+dy;if(x<=q.x||y<=q.y||x>=q.x+q.w-1||y>=q.y+q.h-1||g[y]?.[x]!==0||busy.has(x+","+y))continue;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)busy.add(x+a+","+(y+b));return{col:x,row:y}}return null};
 const /*__GS__*/special=r=>r.boss||r.final||r.crystal||r.hub||r.secret||/^gs-/.test(r.id)||/*§c3BlY2lhbD1yPT5yLmJvc3N8fHIuZmluYWx8fHIuY3J5c3RhbHx8ci5odWJ8fHIuc2VjcmV0fHw=*//*__GS__*/r===spawnRoom||(P.skip||[]).includes(r.id)||r.roomType||r.decor.some(d=>["merchant","shrine","event-altar","throne"].includes(d.type)),cand=shuf(rooms.filter(r=>!special(r)&&r.enemies.length>=2&&r.rect.w>=6&&r.rect.h>=5)),plan={biome:L.id,depth,sealRooms:[],sealNeed:0,keyFrom:null,vault:null};let ci=0;const take=()=>cand[ci++],objRooms=[],objTypes=shuf([...P.obj]),nObj=Math.min(cand.length>=7?3:cand.length>=4?2:cand.length>=2?1:0,P.obj.length?3:0);
 for(let k=0;k<nObj;k++){const r=take();if(!r)break;const t=objTypes[k%objTypes.length],n=r.enemies.length;r.cdObj=t,r.cdPool=r.enemies.filter(e=>!e.elite).map(e=>({type:e.type,col:e.col,row:e.row})),r.banner=W(`cd.ban.${t}`);if(t==="SURVIVE")r.enemies=r.enemies.slice(0,Math.max(1,Math.ceil(n*.5))),r.cdDur=22+Math.min(10,depth*2),r.cdTotal=0;else{r.enemies=r.enemies.slice(0,Math.max(1,Math.ceil(n*.6)));const tex=t==="MECHANISM"?["brazier"]:P.totem,pts=r.rect.w*r.rect.h>=70?[[.15,.2],[.85,.2],[.5,.9]]:[[.2,.5],[.8,.5]];let c=0;for(const[fx,fy]of pts){const p=place(r,fx,fy);p&&(r.decor.push({type:"cd-obj",cd:t==="MECHANISM"?"brazier":"totem",tex,col:p.col,row:p.row,solid:!0,room:r.id,cdPlaced:!0}),c++)}if(!c){r.cdObj=null,r.banner=void 0;continue}r.cdTotal=c}objRooms.push(r)}
-const affix=Object.keys(qt).filter(h=>qt[h].implemented!==!1),el=take();if(el){const e=el.enemies[0];e.elite=!0,e.affixes=affix.length?[pick(affix)]:[],el.roomType="ELITE",el.banner=W("cd.ban.ELITE");const p=place(el,.5,.5);p&&el.decor.push({type:"chest",col:p.col,row:p.row,solid:!0,tier:depth>=4?"EPIC":"RARE",cdRoom:el.id,cdPlaced:!0}),objRooms.push(el)}
+const affix=Object.keys(qt).filter(h=>qt[h].implemented!==!1),el=take();if(el){const e=el.enemies[0];e.elite=!0,e.affixes=affix.length?[pick(affix)]:[],el.roomType="ELITE",el.banner=W("cd.ban.ELITE");const p=place(el,.5,.5);p&&el.decor.push({type:"chest",col:p.col,row:p.row,solid:!0,/*__EXBIO__*/tier:depth>=4?"EPIC":"RARE",cdRoom:el.id,cdPlaced:!0,noMimic:!0}/*§dGllcjpkZXB0aD49ND8iRVBJQyI6IlJBUkUiLGNkUm9vbTplbC5pZCxjZFBsYWNlZDohMH0=*//*__EXBIO__*/),objRooms.push(el)}
 let lore=0;const explore=[];for(let k=0;k<P.explore;k++){const r=take();if(!r)break;r.enemies=R()<.4?[r.enemies[r.enemies.length-1]]:[],explore.push(r);const p=place(r,.5,.4);p&&r.decor.push({type:"cd-obj",cd:"lore",tex:P.lore,idx:lore++%3,col:p.col,row:p.row,solid:!0,room:r.id,cdPlaced:!0});if(k===0&&R()<P.event&&typeof id<"u"&&id.length){const q=place(r,.25,.8);q&&r.decor.push({type:"event-altar",col:q.col,row:q.row,solid:!0,event:pick(id),cdPlaced:!0})}if(R()<P.merchant&&!plan.merchant){const q=place(r,.75,.8);q&&(r.decor.push({type:"merchant",col:q.col,row:q.row,solid:!0,cdPlaced:!0}),plan.merchant=r.id)}}
 const am=take();am&&P.ambush&&(am.cdAmbush=!0);
 const sealable=r=>{const ds=doors.filter(d=>(d.rooms||[]).includes(r.id));if(!ds.length||ds.some(d=>d.secret))return null;const b=new Set;for(const d of ds)for(const[x,y]of __cdDoorTiles(d))b.add(x+","+y);const ok=__cdReach(lvl,g,b);return ok&&!__cdRoomReach(r,ok)?{ds,b}:null},boss=rooms.filter(r=>r.boss);
@@ -2535,7 +2535,7 @@ case"REST":{
   if(t.isFree(s.col+1,s.row))i.decor.push({type:"candle",col:s.col+1,row:s.row});
   break;
 }
-case"START":{if(d===1){i.banner="PREPARE-SE PARA A DESCIDA",i.enterSfx="sfx-treasure-room",i.ambient=.9,i.name="Tesouro Inicial";const s=t.take(c,{inset:1})??t.center();i.decor.push({type:"chest",col:s.col,row:s.row,solid:!0,tier:"STARTER",starter:!0})}break}case"TREASURE":{const s=We(d),r=1+(c.chance(.35)?1:0);for(let l=0;l<r;l++){const h=t.takeInteractive?t.takeInteractive(c):(t.take(c,{inset:1})??t.center());i.decor.push({type:"chest",col:h.col,row:h.row,solid:!0,tier:s});if(l===0&&t.isFree(h.col-1,h.row))i.decor.push({type:"candle",col:h.col-1,row:h.row});if(l===0&&t.isFree(h.col+1,h.row))i.decor.push({type:"candle",col:h.col+1,row:h.row})}break}case"SECRET":{const s=d>=20?"LEGENDARY":"EPIC",r=t.center();i.decor.push({type:"chest",col:r.col,row:r.row,solid:!0,tier:s}),i.secret=!0;const bio=(a||"").toLowerCase();let ek="SKELETON_WARRIOR";bio.includes("ruin")?ek="ORC_BRUTE":bio.includes("catacomb")?ek="DEMON":bio.includes("fortress")?ek="DEMON_CASTER":bio.includes("froze")?ek="TROLL":(bio.includes("forest")||bio.includes("bosque"))&&(ek="GOBLIN_ASSASSIN");const ep=t.take(c,{inset:1})??r;i.enemies.push({type:ek,col:ep.col,row:ep.row,elite:!0});break}case"SHRINE":{const s=c.pick(sd),r=t.takeInteractive?t.takeInteractive(c):t.center();i.decor.push({type:"shrine",col:r.col,row:r.row,solid:!0,shrine:s});if(t.isFree(r.col-1,r.row))i.decor.push({type:"candle",col:r.col-1,row:r.row});if(t.isFree(r.col+1,r.row))i.decor.push({type:"candle",col:r.col+1,row:r.row});break}case"SHOP":{const s=t.takeInteractive?t.takeInteractive(c):t.center();i.decor.push({type:"merchant",col:s.col,row:s.row,solid:!0}),i.shop=!0;if(t.isFree(s.col-1,s.row))i.decor.push({type:"crate",col:s.col-1,row:s.row,solid:!0});if(t.isFree(s.col+1,s.row))i.decor.push({type:"barrel",col:s.col+1,row:s.row,solid:!0});break}case"EVENT":{const s=c.pick(id),r=t.center();i.decor.push({type:"event-altar",col:r.col,row:r.row,solid:!0,event:s});break}case"ELITE":i.eliteReward=xs(We(d));break;case"CHALLENGE":i.challenge={timeLimitSec:45,rewardTier:xs(We(d))};break;case"BOSS":{i.boss=e.bossKey,i.exit=!0,i.final=!0,i.zoom=.92,e.bossRush&&(i.bossRush=e.bossRush,i.banner="BOSS RUSH",i.enterSfx="sfx-boss-rush");break}case"EXIT":i.exit=!0;break}if(n.budget>0){const s=dd(c,{depth:d,playerLevel:o,roomType:i.roomType,biome:a,baseBudget:n.budget});for(const r of s){const l=t.take(c,{inset:1})??t.take(c,{});if(!l)break;i.enemies.push({...r,col:l.col,row:l.row})}}}function cd(c){const{cols:i,rows:t}=c.world,e=Array.from({length:t},()=>new Array(i).fill(1)),d=r=>{for(let l=r.y;l<r.y+r.h;l++)for(let h=r.x;h<r.x+r.w;h++)l>=0&&l<t&&h>=0&&h<i&&(e[l][h]=0)};for(const r of c.rooms)d(r.rect);for(const r of c.corridors)d(r);for(const r of c.rooms){for(const l of r.walls)for(let h=l.y;h<l.y+l.h;h++)for(let u=l.x;u<l.x+l.w;u++)e[h][u]=1;for(const l of r.decor)l.solid&&l.row>=0&&l.row<t&&(e[l.row][l.col]=1)}const o=c.playerSpawn;if(e[o.row]?.[o.col]!==0)return!1;const a=new Set([`${o.col},${o.row}`]),n=[[o.col,o.row]];for(;n.length>0;){const[r,l]=n.pop();for(const[h,u]of[[1,0],[-1,0],[0,1],[0,-1]]){const p=r+h,v=l+u,f=`${p},${v}`;p<0||v<0||p>=i||v>=t||a.has(f)||e[v][p]===0&&(a.add(f),n.push([p,v]))}}const s=(r,l)=>a.has(`${r},${l}`);for(const r of c.rooms){const l=r.rect.x+Math.floor(r.rect.w/2),h=r.rect.y+Math.floor(r.rect.h/2);let u=!1;for(let p=h-1;p<=h+1&&!u;p++)for(let v=l-1;v<=l+1&&!u;v++)s(v,p)&&(u=!0);if(!u)return!1;for(const p of r.enemies)if(e[p.row][p.col]!==0)return!1;for(const p of r.decor){if(p.type!=="chest"&&p.type!=="shrine"&&p.type!=="event-altar")continue;if(![[1,0],[-1,0],[0,1],[0,-1]].some(([f,m])=>s(p.col+f,p.row+m)))return!1}if(r.boss){for(let p=h-1;p<=h+1;p++)for(let v=l-1;v<=l+1;v++)if(e[p][v]!==0)return!1}}for(const r of c.doors)if(e[r.row]?.[r.col]!==0)return!1;return!0}function pd(c,i){const t=c.depth,e=new $e(`${c.seed}:depth:${t}`),d=pr(t,c.seed),o=e.fork(`layout:${i}`),{main:a,branches:n}=fd(o.fork("sequence"),t,c.nextPath),s=o.fork("rooms"),r=o.fork("place"),l=[],h=[],u=[],p=[],v=[],f=ji(s,"START"),m={x:Math.floor(Se.cols/2-f.w/2)+r.randomInt(-4,4),y:Se.rows-f.h-2,w:f.w,h:f.h};l.push({type:"START",geom:f,rect:m}),p.push(m);const g=[0];for(let w=1;w<a.length;w++){const b=a[w],N=ji(s,b),B=l[g[g.length-1]],F=r.shuffle(["up","up","left","right"]);let I=null;for(const O of F)if(I=Sa(r,B.rect,N,O,Se,p,`d${u.length}`),I)break;if(!I)return null;const P=l.length;l.push({type:b,geom:N,rect:I.rect}),p.push(I.rect,I.corridor),h.push(I.corridor),u.push({...I.door,rooms:[`r${g[g.length-1]}`,`r${P}`]}),v.push({roomIndex:g[g.length-1],corridor:I.corridor}),v.push({roomIndex:P,corridor:I.corridor}),g.push(P)}for(const w of n){const b=ji(s,w),N=g.slice(1,-1);if(N.length===0)break;const B=r.pick(N),F=r.shuffle(["left","right","down","up"]);let I=null;for(const O of F)if(I=Sa(r,l[B].rect,b,O,Se,p,`d${u.length}`),I)break;if(!I)continue;const P=l.length;l.push({type:w,geom:b,rect:I.rect}),p.push(I.rect,I.corridor),h.push(I.corridor),u.push({...I.door,rooms:[`r${B}`,`r${P}`],secret:w==="SECRET"}),v.push({roomIndex:B,corridor:I.corridor}),v.push({roomIndex:P,corridor:I.corridor})}const y=yr(t)?xr(t):null,x=y?y[0].key:Fe(t)?vr(t,e.fork("boss"),d):null,S=x&&!y?gr(t,x,e.fork("variant")):null,T=o.fork("content"),E=o.fork("names"),R={depth:t,playerLevel:c.maxLevel??1,biome:d,bossKey:x,bossRush:y},C=l.map((w,b)=>{const N=w.geom.walls.map(P=>({x:w.rect.x+P.x,y:w.rect.y+P.y,w:P.w,h:P.h})),B=xi[w.type]||xi.COMBAT,F={id:`r${b}`,name:E.pick(Tr[w.type]||Tr.COMBAT),roomType:w.type,rect:w.rect,ambient:Math.min(.92,Math.max(.55,.66+E.random()*.18+(B.ambientBoost??0))),walls:N,enemies:[],decor:[]},I=new Er(w.rect,N);I.depth=t;for(const P of v)P.roomIndex===b&&I.reserveDoorApproach(P.corridor);if(Ar(T,F,I,R),Rr(T,F,I,d,w.type),w.type==="BOSS"){const P=S?St(`bossvar.${x}`,S.name):St(`boss.${x}`,Yt[x]?.name??x);F.name=R.bossRush?"BOSS RUSH":`${St("rn.Covil","Covil")}: ${P}`}return F}),A=C[0],M={id:`endless-${t}`,name:`Prof. ${t} · ${Sr(d)}`,endless:!0,depth:t,biome:d,seed:c.seed,theme:Ls[d],world:Se,rooms:C,corridors:h,doors:u,playerSpawn:{col:A.rect.x+Math.floor(A.rect.w/2),row:A.rect.y+Math.floor(A.rect.h/2)},next:null,bossVariant:S};return cd(M)?M:null}function vd(c){const i=c.depth,t=new $e(`${c.seed}:depth:${i}:fallback`),e=pr(i,c.seed),d=["START","COMBAT","TREASURE",Fe(i)?"BOSS":"EXIT"],o=[],a=[],n=[];let s=Se.rows-2;d.forEach((v,f)=>{const m=v==="BOSS"?15:9,g=v==="BOSS"?11:7,y={x:30-Math.floor(m/2),y:s-g,w:m,h:g};if(o.push({type:v,geom:{walls:[]},rect:y}),f>0){const x=o[f-1].rect,S=29,T={x:S,y:y.y+y.h,w:2,h:x.y-(y.y+y.h)};a.push(T),n.push({id:`d${f-1}`,orientation:"h",col:S,row:T.y+Math.floor(T.h/2),rooms:[`r${f-1}`,`r${f}`]})}s=y.y-4});const r=Fe(i)?vr(i,t.fork("boss"),e):null,l={depth:i,playerLevel:c.maxLevel??1,biome:e,bossKey:r,bossRush:yr(i)?xr(i):null},h=t.fork("content"),u=o.map((v,f)=>{const m={id:`r${f}`,name:Tr[v.type][0],roomType:v.type,rect:v.rect,ambient:.7,walls:[],enemies:[],decor:[]},g=new Er(v.rect,[]);return g.depth=i,Ar(h,m,g,l),Rr(h,m,g,e,v.type),m}),p=u[0];return{id:`endless-${i}`,name:`Prof. ${i} · ${Sr(e)}`,endless:!0,depth:i,biome:e,seed:c.seed,theme:Ls[e],world:Se,rooms:u,corridors:a,doors:n,playerSpawn:{col:p.rect.x+Math.floor(p.rect.w/2),row:p.rect.y+Math.floor(p.rect.h/2)},next:null,bossVariant:r&&!l.bossRush?gr(i,r,t.fork("variant")):null}}function md(c){if(!c||typeof c.depth!=="number")c={depth:1,seed:"dg",...(c||{})};for(let i=0;i<15;i++){const t=pd(c,i);if(t)return t}return vd(c)}const Te={chance:1,minDepth:1,maxDepth:99,cooldownLevels:0,rewardGoldBase:60,rewardXpBase:90,secretGold:25},Vt={gravity:950,runSpeed:160,groundAccel:16,airControl:.78,jumpVelocity:-350,jumpCutFactor:.45,fallMultiplier:1.35,coyoteMs:120,bufferMs:140,maxFallSpeed:500},qi={upTiles:1.6,gapTiles:2.8},Ke={SHADOW_RUINS:{id:"SHADOW_RUINS",nameKey:"trav.type.ruins",skin:"fx",backdrop:"gv",skyColors:[1707806,2758182],fogColor:3811902,lightTint:14196991,props:{deco:["trav-gv-barrel","trav-gv-crate","trav-gv-sign","trav-fx-fence"],wide:["trav-gv-cratestack","trav-gv-wagon","trav-gv-well"],lamp:!0},bgSilhouettes:["trav-gv-house-a","trav-gv-house-b","trav-gv-house-c","trav-gv-church"],traps:["SPIKES","FALLING_PLATFORM","ARROW_SHOOTER","MOVING_PLATFORM"],enemies:[{texture:"mk3e-skeleton",kind:"walker",hp:3,damage:1,scale:.62},{texture:"mk3e-ghost",kind:"flyer",hp:2,damage:1,scale:.6},{texture:"mk3e-skeleton-warrior",kind:"sentinel",hp:4,damage:1,scale:.66}],music:"traversal"},WILD_HOLLOW:{id:"WILD_HOLLOW",nameKey:"trav.type.forest",skin:"fx",skyColors:[659478,924196],fogColor:2373706,lightTint:11192552,props:{deco:["trav-fx-brush","trav-fx-fence","trav-fx-pillar"],wide:["trav-fx-mound"],lamp:!1},bgSilhouettes:["trav-fx-tower","trav-fx-dirt"],traps:["SPIKES","FALLING_PLATFORM","MOVING_PLATFORM"],enemies:[{texture:"mk3e-goblin",kind:"walker",hp:3,damage:1,scale:1},{texture:"mk3e-harpy",kind:"flyer",hp:2,damage:1,scale:.9},{texture:"mk3e-orc",kind:"sentinel",hp:4,damage:1,scale:1}],music:"traversal"},SKY_ISLANDS:{id:"SKY_ISLANDS",nameKey:"trav.type.sky",skin:"fx",tex:"sky",skyColors:[10133704,10329802],fogColor:10535104,lightTint:12318207,props:{deco:["trav-sky-flower-a","trav-sky-bush-b","trav-sky-flower-b","trav-sky-bush-c"],wide:["trav-sky-mush-a","trav-sky-tree-b"],lamp:!1},propScale:{"trav-sky-bush-b":.55,"trav-sky-bush-c":.55,"trav-sky-tree-b":.42,"trav-sky-mush-a":.6,"trav-sky-flower-a":.9,"trav-sky-flower-b":.9},bgSilhouettes:["trav-sky-rock1","trav-sky-rock2","trav-sky-rock3"],fairies:!0,plants:!0,traps:["SPIKES","FALLING_PLATFORM","MOVING_PLATFORM"],enemies:[{texture:"mk3e-goblin",kind:"walker",hp:3,damage:1,scale:1},{texture:"mk3e-harpy",kind:"flyer",hp:2,damage:1,scale:.9},{texture:"mk3e-orc",kind:"sentinel",hp:4,damage:1,scale:1}],music:"traversal"}},gd=["START","PLATFORMS","TRAPS","EXPLORATION","VERTICAL","CHALLENGE","REWARD","EXIT"],yd=["START","PLATFORMS","TRAPS","REWARD","EXIT"];function xd(c,i,t=Math.random){if(i<Te.minDepth||i>Te.maxDepth)return null;if(!!c.get("traversal:seenRun")){const s=c.get("traversal:cd")??0;if(s>0)return c.set("traversal:cd",s-1),null;if(t()>Te.chance)return null}const d=Object.keys(Ke),o=c.get("traversal:lastType"),a=d.length>1?d.filter(s=>s!==o):d,n=a[Math.floor(t()*a.length)];return c.set("traversal:seenRun",!0),c.set("traversal:cd",Te.cooldownLevels),c.set("traversal:lastType",n),n}
+case"START":{if(d===1){i.banner="PREPARE-SE PARA A DESCIDA",i.enterSfx="sfx-treasure-room",i.ambient=.9,i.name="Tesouro Inicial";const s=t.take(c,{inset:1})??t.center();i.decor.push({type:"chest",col:s.col,row:s.row,solid:!0,tier:"STARTER",starter:!0})}break}case"TREASURE":{const s=We(d),r=1+(c.chance(.35)?1:0);for(let l=0;l<r;l++){const h=t.takeInteractive?t.takeInteractive(c):(t.take(c,{inset:1})??t.center());i.decor.push({type:"chest",col:h.col,row:h.row,solid:!0,tier:s});if(l===0&&t.isFree(h.col-1,h.row))i.decor.push({type:"candle",col:h.col-1,row:h.row});if(l===0&&t.isFree(h.col+1,h.row))i.decor.push({type:"candle",col:h.col+1,row:h.row})}break}case"SECRET":{const s=d>=20?"LEGENDARY":"EPIC",r=t.center();i.decor.push({type:"chest",col:r.col,row:r.row,solid:!0,tier:s}),i.secret=!0;const bio=(a||"").toLowerCase();let ek="SKELETON_WARRIOR";bio.includes("ruin")?ek="ORC_BRUTE":bio.includes("catacomb")?ek="DEMON":bio.includes("fortress")?ek="DEMON_CASTER":bio.includes("froze")?ek="TROLL":(bio.includes("forest")||bio.includes("bosque"))&&(ek="GOBLIN_ASSASSIN");const ep=t.take(c,{inset:1})??r;i.enemies.push({type:ek,col:ep.col,row:ep.row,elite:!0});break}case"SHRINE":{const s=c.pick(sd),r=t.takeInteractive?t.takeInteractive(c):t.center();i.decor.push({type:"shrine",col:r.col,row:r.row,solid:!0,shrine:s});if(t.isFree(r.col-1,r.row))i.decor.push({type:"candle",col:r.col-1,row:r.row});if(t.isFree(r.col+1,r.row))i.decor.push({type:"candle",col:r.col+1,row:r.row});break}case"SHOP":{const s=t.takeInteractive?t.takeInteractive(c):t.center();i.decor.push({type:"merchant",col:s.col,row:s.row,solid:!0}),i.shop=!0;if(t.isFree(s.col-1,s.row))i.decor.push({type:"crate",col:s.col-1,row:s.row,solid:!0});if(t.isFree(s.col+1,s.row))i.decor.push({type:"barrel",col:s.col+1,row:s.row,solid:!0});break}case"EVENT":{const s=c.pick(id),r=t.center();i.decor.push({type:"event-altar",col:r.col,row:r.row,solid:!0,event:s});break}case"ELITE":i.eliteReward=xs(We(d));break;case"CHALLENGE":i.challenge={timeLimitSec:45,rewardTier:xs(We(d))};break;case"BOSS":{i.boss=e.bossKey,i.exit=!0,i.final=!0,i.zoom=.92,e.bossRush&&(i.bossRush=e.bossRush,i.banner="BOSS RUSH",i.enterSfx="sfx-boss-rush");break}case"EXIT":i.exit=!0;break}if(n.budget>0){const s=dd(c,{depth:d,playerLevel:o,roomType:i.roomType,biome:a,baseBudget:n.budget});for(const r of s){const l=t.take(c,{inset:1})??t.take(c,{});if(!l)break;i.enemies.push({...r,col:l.col,row:l.row})}}}function cd(c){const{cols:i,rows:t}=c.world,e=Array.from({length:t},()=>new Array(i).fill(1)),d=r=>{for(let l=r.y;l<r.y+r.h;l++)for(let h=r.x;h<r.x+r.w;h++)l>=0&&l<t&&h>=0&&h<i&&(e[l][h]=0)};for(const r of c.rooms)d(r.rect);for(const r of c.corridors)d(r);for(const r of c.rooms){for(const l of r.walls)for(let h=l.y;h<l.y+l.h;h++)for(let u=l.x;u<l.x+l.w;u++)e[h][u]=1;for(const l of r.decor)l.solid&&l.row>=0&&l.row<t&&(e[l.row][l.col]=1)}const o=c.playerSpawn;if(e[o.row]?.[o.col]!==0)return!1;const a=new Set([`${o.col},${o.row}`]),n=[[o.col,o.row]];for(;n.length>0;){const[r,l]=n.pop();for(const[h,u]of[[1,0],[-1,0],[0,1],[0,-1]]){const p=r+h,v=l+u,f=`${p},${v}`;p<0||v<0||p>=i||v>=t||a.has(f)||e[v][p]===0&&(a.add(f),n.push([p,v]))}}const s=(r,l)=>a.has(`${r},${l}`);for(const r of c.rooms){const l=r.rect.x+Math.floor(r.rect.w/2),h=r.rect.y+Math.floor(r.rect.h/2);let u=!1;for(let p=h-1;p<=h+1&&!u;p++)for(let v=l-1;v<=l+1&&!u;v++)s(v,p)&&(u=!0);if(!u)return!1;for(const p of r.enemies)if(e[p.row][p.col]!==0)return!1;for(const p of r.decor){if(p.type!=="chest"&&p.type!=="shrine"&&p.type!=="event-altar")continue;if(![[1,0],[-1,0],[0,1],[0,-1]].some(([f,m])=>s(p.col+f,p.row+m)))return!1}if(r.boss){for(let p=h-1;p<=h+1;p++)for(let v=l-1;v<=l+1;v++)if(e[p][v]!==0)return!1}}for(const r of c.doors)if(e[r.row]?.[r.col]!==0)return!1;return!0}function pd(c,i){const t=c.depth,e=new $e(`${c.seed}:depth:${t}`),d=pr(t,c.seed),o=e.fork(`layout:${i}`),{main:a,branches:n}=fd(o.fork("sequence"),t,c.nextPath),s=o.fork("rooms"),r=o.fork("place"),l=[],h=[],u=[],p=[],v=[],f=ji(s,"START"),m={x:Math.floor(Se.cols/2-f.w/2)+r.randomInt(-4,4),y:Se.rows-f.h-2,w:f.w,h:f.h};l.push({type:"START",geom:f,rect:m}),p.push(m);const g=[0];for(let w=1;w<a.length;w++){const b=a[w],N=ji(s,b),B=l[g[g.length-1]],F=r.shuffle(["up","up","left","right"]);let I=null;for(const O of F)if(I=Sa(r,B.rect,N,O,Se,p,`d${u.length}`),I)break;if(!I)return null;const P=l.length;l.push({type:b,geom:N,rect:I.rect}),p.push(I.rect,I.corridor),h.push(I.corridor),u.push({...I.door,rooms:[`r${g[g.length-1]}`,`r${P}`]}),v.push({roomIndex:g[g.length-1],corridor:I.corridor}),v.push({roomIndex:P,corridor:I.corridor}),g.push(P)}for(const w of n){const b=ji(s,w),/*__EXBIO__*/N=__exHosts(g,l);if(N.length===0)break;const B=r.pick(N)/*§Tj1nLnNsaWNlKDEsLTEpO2lmKE4ubGVuZ3RoPT09MClicmVhaztjb25zdCBCPXIucGljayhOKQ==*//*__EXBIO__*/,F=r.shuffle(["left","right","down","up"]);let I=null;for(const O of F)if(I=Sa(r,l[B].rect,b,O,Se,p,`d${u.length}`),I)break;if(!I)continue;const P=l.length;l.push({type:w,geom:b,rect:I.rect}),p.push(I.rect,I.corridor),h.push(I.corridor),u.push({...I.door,rooms:[`r${B}`,`r${P}`],secret:w==="SECRET"}),v.push({roomIndex:B,corridor:I.corridor}),v.push({roomIndex:P,corridor:I.corridor})}const y=yr(t)?xr(t):null,x=y?y[0].key:Fe(t)?vr(t,e.fork("boss"),d):null,S=x&&!y?gr(t,x,e.fork("variant")):null,T=o.fork("content"),E=o.fork("names"),R={depth:t,playerLevel:c.maxLevel??1,biome:d,bossKey:x,bossRush:y},C=l.map((w,b)=>{const N=w.geom.walls.map(P=>({x:w.rect.x+P.x,y:w.rect.y+P.y,w:P.w,h:P.h})),B=xi[w.type]||xi.COMBAT,F={id:`r${b}`,name:E.pick(Tr[w.type]||Tr.COMBAT),roomType:w.type,rect:w.rect,ambient:Math.min(.92,Math.max(.55,.66+E.random()*.18+(B.ambientBoost??0))),walls:N,enemies:[],decor:[]},I=new Er(w.rect,N);I.depth=t;for(const P of v)P.roomIndex===b&&I.reserveDoorApproach(P.corridor);if(Ar(T,F,I,R),Rr(T,F,I,d,w.type),w.type==="BOSS"){const P=S?St(`bossvar.${x}`,S.name):St(`boss.${x}`,Yt[x]?.name??x);F.name=R.bossRush?"BOSS RUSH":`${St("rn.Covil","Covil")}: ${P}`}return F}),A=C[0],M={id:`endless-${t}`,name:`Prof. ${t} · ${Sr(d)}`,endless:!0,depth:t,biome:d,seed:c.seed,theme:Ls[d],world:Se,rooms:C,corridors:h,doors:u,playerSpawn:{col:A.rect.x+Math.floor(A.rect.w/2),row:A.rect.y+Math.floor(A.rect.h/2)},next:null,bossVariant:S};return cd(M)?M:null}function vd(c){const i=c.depth,t=new $e(`${c.seed}:depth:${i}:fallback`),e=pr(i,c.seed),d=["START","COMBAT","TREASURE",Fe(i)?"BOSS":"EXIT"],o=[],a=[],n=[];let s=Se.rows-2;d.forEach((v,f)=>{const m=v==="BOSS"?15:9,g=v==="BOSS"?11:7,y={x:30-Math.floor(m/2),y:s-g,w:m,h:g};if(o.push({type:v,geom:{walls:[]},rect:y}),f>0){const x=o[f-1].rect,S=29,T={x:S,y:y.y+y.h,w:2,h:x.y-(y.y+y.h)};a.push(T),n.push({id:`d${f-1}`,orientation:"h",col:S,row:T.y+Math.floor(T.h/2),rooms:[`r${f-1}`,`r${f}`]})}s=y.y-4});const r=Fe(i)?vr(i,t.fork("boss"),e):null,l={depth:i,playerLevel:c.maxLevel??1,biome:e,bossKey:r,bossRush:yr(i)?xr(i):null},h=t.fork("content"),u=o.map((v,f)=>{const m={id:`r${f}`,name:Tr[v.type][0],roomType:v.type,rect:v.rect,ambient:.7,walls:[],enemies:[],decor:[]},g=new Er(v.rect,[]);return g.depth=i,Ar(h,m,g,l),Rr(h,m,g,e,v.type),m}),p=u[0];return{id:`endless-${i}`,name:`Prof. ${i} · ${Sr(e)}`,endless:!0,depth:i,biome:e,seed:c.seed,theme:Ls[e],world:Se,rooms:u,corridors:a,doors:n,playerSpawn:{col:p.rect.x+Math.floor(p.rect.w/2),row:p.rect.y+Math.floor(p.rect.h/2)},next:null,bossVariant:r&&!l.bossRush?gr(i,r,t.fork("variant")):null}}function md(c){if(!c||typeof c.depth!=="number")c={depth:1,seed:"dg",...(c||{})};for(let i=0;i<15;i++){const t=pd(c,i);if(t)return t}return vd(c)}const Te={chance:1,minDepth:1,maxDepth:99,cooldownLevels:0,rewardGoldBase:60,rewardXpBase:90,secretGold:25},Vt={gravity:950,runSpeed:160,groundAccel:16,airControl:.78,jumpVelocity:-350,jumpCutFactor:.45,fallMultiplier:1.35,coyoteMs:120,bufferMs:140,maxFallSpeed:500},qi={upTiles:1.6,gapTiles:2.8},Ke={SHADOW_RUINS:{id:"SHADOW_RUINS",nameKey:"trav.type.ruins",skin:"fx",backdrop:"gv",skyColors:[1707806,2758182],fogColor:3811902,lightTint:14196991,props:{deco:["trav-gv-barrel","trav-gv-crate","trav-gv-sign","trav-fx-fence"],wide:["trav-gv-cratestack","trav-gv-wagon","trav-gv-well"],lamp:!0},bgSilhouettes:["trav-gv-house-a","trav-gv-house-b","trav-gv-house-c","trav-gv-church"],traps:["SPIKES","FALLING_PLATFORM","ARROW_SHOOTER","MOVING_PLATFORM"],enemies:[{texture:"mk3e-skeleton",kind:"walker",hp:3,damage:1,scale:.62},{texture:"mk3e-ghost",kind:"flyer",hp:2,damage:1,scale:.6},{texture:"mk3e-skeleton-warrior",kind:"sentinel",hp:4,damage:1,scale:.66}],music:"traversal"},WILD_HOLLOW:{id:"WILD_HOLLOW",nameKey:"trav.type.forest",skin:"fx",skyColors:[659478,924196],fogColor:2373706,lightTint:11192552,props:{deco:["trav-fx-brush","trav-fx-fence","trav-fx-pillar"],wide:["trav-fx-mound"],lamp:!1},bgSilhouettes:["trav-fx-tower","trav-fx-dirt"],traps:["SPIKES","FALLING_PLATFORM","MOVING_PLATFORM"],enemies:[{texture:"mk3e-goblin",kind:"walker",hp:3,damage:1,scale:1},{texture:"mk3e-harpy",kind:"flyer",hp:2,damage:1,scale:.9},{texture:"mk3e-orc",kind:"sentinel",hp:4,damage:1,scale:1}],music:"traversal"},SKY_ISLANDS:{id:"SKY_ISLANDS",nameKey:"trav.type.sky",skin:"fx",tex:"sky",skyColors:[10133704,10329802],fogColor:10535104,lightTint:12318207,props:{deco:["trav-sky-flower-a","trav-sky-bush-b","trav-sky-flower-b","trav-sky-bush-c"],wide:["trav-sky-mush-a","trav-sky-tree-b"],lamp:!1},propScale:{"trav-sky-bush-b":.55,"trav-sky-bush-c":.55,"trav-sky-tree-b":.42,"trav-sky-mush-a":.6,"trav-sky-flower-a":.9,"trav-sky-flower-b":.9},bgSilhouettes:["trav-sky-rock1","trav-sky-rock2","trav-sky-rock3"],fairies:!0,plants:!0,traps:["SPIKES","FALLING_PLATFORM","MOVING_PLATFORM"],enemies:[{texture:"mk3e-goblin",kind:"walker",hp:3,damage:1,scale:1},{texture:"mk3e-harpy",kind:"flyer",hp:2,damage:1,scale:.9},{texture:"mk3e-orc",kind:"sentinel",hp:4,damage:1,scale:1}],music:"traversal"}},gd=["START","PLATFORMS","TRAPS","EXPLORATION","VERTICAL","CHALLENGE","REWARD","EXIT"],yd=["START","PLATFORMS","TRAPS","REWARD","EXIT"];function xd(c,i,t=Math.random){if(i<Te.minDepth||i>Te.maxDepth)return null;if(!!c.get("traversal:seenRun")){const s=c.get("traversal:cd")??0;if(s>0)return c.set("traversal:cd",s-1),null;if(t()>Te.chance)return null}const d=Object.keys(Ke),o=c.get("traversal:lastType"),a=d.length>1?d.filter(s=>s!==o):d,n=a[Math.floor(t()*a.length)];return c.set("traversal:seenRun",!0),c.set("traversal:cd",Te.cooldownLevels),c.set("traversal:lastType",n),n}
 $o.prototype.showOnlineCoopLobby = function() {
   this.closeSubPanel();
   const i = _ / 2, t = st / 2;
@@ -11457,6 +11457,276 @@ const __VXCAST = {
     const r = P0.apply(this, arguments);
     try { const L = this.load, op = L.path; L.setPath(""); for (const id of IDS) this.textures.exists("ix-" + id) || L.image("ix-" + id, `assets/pixel-art/ui/icons/${id}.png`); L.setPath(op);
       L.once("complete", () => { for (const id of IDS) Ye[id] && this.textures.exists("ix-" + id) && (Ye[id].icon = "ix-" + id) }) } catch (e) {}
+    return r;
+  };
+}
+
+/* ══ Cenários do modo infinito ══
+   - baús de recompensa (elite, desafio, chefe) nunca viram mímico
+   - sequência de salas: sem duas salas do mesmo tipo seguidas, sem duas salas vazias seguidas
+     (filler de combate entre elas) e sem a mesma planta duas vezes seguidas
+   - sem armadilhas nem poças que ferem nas salas geradas
+   - biomas novos: Deserto Esquecido (edesert), Vulcão de Cinzas (evulcao) e Salões de Valdrak (ecastelo,
+     peças do pack do castelo em assets/pixel-art/endless/exc-atlas.*, scripts/build_endless_castle.py)
+   Ganchos de texto no pacote: scripts/patch_endless_biomes.py */
+
+/* 1) baús de recompensa sem mímico */
+Sd.prototype.spawnRewardChest = function (i, t, e) {
+  const d = Math.floor(i / dt), o = Math.floor(t / dt) + 1, a = new ms(this, { type: "chest", col: d, row: o, tier: e, noMimic: !0, reward: !0 }, this.dungeon.solids);
+  this.dungeon.objects.push(a), this.effects.burstTinted(a.x, a.y, 16765514, 16), this.effects.shockwaveRing(a.x, a.y, 30);
+};
+
+/* 2) sequência de salas */
+const __exQUIET = new Set(["START", "TREASURE", "SHRINE", "SHOP", "EVENT", "SECRET", "PUZZLE", "REST", "MERCHANT"]);
+let __exLastGeo = null;
+function __exHosts(g, l) {
+  const all = g.slice(1, -1), fight = all.filter(k => !__exQUIET.has(l[k]?.type));
+  return fight.length ? fight : all;
+}
+{
+  const FD0 = fd;
+  fd = function (c, i, nextPath) {
+    __exLastGeo = null;
+    const r = FD0(c, i, nextPath), m = r.main, end = m[m.length - 1];
+    const mid = m.slice(1, -1), Q = mid.filter(t => __exQUIET.has(t)), F = mid.filter(t => !__exQUIET.has(t));
+    // o tipo pedido pelo caminho escolhido (loja, enigma, pacto) fica; o resto das salas calmas, no máximo 3
+    const keep = nextPath === "shop" ? "SHOP" : nextPath === "puzzle" ? "PUZZLE" : nextPath === "pact" ? "EVENT" : null;
+    while (Q.length > 3) { const k = Q.findIndex(t => t !== keep); Q.splice(k < 0 ? Q.length - 1 : k, 1) }
+    // F sem tipos iguais vizinhos: intercala COMBAT com os outros
+    const fill = ["COMBAT", "CHALLENGE"];
+    while (F.length < Q.length) F.push(fill[F.length % 2]);
+    if (!F.length) F.push("COMBAT");
+    const out = ["START"];
+    let fi = 0, qi = 0;
+    while (fi < F.length || qi < Q.length) {
+      if (fi < F.length) out.push(F[fi++]);
+      if (qi < Q.length) out.push(Q[qi++]);
+    }
+    // limpa repetições vizinhas que sobrarem (ex.: COMBAT,COMBAT)
+    const seq = [out[0]];
+    for (let k = 1; k < out.length; k++) {
+      const t = out[k], p = seq[seq.length - 1];
+      if (t === p) { if (!__exQUIET.has(t)) { seq.push(t === "COMBAT" ? "CHALLENGE" : "COMBAT"); continue } continue }
+      seq.push(t);
+    }
+    if (seq[seq.length - 1] === end) seq.push(end === "BOSS" ? "COMBAT" : "CHALLENGE");
+    seq.push(end);
+    // ramos laterais calmos só se ligam a salas com luta (__exHosts) — SECRET tem um guardião elite
+    return { main: seq, branches: r.branches };
+  };
+  const JI0 = ji;
+  ji = function (c, t) {
+    let n = JI0(c, t);
+    for (let k = 0; k < 6 && t !== "BOSS" && __exLastGeo && n.template === __exLastGeo.template && (n.template !== "RECTANGLE" || Math.abs(n.w - __exLastGeo.w) + Math.abs(n.h - __exLastGeo.h) < 3); k++) n = JI0(c, t);
+    __exLastGeo = n;
+    return n;
+  };
+  const MD0 = md;
+  md = function (c) {
+    const L = MD0(c);
+    try { __exPost(L) } catch (e) { console.warn("[endless-biomes]", e) }
+    return L;
+  };
+}
+function __exPost(L) {
+  if (!L?.rooms) return;
+  const used = new Set();
+  for (const rm of L.rooms) {
+    // sem armadilhas e sem poças de lava que ferem
+    rm.decor = (rm.decor || []).filter(d => d && !/^trap-/.test(d.type || "") && d.type !== "lava-pool");
+    // nomes sem repetir no mesmo andar
+    if (rm.roomType === "BOSS") continue;
+    if (used.has(rm.name)) {
+      const pool = (Tr[rm.roomType] || Tr.COMBAT).filter(n => !used.has(n));
+      if (pool.length) rm.name = pool[Math.floor(me(rm.rect.x, rm.rect.y) * pool.length)];
+      else { let k = 2; while (used.has(`${rm.name} ${["", "", "II", "III", "IV", "V", "VI"][k] || k}`)) k++; rm.name = `${rm.name} ${["", "", "II", "III", "IV", "V", "VI"][k] || k}` }
+    }
+    used.add(rm.name);
+  }
+}
+
+/* 3) biomas novos */
+Ls.edesert = { ...Kn, id: "edesert", name: "Deserto Esquecido", tilesetKey: "tiles-ruins",
+  palette: { ...Kn.palette, stoneBase: 85, gold: 16766720, goldBright: 16773530, fire: 16752688 },
+  lights: { ...Kn.lights, PLAYER: { ...Kn.lights.PLAYER, radius: 200 } }, music: { explore: "ruins-ambience", boss: "boss-ambience" } };
+Ls.evulcao = { ...$n, id: "evulcao", name: "Vulcão de Cinzas", tilesetKey: "tiles-fortress" };
+Ls.ecastelo = { ...Xn, id: "ecastelo", name: "Salões de Valdrak", tilesetKey: "tiles-ecastle", music: { explore: "catacombs-ambience", boss: "boss-ambience" } };
+Object.assign(ud, { edesert: "Deserto Esquecido", evulcao: "Vulcão de Cinzas", ecastelo: "Salões de Valdrak" });
+try {
+  Object.assign(_s, { "biome.edesert": "Forgotten Desert", "biome.evulcao": "Ash Volcano", "biome.ecastelo": "Halls of Valdrak" });
+  Object.assign(Io, { "biome.edesert": "Desierto Olvidado", "biome.evulcao": "Volcán de Ceniza", "biome.ecastelo": "Salones de Valdrak" });
+} catch (e) {}
+{
+  const B = { edesert: "ruins", evulcao: "fortress", ecastelo: "ecastle" };
+  for (const g of Object.values(ga)) for (const [n, b] of Object.entries(B)) g.biomes.includes(b) && !g.biomes.includes(n) && g.biomes.push(n);
+  for (const [n, b] of Object.entries(B)) js[n] ??= js[b];
+  Object.assign(ed, {
+    edesert: { wallTop: [], onWall: [], solid: ["ds-boulder3", "ds-boulder4", "ds-boulder5", "ds-cactus4", "ds-cactus2"], flat: ["ds-skull"], lightExtra: [] },
+    evulcao: { wallTop: [], onWall: [], solid: ["vc-mp-rock-cluster", "vc-obsidian1", "vc-obsidian2", "vc-mp-magma-rock", "vc-boulder2", "vc-mp-crystal1"], flat: ["vc-mp-titan-skull", "vc-remains", "vc-sulfur"], lightExtra: ["fire-crystal"] },
+    ecastelo: { wallTop: ["torch"], onWall: ["banner"], solid: ["cf-p-knight", "cf-p-urns", "cf-p-pillar-short", "cf-p-gargoyle", "cf-p-angel", "cf-p-halberds", "cf-p-candles"], flat: ["cf-p-rubble-s", "cf-p-stones", "bones"], lightExtra: ["candle"] },
+  });
+}
+/* ordem dos biomas: 2 profundidades cada; depois do ciclo, sorteio sem repetir o anterior */
+const __exCYCLE = ["catacombs", "ruins", "edesert", "ebosque", "frozen", "erio", "evulcao", "fortress", "emorta", "ecastelo", "ecastle", "graveyard"];
+pr = function (c, i) {
+  const cyc = Math.floor((Math.max(1, c) - 1) / 2);
+  if (cyc < __exCYCLE.length) return __exCYCLE[cyc];
+  let prev = __exCYCLE[__exCYCLE.length - 1], d = prev;
+  for (let k = __exCYCLE.length; k <= cyc; k++) {
+    const n = __exCYCLE.filter(h => h !== prev);
+    d = n[Math.floor(new $e(`${i}:biome_cycle2:${k}`).random() * n.length)];
+    prev = d;
+  }
+  return d;
+};
+{
+  const VR0 = vr;
+  vr = function (c, i, b) {
+    const k = { evulcao: "MAGMA_TITAN", edesert: "ANCIENT_COLOSSUS", ecastelo: "CASTLE_LORD" }[b];
+    if (k && Yt[k] && (c < 12 || i.chance(.7))) return k;
+    return VR0(c, i, b);
+  };
+}
+/* deserto e vulcão: cenário aberto pintado pelo __ekBake */
+__EK2.edesert = { under: [168, 122, 72], f: [[212, 174, 116], [224, 188, 130], [234, 202, 146]], dirt: [194, 148, 94], dark: [92, 60, 34],
+  tr: ["ds-cactus", "ds-cactus2", "ds-cactus3", "ds-deadtree", "ds-deadtree2", "ds-deadtree3", "ds-boulder", "ds-boulder2", "ds-rockpile", "ds-cactus", "ds-boulder4"],
+  tu: [], bush: ["ds-cactus4", "ds-boulder3", "ds-boulder5", "ds-skull", "ds-log"] };
+__EK2.evulcao = { under: [44, 24, 28], f: [[70, 52, 52], [82, 60, 58], [96, 70, 64]], dirt: [112, 56, 38], dark: [16, 7, 9],
+  tr: ["vc-mp-tall-cone", "vc-mp-twin-cone", "vc-mp-spatter-cone", "vc-obsidian1", "vc-obsidian2", "vc-obsidian3", "vc-mp-column-single", "vc-mp-column-trio", "vc-mp-column-bundle", "vc-boulder1", "vc-boulder4", "vc-mp-rock-cluster", "vc-vent"],
+  tu: ["vc-fx-crust1", "vc-fx-crust2", "vc-fx-crust3"], bush: ["vc-mp-ember-fern", "vc-mp-fire-succulent", "vc-mp-crystal1", "vc-mp-crystal2", "vc-sulfur", "vc-mp-ember-fern"] };
+
+/* castelo: interior montado com as peças do pack */
+let __excN = 0;
+function __excBake(B) {
+  const S = B.scene, M = S.cache.json.get("exc-atlas");
+  if (!M || !S.textures.exists("exc-atlas")) return !1;
+  const src = S.textures.get("exc-atlas").getSourceImage(), C = B.cols, R = B.rows, T = dt, key = "excb-" + ++__excN;
+  const tx = S.textures.createCanvas(key, C * T, R * T), g = tx.getContext();
+  g.imageSmoothingEnabled = !1;
+  let sd = (String(B.level.seed ?? "v") + B.level.depth).split("").reduce((a, c) => a * 31 + c.charCodeAt(0) | 0, 7) >>> 0;
+  const rnd = () => (sd = sd * 1664525 + 1013904223 >>> 0) / 4294967296, pick = a => a[rnd() * a.length | 0];
+  const F = (c, r) => c >= 0 && r >= 0 && c < C && r < R && !B.isWallTile(c, r);
+  const D = (q, x, y, sx = 0, sy = 0, sw = q[2], sh = q[3]) => g.drawImage(src, q[0] + sx, q[1] + sy, sw, sh, x, y, sw, sh);
+  const kind = new Array(C * R).fill("grey"), rooms = B.level.rooms || [];
+  for (const rm of rooms) {
+    const t = rm.roomType, r = rm.rect;
+    if (!r) continue;
+    const k = t === "BOSS" || t === "ELITE" ? "maroon" : ["SHOP", "REST", "TREASURE", "MERCHANT"].includes(t) ? "wood" : ["SHRINE", "EVENT", "PUZZLE", "SECRET"].includes(t) ? "brown" : rnd() < .35 ? "brown" : "grey";
+    rm.__exk = k;
+    for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) kind[y * C + x] = k;
+  }
+  g.fillStyle = "rgb(9,11,17)";
+  g.fillRect(0, 0, C * T, R * T);
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) F(c, r) && D(pick(M.floor[kind[r * C + c]]), c * T, r * T);
+  // lajotas grandes e tapetes
+  for (const rm of rooms) {
+    const r = rm.rect;
+    if (!r) continue;
+    if (rm.__exk === "grey") for (let y = r.y + 2; y < r.y + r.h - 3; y += 4) for (let x = r.x + 2; x < r.x + r.w - 3; x += 5)
+      if (rnd() < .35 && F(x, y) && F(x + 1, y) && F(x, y + 1) && F(x + 1, y + 1)) D(M.big, x * T, y * T);
+    if (rm.__exk === "maroon" && r.h >= 6) {
+      const cx = r.x + Math.floor(r.w / 2), x0 = cx * T - 22, x1 = cx * T + 22, y0 = (r.y + 1) * T + 2, y1 = (r.y + r.h - 1) * T - 4;
+      g.fillStyle = "rgb(92,22,26)"; g.fillRect(x0, y0, x1 - x0, y1 - y0);
+      g.fillStyle = "rgb(122,30,32)"; g.fillRect(x0 + 2, y0, x1 - x0 - 4, y1 - y0);
+      g.fillStyle = "rgb(178,136,64)"; g.fillRect(x0 + 4, y0, 2, y1 - y0); g.fillRect(x1 - 6, y0, 2, y1 - y0);
+      for (let yy = y0 + 18; yy < y1 - 10; yy += 30) {
+        g.fillStyle = "rgb(150,44,40)"; g.beginPath(); g.moveTo(cx * T, yy - 8); g.lineTo(cx * T + 8, yy); g.lineTo(cx * T, yy + 8); g.lineTo(cx * T - 8, yy); g.closePath(); g.fill();
+        g.strokeStyle = "rgb(178,136,64)"; g.lineWidth = 1; g.stroke();
+      }
+      g.fillStyle = "rgb(178,136,64)";
+      for (let xx = x0 + 2; xx < x1 - 1; xx += 3) g.fillRect(xx, y1 + 1, 1, 3);
+    }
+  }
+  // paredes: até 2 fileiras de tijolo + 1 de topo acima de cada borda superior de piso
+  const face = new Int8Array(C * R);
+  for (let x = 0; x < C; x++) for (let y = 1; y < R; y++) if (F(x, y) && !F(x, y - 1))
+    for (const [k, v] of [[1, 1], [2, 1], [3, 2]]) { const yy = y - k; if (yy < 0 || F(x, yy)) break; face[yy * C + x] = v }
+  const isBot = (x, y) => face[y * C + x] === 1 && (y + 1 >= R || face[(y + 1) * C + x] !== 1);
+  const wallSpots = [];
+  for (let y = 0; y < R; y++) for (let x = 0; x < C;) {
+    if (!isBot(x, y)) { x++; continue }
+    const x0 = x;
+    while (x < C && isBot(x, y)) x++;
+    for (let c = x0; c < x; c++) D(M.brick[c === x0 ? 0 : c === x - 1 ? 4 : 1 + (c - x0) % 3], c * T, (y - 1) * T);
+    for (let c = x0 + 1; c < x - 1; c += 1) face[(y - 1) * C + c] === 1 && wallSpots.push([c, y]);
+  }
+  for (let y = 0; y < R; y++) for (let x = 0; x < C;) {
+    if (face[y * C + x] !== 2) { x++; continue }
+    const x0 = x;
+    while (x < C && face[y * C + x] === 2) x++;
+    for (let c = x0; c < x; c++) D(M.top[c === x0 ? 0 : c === x - 1 ? 4 : 1 + (c - x0) % 3], c * T, y * T);
+  }
+  // janelas, escudos e espadas nas paredes (sem encostar uns nos outros)
+  const taken = new Set(), WN = Object.keys(M.wall), win = WN.filter(n => /^win|arch/.test(n)), arm = WN.filter(n => !/^win|arch|banner/.test(n));
+  for (const [c, y] of wallSpots) {
+    if (rnd() > .22 || taken.has(c - 1 + "," + y) || taken.has(c + "," + y) || taken.has(c - 2 + "," + y)) continue;
+    const n = rnd() < .55 ? pick(win) : pick(arm), q = M.wall[n];
+    if (q[3] > 60) continue;
+    taken.add(c + "," + y);
+    D(q, c * T + 16 - (q[2] >> 1), (y + 1) * T - 6 - q[3]);
+  }
+  // moldura do topo das paredes contornando o vazio
+  const open = (c, r) => F(c, r) || (c >= 0 && r >= 0 && c < C && r < R && face[r * C + c] > 0);
+  const fr = M.frame;
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+    if (open(c, r)) continue;
+    open(c + 1, r) && D(fr.R, c * T + 18, r * T, 18, 0, 14, 32);
+    open(c - 1, r) && D(fr.L, c * T, r * T, 0, 0, 14, 32);
+    open(c, r + 1) && !face[(r + 1) * C + c] && D(fr.B, c * T, r * T + 18, 0, 18, 32, 14);
+    F(c, r - 1) && D(fr.T, c * T, r * T, 0, 0, 32, 14);
+  }
+  // sombra ao pé das paredes e nas laterais
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+    if (!F(c, r)) continue;
+    if (!F(c, r - 1)) { const q = g.createLinearGradient(0, r * T, 0, r * T + 14); q.addColorStop(0, "rgba(0,0,0,.5)"); q.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = q; g.fillRect(c * T, r * T, T, 14) }
+    if (!F(c - 1, r)) { const q = g.createLinearGradient(c * T, 0, c * T + 10, 0); q.addColorStop(0, "rgba(0,0,0,.35)"); q.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = q; g.fillRect(c * T, r * T, 10, T) }
+    if (!F(c + 1, r)) { const q = g.createLinearGradient(c * T + 22, 0, c * T + 32, 0); q.addColorStop(0, "rgba(0,0,0,0)"); q.addColorStop(1, "rgba(0,0,0,.35)"); g.fillStyle = q; g.fillRect(c * T + 22, r * T, 10, T) }
+  }
+  tx.refresh();
+  S.add.image(0, 0, key).setOrigin(0).setDepth(-2);
+  B.groundLayer?.setVisible(!1);
+  B.wallLayer?.setVisible(!1);
+  S.cameras.main.setBackgroundColor("rgb(9,11,17)");
+  S.events.once("shutdown", () => { S.textures.exists(key) && S.textures.remove(key) });
+  return !0;
+}
+/* vulcão: poças de lava fora das salas (não ferem) com brilho pulsando */
+function __exVolcanoFx(B) {
+  const S = B.scene, C = B.cols, R = B.rows, T = dt, pools = ["vc-mp-lavapool-round", "vc-mp-lavapool-crust", "vc-mp-lavapool-drip", "vc-lavapool", "vc-lavapool2"].filter(k => S.textures.exists(k));
+  if (!pools.length) return;
+  let n = 0;
+  for (let k = 0; k < 5000 && n < 40; k++) {
+    const c = Math.random() * C | 0, r = Math.random() * R | 0;
+    if (!B.isWallTile(c, r) || !B.nearFloor(c, r, 2) || B.nearFloor(c, r, 0)) continue;
+    let near1 = !1;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (!B.isWallTile(c + dx, r + dy)) near1 = !0;
+    if (near1) continue;
+    n++;
+    const x = c * T + 16, y = r * T + 16, p = S.add.image(x, y, pools[Math.random() * pools.length | 0]).setDepth(.6);
+    S.tweens.add({ targets: p, alpha: { from: 1, to: .78 }, duration: 900 + Math.random() * 700, yoyo: !0, repeat: -1, delay: Math.random() * 900 });
+  }
+}
+{
+  const BW0 = _l.prototype.buildWallVisuals;
+  _l.prototype.buildWallVisuals = function () {
+    const id = this.level?.theme?.id;
+    if (id === "ecastelo") { try { if (__excBake(this)) return } catch (e) { console.warn("[ecastelo]", e) } }
+    const r = BW0.apply(this, arguments);
+    if (id === "evulcao") try { __exVolcanoFx(this) } catch (e) {}
+    return r;
+  };
+  const CFP = ["knight", "urns", "pillar-short", "gargoyle", "angel", "halberds", "candles", "rubble-s", "stones"];
+  const P0 = bo.prototype.preload;
+  bo.prototype.preload = function () {
+    const r = P0.apply(this, arguments);
+    try {
+      const L = this.load, op = L.path;
+      L.setPath("");
+      this.textures.exists("exc-atlas") || L.image("exc-atlas", "assets/pixel-art/endless/exc-atlas.png");
+      L.json("exc-atlas", "assets/pixel-art/endless/exc-atlas.json");
+      for (const n of CFP) this.textures.exists("cf-p-" + n) || L.image("cf-p-" + n, `assets/pixel-art/castle2/cf-p-${n}.png`);
+      L.setPath(op);
+    } catch (e) {}
     return r;
   };
 }

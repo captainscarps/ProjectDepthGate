@@ -517,12 +517,13 @@ class ProceduralEnvironmentManager {
     // 1. Distribuição procedural de armadilhas e quebra-cabeças pelas salas
     const rooms = dungeon.level.rooms || [];
     const sp = dungeon.level.playerSpawn;
+    const __noTraps = !!(scene && (scene.isEndless || scene.level?.endless || scene.mode === "endless" || scene.game?.registry?.get("mode") === "endless"));
     rooms.forEach((room, roomIdx) => {
       if (room.hasBoss) return;
       const rect = room.rect;
       if (!rect) return;
 
-      if (room.enemies && room.enemies.length > 0) {
+      if (!__noTraps && room.enemies && room.enemies.length > 0) {
         const numTraps = Math.min(2, Math.floor(room.enemies.length / 2) + 1);
         for (let i = 0; i < numTraps; i++) {
           const tc = rect.x + 1 + Math.floor(Math.random() * Math.max(1, rect.w - 2));
@@ -551,7 +552,7 @@ class ProceduralEnvironmentManager {
       }
     });
 
-    if (scene.__environmentalTraps.length === 0 && rooms[0]?.rect) {
+    if (!__noTraps && scene.__environmentalTraps.length === 0 && rooms[0]?.rect) {
       const r = rooms[0].rect;
       for (let tc = r.x + 1; tc < r.x + r.w - 1; tc++) {
         for (let tr = r.y + 1; tr < r.y + r.h - 1; tr++) {
@@ -625,7 +626,7 @@ class ProceduralEnvironmentManager {
     const w = (dungeon?.cols || 80) * 32;
     const h = (dungeon?.rows || 64) * 32;
 
-    if (biomeId === 'vulcao') {
+    if (biomeId === 'vulcao' || biomeId === 'evulcao') {
       // Brasas incandescentes subindo suavemente
       const numEmbers = 45;
       for (let i = 0; i < numEmbers; i++) {
