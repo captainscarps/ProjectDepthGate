@@ -12145,6 +12145,25 @@ function __fxCtxEl(S) {
   W("execAoeStatus", null, function (d) { const S = this.scene, p = S.player, el = el0(S, d, "arcane"); __FX.impact(S, p.x, p.y - 6, el, Math.min(2.4, (d.radius ?? 70) / 40)) });
 }
 
+/* ─── golpe de inimigo comum acertando o herói: faíscas (ou o elemento do inimigo) e poeira ─── */
+{
+  const AP = Uh.prototype.apply;
+  Uh.prototype.apply = function (o) {
+    const S = this.scene, t = o?.target, src = o?.source, hit0 = t && !t.dead;
+    const r = AP.apply(this, arguments);
+    try {
+      if (r && hit0 && t === S.player && src && src !== S.boss && src.typeKey && !src.__fxNoHit) {
+        const el = __fxElOf({ id: src.typeKey, name: src.data_?.name ?? src.cfg?.name, status: o.status }) ?? "steel";
+        const x = t.x - (o.dir?.x ?? 0) * 6, y = t.y - 8 - (o.dir?.y ?? 0) * 6;
+        __FX.impact(S, x, y, el, el === "steel" ? .55 : .7);
+        el === "steel" && __FX.em(S, "fx2-spark", { speed: { min: 60, max: 150 }, angle: { min: 0, max: 360 }, rotate: { onEmit: (p) => Math.atan2(p.velocityY, p.velocityX) * 57.3 }, lifespan: { min: 120, max: 260 }, scale: { start: .7, end: .2 }, alpha: { start: .9, end: 0 }, tint: [0xffffff, 0xffe0a0], blendMode: "ADD" }, 5, x, y, y + 50);
+      }
+    } catch (e) {}
+    return r;
+  };
+}
+try { window.__dgFX = __FX } catch (e) {}
+
 /* ══ Chefes: ataques com peso ══
    - aviso no chão com brilho que cresce até o golpe
    - meteoros, estacas de gelo e pedras caindo de verdade antes do impacto
@@ -12359,8 +12378,8 @@ const __BX = {
   W("die", function () {
     const S = this.scene, el = __bossEl(this);
     this.__fxAura?.stop(); this.__fxAura = null;
-    for (let k = 0; k < 4; k++) S.time.delayedCall(250 + k * 260, () => __FX.impact(S, this.x + (Math.random() - .5) * 60, this.y - this.displayHeight * .3 + (Math.random() - .5) * 40, el, 2));
-    S.time.delayedCall(1400, () => { __FX.impact(S, this.x, this.y - this.displayHeight * .3, el, 3.4); __BX.flash(S, __FX.PAL[el].core, 300, .5); __BX.dust(S, this.x, this.y, 70, 0x8a7a66, 20) });
+    for (let k = 0; k < 4; k++) S.time.delayedCall(250 + k * 260, () => __FX.impact(S, this.x + (Math.random() - .5) * this.displayWidth * .4, this.y - 6 + (Math.random() - .5) * 24, el, 2));
+    S.time.delayedCall(1400, () => { __FX.impact(S, this.x, this.y - 6, el, 3.4); __BX.flash(S, __FX.PAL[el].core, 300, .5); __BX.dust(S, this.x, this.y, 70, 0x8a7a66, 20) });
   });
 }
 

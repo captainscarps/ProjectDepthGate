@@ -212,8 +212,8 @@ const __BX = {
   W("die", function () {
     const S = this.scene, el = __bossEl(this);
     this.__fxAura?.stop(); this.__fxAura = null;
-    for (let k = 0; k < 4; k++) S.time.delayedCall(250 + k * 260, () => __FX.impact(S, this.x + (Math.random() - .5) * 60, this.y - this.displayHeight * .3 + (Math.random() - .5) * 40, el, 2));
-    S.time.delayedCall(1400, () => { __FX.impact(S, this.x, this.y - this.displayHeight * .3, el, 3.4); __BX.flash(S, __FX.PAL[el].core, 300, .5); __BX.dust(S, this.x, this.y, 70, 0x8a7a66, 20) });
+    for (let k = 0; k < 4; k++) S.time.delayedCall(250 + k * 260, () => __FX.impact(S, this.x + (Math.random() - .5) * this.displayWidth * .4, this.y - 6 + (Math.random() - .5) * 24, el, 2));
+    S.time.delayedCall(1400, () => { __FX.impact(S, this.x, this.y - 6, el, 3.4); __BX.flash(S, __FX.PAL[el].core, 300, .5); __BX.dust(S, this.x, this.y, 70, 0x8a7a66, 20) });
   });
 }
 
