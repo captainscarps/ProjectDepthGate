@@ -542,7 +542,7 @@ class ProceduralEnvironmentManager {
       }
 
       const isEndless = scene && (scene.isEndless || scene.level?.endless || scene.mode === "endless" || scene.game?.registry?.get("mode") === "endless" || !!scene.endlessRun?.());
-      if (!isEndless && rect.w >= 8 && rect.h >= 8 && scene.__environmentalPuzzles.length === 0 && roomIdx > 0) {
+      if (false && !isEndless && rect.w >= 8 && rect.h >= 8 && scene.__environmentalPuzzles.length === 0 && roomIdx > 0) { // círculo de totens desativado: aparecia por cima das salas
         const pc = Math.floor(rect.x + rect.w / 2);
         const pr = Math.floor(rect.y + rect.h / 2);
         if (!dungeon.isWallTile(pc, pr)) {
