@@ -1,7 +1,7 @@
 """
 A velha da cabana (pack "Priest Pixel Art Character Sprite Sheets", CraftPix, fora do repositório pela licença).
 Usa Priests_1 (a senhora encapuzada). Gera assets/pixel-art/npc/velha.png: quadros de 48x68
-  linha 0: parada (8)   linha 1: falando (11)   linha 2: andando (12)
+  linha 0: parada (8)   linha 1: falando (11)   linha 2: andando (12)   linha 3: conjurando (11)
 e velha-face.png (rosto ampliado para o retrato do diálogo).
 Uso: PRIEST_PACK="/pasta/do/pack" python3 scripts/build_crone_npc.py
 """
@@ -15,7 +15,7 @@ FW, FH, X0, Y0 = 48, 68, 42, 60
 
 
 def main():
-    rows = [("Idle", 8), ("Dialogue", 11), ("Walk", 12)]
+    rows = [("Idle", 8), ("Dialogue", 11), ("Walk", 12), ("Special", 11)]
     out = Image.new("RGBA", (FW * 12, FH * len(rows)))
     for r, (name, n) in enumerate(rows):
         s = Image.open(os.path.join(PACK, "Priests_1", name + ".png")).convert("RGBA")

@@ -171,11 +171,11 @@ function __wqLady(S, x, y) {
   if (S.textures.exists("velha")) {
     // a senhora encapuzada (pack Priest): parada, falando quando há diálogo por perto, sempre virada para o herói
     const A = S.anims;
-    for (const [k, a, n, fr] of [["velha-idle", 0, 8, 6], ["velha-talk", 12, 11, 8], ["velha-walk", 24, 12, 10]]) A.exists(k) || A.create({ key: k, frames: A.generateFrameNumbers("velha", { start: a, end: a + n - 1 }), frameRate: fr, repeat: -1 });
+    for (const [k, a, n, fr] of [["velha-idle", 0, 8, 6], ["velha-talk", 12, 11, 8], ["velha-walk", 24, 12, 10], ["velha-cast", 36, 11, 10]]) A.exists(k) || A.create({ key: k, frames: A.generateFrameNumbers("velha", { start: a, end: a + n - 1 }), frameRate: fr, repeat: -1 });
     const s = S.add.sprite(x, y, "velha", 0).setOrigin(.5, 1).setDepth(y).setScale(.66).play("velha-idle");
     const sh = S.add.ellipse(x, y, 22, 7, 0, .35).setDepth(y - 1);
     const U = () => {
-      if (!s.active || !S.player) return;
+      if (!s.active || !S.player || s.__lock) return;
       s.setFlipX(S.player.x < s.x);
       const ui = S.scene.get("UI"), talk = !!ui?.__dlgOpen && Math.hypot(S.player.x - s.x, S.player.y - s.y) < 170;
       const want = talk ? "velha-talk" : "velha-idle";
@@ -373,7 +373,7 @@ function __wqBigCauldron(S, x, y) {
   S.anims.exists("gyx-caul-a") || S.anims.create({ key: "gyx-caul-a", frames: S.anims.generateFrameNumbers("gyx-caul", {}), frameRate: 8, repeat: -1 });
   const sc = 2.3;
   S.add.ellipse(x + 4, y - 2, 70, 18, 0, .4).setDepth(y - 1);
-  const c = S.add.sprite(x, y, "gyx-caul", 0).setOrigin(.5, 41 / 48).setScale(sc).setDepth(y).setTint(0xb8ff9a).play("gyx-caul-a");
+  const c = S.__wqCaul = S.add.sprite(x, y, "gyx-caul", 0).setOrigin(.5, 41 / 48).setScale(sc).setDepth(y).setTint(0xb8ff9a).play("gyx-caul-a");
   const b = S.dungeon.solids.create(x, y - 16, "rock"); b.setVisible(!1).setDisplaySize(60, 30); b.refreshBody?.();
   const gl = S.add.image(x, y - 56, "light").setBlendMode(j.BlendModes.ADD).setTint(0x8cff6a).setScale(.5).setAlpha(.45).setDepth(y + 1);
   S.tweens.add({ targets: gl, alpha: .22, scale: .58, duration: 800, yoyo: !0, repeat: -1 });
@@ -395,31 +395,104 @@ function __wqWitchTalk(S, lady) {
     A.V("Cada pedaço que você perde vem para mim. Olhe bem… estou quase jovem de novo.", "special"),
     A.H(S, "Desfaça o feitiço. Agora."),
     A.B("Desfazer? Só se me matar, criança… e ninguém mata a Bruxa das Sepulturas na porta da casa dela!"),
-  ], () => {
-    if (!S.scene.isActive()) return;
-    const x = lady.spr.x, y = lady.spr.y, cam = S.cameras.main;
-    S.uiOpen = !0; try { S.physics?.pause?.() } catch (e) {}
-    S.game.events.emit("ui:banner", "A VELHA MOSTRA SUA VERDADEIRA FORMA!", "#9aff4a");
-    S.audioRef?.play?.("sfx-ancient-dragon-phase");
-    const dark = S.add.rectangle(x, y, 4000, 4000, 0x061206, 0).setDepth(y - 2); S.tweens.add({ targets: dark, fillAlpha: .55, duration: 800 });
-    try { __FX.tex(S) } catch (e) {}
-    S.tweens.add({ targets: lady.spr, x: x + 2, duration: 45, yoyo: !0, repeat: 30 });
-    S.time.addEvent({ delay: 140, repeat: 12, callback: () => { lady.spr.active && lady.spr.setTint(Math.random() < .5 ? 0x8cff6a : 0xffffff); try { __FX.ring(S, x, y, 0x7ad84a, 40 + Math.random() * 60, 420, y + 4) } catch (e) {} } });
-    S.tweens.add({ targets: lady.spr, scaleX: 1.6, scaleY: 1.6, duration: 1700, ease: "Quad.easeIn" });
-    S.time.delayedCall(1900, () => {
-      if (!S.scene.isActive()) return;
-      try { cam.flash(280, 140, 255, 120) } catch (e) {}
-      S.cameraSys?.shake?.(.016, 520); S.audioRef?.play?.("sfx-ancient-dragon-roar");
-      __wqPortalFx(S, x, y, 0x7ad84a);
-      lady.destroy();
-      const b = S.spawnBoss("WITCH_CRONE", x, y, {});
-      const br = [...S.roomManager.byId.values()][0];
-      try { br && (b.arenaBounds = S.roomManager.arenaBoundsFor(br)) } catch (e) {}
-      b.state_ = "recover"; b.stateTimer = 1.4; b.setAlpha(.2); S.tweens.add({ targets: b, alpha: 1, duration: 500 });
-      try { b.__fxAura = __FX.follow(S, b, "poison", { size: 1.5, oy: -b.displayHeight * .3, zone: { w: b.displayWidth * .4, h: b.displayHeight * .5 }, lightScale: .4, lightAlpha: .2 }) } catch (e) {}
-      S.game.events.emit("boss:spawned", b.data_.name, b.data_.subtitle);
-      __wqWitchAI(S, b);
-      S.time.delayedCall(600, () => { S.tweens.add({ targets: dark, fillAlpha: 0, duration: 800, onComplete: () => dark.destroy() }); try { S.physics?.resume?.() } catch (e) {} S.uiOpen = !1; S.state = "playing" });
+  ], () => { if (S.scene.isActive()) __wqTransform(S, lady) });
+}
+/* transformação: a velha conjura, o caldeirão explode em energia, o chão racha, raios verdes,
+   ela cresce envolta num redemoinho e se rompe na Bruxa das Sepulturas */
+function __wqTransform(S, lady) {
+  const s = lady.spr, x = s.x, y = s.y, cam = S.cameras.main, z0 = cam.zoom, P = __FX.PAL?.poison || { core: 0xf0ffc0, mid: 0x9ce64e, out: 0x4a9a2a, light: 0x9ce64e };
+  const live = () => S.scene.isActive();
+  S.uiOpen = !0; try { S.physics?.pause?.() } catch (e) {}
+  try { __FX.tex(S) } catch (e) {}
+  s.__lock = 1; S.anims.exists("velha-cast") && s.play("velha-cast");
+  S.audioRef?.play?.("sfx-ancient-dragon-phase");
+  S.game.events.emit("ui:banner", "A VELHA MOSTRA SUA VERDADEIRA FORMA!", "#9aff4a");
+  // câmera aproxima e o mundo escurece
+  try { cam.stopFollow(); cam.pan(x, y - 40, 800, "Sine.easeInOut"); cam.zoomTo(z0 * 1.45, 1000, "Sine.easeInOut") } catch (e) {}
+  const dark = S.add.rectangle(x, y, 5000, 5000, 0x020a02, 0).setDepth(y - 3);
+  S.tweens.add({ targets: dark, fillAlpha: .72, duration: 1100 });
+  const halo = S.add.image(x, y - 30, "light").setBlendMode(j.BlendModes.ADD).setTint(P.mid).setScale(.15).setAlpha(0).setDepth(y + 5);
+  S.tweens.add({ targets: halo, alpha: .8, scale: 1.1, duration: 3400, ease: "Quad.easeIn" });
+  const lt = S.lighting?.addLight?.({ x, y: y - 30, radius: 60, flicker: .5, color: P.mid });
+  // ela levita tremendo
+  S.tweens.add({ targets: s, y: y - 14, duration: 1600, ease: "Sine.easeInOut" });
+  S.tweens.add({ targets: s, x: x + 1.5, duration: 40, yoyo: !0, repeat: 70 });
+  // o caldeirão explode e a energia corre até ela
+  const C = S.__wqCaul;
+  if (C?.active) {
+    S.time.delayedCall(500, () => {
+      if (!live()) return;
+      S.cameraSys?.shake?.(.008, 300); S.audioRef?.play?.("sfx-ancient-dragon-fire");
+      try { __FX.impact(S, C.x, C.y - 50, "poison", 1.6); __FX.ring(S, C.x, C.y - 10, P.mid, 70, 500, C.y + 2) } catch (e) {}
+      S.tweens.add({ targets: C, scaleX: C.scaleX * 1.15, scaleY: C.scaleY * .88, duration: 90, yoyo: !0, repeat: 5 });
+      for (let k = 0; k < 26; k++) S.time.delayedCall(k * 90, () => {
+        if (!live() || !s.active) return;
+        const o = S.add.image(C.x + (Math.random() - .5) * 30, C.y - 55, "light").setBlendMode(j.BlendModes.ADD).setTint(Math.random() < .5 ? P.mid : P.core).setScale(.06 + Math.random() * .05).setDepth(y + 8);
+        S.tweens.add({ targets: o, x: s.x + (Math.random() - .5) * 12, y: s.y - 30 + (Math.random() - .5) * 16, scale: .02, duration: 520 + Math.random() * 260, ease: "Quad.easeIn", onComplete: () => o.destroy() });
+      });
+    });
+  }
+  // redemoinho de partículas puxando para dentro dela
+  let vort = null;
+  try { if (__FX.ok?.() !== !1) { vort = S.add.particles(0, 0, "fx2-dot", { emitZone: { type: "edge", source: new j.Geom.Circle(x, y - 30, 170), quantity: 56 }, moveToX: x, moveToY: y - 30, frequency: 14, lifespan: 760, scale: { start: 1.2, end: .2 }, alpha: { start: .95, end: .2 }, tint: [P.mid, P.out, P.core], blendMode: "ADD" }).setDepth(y + 6) } } catch (e) { vort = null }
+  // o chão racha e ossos saem da terra
+  for (let k = 0; k < 4; k++) S.time.delayedCall(700 + k * 520, () => {
+    if (!live()) return;
+    try { __BX.crack(S, x + (Math.random() - .5) * 40, y + (Math.random() - .5) * 20, 50 + k * 22, 0x0a1a06) } catch (e) {}
+    try { __FX.ring(S, x, y, P.mid, 60 + k * 35, 600, y + 3); __BX.dust(S, x, y, 50 + k * 15, 0x3a4a2a, 10) } catch (e) {}
+    S.cameraSys?.shake?.(.004 + k * .002, 220);
+  });
+  // raios verdes com clarões
+  for (const t of [1100, 1900, 2600, 3100]) S.time.delayedCall(t, () => {
+    if (!live()) return;
+    try { cam.flash(120, 150, 255, 140) } catch (e) {}
+    S.audioRef?.play?.("sfx-ancient-dragon-roar");
+    const g = S.add.graphics().setDepth(y + 20).setBlendMode(j.BlendModes.ADD);
+    const bx = x + (Math.random() - .5) * 180, top = y - 260;
+    for (const [wid, col, al] of [[6, P.out, .55], [2.5, P.core, 1]]) {
+      g.lineStyle(wid, col, al); g.beginPath(); let px = bx, py = top; g.moveTo(px, py);
+      for (let q = 0; q < 9; q++) { px += (x - px) / (9 - q) + (Math.random() - .5) * 26; py += (y - 34 - top) / 9; g.lineTo(px, py) }
+      g.strokePath();
+    }
+    S.tweens.add({ targets: g, alpha: 0, duration: 260, onComplete: () => g.destroy() });
+    try { __FX.impact(S, x, y - 30, "poison", .9) } catch (e) {}
+  });
+  // silhueta pisca em preto e verde e cresce aos pulsos
+  S.time.addEvent({ delay: 110, repeat: 30, callback: () => { if (s.active) s.setTint([0x111111, P.mid, 0xffffff, 0x2a4a1a][Math.random() * 4 | 0]) } });
+  S.tweens.add({ targets: s, scaleX: s.scaleX * 2.1, scaleY: s.scaleY * 2.1, duration: 3300, ease: "Quad.easeIn" });
+  for (let k = 0; k < 6; k++) S.time.delayedCall(1200 + k * 340, () => { if (s.active) S.tweens.add({ targets: s, scaleX: s.scaleX * 1.08, scaleY: s.scaleY * .94, duration: 80, yoyo: !0 }) });
+  // clímax: explosão e a bruxa surge
+  S.time.delayedCall(3500, () => {
+    if (!live()) return;
+    vort?.stop(); vort && S.time.delayedCall(900, () => vort.destroy());
+    try { cam.flash(380, 180, 255, 150) } catch (e) {}
+    S.cameraSys?.shake?.(.026, 800); S.audioRef?.play?.("sfx-boss-slam"); S.audioRef?.play?.("sfx-ancient-dragon-roar");
+    try {
+      __FX.impact(S, x, y - 30, "poison", 3.6);
+      for (let k = 0; k < 4; k++) S.time.delayedCall(k * 110, () => __FX.ring(S, x, y, k % 2 ? P.core : P.mid, 120 + k * 70, 700, y + 8));
+      __BX.debris(S, x, y, 18, [0x2a3a1a, 0x5a7a3a, 0xd8e8c8]); __BX.crack(S, x, y, 140, 0x061006); __BX.dust(S, x, y, 110, 0x2a3a20, 22);
+    } catch (e) {}
+    S.tweens.add({ targets: halo, alpha: 0, scale: 2, duration: 800, onComplete: () => halo.destroy() });
+    lady.destroy();
+    const b = S.spawnBoss("WITCH_CRONE", x, y, {});
+    const br = [...S.roomManager.byId.values()][0];
+    try { br && (b.arenaBounds = S.roomManager.arenaBoundsFor(br)) } catch (e) {}
+    b.state_ = "recover"; b.stateTimer = 1.8; b.setAlpha(0);
+    S.tweens.add({ targets: b, alpha: 1, duration: 420 });
+    // eco da silhueta se espalhando
+    for (let k = 0; k < 3; k++) S.time.delayedCall(k * 140, () => { if (!b.active) return; const e = S.add.image(b.x, b.y, b.texture.key, b.frame.name).setOrigin(b.originX, b.originY).setScale(b.scaleX).setTint(P.mid).setBlendMode(j.BlendModes.ADD).setAlpha(.6).setDepth(b.depth - 1); S.tweens.add({ targets: e, scaleX: e.scaleX * 1.6, scaleY: e.scaleY * 1.6, alpha: 0, duration: 600, onComplete: () => e.destroy() }) });
+    try { b.__fxAura = __FX.follow(S, b, "poison", { size: 1.7, oy: -b.displayHeight * .3, zone: { w: b.displayWidth * .45, h: b.displayHeight * .55 }, lightScale: .45, lightAlpha: .24 }) } catch (e) {}
+    S.game.events.emit("boss:spawned", b.data_.name, b.data_.subtitle);
+    S.game.events.emit("ui:banner", "A BRUXA DAS SEPULTURAS DESPERTA!", "#9aff4a");
+    __say(S, b.x, b.y - b.displayHeight * .85, "Agora você vai ver de onde vem a minha juventude!", "#c8ff9a", 3400, b);
+    __wqWitchAI(S, b);
+    S.time.delayedCall(900, () => {
+      if (!live()) return;
+      S.tweens.add({ targets: dark, fillAlpha: 0, duration: 900, onComplete: () => dark.destroy() });
+      lt && (lt.radius = 0);
+      try { cam.zoomTo(z0, 700, "Sine.easeInOut"); cam.startFollow(S.player, !0, .1, .1) } catch (e) {}
+      try { S.physics?.resume?.() } catch (e) {}
+      S.uiOpen = !1; S.state = "playing";
     });
   });
 }
