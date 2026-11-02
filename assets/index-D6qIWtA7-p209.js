@@ -13854,7 +13854,7 @@ function __tpBake(B) {
     if (F(c, r) || sp === "plat") {
       // piso com borda clara onde encontra o vazio
       const Wt = (x, y) => SP(x, y) === "water";
-      const l = (!F(c - 1, r) && !SP(c - 1, r) && !fc(c - 1, r)) || (!sp && Wt(c - 1, r)), rr = (!F(c + 1, r) && !SP(c + 1, r) && !fc(c + 1, r)) || (!sp && Wt(c + 1, r)), b = (!F(c, r + 1) && !SP(c, r + 1)) || (!sp && Wt(c, r + 1));
+      const l = !F(c - 1, r) && !SP(c - 1, r) && !fc(c - 1, r), rr = !F(c + 1, r) && !SP(c + 1, r) && !fc(c + 1, r), b = !F(c, r + 1) && !SP(c, r + 1);
       let t = 79;
       if (sp === "plat") { const u = SP(c, r - 1) === "plat", d = SP(c, r + 1) === "plat", lf = SP(c - 1, r) === "plat", rt = SP(c + 1, r) === "plat"; t = [[65, 66, 67], [78, 79, 80], [91, 92, 93]][!u ? 0 : !d ? 2 : 1][!lf ? 0 : !rt ? 2 : 1] }
       else if (b && l) t = 91; else if (b && rr) t = 93; else if (b) t = 92; else if (l) t = 78; else if (rr) t = 80;
@@ -13862,7 +13862,6 @@ function __tpBake(B) {
       if (fv && CR && rnd() < .5) { const k = pick(fv); g.drawImage(src, CR[0] + (k % 8) * 16, CR[1] + (k / 8 | 0) * 16, 16, 16, c * T, r * T, 32, 32) } else tile(t, c, r);
       if (t === 79) plain.add(c + "," + r);
       if (sp === "plat" && SP(c, r + 1) !== "plat") { tile(53, c, r, 0, 10, 16, 6, 0, 10) }
-      if (!sp && Wt(c, r - 1)) tile(66, c, r, 0, 0, 16, 5, 0, 0); // margem de baixo da poça
       continue;
     }
     if (sp === "water") continue;
@@ -13885,6 +13884,40 @@ function __tpBake(B) {
     if (up && lf) wtile(0, c, r, .3); else if (up && rt) wtile(2, c, r, .3); else if (up) wtile(1, c, r, .3);
     else if (lf) wtile(13, c, r, .3); else if (rt) wtile(15, c, r, .3);
   }
+  // corredores num nível mais baixo (piso escuro) e escadinhas do pack nas entradas das salas
+  {
+    const inRoom = (c, r) => rooms.some((q) => q.rect && c >= q.rect.x && c < q.rect.x + q.rect.w && r >= q.rect.y && r < q.rect.y + q.rect.h);
+    const low = (c, r) => F(c, r) && !SP(c, r) && !inRoom(c, r);
+    const px = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x * 2, y * 2, w * 2, h * 2) };
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+      if (!low(c, r)) continue;
+      plain.delete(c + "," + r);
+      const X = c * 16, Y = r * 16;
+      px(X, Y, 16, 16, "rgb(94,107,125)");
+      if (rnd() < .12) { const mx = X + 3 + (rnd() * 8 | 0), my = Y + 4 + (rnd() * 8 | 0); px(mx, my, 6, 1, "rgb(84,96,114)"); px(mx + 2, my, 1, 3, "rgb(84,96,114)") }
+      // contorno onde encontra o vazio dos lados
+      if (!F(c - 1, r) && !fc(c - 1, r)) { px(X, Y, 1, 16, "rgb(36,39,50)"); px(X + 1, Y, 1, 16, "rgb(71,83,98)") }
+      if (!F(c + 1, r) && !fc(c + 1, r)) { px(X + 15, Y, 1, 16, "rgb(36,39,50)"); px(X + 14, Y, 1, 16, "rgb(71,83,98)") }
+      if (!F(c, r + 1)) { px(X, Y + 15, 16, 1, "rgb(36,39,50)") }
+    }
+    // escada: célula da sala encostada no corredor em cima ou embaixo
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+      if (!F(c, r) || SP(c, r) || low(c, r)) continue;
+      const dn = low(c, r + 1), up = low(c, r - 1);
+      if (!dn && !up) {
+        const lw = low(c - 1, r), rw = low(c + 1, r); if (!lw && !rw) continue;
+        // degraus de lado: a escada do pack girada
+        plain.delete(c + "," + r);
+        g.save(); g.translate((c + .5) * T, (r + .5) * T); g.rotate(lw ? Math.PI / 2 : -Math.PI / 2); g.translate(-(c + .5) * T, -(r + .5) * T); tile(114, c, r); g.restore();
+        continue;
+      }
+      plain.delete(c + "," + r);
+      const lft = !(F(c - 1, r) && !low(c - 1, r) && (low(c - 1, r + (dn ? 1 : -1)))), rgt = !(F(c + 1, r) && !low(c + 1, r) && (low(c + 1, r + (dn ? 1 : -1))));
+      const id = 114;
+      if (dn) tile(id, c, r);
+      else { g.save(); g.translate(0, (r * 2 + 1) * T); g.scale(1, -1); tile(id, c, r); g.restore() }
+    }
+  }
   // água no padrão do pack: fundo de piso afundado, beirada de pedra, linha d'água ciano e faixas claras
   {
     const Wt = (x, y) => SP(x, y) === "water";
@@ -13896,19 +13929,25 @@ function __tpBake(B) {
       px(X, Y, 16, 16, "rgb(63,112,166)");
       // marcas do piso afundado
       if (rnd() < .3) { const mx = X + 3 + (rnd() * 8 | 0), my = Y + 4 + (rnd() * 8 | 0); px(mx, my, 6, 1, "rgb(56,99,152)"); px(mx + 2, my, 1, 3, "rgb(56,99,152)"); px(mx, my + 3, 5, 1, "rgb(56,99,152)") }
+      // moldura de pedra clara da cisterna (cores e chanfro do pack), depois a água
+      const FR = ["rgb(36,39,50)", "rgb(161,165,216)", "rgb(146,153,192)", "rgb(146,153,192)", "rgb(89,93,115)"];
+      const L0 = !w ? 5 : 0, R0 = !e ? 5 : 0, B0 = !s_ ? 5 : 0;
       if (!n) {
-        px(X, Y, 16, 1, "rgb(39,40,55)"); px(X, Y + 1, 16, 1, "rgb(63,63,83)"); px(X, Y + 2, 16, 3, "rgb(52,52,70)");
-        for (let q = 0; q < 16; q += 4 + (rnd() * 3 | 0)) px(X + q, Y + 2, 1, 3, "rgb(44,44,60)");
-        px(X, Y + 5, 16, 1, "rgb(76,171,211)"); px(X, Y + 6, 16, 1, "rgb(74,160,203)"); px(X, Y + 7, 16, 1, "rgb(54,85,138)");
-        px(X, Y + 8, 16, 2, "rgb(67,128,179)"); px(X, Y + 10, 16, 1, "rgb(72,149,195)"); px(X, Y + 11, 16, 2, "rgb(67,128,179)");
+        for (let k = 0; k < 5; k++) px(X, Y + k, 16, 1, FR[k]);
+        px(X + L0, Y + 5, 16 - L0 - R0, 1, "rgb(39,40,55)"); px(X + L0, Y + 6, 16 - L0 - R0, 4, "rgb(52,52,70)");
+        for (let q = L0; q < 16 - R0; q += 4 + (rnd() * 3 | 0)) px(X + q, Y + 6, 1, 4, "rgb(44,44,60)");
+        px(X + L0, Y + 10, 16 - L0 - R0, 1, "rgb(76,171,211)"); px(X + L0, Y + 11, 16 - L0 - R0, 1, "rgb(74,160,203)"); px(X + L0, Y + 12, 16 - L0 - R0, 2, "rgb(67,128,179)");
       }
-      if (!w) { px(X, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)"); px(X + 1, Y + (n ? 0 : 6), 1, n ? 16 : 10, "rgb(67,128,179)") }
-      if (!e) { px(X + 15, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)"); px(X + 14, Y + (n ? 0 : 6), 1, n ? 16 : 10, "rgb(67,128,179)") }
-      if (!s_) { px(X, Y + 15, 16, 1, "rgb(76,171,211)") }
-      // cantos de dentro (terra só na diagonal)
-      const nw = Wt(c - 1, r - 1), ne = Wt(c + 1, r - 1);
-      if (n && w && !nw) px(X, Y, 1, 2, "rgb(76,171,211)");
-      if (n && e && !ne) px(X + 15, Y, 1, 2, "rgb(76,171,211)");
+      if (!w) { for (let k = 0; k < 5; k++) px(X + k, Y, 1, 16, FR[k]); px(X + 5, Y + (n ? 0 : 10), 1, n ? 16 - B0 : 6 - B0, "rgb(76,171,211)") }
+      if (!e) { for (let k = 0; k < 5; k++) px(X + 15 - k, Y, 1, 16, FR[k]); px(X + 10, Y + (n ? 0 : 10), 1, n ? 16 - B0 : 6 - B0, "rgb(76,171,211)") }
+      if (!s_) { for (let k = 0; k < 5; k++) px(X, Y + 15 - k, 16, 1, FR[k]); px(X + L0, Y + 10, 16 - L0 - R0, 1, "rgb(76,171,211)") }
+      // chanfro nos cantos da moldura
+      const bev = (sx, sy, dx, dy) => { for (let k = 0; k < 5; k++) px(sx + dx * k, sy + dy * k, 1, 1, "rgb(89,93,115)") };
+      if (!n && !w) bev(X, Y, 1, 1); if (!n && !e) bev(X + 15, Y, -1, 1); if (!s_ && !w) bev(X, Y + 15, 1, -1); if (!s_ && !e) bev(X + 15, Y + 15, -1, -1);
+      // cantos de dentro (terra só na diagonal): pedacinho da moldura
+      const nw = Wt(c - 1, r - 1), ne = Wt(c + 1, r - 1), sw = Wt(c - 1, r + 1), se = Wt(c + 1, r + 1);
+      if (n && w && !nw) px(X, Y, 5, 5, "rgb(146,153,192)"); if (n && e && !ne) px(X + 11, Y, 5, 5, "rgb(146,153,192)");
+      if (s_ && w && !sw) px(X, Y + 11, 5, 5, "rgb(146,153,192)"); if (s_ && e && !se) px(X + 11, Y + 11, 5, 5, "rgb(146,153,192)");
     }
   }
   // superfícies de piso mais escuro como no pack: manchas de contorno arredondado e irregular,
@@ -13925,7 +13964,7 @@ function __tpBake(B) {
     };
     for (const rm of rooms) {
       const q = rm.rect; if (!q || rm.interior) continue;
-      const n = 2 + (rnd() * 3 | 0);
+      const n = 1 + (rnd() * 2 | 0);
       for (let k = 0; k < n; k++) {
         // ancorada numa parede ou canto da sala, com 2 a 4 lóbulos
         const side = rnd() * 4 | 0, len = (3 + rnd() * Math.min(7, Math.max(q.w, q.h) - 3)) * 16, dep = (2 + rnd() * 2.5) * 16;
