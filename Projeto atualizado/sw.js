@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v5.41.2-mausoleus";
+const CACHE = "ded-web-v5.42.0-bruxa";
 /* Imagens, sons e dados ficam num cache que NÃO é apagado a cada versão. Ao ativar uma versão nova,
    o asset-versions.json (gerado por scripts/build_asset_versions.py antes de publicar) é comparado com o
    anterior e só os arquivos que mudaram são apagados (e baixados de novo quando o jogo pedir).

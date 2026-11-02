@@ -85,6 +85,9 @@ function __gyBake(B) {
   const ex = (k) => S.textures.exists(k), trees = ["gy-tree1", "gy-tree2", "gy-tree3", "gy-tree4", "gy-tree5", "gy-tree6", "gy-tree7", "gy-tree8", "gy-tree9", "gy-tree10"].filter(ex);
   const stones = Array.from({ length: 31 }, (_, i) => "gy-statue" + (i + 1)).filter(ex), fences = Array.from({ length: 10 }, (_, i) => "gy-fence" + (i + 1)).filter(ex);
   const grid = new Set(), list = [];
+  // nada de árvores, mausoléus ou lanternas colados no interior de casas nem sobre cabanas
+  const noDeco = (B.level.rooms || []).filter((q) => q.interior || q.wqCabin).map((q) => ({ x0: q.rect.x - (q.interior ? 12 : 0), y0: q.rect.y - (q.interior ? 12 : 0), x1: q.rect.x + q.rect.w + (q.interior ? 12 : 0), y1: q.rect.y + (q.interior ? q.rect.h + 12 : 6) }));
+  const blocked = (c, r) => noDeco.some((q) => c >= q.x0 && c < q.x1 && r >= q.y0 && r < q.y1);
   // mausoléus e criptas na mata, de frente para as clareiras (só onde caibem inteiros sobre a mata)
   {
     const kinds = [["gyt-maus", 4, 7, 2], ["gy-decor1", 3, 3, 1], ["gy-decor2", 2, 3, 1]].filter((k) => ex(k[0]));
@@ -94,6 +97,7 @@ function __gyBake(B) {
     for (let r = 2; r < R - 2; r++) for (let c = 1; c < C - 4; c++) if (!F(c, r) && (F(c + 1, r + 1) || F(c + 1, r + 2)) && !F(c + 1, r)) cand.push([c, r]);
     for (let k = cand.length - 1; k > 0; k--) { const j2 = rnd() * (k + 1) | 0; [cand[k], cand[j2]] = [cand[j2], cand[k]] }
     for (const [c, r] of cand) {
+      if (blocked(c, r)) continue;
       if (placed.length >= maxN) break;
       const nBig = placed.filter((q) => q.big).length, order = kinds.filter((k) => k[3] === 2 ? nBig < Math.ceil(maxN * .6) : rnd() < .5);
       let kd = null, c0 = 0;
@@ -111,7 +115,7 @@ function __gyBake(B) {
   }
   for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
     const d = dist[r * C + c];
-    if (d < 1 || d > 3) continue;
+    if (d < 1 || d > 3 || blocked(c, r)) continue;
     if (F(c, r - 1)) continue; // não cobre a beira da clareira
     const gk = (c >> 1) + "," + (r >> 1);
     if (grid.has(gk)) continue;
@@ -129,7 +133,7 @@ function __gyBake(B) {
   }
   const sp = B.level.playerSpawn;
   for (const rm of B.level.rooms || []) {
-    const r = rm.rect; if (!r || rm.roomType === "BOSS") continue;
+    const r = rm.rect; if (!r || rm.roomType === "BOSS" || rm.boss || rm.interior || rm.wqCabin) continue;
     const spots = [[r.x + 1, r.y + 1], [r.x + r.w - 2, r.y + 1], [r.x + 1, r.y + r.h - 2], [r.x + r.w - 2, r.y + r.h - 2]];
     for (const [c, rr] of spots) {
       if (rnd() > .55 || !F(c, rr) || (sp && Math.abs(sp.col - c) + Math.abs(sp.row - rr) < 3)) continue;
@@ -145,6 +149,7 @@ function __gyBake(B) {
   const fogB = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(8990).setAlpha(.2).setTint(0xaebbb3).setTileScale(3.4);
   const fogC = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.95).setAlpha(.34).setTint(0xdfe6e0).setTileScale(1.3).setFlipY(!0);
   const drift = (t, dms) => { const k = dms / 1000; fogA.tilePositionX += 5.5 * k; fogA.tilePositionY += 1.2 * k; fogB.tilePositionX -= 3.2 * k; fogB.tilePositionY += .8 * k; fogC.tilePositionX += 9 * k; fogC.tilePositionY -= 1.6 * k; fogA.setAlpha(.56 + Math.sin(t / 5200) * .07); fogB.setAlpha(.18 + Math.sin(t / 7300 + 1) * .05) };
+  S.__gyFog = [fogA, fogB, fogC];
   S.events.on("update", drift); S.events.once("shutdown", () => S.events.off("update", drift));
   // só desenha o que está perto da câmera
   let lc = 0; const cull = () => { const now = S.time.now; if (now - lc < 90) return; lc = now; const v = S.cameras.main.worldView, x1 = v.x - 140, x2 = v.right + 140, y1 = v.y - 160, y2 = v.bottom + 160; for (const o of list) o.active && o.setVisible(o.x >= x1 && o.x <= x2 && o.y >= y1 && o.y <= y2) };
