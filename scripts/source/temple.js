@@ -23,7 +23,7 @@ const __TP = {
         enemies: [E("SKELETON", 27, 30), E("SKELETON", 32, 35), E("SKELETON_ARCHER", 36, 30), E("GOBLIN_ASSASSIN", 29, 38)],
         tp: [["small", 29, 33], ["small", 30, 33], ["crate-barrel", 23, 29], ["box-tall", 37, 38], ["pot1", 23, 38], ["urn1", 36, 29]] }),
       R("tp-cisterna", "Cisterna Antiga", 44, 30, 16, 12, { ambient: .45,
-        walls: [{ x: 47, y: 33, w: 6, h: 4, water: !0 }, { x: 54, y: 37, w: 4, h: 3, water: !0 }],
+        walls: [{ x: 47, y: 33, w: 6, h: 4, water: !0 }, { x: 53, y: 37, w: 5, h: 3, water: !0 }],
         enemies: [E("GHOST", 46, 38), E("GHOST", 57, 32), E("SKELETON_WARRIOR", 50, 39), E("SKELETON_MAGE", 58, 40)],
         decor: [{ type: "chest", col: 45, row: 31, solid: !0, tier: "RARE" }],
         tp: [["vases2", 58, 31], ["crates1", 45, 40], ["gold2", 53, 31], ["box", 56, 40]] }),
@@ -62,6 +62,22 @@ function __tpOrganic(L) {
   let sd = 4242; const rnd = () => (sd = sd * 1664525 + 1013904223 >>> 0) / 4294967296;
   const inR = (q, x, y) => x >= q.x && x < q.x + q.w && y >= q.y && y < q.y + q.h;
   const floor = (x, y) => L.rooms.some((r) => inR(r.rect, x, y)) || L.corridors.some((c) => inR(c, x, y));
+  // poças de contorno irregular no lugar dos retângulos de água (uniões de elipses tortas)
+  for (const r of L.rooms) {
+    const ws = (r.walls || []).filter((w) => w.water); if (!ws.length) continue;
+    r.walls = r.walls.filter((w) => !w.water);
+    const q = r.rect, cells = new Set();
+    for (const w of ws) {
+      const blobs = [[w.x + w.w / 2, w.y + w.h / 2, w.w / 2 + .3, w.h / 2 + .3]];
+      for (let k = 0; k < 4; k++) blobs.push([w.x + rnd() * w.w, w.y + rnd() * w.h, 1.2 + rnd() * w.w * .45, 1 + rnd() * w.h * .45]);
+      blobs[0][2] *= .8 + rnd() * .2; blobs[0][3] *= .75 + rnd() * .25;
+      for (let y = q.y + 1; y < q.y + q.h - 1; y++) for (let x = q.x + 1; x < q.x + q.w - 1; x++) {
+        const cx = x + .5, cy = y + .5;
+        if (blobs.some(([bx, by, rx, ry]) => ((cx - bx) / rx) ** 2 + ((cy - by) / ry) ** 2 < 1 + (rnd() - .5) * .25)) cells.add(x + "," + y);
+      }
+    }
+    for (const k of cells) { const [x, y] = k.split(",").map(Number); r.walls.push({ x, y, w: 1, h: 1, water: !0 }) }
+  }
   const keep = new Set();
   const mark = (x, y, rad = 2) => { for (let dy = -rad; dy <= rad; dy++) for (let dx = -rad; dx <= rad; dx++) keep.add((x + dx) + "," + (y + dy)) };
   // entradas: células da borda da sala encostadas num corredor
@@ -140,13 +156,15 @@ function __tpBake(B) {
     const sp = SP(c, r);
     if (F(c, r) || sp === "plat") {
       // piso com borda clara onde encontra o vazio
-      const l = !F(c - 1, r) && !SP(c - 1, r) && !fc(c - 1, r), rr = !F(c + 1, r) && !SP(c + 1, r) && !fc(c + 1, r), b = !F(c, r + 1) && !SP(c, r + 1);
+      const Wt = (x, y) => SP(x, y) === "water";
+      const l = (!F(c - 1, r) && !SP(c - 1, r) && !fc(c - 1, r)) || (!sp && Wt(c - 1, r)), rr = (!F(c + 1, r) && !SP(c + 1, r) && !fc(c + 1, r)) || (!sp && Wt(c + 1, r)), b = (!F(c, r + 1) && !SP(c, r + 1)) || (!sp && Wt(c, r + 1));
       let t = 79;
       if (sp === "plat") { const u = SP(c, r - 1) === "plat", d = SP(c, r + 1) === "plat", lf = SP(c - 1, r) === "plat", rt = SP(c + 1, r) === "plat"; t = [[65, 66, 67], [78, 79, 80], [91, 92, 93]][!u ? 0 : !d ? 2 : 1][!lf ? 0 : !rt ? 2 : 1] }
       else if (b && l) t = 91; else if (b && rr) t = 93; else if (b) t = 92; else if (l) t = 78; else if (rr) t = 80;
       tile(t, c, r);
       if (!sp && t === 79 && rnd() < .055) tile(pick([284, 285, 297, 298]), c, r);
       if (sp === "plat" && SP(c, r + 1) !== "plat") { tile(53, c, r, 0, 10, 16, 6, 0, 10) }
+      if (!sp && Wt(c, r - 1)) tile(66, c, r, 0, 0, 16, 5, 0, 0); // margem de baixo da poça
       continue;
     }
     if (sp === "water") continue;
@@ -162,16 +180,31 @@ function __tpBake(B) {
     if (up && lf) tile(0, c, r); else if (up && rt) tile(2, c, r); else if (up) tile(1, c, r);
     else if (lf) tile(13, c, r); else if (rt) tile(15, c, r);
   }
-  // água: poça funda com borda de pedra, brilho animado depois
-  for (const [k, v] of special) {
-    if (v !== "water") continue;
-    const [c, r] = k.split(",").map(Number), x = c * T, y = r * T;
-    const top = SP(c, r - 1) !== "water", lf = SP(c - 1, r) !== "water", rt = SP(c + 1, r) !== "water", bt = SP(c, r + 1) !== "water";
-    g.fillStyle = top ? "rgb(36,72,128)" : "rgb(63,112,166)"; g.fillRect(x, y, T, T);
-    if (top) { const q = g.createLinearGradient(0, y, 0, y + T); q.addColorStop(0, "rgb(30,52,92)"); q.addColorStop(1, "rgb(63,112,166)"); g.fillStyle = q; g.fillRect(x, y, T, T) }
-    g.fillStyle = "rgb(161,165,216)";
-    top && g.fillRect(x, y, T, 3); lf && g.fillRect(x, y, 3, T); rt && g.fillRect(x + T - 3, y, 3, T); bt && g.fillRect(x, y + T - 3, T, 3);
-    g.fillStyle = "rgba(120,190,240,.55)"; rnd() < .5 && g.fillRect(x + 6 + rnd() * 14 | 0, y + 10 + rnd() * 14 | 0, 8, 2);
+  // água no padrão do pack: fundo de piso afundado, beirada de pedra, linha d'água ciano e faixas claras
+  {
+    const Wt = (x, y) => SP(x, y) === "water";
+    const px = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x * 2, y * 2, w * 2, h * 2) };
+    for (const [k, v] of special) {
+      if (v !== "water") continue;
+      const [c, r] = k.split(",").map(Number), X = c * 16, Y = r * 16;
+      const n = Wt(c, r - 1), s_ = Wt(c, r + 1), w = Wt(c - 1, r), e = Wt(c + 1, r);
+      px(X, Y, 16, 16, "rgb(63,112,166)");
+      // marcas do piso afundado
+      if (rnd() < .3) { const mx = X + 3 + (rnd() * 8 | 0), my = Y + 4 + (rnd() * 8 | 0); px(mx, my, 6, 1, "rgb(56,99,152)"); px(mx + 2, my, 1, 3, "rgb(56,99,152)"); px(mx, my + 3, 5, 1, "rgb(56,99,152)") }
+      if (!n) {
+        px(X, Y, 16, 1, "rgb(39,40,55)"); px(X, Y + 1, 16, 1, "rgb(63,63,83)"); px(X, Y + 2, 16, 3, "rgb(52,52,70)");
+        for (let q = 0; q < 16; q += 4 + (rnd() * 3 | 0)) px(X + q, Y + 2, 1, 3, "rgb(44,44,60)");
+        px(X, Y + 5, 16, 1, "rgb(76,171,211)"); px(X, Y + 6, 16, 1, "rgb(74,160,203)"); px(X, Y + 7, 16, 1, "rgb(54,85,138)");
+        px(X, Y + 8, 16, 2, "rgb(67,128,179)"); px(X, Y + 10, 16, 1, "rgb(72,149,195)"); px(X, Y + 11, 16, 2, "rgb(67,128,179)");
+      }
+      if (!w) { px(X, Y, 1, 16, "rgb(39,40,55)"); px(X + 1, Y, 2, 16, "rgb(52,52,70)"); px(X + 3, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)"); px(X + 4, Y + (n ? 0 : 6), 2, n ? 16 : 10, "rgb(67,128,179)") }
+      if (!e) { px(X + 15, Y, 1, 16, "rgb(39,40,55)"); px(X + 13, Y, 2, 16, "rgb(52,52,70)"); px(X + 12, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)"); px(X + 10, Y + (n ? 0 : 6), 2, n ? 16 : 10, "rgb(67,128,179)") }
+      if (!s_) { px(X, Y + 13, 16, 1, "rgb(72,149,195)"); px(X, Y + 14, 16, 1, "rgb(76,171,211)"); px(X, Y + 15, 16, 1, "rgb(39,40,55)") }
+      // cantos de dentro (terra só na diagonal)
+      const nw = Wt(c - 1, r - 1), ne = Wt(c + 1, r - 1);
+      if (n && w && !nw) { px(X, Y, 3, 5, "rgb(52,52,70)"); px(X, Y, 3, 1, "rgb(39,40,55)"); px(X, Y + 5, 4, 1, "rgb(76,171,211)") }
+      if (n && e && !ne) { px(X + 13, Y, 3, 5, "rgb(52,52,70)"); px(X + 13, Y, 3, 1, "rgb(39,40,55)"); px(X + 12, Y + 5, 4, 1, "rgb(76,171,211)") }
+    }
   }
   // manchas de piso mais escuro, de contorno suave (desenhadas pequenas e ampliadas com suavização)
   {
@@ -270,17 +303,34 @@ function __tpProps(S, B, M, niches, special) {
     const x = c * T + 16, y = (r + 1) * T - 2;
     if (M.fire[k]) { fire(k, x, y, sol !== !1); continue }
     const q = M.props[k]; if (!q) continue;
+    if (special.get(c + "," + r) === "water") continue;
     const o = S.add.image(x, y, "tpd-atlas", k).setOrigin(.5, 1).setScale(2).setDepth(k === "hatch" ? 0.95 : y);
     if (sol !== !1 && !/^gold|hatch|ladder/.test(k)) solid(x, y - Math.min(q[3], 14), q[2] * 2 - 6, Math.min(q[3] * 2, 26));
   }
   // velas nos nichos das paredes
   for (const [x, y] of niches) fire("candle", x, y + 2, !1);
-  // água viva: reflexos que correm
-  for (const [k, v] of special) {
-    if (v !== "water" || Math.random() > .5) continue;
-    const [c, r] = k.split(",").map(Number), x = c * T + 6 + Math.random() * 20, y = r * T + 8 + Math.random() * 18;
-    const s = S.add.rectangle(x, y, 6 + Math.random() * 8, 2, 0xbfe6ff, .7).setDepth(.96).setAlpha(0);
-    S.tweens.add({ targets: s, alpha: .75, x: x + 6, duration: 900 + Math.random() * 900, yoyo: !0, repeat: -1, delay: Math.random() * 2000, repeatDelay: Math.random() * 1500 });
+  // água viva: manchas de reflexo que derivam devagar e brilhos piscando na linha d'água
+  {
+    const mk = (key, w, h, draw) => { if (S.textures.exists(key)) return; const cv = S.textures.createCanvas(key, w, h), x = cv.getContext(); draw(x); cv.refresh() };
+    for (let v = 0; v < 3; v++) mk("tpw-rip" + v, 24, 8, (x) => {
+      x.fillStyle = "rgb(72,149,195)"; const L = [[4, 0, 12], [1, 1, 20], [0, 2, 24], [2, 3, 18], [6, 4, 10]];
+      for (const [a, y, w] of L) x.fillRect(a + (v * 2) % 5, y, w - v * 2, 1);
+      x.fillStyle = "rgb(100,190,230)"; x.fillRect(9 + v, 2, 4, 1); x.fillStyle = "rgb(190,235,250)"; x.fillRect(10 + v, 2, 1, 1);
+    });
+    mk("tpw-spark", 2, 1, (x) => { x.fillStyle = "rgb(200,240,255)"; x.fillRect(0, 0, 2, 1) });
+    const cells = [...special].filter(([, v]) => v === "water").map(([k]) => k.split(",").map(Number));
+    const deep = cells.filter(([c, r]) => special.get(c + "," + (r - 1)) === "water" && special.get((c - 1) + "," + r) === "water" && special.get((c + 1) + "," + r) === "water");
+    for (let i = 0; i < Math.ceil(deep.length * .45); i++) {
+      const [c, r] = deep[Math.random() * deep.length | 0], x = c * T + Math.random() * 10, y = r * T + 6 + Math.random() * 18;
+      const o = S.add.image(x, y, "tpw-rip" + (i % 3)).setOrigin(0).setScale(2).setDepth(.955).setAlpha(0);
+      S.tweens.add({ targets: o, alpha: { from: 0, to: .9 }, duration: 1400 + Math.random() * 1200, yoyo: !0, repeat: -1, delay: Math.random() * 3000, repeatDelay: 300 + Math.random() * 1500 });
+      S.tweens.add({ targets: o, x: x + 10 + Math.random() * 10, duration: 5000 + Math.random() * 3000, yoyo: !0, repeat: -1, ease: "Sine.easeInOut" });
+    }
+    const shore = cells.filter(([c, r]) => special.get(c + "," + (r - 1)) !== "water");
+    for (const [c, r] of shore) for (let k = 0; k < 2; k++) {
+      const sp = S.add.image(c * T + 2 + Math.random() * 26 | 0, r * T + 10, "tpw-spark").setOrigin(0).setScale(2).setDepth(.956).setAlpha(0);
+      S.tweens.add({ targets: sp, alpha: 1, duration: 220, yoyo: !0, repeat: -1, delay: Math.random() * 4000, repeatDelay: 1800 + Math.random() * 3200 });
+    }
   }
   // baús do jogo com a arte do pack (os objetos são criados depois das paredes)
   S.events.once("update", () => { const G = B.solids || S.dungeon?.solids; if (G) for (const [x, y, w, h] of SQ) { const b = G.create(x, y, "rock"); b.setVisible(!1).setDisplaySize(w, h); b.refreshBody?.() } __tpChests(S, B) });
