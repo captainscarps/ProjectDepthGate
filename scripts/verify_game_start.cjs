@@ -96,9 +96,9 @@ server.listen(PORT, '127.0.0.1', async () => {
               const g = window.__DED_GAME;
               if (!g) return "NO GAME";
               try {
-                // Aguarda o boot da engine terminar (ao menos uma cena ativa)
+                // Aguarda o Preload terminar e o MainMenu estar ativo com todos os assets e texturas prontos
                 let attempts = 0;
-                while ((!g.scene || g.scene.getScenes(true).length === 0) && attempts < 40) {
+                while ((!g.scene || !g.scene.isActive("MainMenu")) && attempts < 60) {
                   await new Promise(r => setTimeout(r, 200));
                   attempts++;
                 }
