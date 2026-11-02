@@ -278,16 +278,6 @@ function __wqInterior2(S, rm) {
   prop("potions-table", 20, 96); prop("chair", 50, 96, !1); prop("crate", 120, 42);
   prop("bed", 150, 132); prop("barrel", 18, 140); prop("box", 38, 140);
   prop("pot1", 58, 120, !1); prop("pot2", 46, 112, !1);
-  // caldeirão borbulhando
-  const [cxx, cyy] = G(80, 104);
-  if (S.textures.exists("gyx-caul")) {
-    S.anims.exists("gyx-caul-a") || S.anims.create({ key: "gyx-caul-a", frames: S.anims.generateFrameNumbers("gyx-caul", {}), frameRate: 8, repeat: -1 });
-    S.add.sprite(cxx, cyy, "gyx-caul", 0).setOrigin(.5, 1).setDepth(cyy).setTint(0xb8ff9a).play("gyx-caul-a");
-    const b = S.dungeon.solids.create(cxx, cyy - 10, "rock"); b.setVisible(!1).setDisplaySize(30, 20); b.refreshBody?.();
-  }
-  const gl = S.add.image(cxx, cyy - 18, "light").setBlendMode(j.BlendModes.ADD).setTint(0x8cff6a).setScale(.3).setAlpha(.4).setDepth(cyy + 1);
-  S.tweens.add({ targets: gl, alpha: .2, scale: .34, duration: 700, yoyo: !0, repeat: -1 });
-  S.lighting?.addLight?.({ x: cxx, y: cyy - 18, radius: 130, flicker: .25, color: 0x8cff6a });
   for (const nx of [75, 117]) { const [x, y] = G(nx, 18); S.lighting?.addLight?.({ x, y, radius: 60, flicker: .1, color: 0x8cff6a }) }
   const L = G(100, 102), E = G(96, 140), I = G(96, 128);
   return { lady: { x: L[0], y: L[1] }, exit: { x: E[0], y: E[1] }, inside: { x: I[0], y: I[1] } };
@@ -353,6 +343,7 @@ function __wqBruxa(S) {
   const L = S.dungeon.level, rm = L.rooms[0], C = __wqCabin(S, rm);
   const lady = __wqLady(S, C.door.x, C.door.y + 30);
   S.__wqLadyNpc = lady;
+  __wqBigCauldron(S, C.door.x - 78, C.door.y + 62);
   let started = !1;
   const U = () => {
     if (started || !S.player || S.uiOpen) return;
@@ -375,6 +366,25 @@ function __wqBruxa(S) {
     });
   };
   S.game.events.on("boss:defeated", onB); S.events.once("shutdown", () => S.game.events.off("boss:defeated", onB));
+}
+/* caldeirão grande na porta da bruxa (só quando o herói volta para enfrentá-la) */
+function __wqBigCauldron(S, x, y) {
+  if (!S.textures.exists("gyx-caul")) return;
+  S.anims.exists("gyx-caul-a") || S.anims.create({ key: "gyx-caul-a", frames: S.anims.generateFrameNumbers("gyx-caul", {}), frameRate: 8, repeat: -1 });
+  const sc = 2.3;
+  S.add.ellipse(x + 4, y - 2, 70, 18, 0, .4).setDepth(y - 1);
+  const c = S.add.sprite(x, y, "gyx-caul", 0).setOrigin(.5, 41 / 48).setScale(sc).setDepth(y).setTint(0xb8ff9a).play("gyx-caul-a");
+  const b = S.dungeon.solids.create(x, y - 16, "rock"); b.setVisible(!1).setDisplaySize(60, 30); b.refreshBody?.();
+  const gl = S.add.image(x, y - 56, "light").setBlendMode(j.BlendModes.ADD).setTint(0x8cff6a).setScale(.5).setAlpha(.45).setDepth(y + 1);
+  S.tweens.add({ targets: gl, alpha: .22, scale: .58, duration: 800, yoyo: !0, repeat: -1 });
+  S.lighting?.addLight?.({ x, y: y - 60, radius: 170, flicker: .3, color: 0x8cff6a });
+  // vapor verde subindo
+  S.time.addEvent({ delay: 260, loop: !0, callback: () => {
+    if (!c.active) return;
+    const px = x + (Math.random() - .5) * 40, p = S.add.image(px, y - 62, "light").setBlendMode(j.BlendModes.ADD).setTint(0x9cff7a).setScale(.05 + Math.random() * .04).setAlpha(.6).setDepth(y + 2);
+    S.tweens.add({ targets: p, y: p.y - 50 - Math.random() * 30, x: px + (Math.random() - .5) * 20, alpha: 0, scale: p.scale * 2.4, duration: 1400 + Math.random() * 600, onComplete: () => p.destroy() });
+  } });
+  return c;
 }
 function __wqWitchTalk(S, lady) {
   const A = __WQ;
