@@ -137,7 +137,10 @@ function __tpBake(B) {
   let sd = 9137; const rnd = () => (sd = sd * 1664525 + 1013904223 >>> 0) / 4294967296, pick = (a) => a[rnd() * a.length | 0];
   const WF = M.sheets.walls_floor, CR = M.sheets.decorative_cracks_floor, CW = 13;
   const tile = (i, c, r, sx = 0, sy = 0, sw = 16, sh = 16, dx = 0, dy = 0) => g.drawImage(src, WF[0] + (i % CW) * 16 + sx, WF[1] + (i / CW | 0) * 16 + sy, sw, sh, c * T + dx * 2, r * T + dy * 2, sw * 2, sh * 2);
-  const CWs = M.sheets.decorative_cracks_walls, CRK = M.cracks || {};
+  const CWs = M.sheets.decorative_cracks_walls, CRK = M.cracks || {}, plain = new Set();
+  const rng = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+  // bordas do piso quebradas (variações do pack para cada peça de borda)
+  const FRC = { 65: [...rng(24, 27), ...rng(32, 35)], 66: rng(0, 3), 67: [...rng(28, 31), ...rng(36, 39)], 78: rng(8, 11), 80: rng(12, 15), 59: rng(4, 7), 61: rng(20, 23), 64: rng(16, 19), 73: rng(48, 51), 71: rng(52, 55), 74: rng(44, 47), 77: rng(40, 43) };
   // ladrilho de parede com chance de vir rachado (variações do próprio pack)
   const wtile = (i, c, r, ch = .45) => { const v = CRK[i]; if (v && CWs && rnd() < ch) { const k = pick(v); g.drawImage(src, CWs[0] + (k % 8) * 16, CWs[1] + (k / 8 | 0) * 16, 16, 16, c * T, r * T, 32, 32) } else tile(i, c, r) };
   const rooms = B.level.rooms || [];
@@ -164,8 +167,9 @@ function __tpBake(B) {
       let t = 79;
       if (sp === "plat") { const u = SP(c, r - 1) === "plat", d = SP(c, r + 1) === "plat", lf = SP(c - 1, r) === "plat", rt = SP(c + 1, r) === "plat"; t = [[65, 66, 67], [78, 79, 80], [91, 92, 93]][!u ? 0 : !d ? 2 : 1][!lf ? 0 : !rt ? 2 : 1] }
       else if (b && l) t = 91; else if (b && rr) t = 93; else if (b) t = 92; else if (l) t = 78; else if (rr) t = 80;
-      tile(t, c, r);
-      if (!sp && t === 79 && rnd() < .055) tile(pick([284, 285, 297, 298]), c, r);
+      const fv = FRC[t];
+      if (fv && CR && rnd() < .5) { const k = pick(fv); g.drawImage(src, CR[0] + (k % 8) * 16, CR[1] + (k / 8 | 0) * 16, 16, 16, c * T, r * T, 32, 32) } else tile(t, c, r);
+      if (t === 79) plain.add(c + "," + r);
       if (sp === "plat" && SP(c, r + 1) !== "plat") { tile(53, c, r, 0, 10, 16, 6, 0, 10) }
       if (!sp && Wt(c, r - 1)) tile(66, c, r, 0, 0, 16, 5, 0, 0); // margem de baixo da poça
       continue;
@@ -216,15 +220,54 @@ function __tpBake(B) {
       if (n && e && !ne) px(X + 15, Y, 1, 2, "rgb(76,171,211)");
     }
   }
-  // superfícies de piso mais escuro, recortadas com as bordas arredondadas do pack (9 partes)
-  for (const rm of rooms) {
-    const q = rm.rect; if (!q || q.w < 6) continue;
-    const w = Math.max(3, q.w - 4 - (rnd() * 3 | 0)), h = Math.max(3, q.h - 4 - (rnd() * 3 | 0)), x0 = q.x + 2 + (rnd() * Math.max(1, q.w - 4 - w + 1) | 0), y0 = q.y + 2 + (rnd() * Math.max(1, q.h - 4 - h + 1) | 0);
-    for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
-      if (!F(x, y) || SP(x, y)) continue;
-      const row = y === y0 ? 0 : y === y0 + h - 1 ? 2 : 1, col = x === x0 ? 0 : x === x0 + w - 1 ? 2 : 1;
-      tile([117, 130, 143][row] + col, x, y);
-      rnd() < .06 && tile(pick([273, 274, 286, 287]), x, y);
+  // superfícies de piso mais escuro como no pack: manchas de contorno arredondado e irregular,
+  // encostadas nas paredes e cantos, cor (92,105,127) com contorno (71,83,98) só à direita e embaixo
+  {
+    const PW = C * 16, PH = R * 16, mask = new Uint8Array(PW * PH);
+    const okCell = (x, y) => plain.has(x + "," + y);
+    const blob = (x0, y0, w, h, rad) => {
+      for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
+        if (x < 0 || y < 0 || x >= PW || y >= PH) continue;
+        const dx = Math.max(x0 + rad - x, 0, x - (x0 + w - 1 - rad)), dy = Math.max(y0 + rad - y, 0, y - (y0 + h - 1 - rad));
+        if (dx * dx + dy * dy <= rad * rad) mask[y * PW + x] = 1;
+      }
+    };
+    for (const rm of rooms) {
+      const q = rm.rect; if (!q || rm.interior) continue;
+      const n = 2 + (rnd() * 3 | 0);
+      for (let k = 0; k < n; k++) {
+        // ancorada numa parede ou canto da sala, com 2 a 4 lóbulos
+        const side = rnd() * 4 | 0, len = (3 + rnd() * Math.min(7, Math.max(q.w, q.h) - 3)) * 16, dep = (2 + rnd() * 2.5) * 16;
+        let x0, y0, w, h;
+        if (side === 0) { w = len; h = dep; x0 = (q.x + rnd() * Math.max(1, q.w - len / 16)) * 16; y0 = (q.y + .2) * 16 }
+        else if (side === 1) { w = len; h = dep; x0 = (q.x + rnd() * Math.max(1, q.w - len / 16)) * 16; y0 = (q.y + q.h) * 16 - dep - 3 }
+        else if (side === 2) { w = dep; h = len; x0 = (q.x + .2) * 16; y0 = (q.y + rnd() * Math.max(1, q.h - len / 16)) * 16 }
+        else { w = dep; h = len; x0 = (q.x + q.w) * 16 - dep - 3; y0 = (q.y + rnd() * Math.max(1, q.h - len / 16)) * 16 }
+        blob(x0 | 0, y0 | 0, w | 0, h | 0, 5 + (rnd() * 4 | 0));
+        for (let l = 0; l < 2 + (rnd() * 3 | 0); l++) { const lw = 18 + rnd() * 30, lh = 14 + rnd() * 22; blob((x0 + rnd() * (w - lw * .5)) | 0, (y0 + rnd() * (h - lh * .5)) | 0, lw | 0, lh | 0, 6 + (rnd() * 5 | 0)) }
+      }
+    }
+    // borda dentada em degraus de 1 px e recorte nas células que não são piso liso
+    const cv = document.createElement("canvas"); cv.width = PW; cv.height = PH; const cg = cv.getContext("2d"), id = cg.createImageData(PW, PH), O = id.data;
+    // recorta onde não é piso liso e arredonda os cantos do recorte (abertura morfológica de raio 3)
+    for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) if (mask[y * PW + x] && !okCell(x >> 4, y >> 4)) mask[y * PW + x] = 0;
+    const morph = (src, keepIf) => { const o = new Uint8Array(PW * PH); for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) { let cnt = 0, tot = 0; for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { if (dx * dx + dy * dy > 10) continue; tot++; const X = x + dx, Y = y + dy; if (X >= 0 && Y >= 0 && X < PW && Y < PH && src[Y * PW + X]) cnt++ } o[y * PW + x] = keepIf(cnt, tot) ? 1 : 0 } return o };
+    const er = morph(mask, (c, t) => c === t), op = morph(er, (c) => c > 0);
+    mask.set(op);
+    const M_ = (x, y) => x >= 0 && y >= 0 && x < PW && y < PH && mask[y * PW + x];
+    for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) {
+      if (!M_(x, y)) continue;
+      const i = (y * PW + x) * 4, edge = !M_(x + 1, y) || !M_(x, y + 1);
+      const v = edge ? [71, 83, 98] : [92, 105, 127];
+      O[i] = v[0]; O[i + 1] = v[1]; O[i + 2] = v[2]; O[i + 3] = 255;
+    }
+    cg.putImageData(id, 0, 0);
+    g.drawImage(cv, 0, 0, PW, PH, 0, 0, PW * 2, PH * 2);
+    // marcas de tijolo do pack por cima de algumas células
+    for (const k of plain) {
+      const [c, r] = k.split(",").map(Number); let hit = !1;
+      for (let y = r * 16 - 2; y < r * 16 + 18 && !hit; y += 2) for (let x = c * 16 - 2; x < c * 16 + 18; x += 2) if (M_(x, y)) { hit = !0; break }
+      if (!hit && rnd() < .08) tile(pick([284, 285, 297, 298]), c, r);
     }
   }
   // sombra ao pé das paredes
