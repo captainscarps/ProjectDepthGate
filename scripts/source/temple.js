@@ -54,6 +54,61 @@ const __TP = {
     ],
     playerSpawn: { col: 9, row: 37 }, next: null,
   };
+  __tpOrganic(ki.templo);
+}
+/* sem lados retos: cantos das salas desmoronados em degraus, mordidas nas bordas e corredores com
+   paredes irregulares (sempre longe das entradas, portas, inimigos e objetos) */
+function __tpOrganic(L) {
+  let sd = 4242; const rnd = () => (sd = sd * 1664525 + 1013904223 >>> 0) / 4294967296;
+  const inR = (q, x, y) => x >= q.x && x < q.x + q.w && y >= q.y && y < q.y + q.h;
+  const floor = (x, y) => L.rooms.some((r) => inR(r.rect, x, y)) || L.corridors.some((c) => inR(c, x, y));
+  const keep = new Set();
+  const mark = (x, y, rad = 2) => { for (let dy = -rad; dy <= rad; dy++) for (let dx = -rad; dx <= rad; dx++) keep.add((x + dx) + "," + (y + dy)) };
+  // entradas: células da borda da sala encostadas num corredor
+  for (const r of L.rooms) { const q = r.rect; for (let x = q.x - 1; x <= q.x + q.w; x++) for (let y = q.y - 1; y <= q.y + q.h; y++) if (!inR(q, x, y) && L.corridors.some((c) => inR(c, x, y))) mark(x, y, 2) }
+  for (const d of L.doors || []) mark(d.col, d.row, 2);
+  mark(L.playerSpawn.col, L.playerSpawn.row, 2);
+  for (const r of L.rooms) {
+    for (const e of r.enemies || []) mark(e.col, e.row, 1);
+    for (const d of r.decor || []) mark(d.col, d.row, 1);
+    for (const t of r.tp || []) mark(t[1], t[2], 1);
+    for (const w of r.walls || []) for (let y = w.y - 1; y <= w.y + w.h; y++) for (let x = w.x - 1; x <= w.x + w.w; x++) keep.add(x + "," + y);
+    r.bossCol != null && mark(r.bossCol, r.bossRow, 3);
+  }
+  const bite = (r, x, y) => { const k = x + "," + y; if (keep.has(k)) return; r.walls.push({ x, y, w: 1, h: 1 }); keep.add(k) };
+  for (const r of L.rooms) {
+    const q = r.rect;
+    // cantos em degrau (2 ou 3 células)
+    const corners = [[q.x, q.y, 1, 1], [q.x + q.w - 1, q.y, -1, 1], [q.x, q.y + q.h - 1, 1, -1], [q.x + q.w - 1, q.y + q.h - 1, -1, -1]];
+    for (const [cx, cy, sx, sy] of corners) {
+      const n = 2 + (rnd() * 3 | 0);
+      for (let i = 0; i < n; i++) for (let j = 0; j < n - i; j++) bite(r, cx + sx * i, cy + sy * j);
+    }
+    // mordidas nas bordas
+    const edges = [];
+    for (let x = q.x + 3; x < q.x + q.w - 3; x++) edges.push([x, q.y, 0, 1], [x, q.y + q.h - 1, 0, -1]);
+    for (let y = q.y + 3; y < q.y + q.h - 3; y++) edges.push([q.x, y, 1, 0], [q.x + q.w - 1, y, -1, 0]);
+    for (const [x, y, dx, dy] of edges) {
+      if (rnd() > .26) continue;
+      const top = dy === 1, len = top ? 3 + (rnd() * 2 | 0) : 1 + (rnd() * 3 | 0), deep = top ? 1 : rnd() < .5 ? 2 : 1;
+      for (let k = 0; k < len; k++) for (let d = 0; d < deep; d++) bite(r, x + (dx ? 0 : k) + dx * d, y + (dy ? 0 : k) + dy * d);
+    }
+  }
+  // corredores com paredes irregulares
+  for (const c of L.corridors) {
+    const horiz = c.w > c.h, len = horiz ? c.w : c.h;
+    for (let i = 1; i < len - 1; i++) {
+      if (rnd() > .3) continue;
+      const side = rnd() < .5 ? 0 : (horiz ? c.h : c.w) - 1;
+      const x = horiz ? c.x + i : c.x + side, y = horiz ? c.y + side : c.y + i;
+      if (keep.has(x + "," + y)) continue;
+      const host = L.rooms.find((r) => inR(r.rect, x, y)) || L.rooms[0];
+      if (L.rooms.some((r) => inR(r.rect, x, y))) continue;
+      (L.__cw ??= []).push({ x, y, w: 1, h: 1 }); keep.add(x + "," + y);
+    }
+  }
+  // paredes dos corredores entram como paredes da sala mais próxima (o mapa só lê paredes de salas)
+  if (L.__cw) L.rooms[0].walls.push(...L.__cw);
 }
 /* ─── pintura do mapa com os ladrilhos do pack (cada célula do jogo = 1 ladrilho de 16 px em 2x) ─── */
 let __tpN = 0;
@@ -118,13 +173,19 @@ function __tpBake(B) {
     top && g.fillRect(x, y, T, 3); lf && g.fillRect(x, y, 3, T); rt && g.fillRect(x + T - 3, y, 3, T); bt && g.fillRect(x, y + T - 3, T, 3);
     g.fillStyle = "rgba(120,190,240,.55)"; rnd() < .5 && g.fillRect(x + 6 + rnd() * 14 | 0, y + 10 + rnd() * 14 | 0, 8, 2);
   }
-  // manchas de piso mais escuro (como no exemplo do pack)
-  for (const rm of rooms) {
-    const q = rm.rect; if (!q) continue;
-    for (let k = 0; k < 2; k++) {
-      const w = 3 + (rnd() * 3 | 0), h = 2 + (rnd() * 2 | 0), x = q.x + (rnd() * Math.max(1, q.w - w) | 0), y = q.y + 1 + (rnd() * Math.max(1, q.h - h - 1) | 0);
-      g.fillStyle = "rgba(52,58,86,.22)"; g.beginPath(); g.roundRect ? g.roundRect(x * T, y * T, w * T, h * T, 10) : g.rect(x * T, y * T, w * T, h * T); g.fill();
+  // manchas de piso mais escuro, de contorno suave (desenhadas pequenas e ampliadas com suavização)
+  {
+    const sm = document.createElement("canvas"); sm.width = C * 4; sm.height = R * 4; const sg = sm.getContext("2d");
+    sg.fillStyle = "rgba(40,46,74,1)";
+    for (const rm of rooms) {
+      const q = rm.rect; if (!q) continue;
+      for (let k = 0; k < 2; k++) {
+        const w = 3 + (rnd() * 3 | 0), h = 2 + (rnd() * 2 | 0), x = q.x + (rnd() * Math.max(1, q.w - w) | 0), y = q.y + 1 + (rnd() * Math.max(1, q.h - h - 1) | 0);
+        for (let b = 0; b < 10; b++) { sg.beginPath(); sg.arc((x + rnd() * w) * 4, (y + rnd() * h) * 4, (.6 + rnd() * .8) * 4, 0, 7); sg.fill() }
+      }
     }
+    g.save(); g.globalAlpha = .16; g.imageSmoothingEnabled = !0; g.imageSmoothingQuality = "high";
+    g.filter = "blur(6px)"; g.drawImage(sm, 0, 0, C * 4, R * 4, 0, 0, C * T, R * T); g.filter = "none"; g.restore(); g.imageSmoothingEnabled = !1;
   }
   // sombra ao pé das paredes
   for (let r = 1; r < R; r++) for (let c = 0; c < C; c++) {
@@ -151,8 +212,37 @@ function __tpBake(B) {
       run = 0;
     }
   }
+  // topo das paredes desmoronado e entulho ao pé delas
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+    const f = face[r * C + c];
+    if (f === 3 || (f === 2 && fc(c, r - 1) === 0)) {
+      g.fillStyle = "rgb(29,28,43)"; let x = c * T;
+      for (let k = 0; k < 8; k++) { const h = rnd() < .45 ? (2 + (rnd() * 4 | 0)) * 2 : 0; h && g.fillRect(x + k * 4, r * T, 4, h) }
+    }
+    if (f === 1 && rnd() < .3) {
+      const n = 2 + (rnd() * 4 | 0), y0 = (r + 1) * T;
+      for (let k = 0; k < n; k++) { const s2 = 2 + (rnd() * 3 | 0) * 2, x = c * T + rnd() * 28, y = y0 + 2 + rnd() * 8; g.fillStyle = rnd() < .5 ? "rgb(92,90,118)" : "rgb(66,64,88)"; g.fillRect(x | 0, y | 0, s2, s2 - 2); g.fillStyle = "rgb(128,128,160)"; g.fillRect(x | 0, y | 0, s2, 2) }
+    }
+  }
   tx.refresh();
   S.add.image(0, 0, key).setOrigin(0).setDepth(-2);
+  // névoa densa e fria correndo pelo chão do templo
+  try {
+    __gyFogTex(S);
+    const fa = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.9).setAlpha(.42).setTint(0x7c84ae).setTileScale(2.4);
+    const fb = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(8990).setAlpha(.11).setTint(0x8088b0).setTileScale(3.6);
+    const fc2 = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.95).setAlpha(.26).setTint(0x9aa2c8).setTileScale(1.4).setFlipY(!0);
+    // o vazio escuro fica por cima da névoa (borda suave), para a névoa só correr pelo chão
+    const vk = key + "-v", vc = S.textures.createCanvas(vk, C * T, R * T), vg = vc.getContext();
+    const sm = document.createElement("canvas"); sm.width = C * 2; sm.height = R * 2; const sg = sm.getContext("2d");
+    sg.fillStyle = "rgb(29,28,43)";
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (W(c, r) && !face[r * C + c]) sg.fillRect(c * 2, r * 2, 2, 2);
+    vg.imageSmoothingEnabled = !0; vg.imageSmoothingQuality = "high"; vg.drawImage(sm, 0, 0, C * 2, R * 2, 0, 0, C * T, R * T); vc.refresh();
+    S.add.image(0, 0, vk).setOrigin(0).setDepth(.97);
+    S.events.once("shutdown", () => { S.textures.exists(vk) && S.textures.remove(vk) });
+    const dr = (t, ms) => { const k = ms / 1000; fa.tilePositionX += 4 * k; fa.tilePositionY += 1 * k; fb.tilePositionX -= 2.5 * k; fc2.tilePositionX += 7 * k; fc2.tilePositionY -= 1.4 * k; fa.setAlpha(.38 + Math.sin(t / 5600) * .06) };
+    S.events.on("update", dr); S.events.once("shutdown", () => S.events.off("update", dr));
+  } catch (e) {}
   B.groundLayer?.setVisible(!1); B.wallLayer?.setVisible(!1);
   S.cameras.main.setBackgroundColor("rgb(29,28,43)");
   S.events.once("shutdown", () => { S.textures.exists(key) && S.textures.remove(key) });
