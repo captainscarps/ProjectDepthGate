@@ -90,11 +90,12 @@ function __wqTex(S) {
     for (const a of ["idle", "walk", "attack", "hurt", "death", "windup", "strike", "phase", "special"]) { const ak = "gw-crone-" + a, an = S.anims.get(ak); if (an && !(an.frames?.length > 0)) S.anims.remove(ak); S.anims.exists(ak) || S.anims.create({ key: "gw-crone-" + a, frames: [{ key: "gw-crone", frame: 0 }], frameRate: 4, repeat: a === "idle" || a === "walk" ? -1 : 0 }) }
   }
   // retrato para os diálogos (rosto ampliado do quadro de frente)
-  if (T.exists("gw-crone") && !T.exists("velha-p-talk")) {
-    const src = T.get("gw-crone").getSourceImage();
+  const face = T.exists("velha-face");
+  if ((face || T.exists("gw-crone")) && !T.exists("velha-p-talk")) {
+    const src = T.get(face ? "velha-face" : "gw-crone").getSourceImage();
     for (const [ex, tint] of [["talk", null], ["smile", null], ["calm", null], ["aggression", "rgba(120,255,90,.22)"], ["special", "rgba(120,255,90,.32)"]]) {
       const cv = T.createCanvas("velha-p-" + ex, 128, 128), x = cv.getContext(); x.imageSmoothingEnabled = !1;
-      x.drawImage(src, 8, 2, 40, 40, 0, 0, 128, 128);
+      face ? x.drawImage(src, 0, 0) : x.drawImage(src, 8, 2, 40, 40, 0, 0, 128, 128);
       if (tint) { x.globalCompositeOperation = "source-atop"; x.fillStyle = tint; x.fillRect(0, 0, 128, 128); x.globalCompositeOperation = "source-over" }
       cv.refresh();
     }
@@ -167,6 +168,22 @@ function __wqPoison(S, src, dmg) {
 /* ─── NPC: a senhora (mesma figura da bruxa, olhando para o herói) ─── */
 function __wqLady(S, x, y) {
   __wqTex(S);
+  if (S.textures.exists("velha")) {
+    // a senhora encapuzada (pack Priest): parada, falando quando há diálogo por perto, sempre virada para o herói
+    const A = S.anims;
+    for (const [k, a, n, fr] of [["velha-idle", 0, 8, 6], ["velha-talk", 12, 11, 8], ["velha-walk", 24, 12, 10]]) A.exists(k) || A.create({ key: k, frames: A.generateFrameNumbers("velha", { start: a, end: a + n - 1 }), frameRate: fr, repeat: -1 });
+    const s = S.add.sprite(x, y, "velha", 0).setOrigin(.5, 1).setDepth(y).setScale(.66).play("velha-idle");
+    const sh = S.add.ellipse(x, y, 22, 7, 0, .35).setDepth(y - 1);
+    const U = () => {
+      if (!s.active || !S.player) return;
+      s.setFlipX(S.player.x < s.x);
+      const ui = S.scene.get("UI"), talk = !!ui?.__dlgOpen && Math.hypot(S.player.x - s.x, S.player.y - s.y) < 170;
+      const want = talk ? "velha-talk" : "velha-idle";
+      s.anims.currentAnim?.key !== want && s.play(want);
+    };
+    S.events.on("update", U); S.events.once("shutdown", () => S.events.off("update", U));
+    return { spr: s, sh, destroy() { S.events.off("update", U); s.destroy(); sh.destroy() } };
+  }
   const s = S.add.sprite(x, y, "gw-crone", 0).setOrigin(.5, .92).setDepth(y).setScale(.78);
   const sh = S.add.ellipse(x, y + 2, 26, 8, 0, .35).setDepth(y - 1);
   const U = () => { if (!s.active || !S.player) return; const a = (Math.atan2(S.player.y - s.y, S.player.x - s.x) * 180 / Math.PI + 360) % 360; s.setFrame([2, 1, 0, 7, 6, 5, 4, 3][Math.round(a / 45) % 8]); s.y = y + Math.sin(S.time.now / 600) * .6 };
@@ -545,6 +562,8 @@ const __WQBARK = ["Essa missão foi mais difícil do que deveria ser… o que se
       this.textures.exists("gyx-bed") || L.image("gyx-bed", V + "herb-bed.png");
       this.textures.exists("gyx-shelf") || L.image("gyx-shelf", V + "herb-shelf.png");
       const PR = "assets/pixel-art/props/";
+      this.textures.exists("velha") || L.spritesheet("velha", "assets/pixel-art/npc/velha.png", { frameWidth: 48, frameHeight: 68 });
+      this.textures.exists("velha-face") || L.image("velha-face", "assets/pixel-art/npc/velha-face.png");
       this.textures.exists("wh-cabin") || L.image("wh-cabin", PR + "wh-cabin.png");
       this.textures.exists("wh-interior") || L.image("wh-interior", PR + "wh-interior.png");
       this.textures.exists("wh-props") || L.image("wh-props", PR + "wh-props.png");
