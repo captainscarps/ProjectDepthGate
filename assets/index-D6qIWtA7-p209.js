@@ -13049,6 +13049,7 @@ function __wqLady(S, x, y) {
 function __wqZone(S, x, y, label, fn) { const z = S.add.zone(x, y, 4, 4); z.interactLabel = label; z.interact = fn; S.dungeon.objects.push(z); return z }
 function __wqCabin(S, rm, solid = !0) {
   __wqTex(S);
+  if (S.textures.exists("wh-cabin")) return __wqCabin2(S, rm, solid);
   const r = rm.rect, cx = (r.x + r.w / 2) * dt, by = (r.y + 4) * dt + 8, sc = 1.25;
   const hut = S.add.image(cx, by, S.textures.exists("gyx-hut") ? "gyx-hut" : "gy-decor1").setOrigin(.5, 1).setScale(sc).setDepth(by);
   S.add.ellipse(cx + 6, by - 2, 230, 24, 0, .35).setDepth(.6);
@@ -13059,8 +13060,31 @@ function __wqCabin(S, rm, solid = !0) {
   S.lighting?.addLight?.({ x: dx, y: dy - 20, radius: 70, flicker: .18, color: 0x8cff6a });
   return { hut, door: { x: dx, y: dy + 6 } };
 }
+/* casa da bruxa (pack Main Characters Home recolorido, scripts/build_witch_house.py) */
+function __wqCabin2(S, rm, solid) {
+  const r = rm.rect, cx = (r.x + r.w / 2) * dt, by = (r.y + 4) * dt + 40, sc = 2, N = (nx, ny) => [cx + (nx - 64) * sc, by - (127 - ny) * sc];
+  const hut = S.add.image(cx, by, "wh-cabin").setOrigin(.5, 1).setScale(sc).setDepth(by);
+  S.add.ellipse(cx + 8, by - 4, 250, 26, 0, .38).setDepth(.6);
+  if (solid) { const b = S.dungeon.solids.create(cx, by - 46, "rock"); b.setVisible(!1).setDisplaySize(240, 64); b.refreshBody?.() }
+  // janelas acesas em verde
+  for (const [nx, ny] of [[22, 108], [47, 108], [72, 108], [42, 78], [62, 78]]) {
+    const [x, y] = N(nx, ny), g = S.add.image(x, y, "light").setBlendMode(j.BlendModes.ADD).setTint(0x8cff6a).setScale(.07).setAlpha(.55).setDepth(by + 1);
+    S.tweens.add({ targets: g, alpha: .2, duration: 800 + Math.random() * 700, yoyo: !0, repeat: -1 });
+  }
+  // fumaça esverdeada saindo da chaminé
+  if (S.textures.exists("wh-smoke")) {
+    S.anims.exists("wh-smoke-a") || S.anims.create({ key: "wh-smoke-a", frames: S.anims.generateFrameNumbers("wh-smoke", {}), frameRate: 6, repeat: -1 });
+    const [x, y] = N(25, 15), sm = S.add.sprite(x, y, "wh-smoke", 0).setOrigin(22 / 48, 1).setScale(sc).setDepth(by + 2).setTint(0xa8ff9a).setAlpha(.85);
+    sm.play("wh-smoke-a");
+  }
+  const [dx, dy] = N(97.5, 127);
+  S.lighting?.addLight?.({ x: dx, y: dy - 24, radius: 80, flicker: .18, color: 0x8cff6a });
+  for (const [nx, ny] of [[42, 78], [47, 108]]) { const [x, y] = N(nx, ny); S.lighting?.addLight?.({ x, y, radius: 46, flicker: .2, color: 0x8cff6a }) }
+  return { hut, door: { x: dx, y: dy + 6 } };
+}
 /* interior da cabana: piso de tábuas, paredes de tronco, caldeirão borbulhando */
 function __wqInterior(S, rm) {
+  if (S.textures.exists("wh-interior") && S.cache.json.get("wh-props")) return __wqInterior2(S, rm);
   const r = rm.rect, T = dt, x0 = (r.x - 1) * T, y0 = (r.y - 2) * T, W = (r.w + 2) * T, H = (r.h + 3) * T, key = "wqint-" + S.levelId;
   S.textures.exists(key) && S.textures.remove(key);
   const cv = S.textures.createCanvas(key, W, H), g = cv.getContext();
@@ -13091,6 +13115,38 @@ function __wqInterior(S, rm) {
   S.lighting?.addLight?.({ x: ix(W / 2 - 46), y: iy(2 * T + 56), radius: 120, flicker: .25, color: 0x8cff6a });
   S.lighting?.addLight?.({ x: ix(W - 60), y: iy(2 * T + 20), radius: 70, flicker: .2, color: 0xffb060 });
   return { lady: { x: ix(W / 2 - 4), y: iy(2 * T + 78) }, exit: { x: ix(W / 2), y: iy(H - T * .6 - 10) }, inside: { x: ix(W / 2), y: iy(H - T * .6 - 30) } };
+}
+/* interior novo: parede de pedra com janelas verdes, piso, tapete, estantes, cama, ervas e o caldeirão */
+function __wqInterior2(S, rm) {
+  const r = rm.rect, x0 = (r.x - 1) * dt, y0 = (r.y - 2) * dt, sc = 2, G = (nx, ny) => [x0 + nx * sc, y0 + ny * sc];
+  S.add.image(x0, y0, "wh-interior").setOrigin(0).setScale(sc).setDepth(.97);
+  const M = S.cache.json.get("wh-props"), T = S.textures.get("wh-props");
+  for (const [k, q] of Object.entries(M)) T.has(k) || T.add(k, 0, q[0], q[1], q[2], q[3]);
+  const solids = [];
+  const prop = (k, nx, ny, solid = !0, flip = !1) => {
+    if (!M[k]) return null;
+    const [x, y] = G(nx, ny), o = S.add.image(x, y, "wh-props", k).setOrigin(0, 1).setScale(sc).setDepth(y).setFlipX(flip);
+    if (solid) { const w = M[k][2] * sc, h = Math.min(M[k][3] * sc, 26); const b = S.dungeon.solids.create(x + w / 2, y - h / 2, "rock"); b.setVisible(!1).setDisplaySize(w - 4, h); b.refreshBody?.() }
+    return o;
+  };
+  prop("shelf-jars", 14, 42); prop("bookshelf", 148, 42);
+  prop("herbs", 92, 30, !1); prop("garlic", 130, 38, !1);
+  prop("potions-table", 20, 96); prop("chair", 50, 96, !1); prop("crate", 120, 42);
+  prop("bed", 150, 132); prop("barrel", 18, 140); prop("box", 38, 140);
+  prop("pot1", 58, 120, !1); prop("pot2", 46, 112, !1);
+  // caldeirão borbulhando
+  const [cxx, cyy] = G(80, 104);
+  if (S.textures.exists("gyx-caul")) {
+    S.anims.exists("gyx-caul-a") || S.anims.create({ key: "gyx-caul-a", frames: S.anims.generateFrameNumbers("gyx-caul", {}), frameRate: 8, repeat: -1 });
+    S.add.sprite(cxx, cyy, "gyx-caul", 0).setOrigin(.5, 1).setDepth(cyy).setTint(0xb8ff9a).play("gyx-caul-a");
+    const b = S.dungeon.solids.create(cxx, cyy - 10, "rock"); b.setVisible(!1).setDisplaySize(30, 20); b.refreshBody?.();
+  }
+  const gl = S.add.image(cxx, cyy - 18, "light").setBlendMode(j.BlendModes.ADD).setTint(0x8cff6a).setScale(.3).setAlpha(.4).setDepth(cyy + 1);
+  S.tweens.add({ targets: gl, alpha: .2, scale: .34, duration: 700, yoyo: !0, repeat: -1 });
+  S.lighting?.addLight?.({ x: cxx, y: cyy - 18, radius: 130, flicker: .25, color: 0x8cff6a });
+  for (const nx of [75, 117]) { const [x, y] = G(nx, 18); S.lighting?.addLight?.({ x, y, radius: 60, flicker: .1, color: 0x8cff6a }) }
+  const L = G(100, 102), E = G(96, 140), I = G(96, 128);
+  return { lady: { x: L[0], y: L[1] }, exit: { x: E[0], y: E[1] }, inside: { x: I[0], y: I[1] } };
 }
 function __wqFog(S, on) { for (const f of S.__gyFog || []) f.setVisible(on) }
 function __wqTeleport(S, x, y, inside) {
@@ -13361,6 +13417,12 @@ const __WQBARK = ["Essa missão foi mais difícil do que deveria ser… o que se
       this.textures.exists("gyx-hut-src") || L.image("gyx-hut-src", V + "herb-hut.png");
       this.textures.exists("gyx-bed") || L.image("gyx-bed", V + "herb-bed.png");
       this.textures.exists("gyx-shelf") || L.image("gyx-shelf", V + "herb-shelf.png");
+      const PR = "assets/pixel-art/props/";
+      this.textures.exists("wh-cabin") || L.image("wh-cabin", PR + "wh-cabin.png");
+      this.textures.exists("wh-interior") || L.image("wh-interior", PR + "wh-interior.png");
+      this.textures.exists("wh-props") || L.image("wh-props", PR + "wh-props.png");
+      L.json("wh-props", PR + "wh-props.json");
+      this.textures.exists("wh-smoke") || L.spritesheet("wh-smoke", PR + "wh-smoke.png", { frameWidth: 48, frameHeight: 31 });
       this.textures.exists("gyx-caul") || L.spritesheet("gyx-caul", V + "herb-cauldron.png", { frameWidth: 32, frameHeight: 48 });
       L.setPath(op);
     } catch (e) {}
