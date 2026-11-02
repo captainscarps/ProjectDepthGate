@@ -14,7 +14,7 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PACK = os.environ.get("TPD_PACK", "/tmp/dg/x/PNG")
-SHEETS = ["walls_floor.png", "Objects.png", "doors_lever_chest_animation.png", "fire_animation.png", "decorative_cracks_floor.png"]
+SHEETS = ["walls_floor.png", "Objects.png", "doors_lever_chest_animation.png", "fire_animation.png", "decorative_cracks_floor.png", "decorative_cracks_walls.png"]
 PROPS = {
     "ladder": (98, 1, 12, 49), "ladder2": (114, 12, 12, 49), "chest-gold": (135, 4, 19, 18), "basket-gold": (167, 8, 19, 14),
     "gold1": (199, 7, 19, 17), "gold2": (224, 7, 16, 12), "gold3": (241, 8, 14, 10), "gold4": (197, 38, 22, 17), "gold5": (163, 36, 29, 22),
@@ -40,6 +40,16 @@ def main():
     dy = meta["sheets"]["doors_lever_chest_animation"][1]
     meta["chest"] = [0, dy + 128, 32, 32, 5]
     meta["lever"] = [0, dy + 176, 16, 16, 5]
+    # versões rachadas: para cada ladrilho de walls_floor, os ladrilhos de decorative_cracks_walls mais parecidos
+    import numpy as np
+    wf = np.array(ims[0]).astype(int); cw = np.array(ims[5]).astype(int)
+    T = lambda a: [a[y:y + 16, x:x + 16] for y in range(0, a.shape[0], 16) for x in range(0, a.shape[1], 16)]
+    A, Bq = T(wf), T(cw); cr = {}
+    for j, b in enumerate(Bq):
+        if b[..., 3].sum() == 0: continue
+        best = max(((np.abs(a - b).sum(2) < 20).mean(), i) for i, a in enumerate(A) if a[..., 3].sum())
+        if best[0] > .7: cr.setdefault(str(best[1]), []).append(j)
+    meta["cracks"] = cr
     for base in (ROOT, os.path.join(ROOT, "Projeto atualizado")):
         d = os.path.join(base, "assets", "pixel-art", "temple")
         os.makedirs(d, exist_ok=True)

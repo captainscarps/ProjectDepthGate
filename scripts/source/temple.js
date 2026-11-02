@@ -137,6 +137,9 @@ function __tpBake(B) {
   let sd = 9137; const rnd = () => (sd = sd * 1664525 + 1013904223 >>> 0) / 4294967296, pick = (a) => a[rnd() * a.length | 0];
   const WF = M.sheets.walls_floor, CR = M.sheets.decorative_cracks_floor, CW = 13;
   const tile = (i, c, r, sx = 0, sy = 0, sw = 16, sh = 16, dx = 0, dy = 0) => g.drawImage(src, WF[0] + (i % CW) * 16 + sx, WF[1] + (i / CW | 0) * 16 + sy, sw, sh, c * T + dx * 2, r * T + dy * 2, sw * 2, sh * 2);
+  const CWs = M.sheets.decorative_cracks_walls, CRK = M.cracks || {};
+  // ladrilho de parede com chance de vir rachado (variações do próprio pack)
+  const wtile = (i, c, r, ch = .45) => { const v = CRK[i]; if (v && CWs && rnd() < ch) { const k = pick(v); g.drawImage(src, CWs[0] + (k % 8) * 16, CWs[1] + (k / 8 | 0) * 16, 16, 16, c * T, r * T, 32, 32) } else tile(i, c, r) };
   const rooms = B.level.rooms || [];
   const special = new Map();
   for (const rm of rooms) for (const w of rm.walls || []) if (w.water || w.plat) for (let y = w.y; y < w.y + w.h; y++) for (let x = w.x; x < w.x + w.w; x++) special.set(x + "," + y, w.water ? "water" : "plat");
@@ -171,14 +174,21 @@ function __tpBake(B) {
     const f = face[r * C + c];
     if (f) {
       const L = fc(c - 1, r) === f, Rt = fc(c + 1, r) === f;
+      // parede de uma célula de largura com piso dos dois lados: coluna fina de pedra (como no pack)
+      if (F(c - 1, r) && F(c + 1, r) || (F(c - 1, r + (f === 1 ? 0 : 1)) && F(c + 1, r + (f === 1 ? 0 : 1)))) {
+        tile(79, c, r);
+        tile(f === 1 ? 182 : 169, c, r);
+        continue;
+      }
       const base = f === 1 ? 52 : f === 2 ? 39 : 26;
-      tile(base + (!L ? 0 : !Rt ? 2 : 1), c, r);
+      wtile(base + (!L ? 0 : !Rt ? 2 : 1), c, r);
       continue;
     }
     // vazio: bordas onde encosta no piso
     const up = F(c, r - 1) || SP(c, r - 1) === "plat", lf = F(c - 1, r), rt = F(c + 1, r);
-    if (up && lf) tile(0, c, r); else if (up && rt) tile(2, c, r); else if (up) tile(1, c, r);
-    else if (lf) tile(13, c, r); else if (rt) tile(15, c, r);
+    if (F(c - 1, r) && F(c + 1, r)) { tile(79, c, r); tile(156, c, r); continue }
+    if (up && lf) wtile(0, c, r, .3); else if (up && rt) wtile(2, c, r, .3); else if (up) wtile(1, c, r, .3);
+    else if (lf) wtile(13, c, r, .3); else if (rt) wtile(15, c, r, .3);
   }
   // água no padrão do pack: fundo de piso afundado, beirada de pedra, linha d'água ciano e faixas claras
   {
@@ -206,19 +216,16 @@ function __tpBake(B) {
       if (n && e && !ne) { px(X + 13, Y, 3, 5, "rgb(52,52,70)"); px(X + 13, Y, 3, 1, "rgb(39,40,55)"); px(X + 12, Y + 5, 4, 1, "rgb(76,171,211)") }
     }
   }
-  // manchas de piso mais escuro, de contorno suave (desenhadas pequenas e ampliadas com suavização)
-  {
-    const sm = document.createElement("canvas"); sm.width = C * 4; sm.height = R * 4; const sg = sm.getContext("2d");
-    sg.fillStyle = "rgba(40,46,74,1)";
-    for (const rm of rooms) {
-      const q = rm.rect; if (!q) continue;
-      for (let k = 0; k < 2; k++) {
-        const w = 3 + (rnd() * 3 | 0), h = 2 + (rnd() * 2 | 0), x = q.x + (rnd() * Math.max(1, q.w - w) | 0), y = q.y + 1 + (rnd() * Math.max(1, q.h - h - 1) | 0);
-        for (let b = 0; b < 10; b++) { sg.beginPath(); sg.arc((x + rnd() * w) * 4, (y + rnd() * h) * 4, (.6 + rnd() * .8) * 4, 0, 7); sg.fill() }
-      }
+  // superfícies de piso mais escuro, recortadas com as bordas arredondadas do pack (9 partes)
+  for (const rm of rooms) {
+    const q = rm.rect; if (!q || q.w < 6) continue;
+    const w = Math.max(3, q.w - 4 - (rnd() * 3 | 0)), h = Math.max(3, q.h - 4 - (rnd() * 3 | 0)), x0 = q.x + 2 + (rnd() * Math.max(1, q.w - 4 - w + 1) | 0), y0 = q.y + 2 + (rnd() * Math.max(1, q.h - 4 - h + 1) | 0);
+    for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
+      if (!F(x, y) || SP(x, y)) continue;
+      const row = y === y0 ? 0 : y === y0 + h - 1 ? 2 : 1, col = x === x0 ? 0 : x === x0 + w - 1 ? 2 : 1;
+      tile([117, 130, 143][row] + col, x, y);
+      rnd() < .06 && tile(pick([273, 274, 286, 287]), x, y);
     }
-    g.save(); g.globalAlpha = .16; g.imageSmoothingEnabled = !0; g.imageSmoothingQuality = "high";
-    g.filter = "blur(6px)"; g.drawImage(sm, 0, 0, C * 4, R * 4, 0, 0, C * T, R * T); g.filter = "none"; g.restore(); g.imageSmoothingEnabled = !1;
   }
   // sombra ao pé das paredes
   for (let r = 1; r < R; r++) for (let c = 0; c < C; c++) {
@@ -262,9 +269,9 @@ function __tpBake(B) {
   // névoa densa e fria correndo pelo chão do templo
   try {
     __gyFogTex(S);
-    const fa = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.9).setAlpha(.42).setTint(0x7c84ae).setTileScale(2.4);
-    const fb = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(8990).setAlpha(.11).setTint(0x8088b0).setTileScale(3.6);
-    const fc2 = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.95).setAlpha(.26).setTint(0x9aa2c8).setTileScale(1.4).setFlipY(!0);
+    const fa = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.9).setAlpha(.14).setTint(0x7c84ae).setTileScale(2.4);
+    const fb = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(8990).setAlpha(0).setTint(0x8088b0).setTileScale(3.6);
+    const fc2 = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.95).setAlpha(.08).setTint(0x9aa2c8).setTileScale(1.4).setFlipY(!0);
     // o vazio escuro fica por cima da névoa (borda suave), para a névoa só correr pelo chão
     const vk = key + "-v", vc = S.textures.createCanvas(vk, C * T, R * T), vg = vc.getContext();
     const sm = document.createElement("canvas"); sm.width = C * 2; sm.height = R * 2; const sg = sm.getContext("2d");
@@ -273,7 +280,7 @@ function __tpBake(B) {
     vg.imageSmoothingEnabled = !0; vg.imageSmoothingQuality = "high"; vg.drawImage(sm, 0, 0, C * 2, R * 2, 0, 0, C * T, R * T); vc.refresh();
     S.add.image(0, 0, vk).setOrigin(0).setDepth(.97);
     S.events.once("shutdown", () => { S.textures.exists(vk) && S.textures.remove(vk) });
-    const dr = (t, ms) => { const k = ms / 1000; fa.tilePositionX += 4 * k; fa.tilePositionY += 1 * k; fb.tilePositionX -= 2.5 * k; fc2.tilePositionX += 7 * k; fc2.tilePositionY -= 1.4 * k; fa.setAlpha(.38 + Math.sin(t / 5600) * .06) };
+    const dr = (t, ms) => { const k = ms / 1000; fa.tilePositionX += 4 * k; fa.tilePositionY += 1 * k; fb.tilePositionX -= 2.5 * k; fc2.tilePositionX += 7 * k; fc2.tilePositionY -= 1.4 * k; fa.setAlpha(.12 + Math.sin(t / 5600) * .03) };
     S.events.on("update", dr); S.events.once("shutdown", () => S.events.off("update", dr));
   } catch (e) {}
   B.groundLayer?.setVisible(!1); B.wallLayer?.setVisible(!1);
