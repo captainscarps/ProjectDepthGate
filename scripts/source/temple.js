@@ -163,10 +163,10 @@ function __tpBake(B) {
     if (F(c, r) || sp === "plat") {
       // piso com borda clara onde encontra o vazio
       const Wt = (x, y) => SP(x, y) === "water";
-      const l = !F(c - 1, r) && !SP(c - 1, r) && !fc(c - 1, r), rr = !F(c + 1, r) && !SP(c + 1, r) && !fc(c + 1, r), b = !F(c, r + 1) && !SP(c, r + 1);
+      const l = (!F(c - 1, r) && !SP(c - 1, r) && !fc(c - 1, r)) || (!sp && Wt(c - 1, r)), rr = (!F(c + 1, r) && !SP(c + 1, r) && !fc(c + 1, r)) || (!sp && Wt(c + 1, r)), b = (!F(c, r + 1) && !SP(c, r + 1)) || (!sp && Wt(c, r + 1)), u = !sp && Wt(c, r - 1);
       let t = 79;
       if (sp === "plat") { const u = SP(c, r - 1) === "plat", d = SP(c, r + 1) === "plat", lf = SP(c - 1, r) === "plat", rt = SP(c + 1, r) === "plat"; t = [[65, 66, 67], [78, 79, 80], [91, 92, 93]][!u ? 0 : !d ? 2 : 1][!lf ? 0 : !rt ? 2 : 1] }
-      else if (b && l) t = 91; else if (b && rr) t = 93; else if (b) t = 92; else if (l) t = 78; else if (rr) t = 80;
+      else if (u && l) t = 65; else if (u && rr) t = 67; else if (u) t = 66; else if (b && l) t = 91; else if (b && rr) t = 93; else if (b) t = 92; else if (l) t = 78; else if (rr) t = 80;
       const fv = FRC[t];
       if (fv && CR && rnd() < .5) { const k = pick(fv); g.drawImage(src, CR[0] + (k % 8) * 16, CR[1] + (k / 8 | 0) * 16, 16, 16, c * T, r * T, 32, 32) } else tile(t, c, r);
       if (t === 79) plain.add(c + "," + r);
@@ -215,11 +215,16 @@ function __tpBake(B) {
       const dn = low(c, r + 1), up = low(c, r - 1);
       if (!dn && !up) {
         const lw = low(c - 1, r), rw = low(c + 1, r); if (!lw && !rw) continue;
+        const entv = (y) => F(c, y) && !low(c, y) && (lw ? low(c - 1, y) : low(c + 1, y));
+        if (!(entv(r - 1) && entv(r + 1))) continue;
         // degraus de lado: a escada do pack girada
         plain.delete(c + "," + r);
         g.save(); g.translate((c + .5) * T, (r + .5) * T); g.rotate(lw ? Math.PI / 2 : -Math.PI / 2); g.translate(-(c + .5) * T, -(r + .5) * T); tile(114, c, r); g.restore();
         continue;
       }
+      // escada só no meio da entrada (as pontas ficam com piso liso, como no pack)
+      const ent = (x) => F(x, r) && !low(x, r) && (dn ? low(x, r + 1) : low(x, r - 1));
+      if (!(ent(c - 1) && ent(c + 1))) continue;
       plain.delete(c + "," + r);
       const lft = !(F(c - 1, r) && !low(c - 1, r) && (low(c - 1, r + (dn ? 1 : -1)))), rgt = !(F(c + 1, r) && !low(c + 1, r) && (low(c + 1, r + (dn ? 1 : -1))));
       const id = 114;
@@ -238,25 +243,18 @@ function __tpBake(B) {
       px(X, Y, 16, 16, "rgb(63,112,166)");
       // marcas do piso afundado
       if (rnd() < .3) { const mx = X + 3 + (rnd() * 8 | 0), my = Y + 4 + (rnd() * 8 | 0); px(mx, my, 6, 1, "rgb(56,99,152)"); px(mx + 2, my, 1, 3, "rgb(56,99,152)"); px(mx, my + 3, 5, 1, "rgb(56,99,152)") }
-      // moldura de pedra clara da cisterna (cores e chanfro do pack), depois a água
-      const FR = ["rgb(36,39,50)", "rgb(161,165,216)", "rgb(146,153,192)", "rgb(146,153,192)", "rgb(89,93,115)"];
-      const L0 = !w ? 5 : 0, R0 = !e ? 5 : 0, B0 = !s_ ? 5 : 0;
       if (!n) {
-        for (let k = 0; k < 5; k++) px(X, Y + k, 16, 1, FR[k]);
-        px(X + L0, Y + 5, 16 - L0 - R0, 1, "rgb(39,40,55)"); px(X + L0, Y + 6, 16 - L0 - R0, 4, "rgb(52,52,70)");
-        for (let q = L0; q < 16 - R0; q += 4 + (rnd() * 3 | 0)) px(X + q, Y + 6, 1, 4, "rgb(44,44,60)");
-        px(X + L0, Y + 10, 16 - L0 - R0, 1, "rgb(76,171,211)"); px(X + L0, Y + 11, 16 - L0 - R0, 1, "rgb(74,160,203)"); px(X + L0, Y + 12, 16 - L0 - R0, 2, "rgb(67,128,179)");
+        px(X, Y, 16, 1, "rgb(39,40,55)"); px(X, Y + 1, 16, 1, "rgb(63,63,83)"); px(X, Y + 2, 16, 3, "rgb(52,52,70)");
+        for (let q = 0; q < 16; q += 4 + (rnd() * 3 | 0)) px(X + q, Y + 2, 1, 3, "rgb(44,44,60)");
+        px(X, Y + 5, 16, 1, "rgb(76,171,211)"); px(X, Y + 6, 16, 1, "rgb(74,160,203)"); px(X, Y + 7, 16, 1, "rgb(54,85,138)");
+        px(X, Y + 8, 16, 2, "rgb(67,128,179)"); px(X, Y + 10, 16, 1, "rgb(72,149,195)"); px(X, Y + 11, 16, 2, "rgb(67,128,179)");
       }
-      if (!w) { for (let k = 0; k < 5; k++) px(X + k, Y, 1, 16, FR[k]); px(X + 5, Y + (n ? 0 : 10), 1, n ? 16 - B0 : 6 - B0, "rgb(76,171,211)") }
-      if (!e) { for (let k = 0; k < 5; k++) px(X + 15 - k, Y, 1, 16, FR[k]); px(X + 10, Y + (n ? 0 : 10), 1, n ? 16 - B0 : 6 - B0, "rgb(76,171,211)") }
-      if (!s_) { for (let k = 0; k < 5; k++) px(X, Y + 15 - k, 16, 1, FR[k]); px(X + L0, Y + 10, 16 - L0 - R0, 1, "rgb(76,171,211)") }
-      // chanfro nos cantos da moldura
-      const bev = (sx, sy, dx, dy) => { for (let k = 0; k < 5; k++) px(sx + dx * k, sy + dy * k, 1, 1, "rgb(89,93,115)") };
-      if (!n && !w) bev(X, Y, 1, 1); if (!n && !e) bev(X + 15, Y, -1, 1); if (!s_ && !w) bev(X, Y + 15, 1, -1); if (!s_ && !e) bev(X + 15, Y + 15, -1, -1);
-      // cantos de dentro (terra só na diagonal): pedacinho da moldura
-      const nw = Wt(c - 1, r - 1), ne = Wt(c + 1, r - 1), sw = Wt(c - 1, r + 1), se = Wt(c + 1, r + 1);
-      if (n && w && !nw) px(X, Y, 5, 5, "rgb(146,153,192)"); if (n && e && !ne) px(X + 11, Y, 5, 5, "rgb(146,153,192)");
-      if (s_ && w && !sw) px(X, Y + 11, 5, 5, "rgb(146,153,192)"); if (s_ && e && !se) px(X + 11, Y + 11, 5, 5, "rgb(146,153,192)");
+      if (!w) px(X, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)");
+      if (!e) px(X + 15, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)");
+      if (!s_) px(X, Y + 15, 16, 1, "rgb(76,171,211)");
+      const nw = Wt(c - 1, r - 1), ne = Wt(c + 1, r - 1);
+      if (n && w && !nw) px(X, Y, 1, 2, "rgb(76,171,211)");
+      if (n && e && !ne) px(X + 15, Y, 1, 2, "rgb(76,171,211)");
     }
   }
   // superfícies de piso mais escuro como no pack: manchas de contorno arredondado e irregular,
@@ -273,7 +271,7 @@ function __tpBake(B) {
     };
     for (const rm of rooms) {
       const q = rm.rect; if (!q || rm.interior) continue;
-      const n = 1 + (rnd() * 2 | 0);
+      const n = 0;
       for (let k = 0; k < n; k++) {
         // ancorada numa parede ou canto da sala, com 2 a 4 lóbulos
         const side = rnd() * 4 | 0, len = (3 + rnd() * Math.min(7, Math.max(q.w, q.h) - 3)) * 16, dep = (2 + rnd() * 2.5) * 16;
@@ -338,8 +336,9 @@ function __tpBake(B) {
   for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
     const f = face[r * C + c];
     if (f === 3 || (f === 2 && fc(c, r - 1) === 0)) {
-      g.fillStyle = "rgb(29,28,43)"; let x = c * T;
-      for (let k = 0; k < 8; k++) { const h = rnd() < .45 ? (2 + (rnd() * 4 | 0)) * 2 : 0; h && g.fillRect(x + k * 4, r * T, 4, h) }
+      // topo da parede: só lascas pequenas de 1 px no contorno (o pack já traz o acabamento)
+      g.fillStyle = "rgb(29,28,43)"; const x = c * T;
+      for (let k = 0; k < 16; k++) if (rnd() < .12) g.fillRect(x + k * 2, r * T, 2, 2);
     }
     if (f === 1 && rnd() < .3) {
       const n = 2 + (rnd() * 4 | 0), y0 = (r + 1) * T;
