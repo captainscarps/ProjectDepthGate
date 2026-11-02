@@ -38,9 +38,10 @@ def clean(path):
     for k in set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}:
         kill[k] = True
     alpha = np.where(kill[lab], 0, 255)
-    for _ in range(2):
+    # franja clara do recorte: some com o claro/cinza encostado no transparente (a arte tem contorno escuro)
+    for _ in range(4):
         edge = (alpha > 0) & ndimage.binary_dilation(alpha == 0)
-        alpha = np.where(edge & (mn > 236) & (mx - mn < 18), 0, alpha)
+        alpha = np.where(edge & (mn > 150) & (mx - mn < 40), 0, alpha)
     a[..., 3] = alpha
     return a
 
@@ -82,9 +83,17 @@ def resize_pm(c, size):
     for i in range(3):
         out[..., i] = np.where(keep, np.clip(ch[i] / np.maximum(A, 1) * 255, 0, 255), 0)
     out[..., 3] = np.where(keep, 255, 0)
-    o = out.astype(np.int32); mn, mx = o[..., :3].min(2), o[..., :3].max(2)
-    bad = keep & ndimage.binary_dilation(~keep) & (mn > 232) & (mx - mn < 20)
-    out[bad] = 0
+    # contorno: pixel da borda claro e acinzentado vira o tom mais escuro dos vizinhos de dentro
+    o = out.astype(np.int32); lum = o[..., :3].mean(2); sat = o[..., :3].max(2) - o[..., :3].min(2)
+    edge = keep & ndimage.binary_dilation(~keep)
+    lumk = np.where(keep, lum, 999)
+    darkest = ndimage.minimum_filter(lumk, size=3)
+    fix = edge & (lum > 95) & (sat < 45)
+    ys, xs = np.where(fix)
+    for y, x in zip(ys, xs):
+        y0, y1, x0, x1 = max(0, y - 1), y + 2, max(0, x - 1), x + 2
+        win = lumk[y0:y1, x0:x1]; k = np.unravel_index(np.argmin(win), win.shape)
+        out[y, x, :3] = out[y0 + k[0], x0 + k[1], :3]
     return out
 
 
