@@ -13898,13 +13898,13 @@ function __tpBake(B) {
         px(X, Y + 5, 16, 1, "rgb(76,171,211)"); px(X, Y + 6, 16, 1, "rgb(74,160,203)"); px(X, Y + 7, 16, 1, "rgb(54,85,138)");
         px(X, Y + 8, 16, 2, "rgb(67,128,179)"); px(X, Y + 10, 16, 1, "rgb(72,149,195)"); px(X, Y + 11, 16, 2, "rgb(67,128,179)");
       }
-      if (!w) { px(X, Y, 1, 16, "rgb(39,40,55)"); px(X + 1, Y, 2, 16, "rgb(52,52,70)"); px(X + 3, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)"); px(X + 4, Y + (n ? 0 : 6), 2, n ? 16 : 10, "rgb(67,128,179)") }
-      if (!e) { px(X + 15, Y, 1, 16, "rgb(39,40,55)"); px(X + 13, Y, 2, 16, "rgb(52,52,70)"); px(X + 12, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)"); px(X + 10, Y + (n ? 0 : 6), 2, n ? 16 : 10, "rgb(67,128,179)") }
-      if (!s_) { px(X, Y + 13, 16, 1, "rgb(72,149,195)"); px(X, Y + 14, 16, 1, "rgb(76,171,211)"); px(X, Y + 15, 16, 1, "rgb(39,40,55)") }
+      if (!w) { px(X, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)"); px(X + 1, Y + (n ? 0 : 6), 1, n ? 16 : 10, "rgb(67,128,179)") }
+      if (!e) { px(X + 15, Y + (n ? 0 : 5), 1, n ? 16 : 11, "rgb(76,171,211)"); px(X + 14, Y + (n ? 0 : 6), 1, n ? 16 : 10, "rgb(67,128,179)") }
+      if (!s_) { px(X, Y + 15, 16, 1, "rgb(76,171,211)") }
       // cantos de dentro (terra só na diagonal)
       const nw = Wt(c - 1, r - 1), ne = Wt(c + 1, r - 1);
-      if (n && w && !nw) { px(X, Y, 3, 5, "rgb(52,52,70)"); px(X, Y, 3, 1, "rgb(39,40,55)"); px(X, Y + 5, 4, 1, "rgb(76,171,211)") }
-      if (n && e && !ne) { px(X + 13, Y, 3, 5, "rgb(52,52,70)"); px(X + 13, Y, 3, 1, "rgb(39,40,55)"); px(X + 12, Y + 5, 4, 1, "rgb(76,171,211)") }
+      if (n && w && !nw) px(X, Y, 1, 2, "rgb(76,171,211)");
+      if (n && e && !ne) px(X + 15, Y, 1, 2, "rgb(76,171,211)");
     }
   }
   // superfícies de piso mais escuro, recortadas com as bordas arredondadas do pack (9 partes)
@@ -13960,9 +13960,9 @@ function __tpBake(B) {
   // névoa densa e fria correndo pelo chão do templo
   try {
     __gyFogTex(S);
-    const fa = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.9).setAlpha(.14).setTint(0x7c84ae).setTileScale(2.4);
+    const fa = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.9).setAlpha(.07).setTint(0x7c84ae).setTileScale(2.4);
     const fb = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(8990).setAlpha(0).setTint(0x8088b0).setTileScale(3.6);
-    const fc2 = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.95).setAlpha(.08).setTint(0x9aa2c8).setTileScale(1.4).setFlipY(!0);
+    const fc2 = S.add.tileSprite(0, 0, C * T, R * T, "gy-fog").setOrigin(0).setDepth(.95).setAlpha(0).setTint(0x9aa2c8).setTileScale(1.4).setFlipY(!0);
     // o vazio escuro fica por cima da névoa (borda suave), para a névoa só correr pelo chão
     const vk = key + "-v", vc = S.textures.createCanvas(vk, C * T, R * T), vg = vc.getContext();
     const sm = document.createElement("canvas"); sm.width = C * 2; sm.height = R * 2; const sg = sm.getContext("2d");
@@ -13971,7 +13971,7 @@ function __tpBake(B) {
     vg.imageSmoothingEnabled = !0; vg.imageSmoothingQuality = "high"; vg.drawImage(sm, 0, 0, C * 2, R * 2, 0, 0, C * T, R * T); vc.refresh();
     S.add.image(0, 0, vk).setOrigin(0).setDepth(.97);
     S.events.once("shutdown", () => { S.textures.exists(vk) && S.textures.remove(vk) });
-    const dr = (t, ms) => { const k = ms / 1000; fa.tilePositionX += 4 * k; fa.tilePositionY += 1 * k; fb.tilePositionX -= 2.5 * k; fc2.tilePositionX += 7 * k; fc2.tilePositionY -= 1.4 * k; fa.setAlpha(.12 + Math.sin(t / 5600) * .03) };
+    const dr = (t, ms) => { const k = ms / 1000; fa.tilePositionX += 4 * k; fa.tilePositionY += 1 * k; fb.tilePositionX -= 2.5 * k; fc2.tilePositionX += 7 * k; fc2.tilePositionY -= 1.4 * k; fa.setAlpha(.06 + Math.sin(t / 5600) * .02) };
     S.events.on("update", dr); S.events.once("shutdown", () => S.events.off("update", dr));
   } catch (e) {}
   B.groundLayer?.setVisible(!1); B.wallLayer?.setVisible(!1);
@@ -14017,12 +14017,26 @@ function __tpProps(S, B, M, niches, special) {
     });
     mk("tpw-spark", 2, 1, (x) => { x.fillStyle = "rgb(200,240,255)"; x.fillRect(0, 0, 2, 1) });
     const cells = [...special].filter(([, v]) => v === "water").map(([k]) => k.split(",").map(Number));
-    const deep = cells.filter(([c, r]) => special.get(c + "," + (r - 1)) === "water" && special.get((c - 1) + "," + r) === "water" && special.get((c + 1) + "," + r) === "water");
-    for (let i = 0; i < Math.ceil(deep.length * .45); i++) {
-      const [c, r] = deep[Math.random() * deep.length | 0], x = c * T + Math.random() * 10, y = r * T + 6 + Math.random() * 18;
-      const o = S.add.image(x, y, "tpw-rip" + (i % 3)).setOrigin(0).setScale(2).setDepth(.955).setAlpha(0);
-      S.tweens.add({ targets: o, alpha: { from: 0, to: .9 }, duration: 1400 + Math.random() * 1200, yoyo: !0, repeat: -1, delay: Math.random() * 3000, repeatDelay: 300 + Math.random() * 1500 });
-      S.tweens.add({ targets: o, x: x + 10 + Math.random() * 10, duration: 5000 + Math.random() * 3000, yoyo: !0, repeat: -1, ease: "Sine.easeInOut" });
+    // reflexos do próprio pack: grupos de ladrilhos animados copiados do mapa de exemplo
+    const WD = M.wdet, WS = M.sheets.water_details;
+    if (WD && WS) {
+      for (const [k, fr] of Object.entries(WD.anim)) {
+        const ids = fr.length ? fr : [+k];
+        for (const id of ids) TX.has("wd-" + id) || TX.add("wd-" + id, 0, WS[0] + (id % WD.cols) * 16, WS[1] + (id / WD.cols | 0) * 16, 16, 16);
+        S.anims.exists("wd-a-" + k) || S.anims.create({ key: "wd-a-" + k, frames: ids.map((id) => ({ key: "tpd-atlas", frame: "wd-" + id })), frameRate: 6.6, repeat: -1 });
+      }
+      for (const gp of WD.groups) for (const [, , id] of gp) TX.has("wd-" + id) || TX.add("wd-" + id, 0, WS[0] + (id % WD.cols) * 16, WS[1] + (id / WD.cols | 0) * 16, 16, 16);
+      const isW = (c, r) => special.get(c + "," + r) === "water", used = new Set();
+      const order = cells.slice().sort(() => Math.random() - .5);
+      for (const [c0, r0] of order) {
+        const gp = WD.groups[Math.random() * WD.groups.length | 0];
+        if (!gp.every(([dx, dy]) => isW(c0 + dx, r0 + dy) && isW(c0 + dx, r0 + dy - 1) && !used.has((c0 + dx) + "," + (r0 + dy)))) continue;
+        for (const [dx, dy, id] of gp) {
+          used.add((c0 + dx) + "," + (r0 + dy));
+          const o = S.add.sprite((c0 + dx) * T, (r0 + dy) * T, "tpd-atlas", "wd-" + ((WD.anim[id] || [id])[0])).setOrigin(0).setScale(2).setDepth(.955);
+          WD.anim[id] && o.play("wd-a-" + id);
+        }
+      }
     }
     const shore = cells.filter(([c, r]) => special.get(c + "," + (r - 1)) !== "water");
     for (const [c, r] of shore) for (let k = 0; k < 2; k++) {

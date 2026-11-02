@@ -14,6 +14,7 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PACK = os.environ.get("TPD_PACK", "/tmp/dg/x/PNG")
+TMX = os.path.join(os.path.dirname(PACK), "Tiled_files")
 SHEETS = ["walls_floor.png", "Objects.png", "doors_lever_chest_animation.png", "fire_animation.png", "decorative_cracks_floor.png", "decorative_cracks_walls.png"]
 PROPS = {
     "ladder": (98, 1, 12, 49), "ladder2": (114, 12, 12, 49), "chest-gold": (135, 4, 19, 18), "basket-gold": (167, 8, 19, 14),
@@ -29,6 +30,7 @@ FIRE = {"candle": (0, 37), "small": (37, 43), "big": (80, 48), "bowl": (128, 48)
 
 def main():
     ims = [Image.open(os.path.join(PACK, f)).convert("RGBA") for f in SHEETS]
+    ims.append(Image.open(os.path.join(TMX, "water_details_animation.png")).convert("RGBA")); SHEETS.append("water_details.png")
     W = max(i.width for i in ims); H = sum(i.height for i in ims) + 2 * len(ims)
     atlas = Image.new("RGBA", (W, H)); meta = {"sheets": {}, "props": {}, "fire": {}, "chest": None}; y = 0
     for f, im in zip(SHEETS, ims):
@@ -50,6 +52,35 @@ def main():
         best = max(((np.abs(a - b).sum(2) < 20).mean(), i) for i, a in enumerate(A) if a[..., 3].sum())
         if best[0] > .7: cr.setdefault(str(best[1]), []).append(j)
     meta["cracks"] = cr
+    # reflexos da água: grupos de ladrilhos animados copiados do mapa de exemplo do pack (Dungeon1.tmx)
+    import xml.etree.ElementTree as ET
+    r = ET.parse(os.path.join(TMX, "Dungeon1.tmx")).getroot(); first = None; anim = {}
+    for t in r.findall("tileset"):
+        if t.get("name") == "Water_detilazation":
+            first = int(t.get("firstgid"))
+            for x in t.findall("tile"):
+                a = x.find("animation")
+                if a is not None: anim[int(x.get("id"))] = [int(f.get("tileid")) for f in a.findall("frame")]
+    groups = []
+    for L in r.iter("layer"):
+        if not L.get("name").startswith("water_detailization"): continue
+        cells = {}
+        for c in L.find("data").findall("chunk"):
+            x0, y0, w = int(c.get("x")), int(c.get("y")), int(c.get("width"))
+            for i, v in enumerate(int(q) for q in c.text.replace("\n", "").split(",") if q.strip()):
+                if v: cells[(x0 + i % w, y0 + i // w)] = (v & 0x1FFFFFFF) - first
+        seen = set()
+        for k in cells:
+            if k in seen: continue
+            st = [k]; grp = []; seen.add(k)
+            while st:
+                x, y = st.pop(); grp.append((x, y, cells[(x, y)]))
+                for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    n = (x + d[0], y + d[1])
+                    if n in cells and n not in seen: seen.add(n); st.append(n)
+            mx, my = min(g[0] for g in grp), min(g[1] for g in grp)
+            groups.append([[x - mx, y - my, i] for x, y, i in grp])
+    meta["wdet"] = {"groups": groups, "anim": {str(k): v for k, v in anim.items()}, "cols": 37}
     for base in (ROOT, os.path.join(ROOT, "Projeto atualizado")):
         d = os.path.join(base, "assets", "pixel-art", "temple")
         os.makedirs(d, exist_ok=True)
