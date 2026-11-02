@@ -13782,7 +13782,7 @@ function __tpOrganic(L) {
     for (const w of r.walls || []) for (let y = w.y - 1; y <= w.y + w.h; y++) for (let x = w.x - 1; x <= w.x + w.w; x++) keep.add(x + "," + y);
     r.bossCol != null && mark(r.bossCol, r.bossRow, 3);
   }
-  const bite = (r, x, y) => { const k = x + "," + y; if (keep.has(k)) return; r.walls.push({ x, y, w: 1, h: 1 }); keep.add(k) };
+  const bite = () => {}; // sem recortes nas salas: acabamento reto e bem feito, como no pack
   for (const r of L.rooms) {
     const q = r.rect;
     // cantos em degrau (2 ou 3 células)
@@ -13805,7 +13805,7 @@ function __tpOrganic(L) {
   for (const c of L.corridors) {
     const horiz = c.w > c.h, len = horiz ? c.w : c.h;
     for (let i = 1; i < len - 1; i++) {
-      if (rnd() > .3) continue;
+      if (!0) continue;
       const side = rnd() < .5 ? 0 : (horiz ? c.h : c.w) - 1;
       const x = horiz ? c.x + i : c.x + side, y = horiz ? c.y + side : c.y + i;
       if (keep.has(x + "," + y)) continue;
@@ -14116,6 +14116,25 @@ function __tpProps(S, B, M, niches, special) {
           used.add((c0 + dx) + "," + (r0 + dy));
           const o = S.add.sprite((c0 + dx) * T, (r0 + dy) * T, "tpd-atlas", "wd-" + ((WD.anim[id] || [id])[0])).setOrigin(0).setScale(2).setDepth(.955);
           WD.anim[id] && o.play("wd-a-" + id);
+        }
+      }
+    }
+    // grades de buracos no chão (grupos da camada de armadilhas do exemplo do pack, recolhidas)
+    const TPg = M.traps, TS = M.sheets.trap_animation;
+    if (TPg && TS) {
+      for (const gp of TPg.groups) for (const [, , id] of gp) TX.has("tg-" + id) || TX.add("tg-" + id, 0, TS[0] + (id % TPg.cols) * 16, TS[1] + (id / TPg.cols | 0) * 16, 16, 16);
+      const free = (c, r) => !B.isWallTile(c, r) && !special.has(c + "," + r) && !(B.level.rooms || []).some((q) => (q.tp || []).some((t) => Math.abs(t[1] - c) < 2 && Math.abs(t[2] - r) < 2)) && !(B.level.rooms || []).some((q) => (q.enemies || []).some((e) => e.col === c && e.row === r));
+      const taken = new Set();
+      for (const rm of B.level.rooms || []) {
+        const q = rm.rect; if (!q || rm.boss) continue;
+        for (let k = 0; k < 2; k++) {
+          const gp = TPg.groups[Math.random() * TPg.groups.length | 0];
+          for (let t = 0; t < 20; t++) {
+            const c0 = q.x + 1 + (Math.random() * Math.max(1, q.w - 3) | 0), r0 = q.y + 2 + (Math.random() * Math.max(1, q.h - 4) | 0);
+            if (!gp.every(([dx, dy]) => free(c0 + dx, r0 + dy) && !taken.has((c0 + dx) + "," + (r0 + dy)))) continue;
+            for (const [dx, dy, id] of gp) { taken.add((c0 + dx) + "," + (r0 + dy)); S.add.image((c0 + dx) * T, (r0 + dy) * T, "tpd-atlas", "tg-" + id).setOrigin(0).setScale(2).setDepth(.93) }
+            break;
+          }
         }
       }
     }

@@ -31,6 +31,7 @@ FIRE = {"candle": (0, 37), "small": (37, 43), "big": (80, 48), "bowl": (128, 48)
 def main():
     ims = [Image.open(os.path.join(PACK, f)).convert("RGBA") for f in SHEETS]
     ims.append(Image.open(os.path.join(TMX, "water_details_animation.png")).convert("RGBA")); SHEETS.append("water_details.png")
+    ims.append(Image.open(os.path.join(TMX, "trap_animation.png")).convert("RGBA")); SHEETS.append("trap_animation.png")
     W = max(i.width for i in ims); H = sum(i.height for i in ims) + 2 * len(ims)
     atlas = Image.new("RGBA", (W, H)); meta = {"sheets": {}, "props": {}, "fire": {}, "chest": None}; y = 0
     for f, im in zip(SHEETS, ims):
@@ -81,6 +82,34 @@ def main():
             mx, my = min(g[0] for g in grp), min(g[1] for g in grp)
             groups.append([[x - mx, y - my, i] for x, y, i in grp])
     meta["wdet"] = {"groups": groups, "anim": {str(k): v for k, v in anim.items()}, "cols": 37}
+    # grades de buracos no chão: grupos da camada "traps" do exemplo, no primeiro quadro (espetos recolhidos)
+    tfirst = None; tan = {}
+    for t in r.findall("tileset"):
+        if t.get("name") == "trap_animation":
+            tfirst = int(t.get("firstgid"))
+            for x in t.findall("tile"):
+                a = x.find("animation")
+                if a is not None: tan[int(x.get("id"))] = [int(f.get("tileid")) for f in a.findall("frame")]
+    tg = []
+    for L in r.iter("layer"):
+        if L.get("name") != "traps": continue
+        cells = {}
+        for c in L.find("data").findall("chunk"):
+            x0, y0, w = int(c.get("x")), int(c.get("y")), int(c.get("width"))
+            for i, v in enumerate(int(q) for q in c.text.replace("\n", "").split(",") if q.strip()):
+                if v: cells[(x0 + i % w, y0 + i // w)] = (v & 0x1FFFFFFF) - tfirst
+        seen = set()
+        for k in cells:
+            if k in seen: continue
+            st = [k]; grp = []; seen.add(k)
+            while st:
+                x, y = st.pop(); grp.append((x, y, cells[(x, y)]))
+                for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    n = (x + d[0], y + d[1])
+                    if n in cells and n not in seen: seen.add(n); st.append(n)
+            mx, my = min(g[0] for g in grp), min(g[1] for g in grp)
+            tg.append([[x - mx, y - my, (tan.get(i) or [i])[0]] for x, y, i in grp])
+    meta["traps"] = {"groups": tg, "cols": 13}
     for base in (ROOT, os.path.join(ROOT, "Projeto atualizado")):
         d = os.path.join(base, "assets", "pixel-art", "temple")
         os.makedirs(d, exist_ok=True)
