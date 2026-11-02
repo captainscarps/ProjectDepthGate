@@ -22,12 +22,22 @@ const __HPC = ["warrior", "necromancer", "druid", "mage", "hunter", "rogue", "be
   __dlg = function (S, list, done) {
     try {
       const M = byName(), T = S.textures;
+      const curCls = String(S?.classDef?.id || S?.player?.heroClass || window.__heroCls || S?.classId || "WARRIOR").toLowerCase();
       list = (list || []).map((e) => {
-        if (!e || e.who) return e;
-        const c = M[String(e.name || "").toUpperCase().trim()];
-        if (!c || !T.exists(`hero-${c}-p-talk`)) return e;
-        const ex = e.expr && T.exists(`hero-${c}-p-${e.expr}`) ? e.expr : "talk";
-        return { ...e, who: "hero-" + c, expr: ex };
+        if (!e) return e;
+        let c = null;
+        if (e.who && e.who.startsWith("hero-")) {
+          c = e.who.replace("hero-", "");
+        } else if (!e.who) {
+          const nm = String(e.name || "").toUpperCase().trim();
+          c = M[nm] || (nm === "HERÓI" || nm === "HEROI" || nm === "HERO" ? curCls : null);
+        }
+        if (!c || !T.exists(`hero-${c}-p-talk`)) c = curCls;
+        if (c && T.exists(`hero-${c}-p-talk`)) {
+          const ex = e.expr && T.exists(`hero-${c}-p-${e.expr}`) ? e.expr : "talk";
+          return { ...e, who: "hero-" + c, expr: ex };
+        }
+        return e;
       });
     } catch (e) {}
     return D0.call(this, S, list, done);

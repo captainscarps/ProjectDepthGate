@@ -22,7 +22,7 @@ const __GMEM={
    Guardiã quando a fase tem eco; senão, ao limpar a primeira sala. O Guerreiro fala no começo do castelo, porque
    dali o jogo termina. (Falas em __HMEM, geradas de scripts/hero_memory_lines.json.) ── */
 function __hmemSay(S){const id=S.classDef?.id,h=typeof __HMEM!=="undefined"&&__HMEM[id];if(!h||h[0]!==S.levelId)return;const k="hmem_"+S.levelId+"_"+id;if(__stFlag(S,k))return;__stFlag(S,k,!0);
- const nm=(__HN[id]??S.classDef.name).toUpperCase(),go=()=>{if(!S.sys.isActive())return;if(S.uiOpen||S.state!=="playing"){S.time.delayedCall(800,go);return}__dlg(S,h[1].map(t=>({name:nm,text:t})))};go()}
+ const nm=(__HN[id]??S.classDef.name).toUpperCase(),cid=String(id||"WARRIOR").toLowerCase(),go=()=>{if(!S.sys.isActive())return;if(S.uiOpen||S.state!=="playing"){S.time.delayedCall(800,go);return}__dlg(S,h[1].map((t,idx)=>({who:"hero-"+cid,expr:idx===0?"talk":"special",name:nm,text:t})))};go()}
 {const E0=__echo;__echo=function(S,room){const lv=S?.levelId,before=!!(lv&&__ECHO[lv]&&room&&!__stFlag(S,"echo_"+lv));const r=E0.apply(this,arguments);
  try{if(before&&__stFlag(S,"echo_"+lv)){S.__echoNow=!0;const L=__GMEM[lv],wait=1300+3300*(__ECHO[lv].l.length)+1900;
   S.time.delayedCall(wait,()=>{if(!S.sys.isActive())return;const go=()=>{if(!S.sys.isActive())return;if(S.uiOpen||S.state!=="playing"){S.time.delayedCall(800,go);return}

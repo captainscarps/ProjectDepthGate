@@ -18,7 +18,7 @@ const __WQ = {
   G(text, expr = "talk") { return { who: "guardia", expr, name: __GN, text } },
   V(text, expr = "talk") { return { who: "velha", expr, name: "A SENHORA", text } },
   B(text, expr = "aggression") { return { who: "velha", expr, name: "A BRUXA", text } },
-  H(S, text) { return { name: this.hero(S), text } },
+  H(S, text, expr = "talk") { const c = String(S?.classDef?.id || S?.player?.heroClass || window.__heroCls || "WARRIOR").toLowerCase(); return { who: "hero-" + c, expr, name: this.hero(S), text } },
 };
 /* ─── chefes ─── */
 function __wqDefs() {
@@ -390,10 +390,10 @@ function __wqWitchTalk(S, lady) {
   const A = __WQ;
   __dlg(S, [
     A.V("Ora, ora… voltou para me ver? A fruta estava docinha, não estava? Hihihi.", "smile"),
-    A.H(S, "Você me envenenou!"),
+    A.H(S, "Você me envenenou!", "aggression"),
     A.V("Envenenar? Eu te dei força! E cobrei um preço justo: um pedacinho da sua vida a cada selo."),
     A.V("Cada pedaço que você perde vem para mim. Olhe bem… estou quase jovem de novo.", "special"),
-    A.H(S, "Desfaça o feitiço. Agora."),
+    A.H(S, "Desfaça o feitiço. Agora.", "aggression"),
     A.B("Desfazer? Só se me matar, criança… e ninguém mata a Bruxa das Sepulturas na porta da casa dela!"),
   ], () => { if (S.scene.isActive()) __wqTransform(S, lady) });
 }
@@ -567,7 +567,7 @@ function __wqReveal(S, forced) {
     S.time.delayedCall(900, () => S.scene.isActive() && __dlg(S, [
       A.G("Isto é um envenenamento mágico. Ele se agarra à sua vida e a consome a cada selo.", "sadness"),
       A.G("Você aceitou algo de algum estranho?"),
-      A.H(S, "Uma senhora… na Floresta da Cripta. Ela me deu uma fruta e insistiu que eu comesse ali mesmo."),
+      A.H(S, "Uma senhora… na Floresta da Cripta. Ela me deu uma fruta e insistiu que eu comesse ali mesmo.", "talk"),
       A.G("Na Floresta da Cripta, além dos mortos, só vive uma bruxa. Foi ela que te envenenou.", "aggression"),
       A.G("Vou tentar desfazer o feitiço."),
     ], () => {
@@ -615,7 +615,7 @@ const __WQBARK = ["Essa missão foi mais difícil do que deveria ser… o que se
       if (n >= 1 && !A.f(S, "wqCrQ")) { __wqUrgent(S); return r }
       if (A.poisoned(S) && !A.f(S, "wqRev") && A.stacks(S) > 0) {
         const line = __WQBARK[Math.min(__WQBARK.length - 1, Math.max(0, A.stacks(S) - 1))];
-        __dlg(S, [A.H(S, line)], () => {
+        __dlg(S, [A.H(S, line, "sadness")], () => {
           if (n >= A.FORCE_AT) { __wqReveal(S, !0); return }
           S.__wqAsk = S.time.now + 60000;
         });

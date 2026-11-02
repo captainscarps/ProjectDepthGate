@@ -15,7 +15,7 @@ const __Q = {
   hero(S) { return (__HN[S.classDef?.id] ?? "Herói").toUpperCase() },
   G(text, expr = "talk") { return { who: "guardia", expr, name: __GN, text } },
   N(who, name, text, expr = "talk") { return { who, expr, name, text } },
-  H(S, text, expr = "talk") { return { name: (__HN[S.classDef?.id] ?? "Herói").toUpperCase(), expr, text } },
+  H(S, text, expr = "talk") { const c = String(S?.classDef?.id || S?.player?.heroClass || window.__heroCls || "WARRIOR").toLowerCase(); return { who: "hero-" + c, expr, name: (__HN[S.classDef?.id] ?? "Herói").toUpperCase(), text } },
   hubPos(S, dx, dy) { const q = S.dungeon.level.rooms.find((r) => r.hub)?.rect; return q ? [(q.x + q.w / 2) * dt + dx, (q.y + q.h / 2) * dt + dy] : [S.player.x + dx, S.player.y + dy] },
   frag(n) { try { const m = Xe(); m.fragments = (m.fragments || 0) + n; m.totalEarned = (m.totalEarned || 0) + n; tr(m) } catch (e) {} },
 };
