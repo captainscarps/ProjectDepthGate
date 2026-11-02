@@ -14248,7 +14248,7 @@ const __QLIST = [
   { id: "paje", title: "O Último Pajé", st: (S) => { const s = __Q.get(S, "pj"); if (!s) return null; if (s === 3) return ["done", "O selo do igapó foi refeito."]; const got = (__Q.get(S, "pjL", []) || []).filter((l) => __Q.get(S, "pjG_" + l)).length, need = (__Q.get(S, "pjL", []) || []).length; return ["on", got >= need ? "Leve os objetos sagrados ao pajé no Coração da Floresta." : `Objetos sagrados: ${got}/${need} — procure nas masmorras: ${(__Q.get(S, "pjL", []) || []).filter((l) => !__Q.get(S, "pjG_" + l)).map((l) => St(`lvl.${l}`, ki[l]?.name ?? l)).join(", ")}.`] } },
   { id: "bispo", title: "O Bispo e a Freira", st: (S) => { const s = __Q.get(S, "bp"); return !s ? null : s === 9 ? ["done", "O bispo mostrou quem era. A freira está em paz."] : s === 8 ? ["done", "Você confiou no bispo… e pagou o preço."] : ["on", "Fale com o bispo e com a freira no Coração da Floresta."] } },
   { id: "lamina", title: "A Lâmina Faminta", st: (S) => { const s = __Q.get(S, "mc"); if (!s) return null; const k = __Q.get(S, "mcK"); return s === 3 ? ["done", "A lâmina se curvou à sua vontade."] : s === 4 ? ["done", "A lâmina foi purificada."] : ["on", `Mortes alimentadas: ${k}. ${k >= 80 ? "Ela sussurra… fale com a Guardiã." : "A lâmina cresce a cada morte."}`] } },
-  { id: "crianca", title: "A Criança Perdida", st: (S) => { const s = __Q.get(S, "ck"); return !s ? null : s === 3 ? ["done", "O menino voltou para casa."] : s === 4 ? ["done", "O menino não sobreviveu… o fantasma dele encontrou paz."] : ["on", "Leve o menino em segurança até o fim da masmorra."] } },
+  { id: "crianca", title: "A Criança Perdida", st: (S) => { const s = __Q.get(S, "ck"); return !s ? null : s === 3 ? ["done", "O menino voltou para casa."] : s === 2 ? ["on", "O menino caiu… o fantasma dele vaga pelo Coração da Floresta."] : s === 4 ? ["done", "O menino não sobreviveu… o fantasma dele encontrou paz."] : ["on", "Leve o menino em segurança até o fim da masmorra."] } },
 ];
 function __qDiary(S) {
   const ui = S.scene.get("UI"); if (!ui || ui.__qDia) return;
@@ -14281,7 +14281,7 @@ function __qDiary(S) {
 /* botão do diário no HUD (toque) */
 function __qDiaryBtn(S) {
   const ui = S.scene.get("UI"); if (!ui || ui.__qBtn?.active) return;
-  const b = ui.add.text(_ - 10, 64, "📜", { fontFamily: "monospace", fontSize: "16px" }).setOrigin(1, 0).setDepth(120).setInteractive({ useHandCursor: !0 });
+  const b = ui.add.text(_ - 10, 64, "DIÁRIO [J]", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "10px", color: "#f2d98a", backgroundColor: "#140d08cc", padding: { x: 5, y: 3 } }).setOrigin(1, 0).setDepth(120).setInteractive({ useHandCursor: !0 });
   b.on("pointerdown", () => { try { __Q.camp(S) && !S.uiOpen && __qDiary(S) } catch (e) {} });
   ui.__qBtn = b;
   S.events.once("shutdown", () => { b.destroy(); ui.__qBtn = null });
@@ -14322,7 +14322,7 @@ function __qTemplo(S) {
   if (__Q.get(S, "irm") !== 1) return;
   const bro = __QBRO[__Q.cls(S)], bn = (__HN[bro] ?? "").toUpperCase(), who = "hero-" + bro.toLowerCase();
   // o irmão espera na porta do santuário
-  const x = 56 * dt, y = 15 * dt;
+  const x = 52 * dt + 16, y = 14 * dt + 24; // no Altar, diante da porta do santuário
   let rig = null, cont = null;
   try { rig = new Qe(S, pe[bro], { x, y, scale: .62, isPreview: !0 }); cont = rig.container; cont.setDepth(y) } catch (e) {
     cont = S.add.image(x, y, "hero-" + bro.toLowerCase() + "-hud").setScale(.5).setDepth(y);
@@ -14410,18 +14410,22 @@ function __qPajeTalk(S, npc) {
   if (got < lv.length) { __dlg(S, [P(`Ainda faltam ${lv.length - got}. A mata espera.`, "calm")]); return }
   // ritual
   __dlg(S, [P(ara ? "Tudo aqui. Segure o maracá comigo, kunhã. Cante comigo." : "Tudo aqui… você trouxe mesmo. Afaste-se.", "special")], () => {
-    const x = npc.spr.x, y = npc.spr.y;
-    try { __FX.tex(S); for (let k = 0; k < 4; k++) S.time.delayedCall(k * 350, () => __FX.ring(S, x, y - 10, 0x9ce64e, 60 + k * 30, 700, y + 2)); __FX.impact(S, x, y - 30, "poison", 1.6) } catch (e) {}
-    S.cameraSys?.shake?.(.006, 500);
-    S.time.delayedCall(1600, () => {
-      __Q.set(S, "pj", 3); S.stats.recompute(); S.requestSave?.(10);
+    // grava primeiro: o efeito visual nunca pode impedir a conclusão
+    __Q.set(S, "pj", 3); S.requestSave?.(10);
+    try { S.stats.recompute() } catch (e) {}
+    const x = npc?.spr?.x ?? S.player.x, y = npc?.spr?.y ?? S.player.y;
+    try { __FX.tex(S); for (let k = 0; k < 4; k++) S.time.delayedCall(k * 350, () => { try { __FX.ring(S, x, y - 10, 0x9ce64e, 60 + k * 30, 700, y + 2) } catch (e) {} }); __FX.impact(S, x, y - 30, "poison", 1.6) } catch (e) {}
+    try { S.cameras.main.shake(500, .006) } catch (e) {}
+    const fin = () => {
+      if (!S.scene.isActive()) return;
       const L = [P("O igapó respira de novo. Leve a bênção da mata: ela vai segurar a sua vida como segurou a minha.", "smile")];
       ara && L.push(P("E ouça, kunhã: quem constrói os portais novos usa o mesmo símbolo do castelo. O olho. Cuidado com ele.", "aggression"), __Q.H(S, "O Observador…", "sadness"));
       __dlg(S, L, () => {
         S.game.events.emit("ui:banner", "BÊNÇÃO DA MATA: +12% DE VIDA MÁXIMA", "#9fe0a8");
-        S.tweens.add({ targets: [npc.spr, npc.sh], alpha: 0, duration: 1200, onComplete: () => npc.destroy() });
+        npc && S.tweens.add({ targets: [npc.spr, npc.sh], alpha: 0, duration: 1200, onComplete: () => npc.destroy() });
       });
-    });
+    };
+    setTimeout(fin, 1600);
   });
 }
 function __qPajeLevel(S) {
@@ -14436,7 +14440,7 @@ function __qPajeLevel(S) {
   const x = c * dt + 16, y = r * dt + 16;
   const gl = S.add.image(x, y - 6, "light").setBlendMode(j.BlendModes.ADD).setTint(0x9ce64e).setScale(.25).setAlpha(.6).setDepth(y + 1);
   S.tweens.add({ targets: gl, alpha: .25, scale: .32, duration: 800, yoyo: !0, repeat: -1 });
-  const ic = S.add.text(x, y - 8, idx === 0 ? "🪇" : idx === 1 ? "🐸" : "🥣", { fontSize: "16px" }).setOrigin(.5).setDepth(y + 2);
+  const ic = S.add.text(x, y - 8, "✦", { fontFamily: "Georgia, serif", fontSize: "18px", color: idx === 0 ? "#ffd27a" : idx === 1 ? "#7fe0a0" : "#e0b080", stroke: "#1a3010", strokeThickness: 3 }).setOrigin(.5).setDepth(y + 2);
   S.tweens.add({ targets: ic, y: y - 14, duration: 900, yoyo: !0, repeat: -1, ease: "Sine.easeInOut" });
   const z = S.add.zone(x, y, 4, 4); z.interactLabel = "Pegar: " + name; S.dungeon.objects.push(z);
   z.interact = () => {
@@ -14468,7 +14472,7 @@ function __qBispoHub(S) {
       __dlg(S, [B("Que a luz caminhe ao seu lado.", "smile")]);
     });
   };
-  const freira = __qNpc(S, "freira", fx, fy, { label: "Falar com a freira", onTalk: () => {
+  const freira = __qNpc(S, "freira", fx, fy, { scale: .8, label: "Falar com a freira", onTalk: () => {
     const st = __Q.get(S, "bp");
     if (st < 1) { __dlg(S, [Fr("…", "calm")]); return }
     __dlg(S, [
@@ -14518,8 +14522,8 @@ function __qMercHub(S) {
   const [x, y] = __Q.hubPos(S, 150, -50);
   let npc = null;
   try { npc = __vendorNpc(S, x, y, y) } catch (e) {}
-  npc && npc.setTint(0x8a6aa0);
-  const sh = npc ? null : S.add.text(x, y - 20, "🗡", { fontSize: "18px" }).setOrigin(.5).setDepth(y);
+  npc && npc.setTint(0xb8a0d0);
+  const sh = npc ? null : S.add.text(x, y - 20, "†", { fontFamily: "Georgia, serif", fontSize: "18px", color: "#c0a0ff" }).setOrigin(.5).setDepth(y);
   const z = S.add.zone(x, y, 4, 4); z.interactLabel = "Falar com o mercador encapuzado"; S.dungeon.objects.push(z);
   const M = (t, e) => ({ name: "MERCADOR ENCAPUZADO", text: t });
   z.interact = () => {
@@ -14625,7 +14629,7 @@ function __qContract(S) {
   const c = S.__qCon = { def, goal: def.goal(d), kills: 0, elites: 0, hit: !1, t0: S.time.now, done: !1, rw: def.rw + Math.floor(d / 3) * 3 };
   const ui = S.scene.get("UI");
   const txt = ui?.add?.text(_ / 2, 52, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "10px", color: "#e8d090", stroke: "#000", strokeThickness: 3, align: "center" }).setOrigin(.5, 0).setDepth(110);
-  const paint = () => { if (!txt?.active) return; const p = def.id === "kill" ? ` (${c.kills}/${c.goal})` : def.id === "elite" ? ` (${c.elites}/${c.goal})` : def.id === "nohit" && c.hit ? " ✗" : ""; txt.setText(`📜 ${__L3("Contrato", "Contract", "Contrato")}: ${def.txt(c.goal)}${p} · ✦${c.rw}`).setColor(c.done ? "#8fcf8a" : def.id === "nohit" && c.hit ? "#c07060" : "#e8d090") };
+  const paint = () => { if (!txt?.active) return; const p = def.id === "kill" ? ` (${c.kills}/${c.goal})` : def.id === "elite" ? ` (${c.elites}/${c.goal})` : def.id === "nohit" && c.hit ? " ✗" : ""; txt.setText(`◆ ${__L3("Contrato", "Contract", "Contrato")}: ${def.txt(c.goal)}${p} · ✦${c.rw}`).setColor(c.done ? "#8fcf8a" : def.id === "nohit" && c.hit ? "#c07060" : "#e8d090") };
   paint(); S.time.delayedCall(900, () => S.scene.isActive() && S.game.events.emit("ui:banner", "CONTRATO: " + def.txt(c.goal).toUpperCase(), "#e8d090"));
   const onDie = (e) => { if (S.__qCon !== c || c.done) return; c.kills++; e?.isElite && c.elites++; e?.elite && c.elites++; paint() };
   S.game.events.on("enemy:died", onDie);

@@ -1,4 +1,4 @@
-# Handoff: missões secundárias (branch `missoes-wip`)
+# Handoff: missões secundárias
 
 Este guia é para continuar o trabalho no Antigravity ou em qualquer outro agente/IDE.
 Tudo o que é preciso está nesta branch. Os packs licenciados **não** estão no repositório,
@@ -45,45 +45,28 @@ mas as imagens geradas a partir deles (`assets/pixel-art/npc/*`) já estão.
 | `__hubProg(S).n` | quantidade de selos fechados |
 | `__stKey(S)` | chave do localStorage da história do slot |
 
-## O que já está pronto
+## Situação final (publicado na `main`, versão 5.70 / cache `ded-web-v5.46.0-missoes`)
 
-O arquivo `scripts/source/quests.js` tem cerca de 560 linhas:
-
-- **Motor de missões:** o estado fica salvo por slot, como `q_*` dentro de `depthgate:story:<slot>`.
-- **NPC genérico** com animações de fala.
-- **Diário:** abre com a tecla **J** ou com o botão 📜 no HUD.
-- **Bônus:** aplicados por um wrap do `Eh.recompute`.
+Todas as missões foram testadas no navegador:
 
 | Missão | Situação |
 |---|---|
-| **Bispo e Freira** (4 selos) | ✅ Testada: a bênção de +20% funciona, e confrontar o bispo gera o chefe `BISPO_CAIDO`, que dá +5% de crítico ao morrer. |
-| **Lâmina Faminta** (5 selos) | ✅ Testada: a compra, o bônus por morte, os sussurros a partir de 80 mortes e o chefe `ESPIRITO_LAMINA` funcionam. |
-| **Pajé** (2 selos) | ⚠️ A conversa inicial e o sorteio dos 3 objetos (maracá, muiraquitã e cuia, em rio, bosque e morta) funcionam. **O ritual final não grava `pj=3`** (bug abaixo). |
-| **Irmãos** (Akihiro ou Hayato, 3 selos) | ⏳ Escrita, mas **não testada**: carta → templo → irmão segue e ataca o Tengu → +8% de dano. |
-| **Criança perdida** (6 selos) | ⏳ Escrita, mas **não testada** na masmorra. A versão fantasma no hub aparece. |
-| **Contratos do modo infinito** | ⏳ Escrita, mas **não testada**: um desafio por profundidade, que paga cristais do Refúgio. |
+| Bispo e Freira | ✅ Bênção, confronto e chefe `BISPO_CAIDO` |
+| Lâmina Faminta | ✅ Compra, bônus por morte, sussurros e chefe `ESPIRITO_LAMINA` |
+| Pajé | ✅ Objetos nas masmorras e ritual (+12% de vida); corrigido: o ritual grava antes dos efeitos |
+| Irmãos | ✅ Carta, templo, o irmão segue o herói e causa dano ao Tengu |
+| Criança perdida | ✅ Escolta e recompensa (60 cristais e 80 de ouro); o fantasma aparece no hub |
+| Contratos do infinito | ✅ Desafio aparece no HUD a cada profundidade |
 
-## O que falta (em ordem)
+### O que ainda poderia melhorar (opcional)
+- Ninguém jogou do começo ao fim com saves reais. Os testes forçaram os selos.
+- Equilibrar os valores: vida do bispo (95) e da lâmina (85), recompensas dos contratos.
+- O mercador encapuzado usa o sprite do vendedor com outra cor. Um sprite próprio ficaria melhor.
 
-1. **Bug do ritual do pajé** em `__qPajeTalk`, perto da linha 225 de `quests.js`.
-   - **Sintoma:** depois de fechar o diálogo "Tudo aqui…", os anéis aparecem, mas o `S.time.delayedCall(1600, …)` não grava `pj=3`.
-   - **Primeira coisa a fazer:** colocar `console.log` dentro do callback.
-   - **Suspeita:** algo dentro do `try` falha e sai antes do `delayedCall`. Mover o `delayedCall` para antes dos efeitos visuais pode resolver.
-   - **Atenção ao testar:** a tecla **Enter** abre o menu de pausa quando não há diálogo aberto. Para avançar o texto, use **z**.
-2. **Testar a missão dos Irmãos.**
-   - Comece em `forest` com `BERSERKER`, defina `g.completedDungeons=['temple','catacombs','ruins']` e chame `__dgQ.irm(g)`.
-   - Confira se o irmão (rig `Qe`) aparece no templo perto de (56,15) em tiles, se ele segue o herói e se causa dano ao `RIVER_TENGU`.
-   - Se o `new Qe(...)` falhar, use o `hero-<cls>-hud` como reserva; isso já está no código.
-3. **Testar a Criança perdida.**
-   - Vá para `rio` com 6 selos e chame `__dgQ.kid(g)`.
-   - Confira se o menino segue o herói, perde vida perto de inimigos e se a derrota do chefe paga 60 cristais e 80 de ouro.
-4. **Testar os Contratos.**
-   - Inicie no modo `endless` e confira se o texto aparece no HUD.
-   - Confira se `S.endlessRun()` existe nessa cena e se `roomManager.spawnEndlessPortal` é chamado no fim da profundidade.
-5. **Ajustes visuais.** Tire prints do hub com o pajé, o bispo, a freira e o mercador.
-   - O pajé sentado nos troncos ficou escuro, então talvez seja preciso usar `setTint` ou mudar a profundidade (depth).
-   - Talvez a escala do bispo, hoje em 0.62, também precise de ajuste.
-6. **Lançamento:** suba o cache e o `?v`, rode `build_asset_versions.py`, faça o merge de `missoes-wip` em `main` e dê push.
+### Dicas de teste
+- Para avançar o diálogo, use **z**. Quando não há diálogo aberto, **Enter** abre o menu de pausa.
+- Ao reiniciar a cena por script, não pare a cena `Game` antes do `scene.start`.
+- No console, `window.__dgQ` dá acesso às funções de cada missão.
 
 ## Decisões já tomadas (não perguntar de novo)
 
