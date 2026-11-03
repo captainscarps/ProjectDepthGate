@@ -25,18 +25,33 @@ const __HPC = ["warrior", "necromancer", "druid", "mage", "hunter", "rogue", "be
       const curCls = String(S?.classDef?.id || S?.player?.heroClass || window.__heroCls || S?.classId || "WARRIOR").toLowerCase();
       list = (list || []).map((e) => {
         if (!e) return e;
-        let c = null;
-        if (e.who && e.who.startsWith("hero-")) {
-          c = e.who.replace("hero-", "");
-        } else if (!e.who) {
-          const nm = String(e.name || "").toUpperCase().trim();
-          c = M[nm] || (nm === "HERÓI" || nm === "HEROI" || nm === "HERO" ? curCls : null);
+        const curWho = String(e.who || "").toLowerCase();
+        const nm = String(e.name || "").toUpperCase().trim();
+
+        // 1. Guardiã falando -> estritamente retrato da Guardiã
+        if (curWho === "guardia" || (!curWho && (nm === "A GUARDIÃ" || nm === "GUARDIÃ" || nm === "GUARDIA" || nm.includes("GUARDI")))) {
+          return { ...e, who: "guardia", expr: e.expr || "talk" };
         }
-        if (!c || !T.exists(`hero-${c}-p-talk`)) c = curCls;
+
+        // 2. Rei falando -> estritamente retrato do Rei
+        if (curWho === "rei" || (!curWho && (nm === "O REI" || nm === "REI" || nm.includes("VALDRAK")))) {
+          return { ...e, who: "rei", expr: e.expr || "talk" };
+        }
+
+        // 3. Herói falando -> estritamente retrato do Herói correspondente
+        let c = null;
+        if (curWho.startsWith("hero-")) {
+          c = curWho.replace("hero-", "");
+        } else if (!curWho && (e.isHero || nm === "HERÓI" || nm === "HEROI" || nm === "HERO" || M[nm])) {
+          c = M[nm] || curCls;
+        }
+
         if (c && T.exists(`hero-${c}-p-talk`)) {
           const ex = e.expr && T.exists(`hero-${c}-p-${e.expr}`) ? e.expr : "talk";
           return { ...e, who: "hero-" + c, expr: ex };
         }
+
+        // 4. Outros personagens/narrador -> não atribui foto de herói
         return e;
       });
     } catch (e) {}
