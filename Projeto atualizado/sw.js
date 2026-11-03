@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v5.71.0-codex-hd";
+const CACHE = "ded-web-v5.72.0-paje-elder-nheengatu";
 /* Imagens, sons e dados ficam num cache que NÃO é apagado a cada versão. Ao ativar uma versão nova,
    o asset-versions.json (gerado por scripts/build_asset_versions.py antes de publicar) é comparado com o
    anterior e só os arquivos que mudaram são apagados (e baixados de novo quando o jogo pedir).
@@ -29,8 +29,9 @@ self.addEventListener("activate", (e) => {
             reqs.map((q) => {
               if (q.url === vk) return null;
               const p = relOf(q.url);
-              // scripts nunca devem ficar presos em ASSETS; apaga também o que mudou/sumiu
-              if (p.endsWith(".js") || p.endsWith(".mjs") || (pv ? nv[p] !== pv[p] : !(p in nv))) return ac.delete(q);
+              // scripts e vozes atualizadas nunca devem ficar presos em ASSETS; apaga também o que mudou/sumiu
+              const isVoiceUpdate = p.startsWith("assets/audio/voice/");
+              if (p.endsWith(".js") || p.endsWith(".mjs") || isVoiceUpdate || (pv ? nv[p] !== pv[p] : !(p in nv))) return ac.delete(q);
               return null;
             })
           );
