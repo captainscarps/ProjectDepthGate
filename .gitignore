@@ -4,3 +4,6 @@ scripts/jre8/
 scripts/uber-apk-signer.jar
 temp_unsigned_depthgate.apk
 scripts/volcano_mp_src/
+scripts/.api_key.txt
+*.key
+.env
