@@ -235,6 +235,92 @@ SECONDARY_NPC_DIALOGUES = [
         "voice": "Leda",
         "pt": "Desfazer? Só se me matar, criança… e ninguém mata a Bruxa das Sepulturas na porta da casa dela!",
         "en": "Undo it? Only if you kill me, child… and nobody slays the Grave Witch on her own doorstep!"
+    },
+
+    # ── 5. O PAJÉ (Fenrir - Velho sábio indígena) ──
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Kunhã… filha da mata. Eu sentia o seu cheiro de urucum desde o outro lado do portal.",
+        "en": "Kunhã… daughter of the forest. I could smell your annatto from the other side of the gate."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "O último que sobrou. Quando começaram a construir portais novos, o nosso selo velho rachou. Atravessei para segurá-lo.",
+        "en": "The last one left. When they began building new gates, our ancient seal cracked. I crossed over to hold it."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Roubaram as três coisas sagradas do ritual. Sem elas, não consigo fechar a rachadura.",
+        "en": "They stole the three sacred objects of the ritual. Without them, I cannot mend the fracture."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Hm. Mais um forasteiro tocado pelas Profundezas.",
+        "en": "Hm. Another outlander touched by the Depths."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Um velho que segura uma porta que não quer ficar fechada. Roubaram as coisas sagradas do meu ritual.",
+        "en": "An old man holding a door that refuses to stay shut. They stole the sacred relics of my ritual."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Se as encontrar pelo caminho, traga para mim. Talvez você sirva para alguma coisa.",
+        "en": "If you find them on your path, bring them to me. Perhaps you may be of some use after all."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Ainda faltam 3. A mata espera.",
+        "en": "There are still 3 missing. The forest waits."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Ainda faltam 2. A mata espera.",
+        "en": "There are still 2 missing. The forest waits."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Ainda faltam 1. A mata espera.",
+        "en": "There is still 1 missing. The forest waits."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Ainda falta 1. A mata espera.",
+        "en": "There is still 1 missing. The forest waits."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Tudo aqui. Segure o maracá comigo, kunhã. Cante comigo.",
+        "en": "Everything is here. Hold the maracá with me, kunhã. Sing with me."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "Tudo aqui… você trouxe mesmo. Afaste-se.",
+        "en": "Everything is here… you truly brought it. Step back."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "O igapó respira de novo. Leve a bênção da mata: ela vai segurar a sua vida como segurou a minha.",
+        "en": "The flooded forest breathes once more. Take the forest's blessing: it will sustain your life as it did mine."
+    },
+    {
+        "char": "paje",
+        "voice": "Fenrir",
+        "pt": "E ouça, kunhã: quem constrói os portais novos usa o mesmo símbolo do castelo. O olho. Cuidado com ele.",
+        "en": "And listen, kunhã: whoever builds the new gates bears the same symbol as the castle. The eye. Beware of it."
     }
 ]
 
