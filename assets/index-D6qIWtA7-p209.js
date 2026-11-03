@@ -14318,7 +14318,7 @@ function __qGo(S, id, extra) { try { __goLevel(S, id, extra || {}) } catch (e) {
 const __QLIST = [
   { id: "bruxa", title: "A Velha da Cabana", st: (S) => !__WQ.f(S, "wqCrQ") ? null : __WQ.f(S, "wqCure") ? ["done", "A bruxa caiu e o feitiço se desfez."] : __WQ.f(S, "wqRev") ? ["on", "Derrote a Bruxa das Sepulturas na porta da casa dela."] : !__WQ.f(S, "wqCrDone") ? ["on", "Derrote o Cérbero da Podridão na Floresta da Cripta."] : __WQ.f(S, "wqEat") ? ["on", "Você comeu a fruta da senhora… algo não parece certo."] : ["done", "A Floresta da Cripta está em paz."] },
   { id: "irmaos", title: "Laço dos Irmãos", st: (S) => !__QBRO[__Q.cls(S)] ? null : __Q.get(S, "irm") === 2 ? ["done", "Os irmãos lutaram lado a lado no Templo."] : __Q.get(S, "irm") === 1 ? ["on", "Encontre seu irmão no Templo dos Irmãos."] : null },
-  { id: "paje", title: "O Último Pajé", st: (S) => { const s = __Q.get(S, "pj"); if (!s) return null; if (s === 3) return ["done", "O selo do igapó foi refeito."]; const got = (__Q.get(S, "pjL", []) || []).filter((l) => __Q.get(S, "pjG_" + l)).length, need = (__Q.get(S, "pjL", []) || []).length; return ["on", got >= need ? "Leve os objetos sagrados ao pajé no Coração da Floresta." : `Objetos sagrados: ${got}/${need} — procure nas masmorras: ${(__Q.get(S, "pjL", []) || []).filter((l) => !__Q.get(S, "pjG_" + l)).map((l) => St(`lvl.${l}`, ki[l]?.name ?? l)).join(", ")}.`] } },
+  { id: "paje", title: "O Último Pajé", st: (S) => { if (__Q.cls(S) !== "SHAMAN") return null; const s = __Q.get(S, "pj"); if (!s) return null; if (s === 3) return ["done", "O selo do igapó foi refeito."]; const got = (__Q.get(S, "pjL", []) || []).filter((l) => __Q.get(S, "pjG_" + l)).length, need = (__Q.get(S, "pjL", []) || []).length; return ["on", got >= need ? "Leve os objetos sagrados ao pajé no Coração da Floresta." : `Objetos sagrados: ${got}/${need} — procure nas masmorras: ${(__Q.get(S, "pjL", []) || []).filter((l) => !__Q.get(S, "pjG_" + l)).map((l) => St(`lvl.${l}`, ki[l]?.name ?? l)).join(", ")}.`] } },
   { id: "bispo", title: "O Bispo e a Freira", st: (S) => { const s = __Q.get(S, "bp"); return !s ? null : s === 9 ? ["done", "O bispo mostrou quem era. A freira está em paz."] : s === 8 ? ["done", "Você confiou no bispo… e pagou o preço."] : ["on", "Fale com o bispo e com a freira no Coração da Floresta."] } },
   { id: "lamina", title: "A Lâmina Faminta", st: (S) => { const s = __Q.get(S, "mc"); if (!s) return null; const k = __Q.get(S, "mcK"); return s === 3 ? ["done", "A lâmina se curvou à sua vontade."] : s === 4 ? ["done", "A lâmina foi purificada."] : ["on", `Mortes alimentadas: ${k}. ${k >= 80 ? "Ela sussurra… fale com a Guardiã." : "A lâmina cresce a cada morte."}`] } },
   { id: "crianca", title: "A Criança Perdida", st: (S) => { const s = __Q.get(S, "ck"); return !s ? null : s === 3 ? ["done", "O menino voltou para casa."] : s === 2 ? ["on", "O menino caiu… o fantasma dele vaga pelo Coração da Floresta."] : s === 4 ? ["done", "O menino não sobreviveu… o fantasma dele encontrou paz."] : ["on", "Leve o menino em segurança até o fim da masmorra."] } },
@@ -14450,6 +14450,7 @@ function __qTemplo(S) {
 /* ═════ 2. O Último Pajé ═════ */
 const __PJOBJ = [["maraca", "Maracá Sagrado", "O chocalho que acorda os espíritos."], ["muiraquita", "Muiraquitã", "A pedra verde em forma de sapo, amuleto dos rios."], ["cuia", "Cuia de Ervas", "A cuia onde o pajé misturava as ervas do selo."]];
 function __qPajeHub(S) {
+  if (__Q.cls(S) !== "SHAMAN") return;
   const s = __Q.get(S, "pj"); if (s === 3) return;
   const [x, y] = __Q.hubPos(S, 150, 70);
   const logs = S.textures.exists("paje-logs") ? S.add.image(x, y + 2, "paje-logs", 0).setOrigin(.5, 1).setScale(1).setDepth(y - 2) : null;
@@ -14457,18 +14458,14 @@ function __qPajeHub(S) {
   npc?.spr.setFrame(16);
 }
 function __qPajeTalk(S, npc) {
-  const s = __Q.get(S, "pj"), ara = __Q.cls(S) === "SHAMAN", P = (t, e = "talk") => __Q.N("paje", "O PAJÉ", t, e);
+  if (__Q.cls(S) !== "SHAMAN") return;
+  const s = __Q.get(S, "pj"), P = (t, e = "talk") => __Q.N("paje", "O PAJÉ", t, e);
   if (!s) {
-    const L = ara ? [
+    const L = [
       P("Kunhã… filha da mata. Eu sentia o seu cheiro de urucum desde o outro lado do portal.", "smile"),
       __Q.H(S, "Avô? O senhor é… um dos pajés do igapó?", "special"),
       P("O último que sobrou. Quando começaram a construir portais novos, o nosso selo velho rachou. Atravessei para segurá-lo."),
       P("Roubaram as três coisas sagradas do ritual. Sem elas, não consigo fechar a rachadura.", "sadness"),
-    ] : [
-      P("Hm. Mais um forasteiro tocado pelas Profundezas.", "calm"),
-      __Q.H(S, "Quem é o senhor?"),
-      P("Um velho que segura uma porta que não quer ficar fechada. Roubaram as coisas sagradas do meu ritual.", "sadness"),
-      P("Se as encontrar pelo caminho, traga para mim. Talvez você sirva para alguma coisa.", "aggression"),
     ];
     __dlg(S, L, () => {
       // espalha os objetos em masmorras ainda não seladas
@@ -14482,7 +14479,7 @@ function __qPajeTalk(S, npc) {
   const lv = __Q.get(S, "pjL", []) || [], got = lv.filter((l) => __Q.get(S, "pjG_" + l)).length;
   if (got < lv.length) { __dlg(S, [P(`Ainda faltam ${lv.length - got}. A mata espera.`, "calm")]); return }
   // ritual
-  __dlg(S, [P(ara ? "Tudo aqui. Segure o maracá comigo, kunhã. Cante comigo." : "Tudo aqui… você trouxe mesmo. Afaste-se.", "special")], () => {
+  __dlg(S, [P("Tudo aqui. Segure o maracá comigo, kunhã. Cante comigo.", "special")], () => {
     // grava primeiro: o efeito visual nunca pode impedir a conclusão
     __Q.set(S, "pj", 3); S.requestSave?.(10);
     try { S.stats.recompute() } catch (e) {}
@@ -14491,8 +14488,11 @@ function __qPajeTalk(S, npc) {
     try { S.cameras.main.shake(500, .006) } catch (e) {}
     const fin = () => {
       if (!S.scene.isActive()) return;
-      const L = [P("O igapó respira de novo. Leve a bênção da mata: ela vai segurar a sua vida como segurou a minha.", "smile")];
-      ara && L.push(P("E ouça, kunhã: quem constrói os portais novos usa o mesmo símbolo do castelo. O olho. Cuidado com ele.", "aggression"), __Q.H(S, "O Observador…", "sadness"));
+      const L = [
+        P("O igapó respira de novo. Leve a bênção da mata: ela vai segurar a sua vida como segurou a minha.", "smile"),
+        P("E ouça, kunhã: quem constrói os portais novos usa o mesmo símbolo do castelo. O olho. Cuidado com ele.", "aggression"),
+        __Q.H(S, "O Observador…", "sadness")
+      ];
       __dlg(S, L, () => {
         S.game.events.emit("ui:banner", "BÊNÇÃO DA MATA: +12% DE VIDA MÁXIMA", "#9fe0a8");
         npc && S.tweens.add({ targets: [npc.spr, npc.sh], alpha: 0, duration: 1200, onComplete: () => npc.destroy() });
@@ -14502,7 +14502,7 @@ function __qPajeTalk(S, npc) {
   });
 }
 function __qPajeLevel(S) {
-  if (__Q.get(S, "pj") !== 1) return;
+  if (__Q.cls(S) !== "SHAMAN" || __Q.get(S, "pj") !== 1) return;
   const lv = __Q.get(S, "pjL", []) || [], idx = lv.indexOf(S.levelId);
   if (idx < 0 || __Q.get(S, "pjG_" + S.levelId)) return;
   const [, name, desc] = __PJOBJ[idx];
@@ -14755,7 +14755,7 @@ function __qContract(S) {
       if (id === "forest") S.time.delayedCall(500, () => {
         if (!S.scene.isActive() || !S.__hubPortals) return;
         const n = __Q.n(S);
-        if (__Q.get(S, "pj") || n >= 2) __qPajeHub(S);
+        if ((__Q.get(S, "pj") || n >= 2) && __Q.cls(S) === "SHAMAN") __qPajeHub(S);
         if (n >= 4) __qBispoHub(S);
         if (n >= 5) __qMercHub(S);
         __qKidGhost(S);
