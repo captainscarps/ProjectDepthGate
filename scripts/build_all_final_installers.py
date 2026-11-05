@@ -24,14 +24,18 @@ import tempfile
 # -------------------------------------------------------------------------
 print('\n[1/4] Preparando arquivos do jogo para empacotamento offline...')
 temp_game_dir = tempfile.mkdtemp(prefix='depthgate_pack_')
-# Copy contents of PROJ_DIR to temp_game_dir
+# Copy contents of PROJ_DIR to temp_game_dir (skipping non-runtime tools/docs)
+ignored_items = {'art-source', 'docs', 'scripts', '.git', '.vscode', 'node_modules', 'preview_vozes.html'}
 for item in os.listdir(PROJ_DIR):
+    if item in ignored_items:
+        continue
     s = os.path.join(PROJ_DIR, item)
     d = os.path.join(temp_game_dir, item)
     if os.path.isdir(s):
         shutil.copytree(s, d)
     else:
         shutil.copy2(s, d)
+
 
 # Injetar offline build flag e título DEPTHGATE no index.html
 index_html_path = os.path.join(temp_game_dir, 'index.html')
@@ -88,6 +92,14 @@ if res.returncode != 0:
     print('Erro compilação Windows:', res.stderr, res.stdout)
     sys.exit(1)
 print(f'[OK] DEPTHGATE.exe gerado com sucesso ({os.path.getsize(out_win_exe)} bytes)')
+
+# Liberar espaço imediatamente deletando game_zip_path
+try:
+    if os.path.exists(game_zip_path):
+        os.remove(game_zip_path)
+except Exception:
+    pass
+
 
 # -------------------------------------------------------------------------
 # 3. EMPACOTAR MAC (DEPTHGATE-Mac.zip contendo DEPTHGATE.app)
@@ -168,81 +180,19 @@ with zipfile.ZipFile(mac_zip_path, 'w', zipfile.ZIP_DEFLATED) as z_mac:
 print(f'[OK] DEPTHGATE-Mac.zip gerado com sucesso ({os.path.getsize(mac_zip_path)} bytes)')
 
 # -------------------------------------------------------------------------
-# 4. REEMPACOTAR E ASSINAR ANDROID APK (DEPTHGATE.apk)
+# 4. COMPILAR ANDROID APK OFICIAL COM CAPACITOR E GRADLE
 # -------------------------------------------------------------------------
-print('\n[4/4] Empacotando e assinando versão Android (DEPTHGATE.apk)...')
-unsigned_apk = os.path.join(ROOT, 'temp_unsigned_depthgate.apk')
-if os.path.exists(unsigned_apk):
-    os.remove(unsigned_apk)
-
-with zipfile.ZipFile(BASE_APK, 'r') as z_in, zipfile.ZipFile(unsigned_apk, 'w', zipfile.ZIP_DEFLATED) as z_out:
-    for item in z_in.infolist():
-        if item.filename.startswith('META-INF/') and (item.filename.endswith('.RSA') or item.filename.endswith('.SF') or item.filename.endswith('.MF') or item.filename.endswith('.DSA')):
-            continue
-        if item.filename.startswith('assets/public/'):
-            continue
-        if 'ic_launcher' in item.filename:
-            continue
-        
-        data = z_in.read(item.filename)
-        if item.filename == 'assets/capacitor.config.json':
-            text = data.decode('utf-8')
-            text = text.replace('DARK EPIC DUNGEONS', 'DEPTHGATE')
-            text = text.replace('com.rafaelscarpille.darkepicdungeons', 'com.rafaelscarpille.depthgate')
-            data = text.encode('utf-8')
-        z_out.writestr(item, data)
-    
-    # Adicionar novos ícones do portal em res/
-    apk_icons_dir = os.path.join(ROOT, 'scripts', 'apk_icons')
-    if os.path.exists(apk_icons_dir):
-        for root, dirs, files in os.walk(apk_icons_dir):
-            for file in files:
-                full = os.path.join(root, file)
-                rel = os.path.relpath(full, apk_icons_dir).replace('\\', '/')
-                z_out.write(full, 'res/' + rel)
-
-    # Adicionar todos os assets atualizados para assets/public/
-    for root, dirs, files in os.walk(temp_game_dir):
-        for file in files:
-            full = os.path.join(root, file)
-            rel = os.path.relpath(full, temp_game_dir).replace('\\', '/')
-            z_out.write(full, 'assets/public/' + rel)
-
-# Assinar e alinhar APK
-final_apk_path = os.path.join(DEST_DIR, 'DEPTHGATE.apk')
-if os.path.exists(final_apk_path):
-    try: os.remove(final_apk_path)
-    except: pass
-
-sign_cmd = [
-    JAVA_EXE,
-    '-jar', SIGNER_JAR,
-    '-a', unsigned_apk,
-    '-o', DEST_DIR,
-    '--allowResign'
-]
-
-res = subprocess.run(sign_cmd, capture_output=True, text=True)
-if res.returncode != 0:
-    print('Erro ao assinar APK:', res.stderr, res.stdout)
+print('\n[4/4] Compilando APK nativo oficial via Capacitor e Gradle...')
+cap_script = os.path.join(ROOT, 'scripts', 'build_android_capacitor.py')
+res_cap = subprocess.run([sys.executable, cap_script], capture_output=True, text=True)
+if res_cap.returncode != 0:
+    print('Erro na compilação do APK Capacitor:', res_cap.stderr, res_cap.stdout)
     sys.exit(1)
-
-# Encontrar o APK assinado gerado e renomear para DEPTHGATE.apk
-signed_cand = os.path.join(DEST_DIR, 'temp_unsigned_depthgate-aligned-debugSigned.apk')
-if os.path.exists(signed_cand):
-    if os.path.exists(final_apk_path):
-        os.remove(final_apk_path)
-    os.rename(signed_cand, final_apk_path)
-
-print(f'[OK] DEPTHGATE.apk assinado e alinhado com sucesso ({os.path.getsize(final_apk_path)} bytes)')
-
+print(res_cap.stdout)
 # Limpar temporários
 try: shutil.rmtree(temp_game_dir, ignore_errors=True)
 except: pass
-try: os.remove(game_zip_path)
-except: pass
-try: os.remove(unsigned_apk)
-except: pass
+
 
 # Limpar qualquer arquivo/pasta espúria em DEST_DIR para deixar APENAS os 3 executáveis
 allowed_files = {'DEPTHGATE.exe', 'DEPTHGATE-Mac.zip', 'DEPTHGATE.apk', 'DEPTHGATE - Windows.zip', 'DEPTHGATE - Android.zip'}
