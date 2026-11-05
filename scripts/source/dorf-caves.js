@@ -358,6 +358,23 @@ function __dorfBake(B) {
     S.__dorfReturnPortal = { x: spX, y: spY, r: 44 };
   }
 
+  // Fala da Guardiã ao entrar pela primeira vez no cenário da caverna
+  try {
+    if (typeof localStorage !== "undefined" && !localStorage.getItem("depthgate:dorf_cave_guardian_voice")) {
+      localStorage.setItem("depthgate:dorf_cave_guardian_voice", "1");
+      S.time.delayedCall(1200, () => {
+        if (!S.scene.isActive()) return;
+        const gText = "Explore com cuidado, herói. Não se preocupe, se acontecer algo, eu abro um portal e te trago de volta pro Refúgio.";
+        const gName = typeof __GN !== "undefined" ? __GN : "A GUARDIÃ";
+        if (typeof __dlg === "function") {
+          __dlg(S, [{ who: "guardia", expr: "calm", name: gName, text: gText }]);
+        }
+      });
+    }
+  } catch (e) {
+    console.warn("[dorf_cave] erro ao disparar diálogo da Guardiã:", e);
+  }
+
   S.events.once("shutdown", () => {
     if (S.textures.exists(key)) S.textures.remove(key);
   });
