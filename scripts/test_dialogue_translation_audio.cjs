@@ -92,12 +92,21 @@ server.listen(PORT, "127.0.0.1", async () => {
 
                 const lines = {
                   cave: "Explore com cuidado, herói. Não se preocupe, se acontecer algo, eu abro um portal e te trago de volta pro Refúgio.",
+                  nativeHero: "Como você sabe tudo isso? Quem é você?",
                   magic: "Cada um de vocês veio de terras e eras distintas, falando línguas que os outros não compreendiam. Que a bênção dos selos una nossas vozes e espíritos.",
                   hero: "Nossa, estou falando e entendendo uma língua diferente, que mágica é essa?",
                   explain: "É a comunhão dos DepthGates. Agora nossas mentes se tocam, e qualquer viajante que você encontrar entenderá as suas palavras."
                 };
 
                 const classes = ["WARRIOR", "ARCHER", "MAGE", "ROGUE", "NECROMANCER", "SHAMAN", "BERSERKER", "HUNTER", "DRUID"];
+
+                // 1. Antes da magia da Guardiã: Heróis falam em sua língua materna
+                window.__hasGuardianMagic = false;
+                const heroNativeDurs = {};
+                for (const cls of classes) {
+                  window.__currentSpeaker = cls;
+                  heroNativeDurs[cls] = window.__dubDur(lines.nativeHero);
+                }
 
                 // Test translations in window.__TR.en
                 const transEn = {
@@ -107,7 +116,7 @@ server.listen(PORT, "127.0.0.1", async () => {
                   explain: window.__TR?.en?.[lines.explain]
                 };
 
-                // Test __dubDur with guardian magic active
+                // 2. Após a magia da Guardiã: Heróis falam o idioma do jogador
                 window.__hasGuardianMagic = true;
                 localStorage.setItem("depthgate:guardian_magic", "1");
 
@@ -143,6 +152,8 @@ server.listen(PORT, "127.0.0.1", async () => {
                   status: "ok",
                   manifestLoaded: true,
                   transEn,
+                  heroNativeDurs,
+                  heroVoiceDursPT,
                   heroVoiceDursPT,
                   heroVoiceDursEN,
                   guardiaPT,
@@ -177,6 +188,7 @@ server.listen(PORT, "127.0.0.1", async () => {
             console.log("English Translations:", JSON.stringify(val.transEn, null, 2));
             console.log("Guardiã PT Durations:", val.guardiaPT);
             console.log("Guardiã EN Durations:", val.guardiaEN);
+            console.log("Hero Native Mother Tongue Durations (by class):", val.heroNativeDurs);
             console.log("Hero Voice PT Durations (by class):", val.heroVoiceDursPT);
             console.log("Hero Voice EN Durations (by class):", val.heroVoiceDursEN);
 
@@ -188,6 +200,10 @@ server.listen(PORT, "127.0.0.1", async () => {
 
             const clsList = ["WARRIOR", "ARCHER", "MAGE", "ROGUE", "NECROMANCER", "SHAMAN", "BERSERKER", "HUNTER", "DRUID"];
             for (const c of clsList) {
+              if (!val.heroNativeDurs[c] || val.heroNativeDurs[c] <= 0) {
+                console.error(`Hero Native Mother Tongue duration 0 for ${c}`);
+                ok = false;
+              }
               if (!val.heroVoiceDursPT[c] || val.heroVoiceDursPT[c] <= 0) {
                 console.error(`Hero PT duration 0 for ${c}`);
                 ok = false;

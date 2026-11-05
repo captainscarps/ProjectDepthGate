@@ -18,6 +18,9 @@ FILES = [
 
 TAG_LANG = "/*__LANG_REFINE__*/"
 
+GINTRO_FIRST_OLD = '{who:"guardia",expr:"calm",name:__GN,text:"Então você atravessou a névoa. Poucos chegam até aqui."}'
+GINTRO_FIRST_NEW = '{who:"guardia",expr:"calm",name:__GN,text:"Então você atravessou a névoa. Poucos chegam até aqui.",onShow:()=>{window.__hasGuardianMagic=!1;}}'
+
 GINTRO_TARGET = (
     '{who:"guardia",expr:"calm",name:__GN,text:"Dentro dos selos não existe tempo. '
     'Quem atravessa um portal pode ter nascido séculos antes ou depois de você… e todos chegam a este mesmo lago."}'
@@ -25,6 +28,7 @@ GINTRO_TARGET = (
 
 GINTRO_INJECTION = (
     TAG_LANG + "\n"
+    '{who:"hero",expr:"talk",text:"Como você sabe tudo isso? Quem é você?"},\n'
     '{who:"guardia",expr:"special",name:__GN,text:"Cada um de vocês veio de terras e eras distintas, falando línguas que os outros não compreendiam. Que a bênção dos selos una nossas vozes e espíritos.",'
     'onShow:()=>{try{window.__hasGuardianMagic=!0;localStorage.setItem("depthgate:guardian_magic","1");'
     'if(window.__DED_GAME){const S=window.__DED_GAME.scene.getScene("Game");'
@@ -82,6 +86,11 @@ def patch_file(p):
         a = s.index(TAG_LANG)
         b = s.index(TAG_LANG, a + 1) + len(TAG_LANG)
         s = s[:a] + s[b:]
+
+    # 0. Reset de __hasGuardianMagic na primeira fala de __GINTRO
+    if GINTRO_FIRST_OLD in s and "window.__hasGuardianMagic=!1" not in s:
+        s = s.replace(GINTRO_FIRST_OLD, GINTRO_FIRST_NEW, 1)
+        print(f"[{p}] __GINTRO first line patched with magic reset")
 
     # 1. Injetar novas falas em __GINTRO
     if GINTRO_TARGET in s:

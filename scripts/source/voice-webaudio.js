@@ -25,7 +25,7 @@ __dubInit=function(){
    Após a intervenção mágica da Guardiã (window.__hasGuardianMagic ou flag no storage),
    todos passam a falar e compreender o idioma selecionado pelo jogador nas configurações (PT ou EN). */
 const hasMagic=()=>{
-  if(typeof window!=="undefined"&&window.__hasGuardianMagic)return true;
+  if(typeof window!=="undefined"&&window.__hasGuardianMagic!==undefined)return !!window.__hasGuardianMagic;
   try{
     if(typeof localStorage!=="undefined"){
       if(localStorage.getItem("depthgate:guardian_magic")==="1")return true;
