@@ -10,14 +10,23 @@ import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 out = {}
-for base, dirs, files in os.walk(os.path.join(ROOT, "assets")):
+assets_dir = os.path.join(ROOT, "assets")
+count = 0
+for base, dirs, files in os.walk(assets_dir):
     for f in files:
         p = os.path.join(base, f)
         rel = os.path.relpath(p, ROOT).replace(os.sep, "/")
-        h = hashlib.md5(open(p, "rb").read()).hexdigest()[:10]
-        out[rel] = h
+        with open(p, "rb") as fp:
+            out[rel] = hashlib.md5(fp.read()).hexdigest()[:10]
+        count += 1
+        if count % 1000 == 0:
+            print(f"Indexados {count} arquivos...", flush=True)
+
 data = json.dumps(out, separators=(",", ":"), sort_keys=True)
 for d in (ROOT, os.path.join(ROOT, "Projeto atualizado")):
     if os.path.isdir(d):
-        open(os.path.join(d, "asset-versions.json"), "w").write(data)
-print("asset-versions.json:", len(out), "arquivos")
+        target = os.path.join(d, "asset-versions.json")
+        with open(target, "w", encoding="utf-8") as fp:
+            fp.write(data)
+print("asset-versions.json:", len(out), "arquivos", flush=True)
+

@@ -14731,7 +14731,7 @@ function __qAnims(S) {
   mk("bispo-hurt", "bispo", 24, 1, 8, 0); mk("bispo-death", "bispo", 36, 4, 4, 0);
   mk("freira-idle", "freira", 0, 8, 6); mk("freira-walk", "freira", 12, 12, 10); mk("freira-talk", "freira", 24, 8, 7);
   mk("menino-idle", "menino", 0, 6, 7); mk("menino-walk", "menino", 12, 12, 13); mk("menino-run", "menino", 24, 12, 16); mk("menino-hurt", "menino", 36, 3, 10, 0);
-  mk("paje-sit", "paje", 8, 7, 8, 0); mk("paje-talk", "paje", 16, 4, 3); mk("paje-walk", "paje", 0, 8, 9); mk("paje-idle", "paje", 24, 2, 2);
+  mk("paje-sit", "paje", 8, 7, 8, 0); mk("paje-talk", "paje", 16, 4, 3); mk("paje-walk", "paje", 0, 8, 9); mk("paje-idle", "paje", 24, 2, 2);/*__NEW_NPCS_REGISTRY__*/mk("elf-1-idle", "elf-1", 0, 6, 6); mk("elf-1-idle2", "elf-1", 16, 6, 6); mk("elf-1-walk", "elf-1", 32, 12, 10); mk("elf-1-talk", "elf-1", 48, 7, 7); mk("elf-1-special", "elf-1", 64, 12, 8);mk("elf-2-idle", "elf-2", 0, 7, 6); mk("elf-2-idle2", "elf-2", 16, 4, 6); mk("elf-2-walk", "elf-2", 32, 12, 10); mk("elf-2-talk", "elf-2", 48, 9, 7); mk("elf-2-special", "elf-2", 64, 5, 7);mk("elf-3-idle", "elf-3", 0, 7, 6); mk("elf-3-idle2", "elf-3", 16, 7, 6); mk("elf-3-walk", "elf-3", 32, 12, 10); mk("elf-3-talk", "elf-3", 48, 8, 7); mk("elf-3-special", "elf-3", 64, 7, 7);mk("peasant-1-idle", "peasant-1", 0, 12, 6); mk("peasant-1-idle2", "peasant-1", 16, 7, 6); mk("peasant-1-talk", "peasant-1", 48, 11, 7);mk("peasant-2-idle", "peasant-2", 0, 7, 6); mk("peasant-2-idle2", "peasant-2", 16, 7, 6); mk("peasant-2-walk", "peasant-2", 32, 12, 10); mk("peasant-2-talk", "peasant-2", 48, 10, 7);mk("peasant-3-idle", "peasant-3", 0, 7, 6); mk("peasant-3-walk", "peasant-3", 16, 12, 10); mk("peasant-3-talk", "peasant-3", 32, 9, 7); mk("peasant-3-sell", "peasant-3", 48, 14, 8);mk("peasant-4-idle", "peasant-4", 0, 7, 6); mk("peasant-4-walk", "peasant-4", 16, 10, 10); mk("peasant-4-sell", "peasant-4", 32, 10, 8); mk("peasant-4-talk", "peasant-4", 48, 7, 7);/*__NEW_NPCS_REGISTRY__*/
 }
 function __qNpc(S, key, x, y, o = {}) {
   __qAnims(S);
@@ -15175,9 +15175,9 @@ function __qContract(S) {
     try {
       const L = this.load, op = L.path, D = "assets/pixel-art/npc/"; L.setPath("");
       const sh = (k, f, w, h) => this.textures.exists(k) || L.spritesheet(k, D + f, { frameWidth: w, frameHeight: h });
-      sh("bispo", "bispo.png", 128, 128); sh("freira", "freira.png", 72, 72); sh("menino", "menino.png", 64, 77); sh("paje", "paje.png", 47, 60);
+      sh("bispo", "bispo.png", 128, 128); sh("freira", "freira.png", 72, 72); sh("menino", "menino.png", 64, 77); sh("paje", "paje.png", 47, 60);/*__NEW_NPCS_REGISTRY__*/for (const k of ["elf-1", "elf-2", "elf-3", "peasant-1", "peasant-2", "peasant-3", "peasant-4"]) sh(k, k + ".png", 128, 128);/*__NEW_NPCS_REGISTRY__*/
       this.textures.exists("paje-logs") || L.spritesheet("paje-logs", D + "paje-logs.png", { frameWidth: 46, frameHeight: 19 });
-      for (const nm of ["bispo", "freira", "menino", "paje"]) for (const ex of ["talk", "calm", "smile", "sadness", "aggression", "special"]) this.textures.exists(`${nm}-p-${ex}`) || L.image(`${nm}-p-${ex}`, `${D}${nm}-p-${ex}.png`);
+      for (const nm of ["bispo", "freira", "menino", "paje", "elf-1", "elf-2", "elf-3", "peasant-1", "peasant-2", "peasant-3", "peasant-4"]) for (const ex of ["talk", "calm", "smile", "sadness", "aggression", "special"]) this.textures.exists(`${nm}-p-${ex}`) || L.image(`${nm}-p-${ex}`, `${D}${nm}-p-${ex}.png`);
       L.setPath(op);
     } catch (e) {}
     return r;
