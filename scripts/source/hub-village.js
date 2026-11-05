@@ -16,7 +16,7 @@ mk("vh-house-c","vh-house",0,11,6.67,-1);mk("vh-house-o","vh-house",12,23,6.67,-
 const D=["d","l","r","u"];D.forEach((d,i)=>{mk("vh-sw-"+d,"vh-smith-walk",i*6,i*6+5,9,-1);mk("vh-si-"+d,"vh-smith-idle",i*6,i*6+(d==="u"?1:5),5,-1);mk("vh-dw-"+d,"vh-dog",i*6,i*6+5,9,-1);mk("vh-di-"+d,"vh-dog",24+i*6,24+i*6+5,5,-1)});
 mk("vh-sf","vh-smith-forge",0,5,8,-1);mk("vh-sfi","vh-smith-fidle",0,5,6,-1);mk("vh-st","vh-smith-take",0,2,8,0);mk("vh-sl","vh-smith-leave",0,2,8,0);
 mk("vh-ht","vh-hunter-tans",0,5,6,-1);this.textures.exists("vh-herb-boil")&&mk("vh-herb-a","vh-herb-boil",0,11,7,-1);this.textures.exists("vh-herb-caul")&&mk("vh-herb-c","vh-herb-caul",0,11,7,-1);mk("vh-htk","vh-hunter-take",0,4,7,0);mk("vh-hlv","vh-hunter-leave",0,4,7,0);
-A.exists("hub-portal-a")||A.create({key:"hub-portal-a",frames:A.generateFrameNumbers("hub-portal",{start:0,end:13}),frameRate:10,repeat:-1})}
+this.textures.exists("peasant-1")&&(mk("peasant-1-idle","peasant-1",0,11,6),mk("peasant-1-talk","peasant-1",48,58,7));this.textures.exists("peasant-3")&&(mk("peasant-3-idle","peasant-3",0,6,6),mk("peasant-3-talk","peasant-3",32,40,7));this.textures.exists("elf-1")&&(mk("elf-1-idle","elf-1",0,5,6),mk("elf-1-talk","elf-1",48,54,7));A.exists("hub-portal-a")||A.create({key:"hub-portal-a",frames:A.generateFrameNumbers("hub-portal",{start:0,end:13}),frameRate:10,repeat:-1})}
 create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
 const __F=this.game.registry.get("hub:fromForest");this.game.registry.remove("hub:fromForest");this.fromForest=!!__F;this.retSlot=__F?.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main;cam.setZoom(Pt*1.5);const z=cam.zoom;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);this.__us=Pt/z;cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
 const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];
@@ -143,6 +143,64 @@ __pet(){const d=this.dog;if(!d)return;d.state="sit";d.t=3;d.s.play("vh-di-"+(thi
 __hit(d){const dx=d.x-this.playerX;Math.abs(dx)>3&&(this.facing={x:Math.sign(dx),y:0});this.__attack()}
 __sparks(x,y,n=10,c=16759610){for(let i=0;i<n;i++){const p=this.add.rectangle(x,y,1.5,1.5,c).setBlendMode(j.BlendModes.ADD).setDepth(9400);this.tweens.add({targets:p,x:x+j.Math.Between(-18,18),y:y-j.Math.Between(4,26),alpha:0,duration:380+Math.random()*400,onComplete:()=>p.destroy()})}}
 __steam(x,y){for(let i=0;i<6;i++){const p=this.add.image(x+j.Math.Between(-8,8),y,"light").setScale(.05).setTint(13421772).setAlpha(.35).setDepth(9400);this.tweens.add({targets:p,y:y-24-Math.random()*14,scale:.12,alpha:0,delay:i*90,duration:900,onComplete:()=>p.destroy()})}}
+/* explorador da caverna Dorf */
+__caveExplorerInit(){
+  const p=this.M?.spots?.portal;
+  if(!p||!this.textures.exists("peasant-3"))return;
+  const cx=p[0]-28,cy=p[1]+10;
+  this.caveExplorer=this.add.sprite(cx,cy,"peasant-3",0).setOrigin(.5,1).setDepth(cy).play("peasant-3-idle");
+}
+__talkCaveNpc(onComplete){
+  const s=this.caveExplorer,L3=__L3;
+  s&&s.active&&s.play("peasant-3-talk",!0);
+  const line=L3(
+    "Essa caverna é traiçoeira, ela sempre muda a cada entrada, explore com cuidado.",
+    "This cave is treacherous, it always changes with every entrance, explore with caution.",
+    "Esta caverna es traicionera, cambia con cada entrada, explora con cuidado."
+  );
+  let dur=4600;
+  try{
+    const vd=window.__dubDur?.(line);
+    if(vd&&isFinite(vd))dur=Math.max(dur,Math.round(vd*1000+700));
+  }catch(_) {}
+  const sx=s?s.x:(this.M.spots.portal[0]-28),sy=s?(s.y-44):(this.M.spots.portal[1]-34);
+  this.__say(sx,sy,line,dur,"#fef08a","male");
+  if(onComplete){
+    this.__busy=!0;
+    this.time.delayedCall(dur,()=>{
+      this.__busy=!1;
+      s&&s.active&&s.play("peasant-3-idle",!0);
+      onComplete();
+    });
+  }else{
+    this.time.delayedCall(dur,()=>{
+      s&&s.active&&s.play("peasant-3-idle",!0);
+    });
+  }
+}
+__enterDorfCave(){
+  if(this.__busy)return;
+  this.__busy=!0;
+  this.game.audioEngine?.stinger?.("portal")||this.game.audioEngine?.sfx?.("portal");
+  const isCamp=!!this.fromForest,sl=isCamp?(this.retSlot||1):(this.game.registry.get("save:slot")||1);
+  let rData=null;
+  if(isCamp){try{const cr=Dn(sl);if(cr?.ok)rData=cr.data}catch(e){}}
+  const cam=this.cameras.main;
+  cam.fadeOut(400,0,0,0);
+  cam.once("camerafadeoutcomplete",()=>{
+    this.scene.stop("HubUI");
+    this.scene.start("Game",{
+      isDorfCave:!0,
+      originMode:isCamp?"campaign":"endless",
+      endless:!isCamp,
+      depth:1,
+      slot:sl,
+      classId:this.classDef?.id||"WARRIOR",
+      restore:rData
+    });
+  });
+}
+
 /* ── ferreiro: forja na bigorna, larga as ferramentas, anda pela oficina e volta ── */
 __smith(){const I=this.M.interior,A=I.smith.anvil;const s=this.smith={x:A[0],y:A[1]-20,state:"forge",t:7+Math.random()*4,walking:!1};
 s.f=this.add.sprite(A[0],A[1]+2,"peasant-1",0).setOrigin(.5,1).setDepth(A[1]).play("peasant-1-idle");s.a=this.add.sprite(A[0],A[1],"vh-anvil",0).setOrigin(.5,1).setDepth(A[1]).setVisible(!1);
@@ -277,3 +335,118 @@ __hsNav(k){const H=this.__hs;if(!H)return;H.sel=(H.sel+k+H.rows.length)%H.rows.l
 __hsQty(k){const H=this.__hs;if(!H)return;H.q=Math.max(0,Math.min(2,H.q+k));this.game.audioEngine?.sfx?.("sfx-ui-tab");this.__hsDraw()}
 __hsBuy(){const H=this.__hs;if(!H)return;const r=H.rows[H.sel],S=this.__hbStore(),L3=__L3;if(!S)return;let Q=[1,5,10][H.q];if(r.k==="c"){Q=Math.min(Q,S.max-S.run);if(Q<=0){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(L3("O slot 1 já está cheio.","Slot 1 is already full.","La ranura 1 ya está llena.")).setColor("#e08a7a");return}}const c=this.__hbPrice(r.k)*Q;if(S.money<c){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(L3("Ouro insuficiente.","Not enough gold.","Oro insuficiente.")).setColor("#e08a7a");return}
 r.k==="c"?S.addRun(Q):S.h[r.k]=(S.h[r.k]|0)+Q;if(!S.pay(c)){H.msg.setText(L3("Não foi possível salvar.","Could not save.","No se pudo guardar.")).setColor("#e08a7a");return}this.game.audioEngine?.sfx?.("sfx-item-pickup");H.msg.setText(`+${Q} ${__hbName(r.k)}`).setColor(r.k==="v"?"#ffd24a":"#8ae0b0");this.refreshFragments();const h=this.herb;if(h)for(let i=0;i<6;i++){const b=this.add.circle(h.x+j.Math.Between(-8,8),h.y-28,2,r.k==="v"?16765514:r.k==="p"?16730730:9101402).setDepth(h.y+2).setBlendMode(j.BlendModes.ADD);this.tweens.add({targets:b,y:b.y-26-i*3,alpha:0,duration:700,delay:i*40,onComplete:()=>b.destroy()})}this.tweens.add({targets:r.nm,scale:{from:1.12,to:1},duration:220});this.__hsDraw()}
+
+__forgeWeaponsShop(){
+  if(this.panel||this.__busy)return;
+  const L3=__L3,d=_/2,Y=12,HH=336;
+  const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
+  const bg=this.add.rectangle(d,st/2,_,st,328450,.82).setInteractive();
+  const n=this.add.graphics();
+  Dt(n,d-210,Y,420,HH);
+  o.add([bg,n]);
+  __winSkin(this,o,d-210,Y,420,HH,1)&&n.clear();
+
+  const isCamp=this.fromForest;
+  let slot=isCamp?this.retSlot:(this.game.registry.get("save:slot")??1);
+  if(!isCamp){
+    for(const s of [1,2,3,4]){if(Nn(s).ok){slot=s;break;}}
+  }
+  const getGold=()=>{
+    if(isCamp){
+      const c=__cData(this);
+      return c?.d?.player?.gold??0;
+    }else{
+      const e=Nn(slot);
+      return e.ok?(e.data.player?.gold??0):0;
+    }
+  };
+  let curGold=getGold();
+
+  o.add(this.add.text(d,Y+16,L3("FORJA ANCESTRAL · ARMARIA LENDÁRIA","ANCIENT FORGE · LEGENDARY ARMORY","FORJA ANCESTRAL · ARMERÍA LEGENDARIA"),{...ti,fontSize:"12px",color:"#ffd24a"}).setOrigin(.5));
+  o.add(this.add.text(d,Y+30,L3("Armas únicas de imenso poder. Quebram-se se você morrer em uma run!","Unique weapons of immense power. They break if you die in a run!","¡Armas únicas de inmenso poder. ¡Se rompen si mueres en una run!"),{...Le,fontSize:"8px",fontStyle:"italic",color:"#f87171"}).setOrigin(.5));
+
+  const weaponsList=[
+    {id:"unique_forge_eclipse",name:L3("Lâmina do Eclipse Negro","Dark Eclipse Blade","Hoja del Eclipse Oscuro"),price:350,icon:"icon-sword",stats:"+16 DANO · +22% CRÍTICO · +5 DANO MÁGICO",color:"#c084fc"},
+    {id:"unique_forge_cataclysm",name:L3("Machado do Cataclismo","Cataclysm Axe","Hacha del Cataclismo"),price:380,icon:"icon-axe",stats:"+24 DANO · +4 DEFESA · +15% CRÍTICO",color:"#f87171"},
+    {id:"unique_forge_shadowfangs",name:L3("Presas do Vácuo Eterno","Fangs of the Void","Colmillos del Vacío"),price:360,icon:"icon-twin-fangs",stats:"+12 DANO · +35% CRÍTICO · +25 VEL · +12% ESQUIVA",color:"#38bdf8"},
+    {id:"unique_forge_starfall",name:L3("Arco Estelar de Dorf","Dorf Starfall Bow","Arco Estelar de Dorf"),price:370,icon:"icon-long-bow",stats:"+18 DANO · +25% CRÍTICO · +40 ALCANCE",color:"#fbbf24"},
+    {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:390,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"},
+    {id:"unique_forge_aegis",name:L3("Espada-Baluarte da Aurora","Aurora Bastion Edge","Espada Baluarte de la Aurora"),price:340,icon:"icon-dragon-sword",stats:"+15 DANO · +8 DEFESA · +4 VIDA · +18% BLOQUEIO",color:"#34d399"}
+  ];
+
+  const goldText=this.add.text(d,Y+276,`${L3("SEU OURO","YOUR GOLD","TU ORO")}: ${curGold} 🪙`,{...ti,fontSize:"11px",color:"#ffd24a"}).setOrigin(.5);
+  const msgText=this.add.text(d,Y+292,"",{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(.5);
+  o.add([goldText,msgText]);
+
+  weaponsList.forEach((wp,idx)=>{
+    const ry=Y+44+idx*37;
+    const box=this.add.graphics();
+    const z=this.add.zone(d,ry+16,400,34).setInteractive({useHandCursor:!0});
+    const icKey=this.textures.exists(wp.icon)?wp.icon:"icon-sword";
+    const im=this.add.image(d-176,ry+16,icKey).setScale(1.1);
+    const nm=this.add.text(d-154,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"10px",color:wp.color});
+    const stT=this.add.text(d-154,ry+18,wp.stats,{...Le,fontSize:"7px",color:"#e2e8f0"});
+    const prT=this.add.text(d+186,ry+10,`${wp.price} 🪙`,{...ti,fontSize:"11px",color:"#ffd24a"}).setOrigin(1,0);
+
+    const drawRow=(hover)=>{
+      box.clear();
+      box.fillStyle(hover?0x3d2818:0x1a120b,hover?0.92:0.65);
+      box.fillRoundedRect(d-200,ry,400,34,4);
+      box.lineStyle(1,hover?0xffd24a:0x5a4832,hover?1:0.5);
+      box.strokeRoundedRect(d-200,ry,400,34,4);
+    };
+    drawRow(!1);
+
+    z.on("pointerover",()=>drawRow(!0));
+    z.on("pointerout",()=>drawRow(!1));
+    z.on("pointerdown",()=>{
+      curGold=getGold();
+      if(curGold<wp.price){
+        msgText.setText(L3("Ouro insuficiente para forjar esta arma!","Not enough gold to forge this weapon!","¡Oro insuficiente para forjar esta arma!")).setColor("#f87171");
+        this.game.audioEngine?.sfx?.("sfx-door-locked");
+        return;
+      }
+      if(isCamp){
+        const c=__cData(this);
+        if(c&&c.d){
+          c.d.player=c.d.player||{};
+          c.d.player.gold=(c.d.player.gold||0)-wp.price;
+          c.d.player.items=c.d.player.items||[];
+          c.d.player.items.push({id:wp.id,rarity:"UNIQUE",seed:Date.now(),uniqueForge:!0,breaksOnDeath:!0});
+          localStorage.setItem(Wt("campaign",c.sl),JSON.stringify(c.d));
+        }
+      }else{
+        let e=Nn(slot);
+        if(e.ok){
+          e.data.player=e.data.player||{};
+          e.data.player.gold=(e.data.player.gold||0)-wp.price;
+          e.data.player.items=e.data.player.items||[];
+          e.data.player.items.push({id:wp.id,rarity:"UNIQUE",seed:Date.now(),uniqueForge:!0,breaksOnDeath:!0});
+          localStorage.setItem(Wt("endless",slot),JSON.stringify(e.data));
+        }
+      }
+      curGold=getGold();
+      goldText.setText(`${L3("SEU OURO","YOUR GOLD","TU ORO")}: ${curGold} 🪙`);
+      msgText.setText(L3(`Forjado: ${wp.name}! (Quebra se morrer na run)`,`Forged: ${wp.name}! (Breaks on death in run)`,`¡Forjado: ${wp.name}! (Se rompe si mueres en run)`)).setColor("#4ade80");
+      window.__advancedAudio?.playMetalClang?.("E5");
+      this.game.audioEngine?.sfx?.("sfx-item-pickup");
+      const I=this.M?.interior;
+      if(I?.spots?.rack)this.__sparks(I.spots.rack[0],I.spots.rack[1]-14,12);
+    });
+
+    o.add([box,im,nm,stT,prT,z]);
+  });
+
+  const swBtn=this.add.text(d-100,Y+HH-16,L3("⚙ MELHORIAS DA FORJA","⚙ FORGE UPGRADES","⚙ MEJORAS DE FORJA"),{...ti,fontSize:"10px",color:"#8fd8ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
+  swBtn.on("pointerover",()=>swBtn.setColor("#ffffff"));
+  swBtn.on("pointerout",()=>swBtn.setColor("#8fd8ff"));
+  swBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.openBlacksmith();});
+
+  const cBtn=this.add.text(d+100,Y+HH-16,L3("✕ FECHAR","✕ CLOSE","✕ CERRAR"),{...ti,fontSize:"10px",color:"#d8cdb4"}).setOrigin(.5).setInteractive({useHandCursor:!0});
+  cBtn.on("pointerover",()=>cBtn.setColor("#ffd24a"));
+  cBtn.on("pointerout",()=>cBtn.setColor("#d8cdb4"));
+  cBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__busy=!1;});
+
+  o.add([swBtn,cBtn]);
+  this.panel=o;
+}

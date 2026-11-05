@@ -1910,7 +1910,7 @@ mk("vh-house-c","vh-house",0,11,6.67,-1);mk("vh-house-o","vh-house",12,23,6.67,-
 const D=["d","l","r","u"];D.forEach((d,i)=>{mk("vh-sw-"+d,"vh-smith-walk",i*6,i*6+5,9,-1);mk("vh-si-"+d,"vh-smith-idle",i*6,i*6+(d==="u"?1:5),5,-1);mk("vh-dw-"+d,"vh-dog",i*6,i*6+5,9,-1);mk("vh-di-"+d,"vh-dog",24+i*6,24+i*6+5,5,-1)});
 mk("vh-sf","vh-smith-forge",0,5,8,-1);mk("vh-sfi","vh-smith-fidle",0,5,6,-1);mk("vh-st","vh-smith-take",0,2,8,0);mk("vh-sl","vh-smith-leave",0,2,8,0);
 mk("vh-ht","vh-hunter-tans",0,5,6,-1);this.textures.exists("vh-herb-boil")&&mk("vh-herb-a","vh-herb-boil",0,11,7,-1);this.textures.exists("vh-herb-caul")&&mk("vh-herb-c","vh-herb-caul",0,11,7,-1);mk("vh-htk","vh-hunter-take",0,4,7,0);mk("vh-hlv","vh-hunter-leave",0,4,7,0);
-A.exists("hub-portal-a")||A.create({key:"hub-portal-a",frames:A.generateFrameNumbers("hub-portal",{start:0,end:13}),frameRate:10,repeat:-1})}
+this.textures.exists("peasant-1")&&(mk("peasant-1-idle","peasant-1",0,11,6),mk("peasant-1-talk","peasant-1",48,58,7));this.textures.exists("peasant-3")&&(mk("peasant-3-idle","peasant-3",0,6,6),mk("peasant-3-talk","peasant-3",32,40,7));this.textures.exists("elf-1")&&(mk("elf-1-idle","elf-1",0,5,6),mk("elf-1-talk","elf-1",48,54,7));A.exists("hub-portal-a")||A.create({key:"hub-portal-a",frames:A.generateFrameNumbers("hub-portal",{start:0,end:13}),frameRate:10,repeat:-1})}
 create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
 const __F=this.game.registry.get("hub:fromForest");this.game.registry.remove("hub:fromForest");this.fromForest=!!__F;this.retSlot=__F?.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main;cam.setZoom(Pt*1.5);const z=cam.zoom;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);this.__us=Pt/z;cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
 const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];
@@ -2037,6 +2037,64 @@ __pet(){const d=this.dog;if(!d)return;d.state="sit";d.t=3;d.s.play("vh-di-"+(thi
 __hit(d){const dx=d.x-this.playerX;Math.abs(dx)>3&&(this.facing={x:Math.sign(dx),y:0});this.__attack()}
 __sparks(x,y,n=10,c=16759610){for(let i=0;i<n;i++){const p=this.add.rectangle(x,y,1.5,1.5,c).setBlendMode(j.BlendModes.ADD).setDepth(9400);this.tweens.add({targets:p,x:x+j.Math.Between(-18,18),y:y-j.Math.Between(4,26),alpha:0,duration:380+Math.random()*400,onComplete:()=>p.destroy()})}}
 __steam(x,y){for(let i=0;i<6;i++){const p=this.add.image(x+j.Math.Between(-8,8),y,"light").setScale(.05).setTint(13421772).setAlpha(.35).setDepth(9400);this.tweens.add({targets:p,y:y-24-Math.random()*14,scale:.12,alpha:0,delay:i*90,duration:900,onComplete:()=>p.destroy()})}}
+/* explorador da caverna Dorf */
+__caveExplorerInit(){
+  const p=this.M?.spots?.portal;
+  if(!p||!this.textures.exists("peasant-3"))return;
+  const cx=p[0]-28,cy=p[1]+10;
+  this.caveExplorer=this.add.sprite(cx,cy,"peasant-3",0).setOrigin(.5,1).setDepth(cy).play("peasant-3-idle");
+}
+__talkCaveNpc(onComplete){
+  const s=this.caveExplorer,L3=__L3;
+  s&&s.active&&s.play("peasant-3-talk",!0);
+  const line=L3(
+    "Essa caverna é traiçoeira, ela sempre muda a cada entrada, explore com cuidado.",
+    "This cave is treacherous, it always changes with every entrance, explore with caution.",
+    "Esta caverna es traicionera, cambia con cada entrada, explora con cuidado."
+  );
+  let dur=4600;
+  try{
+    const vd=window.__dubDur?.(line);
+    if(vd&&isFinite(vd))dur=Math.max(dur,Math.round(vd*1000+700));
+  }catch(_) {}
+  const sx=s?s.x:(this.M.spots.portal[0]-28),sy=s?(s.y-44):(this.M.spots.portal[1]-34);
+  this.__say(sx,sy,line,dur,"#fef08a","male");
+  if(onComplete){
+    this.__busy=!0;
+    this.time.delayedCall(dur,()=>{
+      this.__busy=!1;
+      s&&s.active&&s.play("peasant-3-idle",!0);
+      onComplete();
+    });
+  }else{
+    this.time.delayedCall(dur,()=>{
+      s&&s.active&&s.play("peasant-3-idle",!0);
+    });
+  }
+}
+__enterDorfCave(){
+  if(this.__busy)return;
+  this.__busy=!0;
+  this.game.audioEngine?.stinger?.("portal")||this.game.audioEngine?.sfx?.("portal");
+  const isCamp=!!this.fromForest,sl=isCamp?(this.retSlot||1):(this.game.registry.get("save:slot")||1);
+  let rData=null;
+  if(isCamp){try{const cr=Dn(sl);if(cr?.ok)rData=cr.data}catch(e){}}
+  const cam=this.cameras.main;
+  cam.fadeOut(400,0,0,0);
+  cam.once("camerafadeoutcomplete",()=>{
+    this.scene.stop("HubUI");
+    this.scene.start("Game",{
+      isDorfCave:!0,
+      originMode:isCamp?"campaign":"endless",
+      endless:!isCamp,
+      depth:1,
+      slot:sl,
+      classId:this.classDef?.id||"WARRIOR",
+      restore:rData
+    });
+  });
+}
+
 /* ── ferreiro: forja na bigorna, larga as ferramentas, anda pela oficina e volta ── */
 __smith(){const I=this.M.interior,A=I.smith.anvil;const s=this.smith={x:A[0],y:A[1]-20,state:"forge",t:7+Math.random()*4,walking:!1};
 s.f=this.add.sprite(A[0],A[1]+2,"peasant-1",0).setOrigin(.5,1).setDepth(A[1]).play("peasant-1-idle");s.a=this.add.sprite(A[0],A[1],"vh-anvil",0).setOrigin(.5,1).setDepth(A[1]).setVisible(!1);
@@ -2170,7 +2228,122 @@ __hsDraw(){const H=this.__hs;if(!H)return;const S=this.__hbStore(),Q=[1,5,10][H.
 __hsNav(k){const H=this.__hs;if(!H)return;H.sel=(H.sel+k+H.rows.length)%H.rows.length;this.game.audioEngine?.sfx?.("sfx-ui-tab");this.__hsDraw()}
 __hsQty(k){const H=this.__hs;if(!H)return;H.q=Math.max(0,Math.min(2,H.q+k));this.game.audioEngine?.sfx?.("sfx-ui-tab");this.__hsDraw()}
 __hsBuy(){const H=this.__hs;if(!H)return;const r=H.rows[H.sel],S=this.__hbStore(),L3=__L3;if(!S)return;let Q=[1,5,10][H.q];if(r.k==="c"){Q=Math.min(Q,S.max-S.run);if(Q<=0){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(L3("O slot 1 já está cheio.","Slot 1 is already full.","La ranura 1 ya está llena.")).setColor("#e08a7a");return}}const c=this.__hbPrice(r.k)*Q;if(S.money<c){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(L3("Ouro insuficiente.","Not enough gold.","Oro insuficiente.")).setColor("#e08a7a");return}
-r.k==="c"?S.addRun(Q):S.h[r.k]=(S.h[r.k]|0)+Q;if(!S.pay(c)){H.msg.setText(L3("Não foi possível salvar.","Could not save.","No se pudo guardar.")).setColor("#e08a7a");return}this.game.audioEngine?.sfx?.("sfx-item-pickup");H.msg.setText(`+${Q} ${__hbName(r.k)}`).setColor(r.k==="v"?"#ffd24a":"#8ae0b0");this.refreshFragments();const h=this.herb;if(h)for(let i=0;i<6;i++){const b=this.add.circle(h.x+j.Math.Between(-8,8),h.y-28,2,r.k==="v"?16765514:r.k==="p"?16730730:9101402).setDepth(h.y+2).setBlendMode(j.BlendModes.ADD);this.tweens.add({targets:b,y:b.y-26-i*3,alpha:0,duration:700,delay:i*40,onComplete:()=>b.destroy()})}this.tweens.add({targets:r.nm,scale:{from:1.12,to:1},duration:220});this.__hsDraw()}/*__HUBV_PANEL_BEGIN__*/refreshFragments(){this.meta=this.fromForest?__cmeta(this):Xe(),this.fragText.setText(this.fromForest?`● ${this.meta.fragments}`:`◆ ${this.meta.fragments}`)}enterPortal(){this.game.registry.set("mode","endless");const i=ke.find(t=>!Fn(t))??1;this.game.registry.set("save:slot",i),this.game.audioEngine?.sfx("sfx-endless-start"),this.cameras.main.fadeOut(500,0,0,0),this.cameras.main.once("camerafadeoutcomplete",()=>this.scene.start("ClassSelect"))}exitToMenu(){this.cameras.main.fadeOut(350,0,0,0),this.cameras.main.once("camerafadeoutcomplete",()=>this.scene.start("MainMenu"))}openMetaPanel(i,t,e){this.closePanel();const d=_/2,o=this.add.container(this.__ox||0,this.__oy||0).setDepth(9800).setScrollFactor(0).setScale(this.__us||1),a=this.add.rectangle(d,st/2,_,st,328450,.78).setInteractive(),n=this.add.graphics();Dt(n,d-190,40,380,268),o.add([a,n]),__winSkin(this,o,d-190,40,380,268,1)&&n.clear(),o.add(this.add.text(d,58,i,la).setOrigin(.5)),o.add(this.add.text(d,78,t,{...Le,fontStyle:"italic"}).setOrigin(.5)),this.panelRows=[],this.panelSel=0,e.forEach((r,l)=>{const h=Ms[r],u=104+l*32,p=this.add.text(d,u,"",{...ti,backgroundColor:"#241a10",padding:{x:10,y:6}}).setOrigin(.5).setInteractive({useHandCursor:!0});p.on("pointerover",()=>{this.panelSel=l,this.refreshPanel()}),p.on("pointerdown",()=>{this.panelSel=l,this.panelConfirm()}),o.add(p),this.panelRows.push({id:r,def:h,row:p})}),this.panelMsg=this.add.text(d,272,"",{...Le,color:"#8ae0b0"}).setOrigin(.5);const s=this.add.text(d,292,W("hub.back"),{...ti,color:"#e08a7a"}).setOrigin(.5).setInteractive({useHandCursor:!0});Gt(s,16,12),s.on("pointerdown",()=>this.closePanel()),o.add([this.panelMsg,s]),this.panel=o,this.refreshPanel()}refreshPanel(){this.panelRows&&(this.refreshFragments(),this.panelRows.forEach(({id:i,def:t,row:e},d)=>{const o=this.meta.upgrades[i]??0,a=o>=t.max,n=a?"—":this.fromForest?`${__cCost(t,o)}●`:`${er(t,o)}◆`,s=W(`meta.${i}`),[r,l]=s!==`meta.${i}`?s.split("|"):[t.name,t.desc];e.setText(`${t.icon} ${r}  ${"▰".repeat(o)}${"▱".repeat(t.max-o)}  ${l}  [${n}]`),e.setColor(d===this.panelSel?"#ffd24a":a?"#6b5f4a":"#e8dcc0"),e.setBackgroundColor(d===this.panelSel?"#3a2f1e":"#241a10")}))}panelNav(i){!this.panel||!this.panelRows?.length||(this.panelSel=(this.panelSel+i+this.panelRows.length)%this.panelRows.length,this.refreshPanel())}panelConfirm(){if(!this.panel||!this.panelRows?.length)return;const{id:i,def:t}=this.panelRows[this.panelSel];if((this.meta.upgrades[i]??0)>=t.max){this.panelMsg.setText(W("hub.maxed")).setColor("#e08a7a");return}if(this.fromForest?__cBuy(this,i):Ol(i)){this.game.audioEngine?.sfx("sfx-item-pickup");const d=W(`meta.${i}`),o=d!==`meta.${i}`?d.split("|")[0]:t.name;/*__FORGEPAD__*/this.panelMsg.setText(i==="HAMMER"?__L3("Martelo comprado! Agora você pode forjar e desmontar itens.","Hammer bought! You can now forge and dismantle items.","¡Martillo comprado! Ya puedes forjar y desmontar objetos."):W("hub.upgraded",{name:o})).setColor("#8ae0b0")/*§dGhpcy5wYW5lbE1zZy5zZXRUZXh0KFcoImh1Yi51cGdyYWRlZCIse25hbWU6b30pKS5zZXRDb2xvcigiIzhhZTBiMCIp*//*__FORGEPAD__*/}else this.game.audioEngine?.sfx("sfx-event-refuse"),this.panelMsg.setText(this.fromForest?__L3("Ouro da campanha insuficiente.","Not enough campaign gold.","Oro de campaña insuficiente."):W("hub.noFrags")).setColor("#e08a7a");this.refreshPanel()}/*__FORGEPAD__*/openBlacksmith(){this.openMetaPanel(W("hub.smith"),W("hub.smithQuote"),["MIGHT","PRECISION","HAMMER"]);const i=_/2,t=ir.map(d=>{const o=Xt[d.output];return`• ${d.label} → ${St(`item.${d.output}`,o?.name??d.output)}`}),e=this.add.text(i,186,[W("hub.recipes"),...t].join(`
+r.k==="c"?S.addRun(Q):S.h[r.k]=(S.h[r.k]|0)+Q;if(!S.pay(c)){H.msg.setText(L3("Não foi possível salvar.","Could not save.","No se pudo guardar.")).setColor("#e08a7a");return}this.game.audioEngine?.sfx?.("sfx-item-pickup");H.msg.setText(`+${Q} ${__hbName(r.k)}`).setColor(r.k==="v"?"#ffd24a":"#8ae0b0");this.refreshFragments();const h=this.herb;if(h)for(let i=0;i<6;i++){const b=this.add.circle(h.x+j.Math.Between(-8,8),h.y-28,2,r.k==="v"?16765514:r.k==="p"?16730730:9101402).setDepth(h.y+2).setBlendMode(j.BlendModes.ADD);this.tweens.add({targets:b,y:b.y-26-i*3,alpha:0,duration:700,delay:i*40,onComplete:()=>b.destroy()})}this.tweens.add({targets:r.nm,scale:{from:1.12,to:1},duration:220});this.__hsDraw()}
+
+__forgeWeaponsShop(){
+  if(this.panel||this.__busy)return;
+  const L3=__L3,d=_/2,Y=12,HH=336;
+  const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
+  const bg=this.add.rectangle(d,st/2,_,st,328450,.82).setInteractive();
+  const n=this.add.graphics();
+  Dt(n,d-210,Y,420,HH);
+  o.add([bg,n]);
+  __winSkin(this,o,d-210,Y,420,HH,1)&&n.clear();
+
+  const isCamp=this.fromForest;
+  let slot=isCamp?this.retSlot:(this.game.registry.get("save:slot")??1);
+  if(!isCamp){
+    for(const s of [1,2,3,4]){if(Nn(s).ok){slot=s;break;}}
+  }
+  const getGold=()=>{
+    if(isCamp){
+      const c=__cData(this);
+      return c?.d?.player?.gold??0;
+    }else{
+      const e=Nn(slot);
+      return e.ok?(e.data.player?.gold??0):0;
+    }
+  };
+  let curGold=getGold();
+
+  o.add(this.add.text(d,Y+16,L3("FORJA ANCESTRAL · ARMARIA LENDÁRIA","ANCIENT FORGE · LEGENDARY ARMORY","FORJA ANCESTRAL · ARMERÍA LEGENDARIA"),{...ti,fontSize:"12px",color:"#ffd24a"}).setOrigin(.5));
+  o.add(this.add.text(d,Y+30,L3("Armas únicas de imenso poder. Quebram-se se você morrer em uma run!","Unique weapons of immense power. They break if you die in a run!","¡Armas únicas de inmenso poder. ¡Se rompen si mueres en una run!"),{...Le,fontSize:"8px",fontStyle:"italic",color:"#f87171"}).setOrigin(.5));
+
+  const weaponsList=[
+    {id:"unique_forge_eclipse",name:L3("Lâmina do Eclipse Negro","Dark Eclipse Blade","Hoja del Eclipse Oscuro"),price:350,icon:"icon-sword",stats:"+16 DANO · +22% CRÍTICO · +5 DANO MÁGICO",color:"#c084fc"},
+    {id:"unique_forge_cataclysm",name:L3("Machado do Cataclismo","Cataclysm Axe","Hacha del Cataclismo"),price:380,icon:"icon-axe",stats:"+24 DANO · +4 DEFESA · +15% CRÍTICO",color:"#f87171"},
+    {id:"unique_forge_shadowfangs",name:L3("Presas do Vácuo Eterno","Fangs of the Void","Colmillos del Vacío"),price:360,icon:"icon-twin-fangs",stats:"+12 DANO · +35% CRÍTICO · +25 VEL · +12% ESQUIVA",color:"#38bdf8"},
+    {id:"unique_forge_starfall",name:L3("Arco Estelar de Dorf","Dorf Starfall Bow","Arco Estelar de Dorf"),price:370,icon:"icon-long-bow",stats:"+18 DANO · +25% CRÍTICO · +40 ALCANCE",color:"#fbbf24"},
+    {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:390,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"},
+    {id:"unique_forge_aegis",name:L3("Espada-Baluarte da Aurora","Aurora Bastion Edge","Espada Baluarte de la Aurora"),price:340,icon:"icon-dragon-sword",stats:"+15 DANO · +8 DEFESA · +4 VIDA · +18% BLOQUEIO",color:"#34d399"}
+  ];
+
+  const goldText=this.add.text(d,Y+276,`${L3("SEU OURO","YOUR GOLD","TU ORO")}: ${curGold} 🪙`,{...ti,fontSize:"11px",color:"#ffd24a"}).setOrigin(.5);
+  const msgText=this.add.text(d,Y+292,"",{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(.5);
+  o.add([goldText,msgText]);
+
+  weaponsList.forEach((wp,idx)=>{
+    const ry=Y+44+idx*37;
+    const box=this.add.graphics();
+    const z=this.add.zone(d,ry+16,400,34).setInteractive({useHandCursor:!0});
+    const icKey=this.textures.exists(wp.icon)?wp.icon:"icon-sword";
+    const im=this.add.image(d-176,ry+16,icKey).setScale(1.1);
+    const nm=this.add.text(d-154,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"10px",color:wp.color});
+    const stT=this.add.text(d-154,ry+18,wp.stats,{...Le,fontSize:"7px",color:"#e2e8f0"});
+    const prT=this.add.text(d+186,ry+10,`${wp.price} 🪙`,{...ti,fontSize:"11px",color:"#ffd24a"}).setOrigin(1,0);
+
+    const drawRow=(hover)=>{
+      box.clear();
+      box.fillStyle(hover?0x3d2818:0x1a120b,hover?0.92:0.65);
+      box.fillRoundedRect(d-200,ry,400,34,4);
+      box.lineStyle(1,hover?0xffd24a:0x5a4832,hover?1:0.5);
+      box.strokeRoundedRect(d-200,ry,400,34,4);
+    };
+    drawRow(!1);
+
+    z.on("pointerover",()=>drawRow(!0));
+    z.on("pointerout",()=>drawRow(!1));
+    z.on("pointerdown",()=>{
+      curGold=getGold();
+      if(curGold<wp.price){
+        msgText.setText(L3("Ouro insuficiente para forjar esta arma!","Not enough gold to forge this weapon!","¡Oro insuficiente para forjar esta arma!")).setColor("#f87171");
+        this.game.audioEngine?.sfx?.("sfx-door-locked");
+        return;
+      }
+      if(isCamp){
+        const c=__cData(this);
+        if(c&&c.d){
+          c.d.player=c.d.player||{};
+          c.d.player.gold=(c.d.player.gold||0)-wp.price;
+          c.d.player.items=c.d.player.items||[];
+          c.d.player.items.push({id:wp.id,rarity:"UNIQUE",seed:Date.now(),uniqueForge:!0,breaksOnDeath:!0});
+          localStorage.setItem(Wt("campaign",c.sl),JSON.stringify(c.d));
+        }
+      }else{
+        let e=Nn(slot);
+        if(e.ok){
+          e.data.player=e.data.player||{};
+          e.data.player.gold=(e.data.player.gold||0)-wp.price;
+          e.data.player.items=e.data.player.items||[];
+          e.data.player.items.push({id:wp.id,rarity:"UNIQUE",seed:Date.now(),uniqueForge:!0,breaksOnDeath:!0});
+          localStorage.setItem(Wt("endless",slot),JSON.stringify(e.data));
+        }
+      }
+      curGold=getGold();
+      goldText.setText(`${L3("SEU OURO","YOUR GOLD","TU ORO")}: ${curGold} 🪙`);
+      msgText.setText(L3(`Forjado: ${wp.name}! (Quebra se morrer na run)`,`Forged: ${wp.name}! (Breaks on death in run)`,`¡Forjado: ${wp.name}! (Se rompe si mueres en run)`)).setColor("#4ade80");
+      window.__advancedAudio?.playMetalClang?.("E5");
+      this.game.audioEngine?.sfx?.("sfx-item-pickup");
+      const I=this.M?.interior;
+      if(I?.spots?.rack)this.__sparks(I.spots.rack[0],I.spots.rack[1]-14,12);
+    });
+
+    o.add([box,im,nm,stT,prT,z]);
+  });
+
+  const swBtn=this.add.text(d-100,Y+HH-16,L3("⚙ MELHORIAS DA FORJA","⚙ FORGE UPGRADES","⚙ MEJORAS DE FORJA"),{...ti,fontSize:"10px",color:"#8fd8ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
+  swBtn.on("pointerover",()=>swBtn.setColor("#ffffff"));
+  swBtn.on("pointerout",()=>swBtn.setColor("#8fd8ff"));
+  swBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.openBlacksmith();});
+
+  const cBtn=this.add.text(d+100,Y+HH-16,L3("✕ FECHAR","✕ CLOSE","✕ CERRAR"),{...ti,fontSize:"10px",color:"#d8cdb4"}).setOrigin(.5).setInteractive({useHandCursor:!0});
+  cBtn.on("pointerover",()=>cBtn.setColor("#ffd24a"));
+  cBtn.on("pointerout",()=>cBtn.setColor("#d8cdb4"));
+  cBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__busy=!1;});
+
+  o.add([swBtn,cBtn]);
+  this.panel=o;
+}/*__HUBV_PANEL_BEGIN__*/refreshFragments(){this.meta=this.fromForest?__cmeta(this):Xe(),this.fragText.setText(this.fromForest?`● ${this.meta.fragments}`:`◆ ${this.meta.fragments}`)}enterPortal(){this.game.registry.set("mode","endless");const i=ke.find(t=>!Fn(t))??1;this.game.registry.set("save:slot",i),this.game.audioEngine?.sfx("sfx-endless-start"),this.cameras.main.fadeOut(500,0,0,0),this.cameras.main.once("camerafadeoutcomplete",()=>this.scene.start("ClassSelect"))}exitToMenu(){this.cameras.main.fadeOut(350,0,0,0),this.cameras.main.once("camerafadeoutcomplete",()=>this.scene.start("MainMenu"))}openMetaPanel(i,t,e){this.closePanel();const d=_/2,o=this.add.container(this.__ox||0,this.__oy||0).setDepth(9800).setScrollFactor(0).setScale(this.__us||1),a=this.add.rectangle(d,st/2,_,st,328450,.78).setInteractive(),n=this.add.graphics();Dt(n,d-190,40,380,268),o.add([a,n]),__winSkin(this,o,d-190,40,380,268,1)&&n.clear(),o.add(this.add.text(d,58,i,la).setOrigin(.5)),o.add(this.add.text(d,78,t,{...Le,fontStyle:"italic"}).setOrigin(.5)),this.panelRows=[],this.panelSel=0,e.forEach((r,l)=>{const h=Ms[r],u=104+l*32,p=this.add.text(d,u,"",{...ti,backgroundColor:"#241a10",padding:{x:10,y:6}}).setOrigin(.5).setInteractive({useHandCursor:!0});p.on("pointerover",()=>{this.panelSel=l,this.refreshPanel()}),p.on("pointerdown",()=>{this.panelSel=l,this.panelConfirm()}),o.add(p),this.panelRows.push({id:r,def:h,row:p})}),this.panelMsg=this.add.text(d,272,"",{...Le,color:"#8ae0b0"}).setOrigin(.5);const s=this.add.text(d,292,W("hub.back"),{...ti,color:"#e08a7a"}).setOrigin(.5).setInteractive({useHandCursor:!0});Gt(s,16,12),s.on("pointerdown",()=>this.closePanel()),o.add([this.panelMsg,s]),this.panel=o,this.refreshPanel()}refreshPanel(){this.panelRows&&(this.refreshFragments(),this.panelRows.forEach(({id:i,def:t,row:e},d)=>{const o=this.meta.upgrades[i]??0,a=o>=t.max,n=a?"—":this.fromForest?`${__cCost(t,o)}●`:`${er(t,o)}◆`,s=W(`meta.${i}`),[r,l]=s!==`meta.${i}`?s.split("|"):[t.name,t.desc];e.setText(`${t.icon} ${r}  ${"▰".repeat(o)}${"▱".repeat(t.max-o)}  ${l}  [${n}]`),e.setColor(d===this.panelSel?"#ffd24a":a?"#6b5f4a":"#e8dcc0"),e.setBackgroundColor(d===this.panelSel?"#3a2f1e":"#241a10")}))}panelNav(i){!this.panel||!this.panelRows?.length||(this.panelSel=(this.panelSel+i+this.panelRows.length)%this.panelRows.length,this.refreshPanel())}panelConfirm(){if(!this.panel||!this.panelRows?.length)return;const{id:i,def:t}=this.panelRows[this.panelSel];if((this.meta.upgrades[i]??0)>=t.max){this.panelMsg.setText(W("hub.maxed")).setColor("#e08a7a");return}if(this.fromForest?__cBuy(this,i):Ol(i)){this.game.audioEngine?.sfx("sfx-item-pickup");const d=W(`meta.${i}`),o=d!==`meta.${i}`?d.split("|")[0]:t.name;/*__FORGEPAD__*/this.panelMsg.setText(i==="HAMMER"?__L3("Martelo comprado! Agora você pode forjar e desmontar itens.","Hammer bought! You can now forge and dismantle items.","¡Martillo comprado! Ya puedes forjar y desmontar objetos."):W("hub.upgraded",{name:o})).setColor("#8ae0b0")/*§dGhpcy5wYW5lbE1zZy5zZXRUZXh0KFcoImh1Yi51cGdyYWRlZCIse25hbWU6b30pKS5zZXRDb2xvcigiIzhhZTBiMCIp*//*__FORGEPAD__*/}else this.game.audioEngine?.sfx("sfx-event-refuse"),this.panelMsg.setText(this.fromForest?__L3("Ouro da campanha insuficiente.","Not enough campaign gold.","Oro de campaña insuficiente."):W("hub.noFrags")).setColor("#e08a7a");this.refreshPanel()}/*__FORGEPAD__*/openBlacksmith(){this.openMetaPanel(W("hub.smith"),W("hub.smithQuote"),["MIGHT","PRECISION","HAMMER"]);const i=_/2,t=ir.map(d=>{const o=Xt[d.output];return`• ${d.label} → ${St(`item.${d.output}`,o?.name??d.output)}`}),e=this.add.text(i,186,[W("hub.recipes"),...t].join(`
 `),{...Le,fontSize:"7px",lineSpacing:2,align:"center"}/*§b3BlbkJsYWNrc21pdGgoKXt0aGlzLm9wZW5NZXRhUGFuZWwoVygiaHViLnNtaXRoIiksVygiaHViLnNtaXRoUXVvdGUiKSxbIk1JR0hUIiwiUFJFQ0lTSU9OIl0pO2NvbnN0IGk9Xy8yLHQ9aXIubWFwKGQ9Pntjb25zdCBvPVh0W2Qub3V0cHV0XTtyZXR1cm5g4oCiICR7ZC5sYWJlbH0g4oaSICR7U3QoYGl0ZW0uJHtkLm91dHB1dH1gLG8/Lm5hbWU/P2Qub3V0cHV0KX1gfSksZT10aGlzLmFkZC50ZXh0KGksMTc2LFtXKCJodWIucmVjaXBlcyIpLC4uLnRdLmpvaW4oYApgKSx7Li4uTGUsZm9udFNpemU6IjhweCIsbGluZVNwYWNpbmc6NCxhbGlnbjoiY2VudGVyIn0=*//*__FORGEPAD__*/).setOrigin(.5,0);this.panel.add(e)}closePanel(){this.panel?.destroy(),this.panel=null,this.panelRows=null}/*__HUBV_PANEL_END__*/}const Ct={PLAYER_HURT:"sfx-player-hurt",ENEMY_DEATH:"sfx-enemy-death",DOOR_OPEN:"sfx-door-open",DOOR_LOCKED:"sfx-door-locked",ROOM_ENTER:"sfx-room-enter",ROOM_CLEAR:"sfx-room-clear",VICTORY:"sfx-victory",ITEM_PICKUP:"sfx-item-pickup",CHEST_OPEN:"sfx-chest-open",LEVEL_UP:"sfx-level-up",POTION_USE:"sfx-potion-use",EQUIP:"sfx-equip",UNEQUIP:"sfx-unequip",RARE_DROP:"sfx-rare-drop",EPIC_DROP:"sfx-epic-drop",LEGENDARY_DROP:"sfx-legendary-drop",BOSS_ATTACK:"sfx-boss-attack",BOSS_HIT:"sfx-boss-hit",BOSS_PHASE2:"sfx-boss-phase2",BOSS_DEATH:"sfx-boss-death",BOSS_VICTORY:"sfx-boss-victory"};/*__DUB__*/const __DUB={m:null,a:null,d:0,tok:0};function __dubInit(){if(__DUB.m!==null)return;__DUB.m={k:{},d:{}};fetch("assets/audio/voice/voice-manifest.json").then(r=>r.json()).then(m=>{__DUB.m=m}).catch(()=>{})}function __dubH(t){t=String(t||"").replace(/\s+/g," ").trim();let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h.toString(16).padStart(8,"0")}function __dubLang(){let v="en";try{v=Kt().voiceLang||"en"}catch(e){}return v}function __dubVol(){const E=window.__DED_GAME?.audioEngine;if(!E)return 1;if(E.muted)return 0;return Math.min(1,(E.masterVolume??1)*Math.max(.4,E.sfxVolume??.9)*1.15)}function __dubDuck(on){const E=window.__DED_GAME?.audioEngine;try{E?.musicBus&&E.ctx&&E.musicBus.gain.setTargetAtTime((E.musicVolume??.4)*(on?.35:1),E.ctx.currentTime,.3)}catch(e){}const A=window.__dubAu;if(A&&!A.paused){if(on){A.__dk||(A.__dk=A.volume||.5,A.volume=A.__dk*.4)}else if(A.__dk){A.volume=A.__dk;A.__dk=0}}}function __dubStop(){__DUB.tok++;__DUB.q=[];if(__DUB.a){try{__DUB.a.onended=null;__DUB.a.pause()}catch(e){}__DUB.a=null}window.__dubOn=!1;__dubDuck(!1)}function __dub(text,onEnd){__dubInit();if(__DUB.a){try{__DUB.a.onended=null;__DUB.a.pause()}catch(e){}__DUB.a=null}const id=__DUB.m?.k?.[__dubH(text)],D=id&&__DUB.m.d[id];let L=__dubLang();if(!L||L==="off"||!D){window.__dubOn=!1;__dubDuck(!1);onEnd&&onEnd(!1);return!1}if(!D[L])L=D.pt?"pt":(D.en?"en":null);if(!L||!D[L]){window.__dubOn=!1;__dubDuck(!1);onEnd&&onEnd(!1);return!1}const a=new Audio("assets/audio/voice/"+L+"/"+id+".mp3");a.volume=__dubVol();__DUB.a=a;__DUB.d=D[L];window.__dubOn=!0;__dubDuck(!0);let fin=!1;const F=ok=>{if(fin)return;fin=!0;if(__DUB.a===a){__DUB.a=null;window.__dubOn=!1;__dubDuck(!1)}onEnd&&onEnd(ok)};a.onended=()=>F(!0);a.play().catch(()=>F(!1));return!0}function __dubLeft(){const a=__DUB.a;if(!a)return 0;const d=isFinite(a.duration)&&a.duration>0?a.duration:__DUB.d||0;return Math.max(0,(d-a.currentTime)*1e3)}function __dubSeq(lines){__dubStop();const L=(lines||[]).slice(),tok=__DUB.tok;const go=()=>{if(__DUB.tok!==tok||!L.length)return;const t=L.shift();__dub(t,()=>setTimeout(go,300))};go()}function __dubQ(text){__dubInit();(__DUB.q||(__DUB.q=[])).push(text);const tok=__DUB.tok;const go=()=>{if(__DUB.tok!==tok||__DUB.a||!__DUB.q.length)return;__dub(__DUB.q.shift(),()=>setTimeout(go,200))};go()}function __dubAuto(text,cb){const tok=++__DUB.tok;__DUB.q=[];const fire=()=>{__DUB.tok===tok&&cb()},rd=1600+45*String(text||"").length;__dub(text,ok=>{__DUB.tok===tok&&setTimeout(fire,ok?650:rd)})}function __voLbl(){try{Un["set.voiceLang"]="DUBLAGEM";Hn["set.voiceLang"]="VOICE-OVER";Po["set.voiceLang"]="DOBLAJE";if(typeof __L5!=="undefined"){if(__L5.de)__L5.de["set.voiceLang"]="SYNCHRONISATION";if(__L5.ru)__L5.ru["set.voiceLang"]="ОЗВУЧКА";if(__L5.ja)__L5.ja["set.voiceLang"]="ボイス言語";if(__L5.zh)__L5.zh["set.voiceLang"]="配音语言";if(__L5.ko)__L5.ko["set.voiceLang"]="음성 언어"}}catch(e){}}function __dubHas(t){const id=__DUB.m?.k?.[__dubH(t)];return!!(id&&__DUB.m.d[id])}function __dubReady(){__dubInit();return!!(__DUB.m&&__DUB.m.k&&Object.keys(__DUB.m.k).length)}__dubInit();window.__dubHas=__dubHas;window.__dubReady=__dubReady;window.__dub=__dub;window.__dubStop=__dubStop;window.__dubQ=__dubQ;window.__dubAuto=__dubAuto;class Bl{constructor(i){this.scene=i,this.musicKey=null/*§Y2xhc3MgQmx7Y29uc3RydWN0b3IoaSl7dGhpcy5zY2VuZT1pLHRoaXMubXVzaWNLZXk9bnVsbA==*//*__DUB__*/,this.engine=i.game.audioEngine??null}play(i,t={}){if(this.scene.cache.audio.exists(i)){this.scene.sound.play(i,t);return}this.engine?.sfx(i)}playAt(i,t,e){const d=this.scene.player;if(!d||!this.engine)return this.play(i);const o=t-d.x,a=e-d.y,n=Math.hypot(o,a),s=Math.max(-1,Math.min(1,o/260)),r=Math.min(1,n/420);this.engine.sfxAt(i,s,r)}playUI(i){this.engine?.sfx(i.startsWith("sfx-")?i:`sfx-ui-${i}`)}playMusic(i,t={loop:!0,volume:.5}){if(this.scene.cache.audio.exists(i)){if(this.musicKey===i)return;this.scene.sound.stopByKey(this.musicKey),this.musicKey=i,this.scene.sound.play(i,t);return}this.engine?.music(i)}ambient(i){this.engine?.startAmbience(i)}setState(i){this.engine?.setState(i)}bossEntrance(i){this.engine?this.engine.bossEntrance(i):this.playMusic(i)}playStinger(i){this.engine?.stinger?.(i)}step(i,t){this.engine?.step(i,t)}setCombat(i){this.engine?.setState(i?"COMBAT":"EXPLORATION")}}class Ti extends j.GameObjects.Image{constructor(i,t,e){const d=t.col*dt+dt/2,o=t.row*dt+dt/2;super(i,d,o,e),this.def=t,i.add.existing(this),this.isTrap=!0,this.setDepth(2)}hitPlayer(i,t=null){const e=this.scene.player;if(e.dead||this.scene.state!=="playing")return!1;const d=e.x-this.x,o=e.y-this.y,a=Math.hypot(d,o)||1,n=this.scene.damageSystem.apply({target:e,amount:i,dir:{x:d/a,y:o/a},status:t});return!n&&t&&!e.dead&&(t.key==="SLOW"||t.key==="CHILL")&&this.scene.statusFx?.apply(e,t.key,t),n}playerInside(i=15){const t=this.scene.player;return Math.hypot(t.x-this.x,t.y-this.y)<=i}}class Gl extends Ti{constructor(i,t){super(i,t,"trap-spikes"),this.state="idle",this.timer=1.2+Math.random()*1.6,this.setAlpha(.85)}update(i){this.timer-=i,this.state==="idle"?(this.playerInside(14)||this.timer<=0)&&(this.state="arming",this.timer=.45,this.setTexture("trap-spikes-arm"),this.scene.effects.burstTinted(this.x,this.y,9080698,3),this.scene.tutorial?.onTrapSeen()):this.state==="arming"?(this.setAlpha(Math.floor(this.timer*12)%2===0?1:.6),this.timer<=0&&(this.state="out",this.timer=.5,this.setTexture("trap-spikes-out").setAlpha(1),this.scene.audioRef?.play("sfx-door-locked"),this.playerInside(15)&&this.hitPlayer(1))):this.state==="out"&&(this.playerInside(15)&&this.hitPlayer(1),this.timer<=0&&(this.state="idle",this.timer=2.2+Math.random()*1.8,this.setTexture("trap-spikes").setAlpha(.85)))}}class Ul extends Ti{constructor(i,t){super(i,t,"trap-fire"),this.state="idle",this.timer=1+Math.random()*2,this.radius=22}update(i){if(this.timer-=i,this.state==="idle")this.timer<=0&&(this.state="warn",this.timer=.55,this.scene.effects.burstTinted(this.x,this.y-4,16750130,5));else if(this.state==="warn")Math.random()<.3&&this.scene.effects.burstTinted(this.x,this.y-4,16761418,2),this.timer<=0&&(this.state="burst",this.timer=.9,this.scene.audioRef?.play("sfx-lava-damage"));else if(this.state==="burst"){if(Math.random()<.6){const t=Math.random()*Math.PI*2,e=Math.random()*this.radius;this.scene.effects.burstTinted(this.x+Math.cos(t)*e,this.y+Math.sin(t)*e-6,Math.random()<.5?16738846:16761418,3)}this.playerInside(this.radius)&&this.hitPlayer(1,{key:"BURN",duration:2,power:1}),this.timer<=0&&(this.state="idle",this.timer=2.4+Math.random()*1.6)}}}class Hl extends Ti{constructor(i,t){super(i,t,"trap-dart"),this.dir=t.dir??{x:0,y:1},this.setRotation(Math.atan2(this.dir.y,this.dir.x)-Math.PI/2),this.cooldown=0,this.range=dt*6}playerOnLine(){const i=this.scene.player,t=i.x-this.x,e=i.y-this.y,d=t*this.dir.x+e*this.dir.y;return d<8||d>this.range?!1:Math.abs(t*this.dir.y-e*this.dir.x)<16}update(i){if(this.cooldown>0){this.cooldown-=i;return}this.playerOnLine()&&(this.cooldown=2.2,this.scene.tutorial?.onTrapSeen(),this.setTint(16765514),this.scene.effects.burstTinted(this.x,this.y,16765514,4),this.scene.time.delayedCall(420,()=>{!this.scene?.scene?.isActive()||this.scene.state!=="playing"||(this.clearTint(),this.scene.audioRef?.play("sfx-ranged-enemy-attack"),this.scene.projectiles.spawn({x:this.x+this.dir.x*10,y:this.y+this.dir.y*10,dir:{...this.dir},texture:"proj-arrow",speed:300,maxDist:this.range,tint:11577488,damage:1,hostile:!0}))}))}}class Vl extends Ti{constructor(i,t){super(i,t,"trap-frost"),this.fxTimer=0,this.setAlpha(.9)}update(i){this.fxTimer-=i,this.fxTimer<=0&&(this.fxTimer=1.4,this.scene.effects.burstTinted(this.x,this.y,10146032,2)),this.playerInside(16)&&this.scene.statusFx?.apply(this.scene.player,"SLOW",{duration:1.4})}}const ei={"trap-spikes":(c,i)=>new Gl(c,i),"trap-fire":(c,i)=>new Ul(c,i),"trap-dart":(c,i)=>new Hl(c,i),"trap-frost":(c,i)=>new Vl(c,i)};class Ut extends j.GameObjects.Image{constructor(i,t,e){const d=t.col*dt+dt/2,o=t.row*dt+dt/2;super(i,d,o,e),this.def=t,i.add.existing(this),this.setDepth(o)}addSolidBody(i){i.add(this),this.body.setSize(dt-8,dt-12),this.body.setOffset(this.width/2-12,this.height/2-8)}}class zl extends Ut{constructor(i,t,e){super(i,t,"barrel"),this.addSolidBody(e)}}class Wl extends Ut{constructor(i,t,e){super(i,t,"crate"),this.addSolidBody(e)}}class ms extends Ut{constructor(i,t,e){const d=t.tier?t.tier==="STARTER"?"rare":t.tier.toLowerCase():null;super(i,t,d?`chest-${d}`:"chest"),this.tierKey=d,this.addSolidBody(e),this.opened=!1}get interactLabel(){return this.opened||__cdChestLocked(this)?null:W("g.openChest")}interact(){if(!this.opened&&!__cdChestLocked(this)){this.opened=!0,this.scene.tweens.add({targets:this,scaleY:.75,duration:90,yoyo:!0,onYoyo:()=>this.setTexture(this.tierKey?`chest-${this.tierKey}-open`:"chest-open")}),this.scene.effectsRef?.burstTinted(this.x,this.y-8,16765514,20),this.scene.effectsRef?.shockwaveRing(this.x,this.y-4,28);const tk=this.tierKey;tk==="epic"?this.scene.effectsRef?.burstTinted(this.x,this.y-8,11546879,16):tk==="legendary"?this.scene.effectsRef?.burstTinted(this.x,this.y-8,16762640,24):tk==="rare"&&this.scene.effectsRef?.burstTinted(this.x,this.y-8,4422271,16);
 const __isEndless = !!this.scene.level?.endless || this.scene.game?.registry?.get("mode") === "endless";
 const __mimicChance = __isEndless ? 0.55 : 0.25;
