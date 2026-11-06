@@ -198,7 +198,7 @@ server.listen(PORT, '127.0.0.1', async () => {
       // 1. Aguardar boot do jogo e Preload
       console.log('Aguardando inicialização do Phaser e cenas ativas...');
       let ready = false;
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 80; i++) {
         const state = await evaluate(`
           (function() {
             const g = window.__DED_GAME;
@@ -222,6 +222,7 @@ server.listen(PORT, '127.0.0.1', async () => {
         }
         await new Promise(r => setTimeout(r, 500));
       }
+      if (!ready) throw new Error('Timeout esperando Preload do jogo terminar');
 
       // Garantir manifest de dublagem carregado
       await evaluate(`
@@ -449,7 +450,8 @@ server.listen(PORT, '127.0.0.1', async () => {
           sc.panel = null;
           sc.__busy = false;
           const p = sc.M.spots.portal;
-          sc.cameras.main.centerOn(p[0], p[1]);
+          sc.cameras.main.stopFollow();
+          sc.cameras.main.centerOn(p[0], p[1] - 30);
         })()
       `);
       await new Promise(r => setTimeout(r, 600));

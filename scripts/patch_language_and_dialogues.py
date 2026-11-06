@@ -30,13 +30,17 @@ GINTRO_INJECTION = (
     TAG_LANG + "\n"
     '{who:"hero",expr:"talk",text:"Como você sabe tudo isso? Quem é você?"},\n'
     '{who:"guardia",expr:"special",name:__GN,text:"Cada um de vocês veio de terras e eras distintas, falando línguas que os outros não compreendiam. Que a bênção dos selos una nossas vozes e espíritos.",'
-    'onShow:()=>{try{window.__hasGuardianMagic=!0;localStorage.setItem("depthgate:guardian_magic","1");'
+    'onShow:()=>{try{'
     'if(window.__DED_GAME){const S=window.__DED_GAME.scene.getScene("Game");'
     'S?.cameras?.main?.flash?.(600,100,200,255);'
     'S?.effects?.burstTinted?.(S.player?.x||0,(S.player?.y||0)-16,0x38bdf8,24);'
     'S?.audio?.play?.("sfx-boss-victory")||S?.audioEngine?.sfx?.("sfx-boss-victory");}}catch(e){}}},'
     '{who:"hero",expr:"surprise",text:"Nossa, estou falando e entendendo uma língua diferente, que mágica é essa?"},'
-    '{who:"guardia",expr:"smile",name:__GN,text:"É a comunhão dos DepthGates. Agora nossas mentes se tocam, e qualquer viajante que você encontrar entenderá as suas palavras."},\n'
+    '{who:"guardia",expr:"smile",name:__GN,text:"É a comunhão dos DepthGates. Agora nossas mentes se tocam, e qualquer viajante que você encontrar entenderá as suas palavras.",'
+    'onShow:()=>{try{window.__hasGuardianMagic=!0;'
+    'const sl=(window.__activeSlot||1);'
+    'localStorage.setItem("depthgate:guardian_magic_slot_"+sl,"1");'
+    'localStorage.setItem("depthgate:guardian_magic","1");}catch(e){}}},\n'
     + TAG_LANG
 )
 
@@ -122,6 +126,55 @@ def patch_file(p):
         print(f"[{p}] __TR.es patched")
     else:
         print(f"[{p}] __TR.es already contains strings or anchor missing")
+
+    # 4. Patch hasMagic e natOf para respeitar slot e permitir fala de reação
+    HAS_MAGIC_OLD = '''const hasMagic=()=>{
+  if(typeof window!=="undefined"&&window.__hasGuardianMagic!==undefined)return !!window.__hasGuardianMagic;
+  try{
+    if(typeof localStorage!=="undefined"){
+      if(localStorage.getItem("depthgate:guardian_magic")==="1")return true;
+      for(let i=0;i<=3;i++){
+        const s=localStorage.getItem("depthgate:story:"+i);
+        if(s&&(s.indexOf('"gIntro":1')!==-1||s.indexOf('"gIntro":true')!==-1))return true;
+      }
+    }
+  }catch(e){}
+  return false;
+};
+const natOf=text=>{
+  if(hasMagic())return null;
+  const N=__DUB.n;if(!N||!N.k)return null;const id=N.k[__dubH(text)],nd=id&&N.d[id];if(!nd)return null;
+  const cls=String(window.__currentSpeaker||window.__heroCls||"").toUpperCase(),ks=Object.keys(nd),ck=nd[cls]!=null?cls:ks.length===1?ks[0]:null;
+  return ck?{url:"assets/audio/voice/nat/"+id+"-"+ck+".mp3",dur:nd[ck],id}:null;
+};'''
+
+    HAS_MAGIC_NEW = '''const hasMagic=()=>{
+  if(typeof window!=="undefined"&&window.__hasGuardianMagic!==undefined)return !!window.__hasGuardianMagic;
+  try{
+    if(typeof localStorage!=="undefined"){
+      const sl=(typeof window!=="undefined"&&window.__activeSlot)||1;
+      if(localStorage.getItem("depthgate:guardian_magic_slot_"+sl)==="1")return true;
+      const s=localStorage.getItem("depthgate:story:"+sl);
+      if(s&&(s.indexOf('"guardian_magic":true')!==-1||s.indexOf('"guardian_magic":"1"')!==-1))return true;
+    }
+  }catch(e){}
+  return false;
+};
+const natOf=text=>{
+  if(hasMagic())return null;
+  if(typeof text==="string"&&(text.indexOf("língua diferente")!==-1||text.indexOf("different language")!==-1))return null;
+  const N=__DUB.n;if(!N||!N.k)return null;const id=N.k[__dubH(text)],nd=id&&N.d[id];if(!nd)return null;
+  const cls=String(window.__currentSpeaker||window.__heroCls||"").toUpperCase(),ks=Object.keys(nd),ck=nd[cls]!=null?cls:ks.length===1?ks[0]:null;
+  return ck?{url:"assets/audio/voice/nat/"+id+"-"+ck+".mp3",dur:nd[ck],id}:null;
+};'''
+
+    if HAS_MAGIC_OLD in s:
+        s = s.replace(HAS_MAGIC_OLD, HAS_MAGIC_NEW)
+        print(f"[{p}] hasMagic & natOf patched")
+    elif HAS_MAGIC_NEW in s:
+        print(f"[{p}] hasMagic & natOf already patched")
+    else:
+        print(f"[{p}] WARNING: HAS_MAGIC_OLD not found")
 
     open(p, "w", encoding="utf-8").write(s)
     print(f"[{p}] File saved successfully.")
