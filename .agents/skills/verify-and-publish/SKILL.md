@@ -62,3 +62,4 @@ git push origin main
 ### 4. Confirmação Final
 * Verifique o hash do commit gerado (`git log -1 --oneline`).
 * Confirme ao usuário que a verificação passou em 100% dos testes e o código foi publicado com sucesso.
+

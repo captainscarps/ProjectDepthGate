@@ -15437,17 +15437,17 @@ const hasMagic=()=>{
   if(typeof window!=="undefined"&&window.__hasGuardianMagic!==undefined)return !!window.__hasGuardianMagic;
   try{
     if(typeof localStorage!=="undefined"){
-      const sl=(typeof window!=="undefined"&&window.__activeSlot)||1;
-      if(localStorage.getItem("depthgate:guardian_magic_slot_"+sl)==="1")return true;
-      const s=localStorage.getItem("depthgate:story:"+sl);
-      if(s&&(s.indexOf('"guardian_magic":true')!==-1||s.indexOf('"guardian_magic":"1"')!==-1))return true;
+      if(localStorage.getItem("depthgate:guardian_magic")==="1")return true;
+      for(let i=0;i<=3;i++){
+        const s=localStorage.getItem("depthgate:story:"+i);
+        if(s&&(s.indexOf('"gIntro":1')!==-1||s.indexOf('"gIntro":true')!==-1))return true;
+      }
     }
   }catch(e){}
   return false;
 };
 const natOf=text=>{
   if(hasMagic())return null;
-  if(typeof text==="string"&&(text.indexOf("língua diferente")!==-1||text.indexOf("different language")!==-1))return null;
   const N=__DUB.n;if(!N||!N.k)return null;const id=N.k[__dubH(text)],nd=id&&N.d[id];if(!nd)return null;
   const cls=String(window.__currentSpeaker||window.__heroCls||"").toUpperCase(),ks=Object.keys(nd),ck=nd[cls]!=null?cls:ks.length===1?ks[0]:null;
   return ck?{url:"assets/audio/voice/nat/"+id+"-"+ck+".mp3",dur:nd[ck],id}:null;
@@ -15493,7 +15493,7 @@ __dub=function(text,onEnd){__dubInit();if(__DUB.a){try{__DUB.a.onended=null;__DU
   return!0};
  if(Object.keys(__DUB.m?.k||{}).length&&__DUB.n)return go();
  /* lista ainda carregando: espera um pouco em vez de perder a fala */
- let done=!1;const t=setTimeout(()=>{done||(done=!0,go()||0)},4e3);Promise.all([manP,natP]).then(()=>{if(!done){done=!0;clearTimeout(t);go()}});return!0};
+ let done=!1;const t=setTimeout(()=>{done||(done=!0,go()||0)},4e3);Promise.all([manP,natP]).then(()=>{if(!done){done=!0;clearTimeout(t);go()}}).catch(()=>{if(!done){done=!0;clearTimeout(t);go()}});return!0};
 
 /* voz e texto juntos: quanto do texto já deveria aparecer (0..1) pelo ponto em que a voz está */
 window.__dubProg=function(full){if(!full||__DUB.cur!==full)return null;const H=__DUB.a;if(!H||H._text!==full)return performance.now()-(__DUB.t0||0)<1200?0:null;

@@ -147,3 +147,4 @@ if (errors === 0) {
   console.error(`[FALHA] Foram encontrados ${errors} erro(s). Corrija antes de publicar!`);
   process.exit(1);
 }
+
