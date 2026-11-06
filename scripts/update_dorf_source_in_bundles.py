@@ -112,6 +112,29 @@ for p in FILES:
     idx2 = s.index(ANCHOR_AFTER, idx1)
     s = s[:idx1] + SRC + s[idx2:]
 
+    # 7. Evitar tela de derrota de campanha sobreposta e travamento de timers na Caverna Dorf:
+    # 7a. Vd.prototype.onGameOver (UI scene) não deve abrir tela de derrota se for Dorf Cave ou Rift
+    s = s.replace(
+        'onGameOver(){if(this.game.registry.get("mode")==="endless")return;',
+        'onGameOver(){if(this.game.registry.get("mode")==="endless"||this.scene.get("Game")?.isDorfCave||this.scene.get("Game")?.isRift)return;'
+    )
+
+    # 7b. __spCheck não deve abrir o popup modal congelador __SPPanel na Caverna Dorf
+    s = s.replace(
+        'if (!S?.skillState || !S.classDef || S.isRift) return;',
+        'if (!S?.skillState || !S.classDef || S.isRift || S.isDorfCave) return;'
+    )
+
+    # 7c. Sd.prototype.preload: não baixar todos os 170 mapas lazy ao entrar na Caverna Dorf
+    s = s.replace(
+        'Sd.prototype.preload=function(){const S=this,D=S.scene.settings.data||{},lv=D.levelId??D.restore?.campaign?.levelId,need=!D.endless&&__LZ_LV[lv],L=[];',
+        'Sd.prototype.preload=function(){const S=this,D=S.scene.settings.data||{};if(D.isDorfCave||S.isDorfCave)return;const lv=D.levelId??D.restore?.campaign?.levelId,need=!D.endless&&__LZ_LV[lv],L=[];'
+    )
+    s = s.replace(
+        'Sd.prototype.preload=function(){const S=this,D=S.scene.settings.data||{},lv=D.levelId??D.restore?.campaign?.levelId,need=(!D.endless&&!D.isDorfCave)&&__LZ_LV[lv],L=[];',
+        'Sd.prototype.preload=function(){const S=this,D=S.scene.settings.data||{};if(D.isDorfCave||S.isDorfCave)return;const lv=D.levelId??D.restore?.campaign?.levelId,need=!D.endless&&__LZ_LV[lv],L=[];'
+    )
+
     open(p, "w", encoding="utf-8").write(s)
     print(f"Updated dorf-caves.js and hooks in {p} successfully.")
 

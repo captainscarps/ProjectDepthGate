@@ -1192,6 +1192,18 @@ function __dorfBake(B) {
     const runPostInit = () => {
       if (postInitDone || !S.scene?.isActive()) return;
       postInitDone = true;
+
+      // Limpar qualquer pendência ou estado aberto de __SPPanel na caverna Dorf
+      try {
+        const U = S.scene?.get?.("UI");
+        if (U?.__etp) {
+          U.__etp.open = false;
+          U.__etp.queue = [];
+          try { U.__etp.root?.destroy?.(true); } catch (_) {}
+          U.__etp.root = null;
+        }
+      } catch (_) {}
+
       if (B.__dorfSolids && S.player) {
         S.physics.add.collider(S.player, B.__dorfSolids);
         if (S.enemies) S.physics.add.collider(S.enemies, B.__dorfSolids);
@@ -1279,6 +1291,31 @@ function __dorfBake(B) {
 function __dorfReturnToRefuge(S) {
   if (!S || S.__dorfExiting) return;
   S.__dorfExiting = true;
+
+  // Descongelar timers, física, tweens e flags de UI para evitar qualquer travamento
+  try {
+    S.uiOpen = false;
+    if (S.time) S.time.paused = false;
+    S.physics?.resume?.();
+    S.tweens?.resumeAll?.();
+    if (S.player?.body) {
+      S.player.body.enable = false;
+      S.player.setVelocity?.(0, 0);
+    }
+    for (const e of (S.enemies?.getChildren?.() || [])) {
+      if (e.active && !e.dead) e.setVelocity?.(0, 0);
+    }
+    const U = S.scene?.get?.("UI");
+    if (U?.__etp) {
+      U.__etp.open = false;
+      U.__etp.queue = [];
+      try { U.__etp.root?.destroy?.(true); } catch (_) {}
+      U.__etp.root = null;
+    }
+  } catch (e) {
+    console.warn("[dorf_cave] erro ao descongelar física/tweens:", e);
+  }
+
   S.audio?.play?.("portal") || S.game?.audioEngine?.sfx?.("portal");
 
   const isCamp = S.originMode === "campaign";
@@ -1291,6 +1328,10 @@ function __dorfReturnToRefuge(S) {
       if (res?.ok && res.data) {
         const d = res.data;
         d.player = d.player || {};
+        // Ao retornar (seja vivo ou derrotado), garante HP recuperado no Refúgio
+        const maxHp = S.player?.maxHp || S.stats?.maxHp || d.player.maxHp || 6;
+        d.player.hp = Math.max(1, maxHp);
+        d.player.dead = false;
         if (typeof S.stats?.gold === "number") d.player.gold = S.stats.gold;
         else if (typeof S.player?.gold === "number") d.player.gold = S.player.gold;
         d.player.forgeCoins = curForgeCoins;
@@ -1328,6 +1369,6 @@ function __dorfReturnToRefuge(S) {
   };
   try { S.cameras?.main?.fadeEffect?.reset?.(); } catch (e) {}
   S.cameraSys?.fadeOut(350, doReturn);
-  setTimeout(doReturn, 420);
+  setTimeout(doReturn, 400);
 }
 try { if (typeof window !== "undefined") window.__dorfReturnToRefuge = __dorfReturnToRefuge; } catch (e) {}

@@ -20,6 +20,7 @@ this.textures.exists("peasant-1")&&(mk("peasant-1-idle","peasant-1",0,11,6),mk("
 create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
 const __F=this.game.registry.get("hub:fromForest");this.game.registry.remove("hub:fromForest");this.fromForest=!!__F;this.retSlot=__F?.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main;cam.setZoom(Pt*1.5);const z=cam.zoom;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);this.__us=Pt/z;cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
 const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];this.title=null;this.shade=null;this.hud=null;this.smith=null;this.hunter=null;this.herb=null;this.panel=null;this.panelRows=null;this.__pz=null;this.__hs=null;this.__bub=null;this.dummies=[];
+this.__busy=!1;this.__uiTap=!1;this.__caveWarned=!1;
 /* chão, casa, props */
 this.add.image(0,0,"vh-ground").setOrigin(0).setDepth(-50);const H=M.house;
 this.house=this.add.sprite(H.x,H.y,"vh-house",0).setOrigin(0).setDepth(H.base);this.house.play("vh-house-c");this.doorOpen=!1;
@@ -70,7 +71,7 @@ if(it){if(Math.hypot(it.x-this.playerX,it.y-this.playerY)<=it.r){this.__do(it);r
 this.input.keyboard.on("keydown-ESC",()=>{this.__pz?this.__pzClose():this.panel?this.closePanel():this.__pzOpen()});this.input.keyboard.on("keydown-ENTER",()=>{this.__pz?this.__pzConfirm():this.__hs?this.__hsBuy():this.panel?(this.panelRows?.length?this.panelConfirm():this.closePanel()):this.tryInteract()});this.input.keyboard.on("keydown-SPACE",()=>{this.__pz&&this.__pzConfirm()});this.input.keyboard.on("keydown-E",()=>{this.panel||this.tryInteract()});this.input.keyboard.on("keydown-UP",()=>this.__pz?this.__pzNav(-1):this.__hs?this.__hsNav(-1):this.panelNav(-1)),this.input.keyboard.on("keydown-DOWN",()=>this.__pz?this.__pzNav(1):this.__hs?this.__hsNav(1):this.panelNav(1));this.input.keyboard.on("keydown-LEFT",()=>this.__hs&&this.__hsQty(-1));this.input.keyboard.on("keydown-RIGHT",()=>this.__hs&&this.__hsQty(1));
 /* toques nos painéis (pausa, lojas, HUD): os filhos dos painéis fixos na tela precisam do mesmo "fixo na tela"
    do painel, senão o toque é calculado com a câmera (com zoom) e erra o botão */
-this.refreshFragments();this.__combatHud();this.__joyInit();try{this.scene.get("HubUI")?this.scene.launch("HubUI"):this.scene.add("HubUI",__HubUI,!0);this.scene.bringToTop("HubUI")}catch(e){}this.events.once("shutdown",()=>{try{this.scene.stop("HubUI")}catch(e){}});cam.fadeIn(400,0,0,0);
+this.refreshFragments();this.__combatHud();this.__joyInit();try{this.scene.get("HubUI")?this.scene.launch("HubUI"):this.scene.add("HubUI",__HubUI,!0);this.scene.bringToTop("HubUI")}catch(e){}this.events.once("shutdown",()=>{this.__busy=!1;try{this.scene.stop("HubUI")}catch(e){}});cam.fadeIn(400,0,0,0);
 this.time.delayedCall(700,()=>this.__say(this.playerX,this.playerY-40,this.fromForest?L3("Bem-vindo ao Refúgio! A placa da FLORESTA leva você de volta.","Welcome to the Refuge! The FOREST sign takes you back.","¡Bienvenido al Refugio! El cartel del BOSQUE te lleva de vuelta."):L3("Bem-vindo ao Refúgio. Explore a vila!","Welcome to the Refuge. Explore the village!","Bienvenido al Refugio. ¡Explora la aldea!"),3000,"#ffe7a8"))}
 __pzOpen(){if(this.panel||this.__busy)return;const L3=__L3,ff=this.fromForest,d=_/2,o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us),a=this.add.rectangle(d,st/2,_,st,328450,.7).setInteractive(),n=this.add.graphics(),H=ff?196:156,Y=st/2-H/2;Dt(n,d-140,Y,280,H);o.add([a,n]);__winSkin(this,o,d-140,Y,280,H,1)&&n.clear();
 o.add(this.add.text(d,Y+22,L3("PAUSA","PAUSE","PAUSA"),la).setOrigin(.5));
@@ -257,6 +258,7 @@ __enterDorfCave(){
   const doStart=()=>{
     if(entered)return;
     entered=!0;
+    this.__busy=!1;
     this.scene.stop("HubUI");
     this.scene.start("Game",{
       isDorfCave:!0,

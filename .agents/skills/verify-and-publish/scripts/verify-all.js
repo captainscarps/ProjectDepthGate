@@ -41,7 +41,13 @@ for (const b of bundles) {
   }
   try {
     const code = fs.readFileSync(b, 'utf8');
-    new vm.SourceTextModule(code);
+    if (vm.SourceTextModule) {
+      new vm.SourceTextModule(code);
+    } else {
+      // Quando executado sem a flag experimental, mascara import.meta para validação de sintaxe pura
+      const sanitized = code.replace(/import\.meta(?:\.[a-zA-Z_$][0-9a-zA-Z_$]*)*/g, '({})');
+      new vm.Script(sanitized, { filename: rel });
+    }
     logPass(`Sintaxe ES Module válida: ${rel}`);
   } catch (err) {
     logFail(`Erro de sintaxe em ${rel}: ${err.message}`);
@@ -166,9 +172,9 @@ try {
   logPass('Atlas Deep Cave (dorf-atlas.json + dorf-atlas.png) íntegro e completo.');
 
   const dorfSrc = fs.readFileSync(path.join(ROOT, 'scripts', 'source', 'dorf-caves.js'), 'utf8');
-  const dorfFn = new Function('Ls', 'window', dorfSrc + '\nreturn { __buildDorfCaveLevel, __getForgeCoins, __setForgeCoins };');
+  const dorfFn = new Function('Ls', 'window', dorfSrc + '\nreturn { __buildDorfCaveLevel, __getForgeCoins, __setForgeCoins, __dorfReturnToRefuge };');
   const mockWin = {};
-  const { __buildDorfCaveLevel } = dorfFn({ catacombs: { id: 'catacombs' } }, mockWin);
+  const { __buildDorfCaveLevel, __dorfReturnToRefuge } = dorfFn({ catacombs: { id: 'catacombs' } }, mockWin);
   const lvl = __buildDorfCaveLevel({ depth: 1, seed: 'qa_test' });
   if (!lvl || !lvl.__organicGrid || !Array.isArray(lvl.doors) || lvl.doors.length !== 0) {
     throw new Error('A caverna gerada deve ser orgânica e sem portas trancadas (doors.length === 0)');
@@ -183,6 +189,31 @@ try {
     throw new Error(`Quantidade de baús fora do esperado para economia escassa: ${chestCount}`);
   }
   logPass(`Gerador orgânico Cavernas Dorf validado (${lvl.world.cols}x${lvl.world.rows}, 0 portas, ${chestCount} baús valiosos em alcovas).`);
+
+  // Testar fluxo de morte e retorno seguro da Caverna Dorf sem travar física/timers/UI
+  let startCalled = false;
+  const mockScene = {
+    isDorfCave: true,
+    originMode: 'campaign',
+    dorfSlot: 1,
+    time: { paused: true },
+    physics: { resume: () => {} },
+    tweens: { resumeAll: () => {} },
+    player: { maxHp: 8, hp: 0, dead: true, body: { enable: true }, setVelocity: () => {} },
+    enemies: { getChildren: () => [] },
+    scene: {
+      get: () => ({ __etp: { open: true, queue: [1], root: { destroy: () => {} } } }),
+      stop: () => {},
+      start: (key) => { if (key === 'Hub') startCalled = true; }
+    },
+    game: { registry: { get: () => 1, set: () => {}, remove: () => {} } },
+    cameraSys: { fadeOut: (ms, cb) => cb() }
+  };
+  __dorfReturnToRefuge(mockScene);
+  if (!startCalled || mockScene.time.paused) {
+    throw new Error('Falha no fluxo de retorno e recuperação de morte da Caverna Dorf: cena congelada ou transição falhou.');
+  }
+  logPass('Fluxo de morte e retorno seguro ao Refúgio validado (física/timers descongelados, transição garantida).');
 
   const avPath = path.join(ROOT, 'asset-versions.json');
   if (fs.existsSync(avPath)) {
