@@ -54,19 +54,25 @@ def patch_file(p):
     s = s.replace(buildwall_old, buildwall_old + "\n" + TAG + buildwall_dorf + TAG, 1)
 
     # 4. Sd.prototype.create
+    s = s.replace(
+        'this.restoreEndless=i.restoreEndless??null,i.endless){',
+        'this.restoreEndless=i.restoreEndless??null,i.endless&&!i.isDorfCave){'
+    )
     create_anchor = 'else if(i.isRift){this.isRift=!0;this.level=__buildRiftLevel(this);this.levelId="rift";ki.rift=this.level;}'
     create_dorf = (
         'else if(i.isDorfCave){'
         'this.isDorfCave=!0;'
         'this.originMode=i.originMode||(i.endless?"endless":"campaign");'
         'this.dorfSlot=i.slot||this.game.registry.get("save:slot")||1;'
-        'this.levelDepth=i.depth||1;'
+        'this.levelDepth=1;'
         'this.classDef=pe[i.classId||"WARRIOR"];'
-        'const runCfg={depth:this.levelDepth,seed:"dorf_"+this.dorfSlot+"_"+this.levelDepth,biome:"dorf_cave",originMode:this.originMode};'
+        'if(this.restoreData){this.restoreData={...this.restoreData,campaign:{...(this.restoreData.campaign||{}),rooms:{},roomId:null},world:{openedChests:[]}};}'
+        'const runCfg={depth:1,seed:"dorf_"+Date.now()+"_"+Math.floor(Math.random()*1e9),freshSeed:i.freshSeed||(Date.now()+"_"+Math.floor(Math.random()*1e9)),biome:"dorf_cave",originMode:this.originMode};'
         'this.level=typeof __buildDorfCaveLevel==="function"?__buildDorfCaveLevel(runCfg):md(runCfg);'
         'this.level.id="dorf_cave";'
-        'this.level.name="Cavernas da Montanha Dorf"+(this.levelDepth>1?` · Nível ${this.levelDepth}`:"");'
-        'this.level.endless=!0;'
+        'this.level.name="Cavernas da Montanha Dorf";'
+        'this.level.endless=!1;'
+        'this.level.next=null;'
         'this.levelId="dorf_cave";'
         'ki.dorf_cave=this.level;'
         '}'
@@ -91,7 +97,7 @@ def patch_file(p):
     # 6. Sd.prototype.onGameOver
     gameover_anchor = 'if(this.isRift){this.state="rift_defeat";'
     gameover_dorf = (
-        'if(this.isDorfCave&&this.originMode==="campaign"){'
+        'if(this.isDorfCave){'
         'this.state="dorf_defeat";'
         'const L3=typeof __L3==="function"?__L3:(pt,en)=>pt;'
         'this.game.events.emit("ui:banner",L3("VOCÊ CAIU NAS CAVERNAS! Retornando ao Refúgio com seus tesouros...","YOU FELL IN THE CAVES! Returning to Refuge with saved loot...","¡CAÍSTE EN LAS CAVERNAS! Regresando al Refugio..."),"#38bdf8");'
@@ -109,52 +115,23 @@ def patch_file(p):
 
     find_anchor = 'const d=this.roomManager.portal;'
     find_dorf = (
-        'if(this.isDorfCave&&this.__dorfReturnPortal){'
-        'const dp=this.__dorfReturnPortal,dist=j.Math.Distance.Between(dp.x,dp.y,i.x,i.y);'
-        'if(dist<48){'
+        'if(this.isDorfCave){'
+        'const pts=this.__dorfPortals||(this.__dorfReturnPortal?[this.__dorfReturnPortal]:[]);'
+        'for(const dp of pts){'
+        'const dist=j.Math.Distance.Between(dp.x,dp.y,i.x,i.y);'
+        'if(dist<52&&dist<e){'
         't={kind:"dorf_return",target:dp,label:typeof __L3==="function"?__L3("Retornar ao Refúgio","Return to Refuge","Volver al Refugio"):"Retornar ao Refúgio"};'
         'e=dist;'
+        '}'
         '}'
         '}'
     )
     assert find_anchor in s, "find_anchor not found"
     s = s.replace(find_anchor, TAG + find_dorf + TAG + find_anchor, 1)
 
-    # 8. descendEndless: aprofundar nas cavernas de Dorf
+    # 8. descendEndless: retornar ao Refúgio se chamado nas cavernas de Dorf
     descend_anchor = 'this.transitioning = true;\n  this.endChallenge();\n\n  i.depth++;'
-    descend_dorf = (
-        'if(this.isDorfCave){\n'
-        '  this.levelDepth=(this.levelDepth||1)+1;\n'
-        '  const isCamp=this.originMode==="campaign";\n'
-        '  if(isCamp){\n'
-        '    try{\n'
-        '      const sl=this.dorfSlot||1,r=Dn(sl);\n'
-        '      if(r.ok&&r.data){\n'
-        '        if(typeof this.player?.gold==="number")r.data.player.gold=this.player.gold;\n'
-        '        if(this.inventory?.serialize)r.data.player.inventory=this.inventory.serialize();\n'
-        '        localStorage.setItem(Wt("campaign",sl),JSON.stringify(r.data));\n'
-        '      }\n'
-        '    }catch(e){}\n'
-        '  }\n'
-        '  this.audio?.play?.("sfx-endless-descent")||this.audio?.play?.("portal");\n'
-        '  const L3=typeof __L3==="function"?__L3:(pt,en)=>pt;\n'
-        '  this.game.events.emit("ui:banner",L3(`Aprofundando nas Cavernas Dorf (Nível ${this.levelDepth})...`,`Descending deeper into Dorf Caves (Level ${this.levelDepth})...`,`Descendiendo en las Cavernas Dorf (Nivel ${this.levelDepth})...`),"#38bdf8");\n'
-        '  this.cameraSys?.fadeOut(450,()=>{\n'
-        '    let rData=null;\n'
-        '    if(isCamp){try{const cr=Dn(this.dorfSlot);if(cr?.ok)rData=cr.data}catch(e){}}\n'
-        '    this.scene.start("Game",{\n'
-        '      isDorfCave:true,\n'
-        '      originMode:this.originMode,\n'
-        '      endless:!isCamp,\n'
-        '      depth:this.levelDepth,\n'
-        '      slot:this.dorfSlot,\n'
-        '      classId:this.classDef.id,\n'
-        '      restore:rData\n'
-        '    });\n'
-        '  });\n'
-        '  return;\n'
-        '}\n'
-    )
+    descend_dorf = 'if(this.isDorfCave){__dorfReturnToRefuge(this);return;}\n'
     assert descend_anchor in s, "descend_anchor not found"
     s = s.replace(descend_anchor, TAG + descend_dorf + TAG + descend_anchor, 1)
 

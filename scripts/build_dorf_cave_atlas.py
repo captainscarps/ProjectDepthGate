@@ -201,18 +201,21 @@ def main():
             cropped = cropped.crop(bb)
         pieces.append((f"p-{name}", cropped))
 
-    # 11. Animated crystal light frames (64x64 each)
-    pieces.append(("light-cyan-0", l_cyan.crop((0, 0, 64, 64))))
-    pieces.append(("light-cyan-1", l_cyan.crop((64, 0, 128, 64))))
-    pieces.append(("light-cyan-2", l_cyan.crop((0, 64, 64, 128))))
-
-    pieces.append(("light-green-0", l_green.crop((0, 0, 64, 64))))
-    pieces.append(("light-green-1", l_green.crop((64, 0, 128, 64))))
-    pieces.append(("light-green-2", l_green.crop((0, 64, 64, 128))))
-
-    pieces.append(("light-fire-0", l_fire.crop((0, 0, 64, 64))))
-    pieces.append(("light-fire-1", l_fire.crop((64, 0, 128, 64))))
-    pieces.append(("light-fire-2", l_fire.crop((0, 64, 64, 128))))
+    # 11. Animated crystal light frames (32x64 each, 6 frames per color: 4 in row 0, 2 in row 1)
+    light_boxes = [
+        (0, 0, 32, 64),
+        (32, 0, 64, 64),
+        (64, 0, 96, 64),
+        (96, 0, 128, 64),
+        (0, 64, 32, 128),
+        (32, 64, 64, 128),
+    ]
+    for idx_b, box in enumerate(light_boxes):
+        pieces.append((f"light-cyan-{idx_b}", l_cyan.crop(box)))
+    for idx_b, box in enumerate(light_boxes):
+        pieces.append((f"light-green-{idx_b}", l_green.crop(box)))
+    for idx_b, box in enumerate(light_boxes):
+        pieces.append((f"light-fire-{idx_b}", l_fire.crop(box)))
 
     # 12. Composite Entrance Portal Arch (stone doorway + basalt side columns + stairs)
     # Build a clean 128x112 archway composition from MainLev tiles
@@ -307,9 +310,9 @@ def main():
         },
         "props": {k: rects[f"p-{k}"] for k in props_def.keys()},
         "lights": {
-            "cyan": [rects[f"light-cyan-{i}"] for i in range(3)],
-            "green": [rects[f"light-green-{i}"] for i in range(3)],
-            "fire": [rects[f"light-fire-{i}"] for i in range(3)],
+            "cyan": [rects[f"light-cyan-{i}"] for i in range(6)],
+            "green": [rects[f"light-green-{i}"] for i in range(6)],
+            "fire": [rects[f"light-fire-{i}"] for i in range(6)],
         },
         "portalArch": rects["portal-arch"],
         "frames": rects,

@@ -10,7 +10,7 @@ this.textures.exists("vh-ground")||this.load.image("vh-ground",V+"ground.png");t
 this.textures.exists("vh-props")||this.load.atlas("vh-props",V+"props.png",V+"props.json");this.cache.json.exists("vh-map")||this.load.json("vh-map",V+"village.json");
 L("vh-house","house.png",208,160);L("vh-int","interior.png",320,224);L("vh-intf","interior-front.png",320,224);L("vh-smoke","smoke.png",64,80);L("vh-girl","girl.png",32,48);
 L("vh-smith-idle","smith-idle.png",48,48);L("vh-smith-walk","smith-walk.png",48,48);L("vh-smith-forge","smith-forge.png",48,48);L("vh-smith-fidle","smith-forge-idle.png",48,48);L("vh-smith-take","smith-take.png",48,48);L("vh-smith-leave","smith-leave.png",48,48);L("vh-anvil","anvil.png",48,48);
-L("vh-hunter-tans","hunter-tans.png",48,48);L("vh-hunter-take","hunter-take.png",48,48);L("vh-hunter-leave","hunter-leave.png",48,48);L("vh-dog","dog.png",32,32);L("vh-herb-boil","herb-boiler.png",32,64);L("vh-herb-caul","herb-cauldron.png",32,48);this.textures.exists("dorf-portal-arch")||this.load.image("dorf-portal-arch","assets/pixel-art/deepcave/dorf-portal-arch.png");this.textures.exists("dorf-brazier")||this.load.spritesheet("dorf-brazier","assets/pixel-art/deepcave/dorf-brazier.png",{frameWidth:32,frameHeight:32});this.textures.exists("dorf-atlas")||this.load.image("dorf-atlas","assets/pixel-art/deepcave/dorf-atlas.png");this.cache.json.exists("dorf-atlas")||this.load.json("dorf-atlas","assets/pixel-art/deepcave/dorf-atlas.json");this.textures.exists("vh-herb-hut")||this.load.image("vh-herb-hut",V+"herb-hut.png");this.textures.exists("vh-herb-bed")||this.load.image("vh-herb-bed",V+"herb-bed.png");this.textures.exists("vh-herb-shelf")||this.load.image("vh-herb-shelf",V+"herb-shelf.png")}
+L("vh-hunter-tans","hunter-tans.png",48,48);L("vh-hunter-take","hunter-take.png",48,48);L("vh-hunter-leave","hunter-leave.png",48,48);L("vh-dog","dog.png",32,32);L("vh-herb-boil","herb-boiler.png",32,64);L("vh-herb-caul","herb-cauldron.png",32,48);this.textures.exists("dorf-portal-arch")||this.load.image("dorf-portal-arch","assets/pixel-art/deepcave/dorf-portal-arch.png");this.textures.exists("dorf-brazier")||this.load.spritesheet("dorf-brazier","assets/pixel-art/deepcave/dorf-brazier.png",{frameWidth:32,frameHeight:64});this.textures.exists("dorf-atlas")||this.load.image("dorf-atlas","assets/pixel-art/deepcave/dorf-atlas.png");this.cache.json.exists("dorf-atlas")||this.load.json("dorf-atlas","assets/pixel-art/deepcave/dorf-atlas.json");this.textures.exists("vh-herb-hut")||this.load.image("vh-herb-hut",V+"herb-hut.png");this.textures.exists("vh-herb-bed")||this.load.image("vh-herb-bed",V+"herb-bed.png");this.textures.exists("vh-herb-shelf")||this.load.image("vh-herb-shelf",V+"herb-shelf.png")}
 __anims(){const A=this.anims,mk=(k,t,s,e,fr,rep)=>{A.exists(k)||A.create({key:k,frames:A.generateFrameNumbers(t,{start:s,end:e}),frameRate:fr,repeat:rep})};
 mk("vh-house-c","vh-house",0,11,6.67,-1);mk("vh-house-o","vh-house",12,23,6.67,-1);mk("vh-int-a","vh-int",0,11,6.67,-1);mk("vh-intf-a","vh-intf",0,11,6.67,-1);mk("vh-smoke-a","vh-smoke",0,11,8,-1);mk("vh-girl-a","vh-girl",0,9,7,-1);
 const D=["d","l","r","u"];D.forEach((d,i)=>{mk("vh-sw-"+d,"vh-smith-walk",i*6,i*6+5,9,-1);mk("vh-si-"+d,"vh-smith-idle",i*6,i*6+(d==="u"?1:5),5,-1);mk("vh-dw-"+d,"vh-dog",i*6,i*6+5,9,-1);mk("vh-di-"+d,"vh-dog",24+i*6,24+i*6+5,5,-1)});
@@ -190,8 +190,8 @@ __caveExplorerInit(){
     this.tweens.add({targets:cpo2,alpha:.75,duration:1200,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});
   }
   if(this.textures.exists("dorf-brazier")){
-    this.add.sprite(cpX-42,cpY-6,"dorf-brazier",0).setOrigin(.5,1).setDepth(cpY).play("dorf-brazier-a");
-    this.add.sprite(cpX+42,cpY-6,"dorf-brazier",0).setOrigin(.5,1).setDepth(cpY).play("dorf-brazier-a");
+    this.add.sprite(cpX-42,cpY+2,"dorf-brazier",0).setOrigin(.5,1).setDepth(cpY).play("dorf-brazier-a");
+    this.add.sprite(cpX+42,cpY+2,"dorf-brazier",0).setOrigin(.5,1).setDepth(cpY).play("dorf-brazier-a");
     this.__glow(cpX-42,cpY-22,.35,3718648,.4,900);
     this.__glow(cpX+42,cpY-22,.35,3718648,.4,900);
   }
@@ -249,22 +249,31 @@ __enterDorfCave(){
   this.__busy=!0;
   this.game.audioEngine?.stinger?.("portal")||this.game.audioEngine?.sfx?.("portal");
   const isCamp=!!this.fromForest,sl=isCamp?(this.retSlot||1):(this.game.registry.get("save:slot")||1);
-  let rData=null;
+  let rData=null,eData=null;
   if(isCamp){try{const cr=Dn(sl);if(cr?.ok)rData=cr.data}catch(e){}}
+  else{try{if(typeof Nn==="function"){const er=Nn(sl);if(er?.ok)eData=er.data}}catch(e){}}
   const cam=this.cameras.main;
-  cam.fadeOut(400,0,0,0);
-  cam.once("camerafadeoutcomplete",()=>{
+  let entered=!1;
+  const doStart=()=>{
+    if(entered)return;
+    entered=!0;
     this.scene.stop("HubUI");
     this.scene.start("Game",{
       isDorfCave:!0,
       originMode:isCamp?"campaign":"endless",
-      endless:!isCamp,
+      endless:!1,
       depth:1,
+      freshSeed:Date.now()+"_"+Math.floor(Math.random()*1e9),
       slot:sl,
       classId:this.classDef?.id||"WARRIOR",
-      restore:rData
+      restore:rData,
+      restoreEndless:eData
     });
-  });
+  };
+  try{cam.fadeEffect?.reset?.()}catch(e){}
+  cam.fadeOut(350,0,0,0);
+  cam.once("camerafadeoutcomplete",doStart);
+  setTimeout(doStart,420);
 }
 
 /* ── ferreiro: permanece na bigorna trabalhando e conversando como peasant-1 permanente ── */

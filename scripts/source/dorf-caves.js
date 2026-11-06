@@ -1,9 +1,10 @@
 /* ── Bioma: Cavernas da Montanha Dorf (RPG Worlds Deep Cave - Szadi art) ─────────────────────────
-   Cenário exploratório orgânico e procedural (sem salas retangulares e sem portas trancadas):
+   Cenário exploratório amplo, orgânico e procedural por entrada (sem salas e sem explorar profundidades):
    - Paredes de basalto de 3 tiles de altura em degraus curvos com vinhas luminescentes
    - Clareiras de musgo hexagonal com bordas orgânicas, terraços de pedra cinza e escadarias
+   - Penínsulas rochosas abissais internas (como nas imagens de referência) criando loops naturais
    - Formações de estalagmites 2.5D com ordenação de profundidade Y (Y-sorting) e colisão na base
-   - Economia de exploração: poucos baús escondidos em fendas profundas, porém valiosos,
+   - Economia de exploração: poucos baús escondidos em fendas laterais, porém valiosos,
      contendo as Moedas do Ferreiro (🪙) usadas para forjar as Armas Únicas no Refúgio.
 ────────────────────────────────────────────────────────────────────────────────────────────────── */
 let __dorfN = 0;
@@ -104,7 +105,7 @@ if (typeof window !== "undefined") {
   window.__addForgeCoins = __addForgeCoins;
 }
 
-/* 1) Registro de Tema, Inimigos e Tabelas de Loot Escasso e Valioso */
+/* 1) Registro de Tema, Inimigos Reais e Tabelas de Loot Escasso e Valioso */
 (function __registerDorfBiome() {
   if (typeof Ls === "undefined") return;
   const baseTheme = Ls.catacombs || Ls.ruins || Object.values(Ls)[0];
@@ -113,9 +114,9 @@ if (typeof window !== "undefined") {
     id: "dorf_cave",
     name: "Cavernas da Montanha Dorf",
     tilesetKey: "tiles-dorf-cave",
-    ambient: 0.56,
+    ambient: 0.62,
     fogColor: 0x0d0a10,
-    fogDensity: 0.008,
+    fogDensity: 0.006,
     music: "catacombs-theme",
     palette: {
       floor: 0x4b3834,
@@ -125,8 +126,8 @@ if (typeof window !== "undefined") {
     },
     lightPreset: {
       color: 0x67e8f9,
-      radius: 145,
-      intensity: 0.95
+      radius: 155,
+      intensity: 0.96
     }
   };
 
@@ -146,115 +147,263 @@ if (typeof window !== "undefined") {
       }
     }
     if (typeof js !== "undefined") {
-      // Poucos baús, mas com itens raros/épicos/lendários garantidos
+      const refPools = js.fortress?.pools || js.ruins?.pools || [
+        "dragon_sword", "bulwark_blade", "tower_shield", "ember_bow", "inferno_staff",
+        "soul_reaper", "great_sword", "war_hammer", "long_bow", "arcane_staff",
+        "assassin_dagger", "colossus_sword", "hunter_bow", "ruins_staff",
+        "colossus_plate", "armor", "helmet", "ring", "amulet", "potion"
+      ];
+      // Poucos baús na caverna, mas cada um guarda equipamento Raro, Épico ou Lendário + Moedas do Ferreiro
       js.dorf_cave = {
         rolls: 2,
-        gold: { min: 18, max: 34 },
-        pools: ["weapons_tier2", "weapons_tier3", "armor_tier2", "armor_tier3", "rings", "amulets", "relics_pool"],
-        rarities: { COMMON: 0, UNCOMMON: 12, RARE: 52, EPIC: 26, LEGENDARY: 10 }
+        gold: { min: 22, max: 45 },
+        pools: refPools,
+        rarities: { COMMON: 0, UNCOMMON: 10, RARE: 52, EPIC: 28, LEGENDARY: 10 }
       };
     }
     if (typeof ed !== "undefined") {
       ed.dorf_cave = {
-        common: ["BAT", "SPIDER", "GOBLIN", "SKELETON", "SLIME"],
-        uncommon: ["CAVE_TROLL", "GHOUL", "DARK_MAGE", "WRAITH", "GARGOYLE"],
-        elite: ["GOLEM", "VOID_STALKER", "DEATH_KNIGHT", "LICH"],
-        bosses: ["ANCIENT_COLOSSUS", "ABYSS_GUARDIAN", "BEHOLDER"]
+        common: ["GOBLIN", "GOBLIN_ARCHER", "GOBLIN_ASSASSIN", "SKELETON", "SKELETON_WARRIOR", "ORC"],
+        uncommon: ["ORC_WARRIOR", "ORC_BRUTE", "SKELETON_MAGE", "NECRO_SHADE", "MB_CINDER_STALKER", "MB_CRYSTAL_SAGE"],
+        elite: ["MB_BASALT_COLOSSUS", "TROLL", "CYCLOPS", "DEMON"],
+        bosses: ["ANCIENT_COLOSSUS", "ABYSS_GUARDIAN"]
       };
     }
   } catch (e) {}
+
+  // Hook em _l.prototype.carve para usar diretamente a malha orgânica (__organicGrid) antes de criar wallLayer
+  if (typeof _l !== "undefined" && _l.prototype && !_l.prototype.__dorfCarveHooked) {
+    _l.prototype.__dorfCarveHooked = true;
+    const __origCarve = _l.prototype.carve;
+    _l.prototype.carve = function () {
+      if (this.level?.__organicGrid) {
+        this.grid = this.level.__organicGrid.map((row) => row.slice());
+        return;
+      }
+      return __origCarve.apply(this, arguments);
+    };
+  }
+
+  // Hook no Minimapa (class Id) para desenhar o contorno orgânico da caverna em vez de retângulos de salas
+  if (typeof Id !== "undefined" && Id.prototype && !Id.prototype.__dorfMinimapHooked) {
+    Id.prototype.__dorfMinimapHooked = true;
+    const __origRedraw = Id.prototype.redraw;
+    Id.prototype.redraw = function (i, t) {
+      const gs = this.scene?.scene?.get?.("Game");
+      if (gs?.isDorfCave && gs.level?.__organicGrid) {
+        if (this.touchOn) {
+          this.panel?.setVisible(false);
+          this.parch?.setVisible(false);
+          this.map?.setVisible(false);
+          this.title?.setVisible(false);
+          return;
+        }
+        this.panel?.setVisible(true);
+        this.parch?.setVisible(true);
+        this.map?.setVisible(true);
+        this.title?.setVisible(true);
+        const __n = performance.now();
+        if (this.__rl && __n - this.__rl < 80) return;
+        this.__rl = __n;
+        const e = this.map;
+        const C = gs.level.world.cols, R = gs.level.world.rows;
+        if (this.setWorld(C, R)) this.layout();
+        const d = this.mapScale;
+        const __tk = "dorf_cave|" + this.width;
+        e.clear();
+        if (this.__tk !== __tk) {
+          this.__tk = __tk;
+          this.title.setText("CAVERNAS DORF");
+        }
+        e.fillStyle(0x5c4438, 0.88);
+        for (const sp of gs.level.corridors || []) {
+          e.fillRect(this.tx(sp.x), this.ty(sp.y), Math.max(1, sp.w * d), Math.max(1, d + 0.35));
+        }
+        e.fillStyle(0x3b6e4c, 0.85);
+        for (const mz of gs.level.__mossZones || []) {
+          e.fillCircle(this.tx(mz.cx), this.ty(mz.cy), Math.max(2, mz.rx * d * 0.65));
+        }
+        const pts = gs.__dorfPortals || (gs.__dorfReturnPortal ? [gs.__dorfReturnPortal] : []);
+        for (const pt of pts) {
+          e.fillStyle(0x38bdf8, 1);
+          e.fillCircle(this.tx(pt.x / 32), this.ty(pt.y / 32), 2.5);
+        }
+        if (t) {
+          e.fillStyle(0x2c2013, 1).fillCircle(this.tx(t.x / 32), this.ty(t.y / 32), 3);
+          e.fillStyle(0xffd24a, 1).fillCircle(this.tx(t.x / 32), this.ty(t.y / 32), 2);
+        }
+        return;
+      }
+      return __origRedraw.apply(this, arguments);
+    };
+  }
 })();
 
-/* 2) Gerador Procedural Orgânico Sem Salas Retangulares (__buildDorfCaveLevel) */
+/* 2) Gerador Procedural Amplo e Orgânico por Entrada (__buildDorfCaveLevel)
+      Não explora profundidades e não usa salas retangulares padrão. */
 function __buildDorfCaveLevel(runCfg = {}) {
-  const depth = Math.max(1, runCfg.depth || 1);
-  // Semente muda a cada expedição para que os túneis sempre se transformem
-  const salt = runCfg.freshSeed || Math.floor(Date.now() / 1000);
-  const seedStr = `${runCfg.seed || "dorf"}_${depth}_${salt}`;
-  let sd = seedStr.split("").reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 17) >>> 0;
+  const salt = runCfg.freshSeed || `${Date.now()}_${Math.floor(Math.random() * 1e9)}_${++__dorfN}`;
+  const seedStr = `${runCfg.seed || "dorf"}_${salt}`;
+  let sd = seedStr.split("").reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 19) >>> 0;
   const rnd = () => (sd = (sd * 1664525 + 1013904223) >>> 0) / 4294967296;
   const pick = (a) => a[(rnd() * a.length) | 0];
   const between = (a, b) => a + rnd() * (b - a);
 
-  const C = 76, R = 62;
+  // Mapa amplo de caverna (88x68 tiles = 2816x2176 px)
+  const C = 88, R = 68;
   const grid = Array.from({ length: R }, () => new Array(C).fill(1));
 
-  // Centros das clareiras orgânicas (dispostas em rede exploratória sinuosa, nunca em grade reta)
   const flipX = rnd() < 0.5;
   const tx = (x) => (flipX ? C - 1 - x : x);
+  const jitX = (x, m = 3) => Math.max(10, Math.min(C - 11, Math.round(tx(x) + between(-m, m))));
+  const jitY = (y, m = 3) => Math.max(11, Math.min(R - 10, Math.round(y + between(-m, m))));
 
-  const nodes = [
-    { id: "fenda_entrada", name: "Fenda de Basalto", cx: tx(14), cy: 13, rx: 6.2, ry: 4.5, kind: "START" },
-    { id: "clareira_musgo_1", name: "Clareira do Musgo Antigo", cx: tx(31), cy: Math.round(between(14, 17)), rx: 7.8, ry: 5.4, kind: "MOSS" },
-    { id: "galeria_colunas", name: "Galeria das Estalagmites", cx: tx(50), cy: Math.round(between(15, 19)), rx: 7.2, ry: 5.0, kind: "DARK_ROCK", pillar: true },
-    { id: "alcova_norte", name: "Recanto Oculto da Forja", cx: tx(64), cy: Math.round(between(12, 15)), rx: 5.2, ry: 4.2, kind: "ALCOVE_LOOT" },
-    { id: "jardim_subterraneo", name: "Terraço Subterrâneo de Dorf", cx: tx(42), cy: Math.round(between(33, 36)), rx: 8.2, ry: 5.6, kind: "MOSS", pillar: rnd() < 0.5 },
-    { id: "alcova_sul", name: "Fenda Esquecida do Ferreiro", cx: tx(16), cy: Math.round(between(35, 39)), rx: 5.4, ry: 4.3, kind: "ALCOVE_LOOT" },
-    { id: "abismo_profundo", name: "Coração da Montanha Dorf", cx: tx(58), cy: Math.round(between(46, 49)), rx: 7.6, ry: 5.2, kind: "EXIT" }
-  ];
+  // Escolher proceduralmente uma entre 4 arquiteturas macro de caverna a cada entrada
+  const archStyle = Math.floor(rnd() * 4);
+  let nodes = [];
+  let edges = [];
+  let rockIslands = [];
 
-  // Arestas de túneis sinuosos conectando as clareiras e alcovas
-  const edges = [
-    [0, 1],
-    [1, 2],
-    [2, 3], // túnel estreito para a alcova de loot 1
-    [1, 4],
-    [2, 4],
-    [4, 5], // túnel sinuoso para a alcova de loot 2
-    [4, 6]  // descida para o abismo profundo (saída)
-  ];
+  if (archStyle === 0) {
+    // Arquitetura A: Caldeira de Musgo Central & Penínsulas Abissais (inspirada na Imagem de Referência 3)
+    nodes = [
+      { id: "entrada", name: "Fenda Norte de Basalto", cx: jitX(18, 2), cy: jitY(14, 1), rx: 7.5, ry: 5.2, kind: "START" },
+      { id: "terraco_musgo_sup", name: "Santuário do Musgo Antigo", cx: jitX(38, 2), cy: jitY(19, 2), rx: 11.2, ry: 7.4, kind: "MOSS" },
+      { id: "galeria_leste", name: "Galeria das Colunas Rubras", cx: jitX(65, 2), cy: jitY(21, 2), rx: 9.6, ry: 6.8, kind: "DARK_ROCK" },
+      { id: "alcova_noroeste", name: "Fenda Oculta do Ferreiro", cx: jitX(74, 2), cy: jitY(12, 1), rx: 5.5, ry: 4.3, kind: "ALCOVE_LOOT" },
+      { id: "vale_subterraneo", name: "Vale Subterrâneo de Dorf", cx: jitX(26, 2), cy: jitY(39, 2), rx: 9.8, ry: 6.5, kind: "OPEN" },
+      { id: "terraco_musgo_inf", name: "Jardim dos Vasos Luminescentes", cx: jitX(58, 2), cy: jitY(44, 2), rx: 10.4, ry: 6.8, kind: "MOSS" },
+      { id: "alcova_sudoeste", name: "Recanto das Relíquias", cx: jitX(14, 2), cy: jitY(54, 2), rx: 5.8, ry: 4.5, kind: "ALCOVE_LOOT" },
+      { id: "alcova_sudeste", name: "Gruta dos Cristais Azuis", cx: jitX(74, 2), cy: jitY(54, 2), rx: 5.8, ry: 4.4, kind: "ALCOVE_LOOT" },
+      { id: "coracao_dorf", name: "Coração da Montanha Dorf", cx: jitX(44, 3), cy: jitY(55, 2), rx: 9.2, ry: 6.0, kind: "SANCTUARY" }
+    ];
+    edges = [
+      [0, 1], [1, 2], [2, 3], [0, 4], [1, 4], [1, 5], [2, 5],
+      [4, 6], [5, 7], [4, 8], [5, 8]
+    ];
+    rockIslands = [
+      { cx: jitX(48, 1), cy: jitY(32, 1), rx: 5.2, ry: 4.2 },
+      { cx: jitX(29, 1), cy: jitY(27, 1), rx: 4.4, ry: 3.6 }
+    ];
+  } else if (archStyle === 1) {
+    // Arquitetura B: Galerias Gêmeas & Anel Subterrâneo Amplo
+    nodes = [
+      { id: "entrada", name: "Pórtico da Montanha", cx: jitX(44, 3), cy: jitY(13, 1), rx: 8.0, ry: 5.2, kind: "START" },
+      { id: "salao_oeste", name: "Clareira Hexagonal Oeste", cx: jitX(22, 2), cy: jitY(24, 2), rx: 10.8, ry: 7.2, kind: "MOSS" },
+      { id: "salao_leste", name: "Floresta de Estalagmites", cx: jitX(66, 2), cy: jitY(24, 2), rx: 10.6, ry: 7.0, kind: "DARK_ROCK" },
+      { id: "alcova_1", name: "Fenda da Bigorna Antiga", cx: jitX(13, 1), cy: jitY(13, 1), rx: 5.4, ry: 4.2, kind: "ALCOVE_LOOT" },
+      { id: "ponte_central", name: "Encruzilhada de Basalto", cx: jitX(44, 2), cy: jitY(35, 2), rx: 9.4, ry: 6.4, kind: "OPEN" },
+      { id: "alcova_2", name: "Câmara da Forja Perdida", cx: jitX(75, 1), cy: jitY(41, 2), rx: 5.6, ry: 4.4, kind: "ALCOVE_LOOT" },
+      { id: "santuario_musgo", name: "Terraço Verdejante Sul", cx: jitX(25, 2), cy: jitY(48, 2), rx: 10.2, ry: 6.8, kind: "MOSS" },
+      { id: "alcova_3", name: "Fenda dos Veios de Ouro", cx: jitX(15, 2), cy: jitY(57, 1), rx: 5.5, ry: 4.3, kind: "ALCOVE_LOOT" },
+      { id: "coracao_dorf", name: "Santuário Profundo de Dorf", cx: jitX(58, 2), cy: jitY(54, 2), rx: 9.6, ry: 6.2, kind: "SANCTUARY" }
+    ];
+    edges = [
+      [0, 1], [0, 2], [1, 3], [1, 4], [2, 4], [2, 5],
+      [1, 6], [4, 6], [6, 7], [4, 8], [6, 8]
+    ];
+    rockIslands = [
+      { cx: jitX(44, 1), cy: jitY(23, 1), rx: 5.5, ry: 4.0 },
+      { cx: jitX(42, 1), cy: jitY(47, 1), rx: 5.0, ry: 3.8 }
+    ];
+  } else if (archStyle === 2) {
+    // Arquitetura C: Anfiteatro Curvo em Crescente com Fendas Laterais
+    nodes = [
+      { id: "entrada", name: "Entrada das Falésias", cx: jitX(68, 2), cy: jitY(14, 1), rx: 7.8, ry: 5.2, kind: "START" },
+      { id: "galeria_norte", name: "Terraço Superior de Dorf", cx: jitX(42, 2), cy: jitY(17, 2), rx: 11.4, ry: 7.0, kind: "MOSS" },
+      { id: "alcova_norte", name: "Fenda Norte do Ferreiro", cx: jitX(15, 2), cy: jitY(15, 1), rx: 5.8, ry: 4.4, kind: "ALCOVE_LOOT" },
+      { id: "curva_oeste", name: "Passagem das Samambaias Gigantes", cx: jitX(20, 2), cy: jitY(33, 2), rx: 9.8, ry: 6.8, kind: "OPEN" },
+      { id: "galeria_central", name: "Salão das Colunas de Basalto", cx: jitX(48, 2), cy: jitY(36, 2), rx: 10.5, ry: 6.8, kind: "DARK_ROCK" },
+      { id: "alcova_leste", name: "Recanto da Forja Cristalina", cx: jitX(74, 2), cy: jitY(35, 2), rx: 5.6, ry: 4.4, kind: "ALCOVE_LOOT" },
+      { id: "terraco_sul", name: "Clareira do Musgo Luminoso", cx: jitX(30, 2), cy: jitY(52, 2), rx: 10.6, ry: 6.8, kind: "MOSS" },
+      { id: "alcova_sul", name: "Gruta Esquecida", cx: jitX(73, 2), cy: jitY(55, 1), rx: 5.6, ry: 4.3, kind: "ALCOVE_LOOT" },
+      { id: "coracao_dorf", name: "Altar da Montanha Dorf", cx: jitX(54, 2), cy: jitY(54, 2), rx: 9.2, ry: 6.0, kind: "SANCTUARY" }
+    ];
+    edges = [
+      [0, 1], [1, 2], [1, 3], [1, 4], [3, 4], [4, 5],
+      [3, 6], [4, 6], [6, 8], [4, 8], [8, 7]
+    ];
+    rockIslands = [
+      { cx: jitX(34, 1), cy: jitY(27, 1), rx: 4.8, ry: 3.8 },
+      { cx: jitX(61, 1), cy: jitY(26, 1), rx: 5.2, ry: 4.0 }
+    ];
+  } else {
+    // Arquitetura D: Grande Caverna Exploratória Multi-Lobular
+    nodes = [
+      { id: "entrada", name: "Arco de Basalto", cx: jitX(26, 2), cy: jitY(14, 1), rx: 7.6, ry: 5.0, kind: "START" },
+      { id: "clareira_1", name: "Clareira dos Brotos Dourados", cx: jitX(24, 2), cy: jitY(29, 2), rx: 10.6, ry: 7.0, kind: "MOSS" },
+      { id: "clareira_2", name: "Galeria dos Cogumelos Gigantes", cx: jitX(52, 2), cy: jitY(20, 2), rx: 10.4, ry: 6.8, kind: "OPEN" },
+      { id: "alcova_1", name: "Fenda Secreta Leste", cx: jitX(75, 1), cy: jitY(16, 1), rx: 5.6, ry: 4.3, kind: "ALCOVE_LOOT" },
+      { id: "clareira_3", name: "Terraço das Estalagmites Rubras", cx: jitX(62, 2), cy: jitY(38, 2), rx: 11.0, ry: 7.2, kind: "MOSS" },
+      { id: "alcova_2", name: "Fenda Profunda Oeste", cx: jitX(13, 1), cy: jitY(46, 2), rx: 5.6, ry: 4.4, kind: "ALCOVE_LOOT" },
+      { id: "clareira_4", name: "Vale das Sombras Antigas", cx: jitX(34, 2), cy: jitY(49, 2), rx: 9.8, ry: 6.6, kind: "DARK_ROCK" },
+      { id: "alcova_3", name: "Arca do Ferreiro Ancestral", cx: jitX(75, 1), cy: jitY(55, 1), rx: 5.6, ry: 4.3, kind: "ALCOVE_LOOT" },
+      { id: "coracao_dorf", name: "Pórtico Sul da Montanha", cx: jitX(54, 2), cy: jitY(55, 2), rx: 9.4, ry: 6.0, kind: "SANCTUARY" }
+    ];
+    edges = [
+      [0, 1], [0, 2], [1, 2], [2, 3], [2, 4], [1, 4],
+      [1, 5], [1, 6], [4, 6], [6, 8], [4, 8], [8, 7]
+    ];
+    rockIslands = [
+      { cx: jitX(41, 1), cy: jitY(33, 1), rx: 5.4, ry: 4.2 }
+    ];
+  }
 
-  const carveDisk = (cx, cy, rx, ry, ph1 = 0, ph2 = 0) => {
-    const x0 = Math.max(4, Math.floor(cx - rx - 2));
-    const x1 = Math.min(C - 5, Math.ceil(cx + rx + 2));
-    const y0 = Math.max(6, Math.floor(cy - ry - 2));
-    const y1 = Math.min(R - 5, Math.ceil(cy + ry + 2));
+  const carveDisk = (cx, cy, rx, ry, ph1 = 0, ph2 = 0, val = 0) => {
+    const x0 = Math.max(4, Math.floor(cx - rx - 3));
+    const x1 = Math.min(C - 5, Math.ceil(cx + rx + 3));
+    const y0 = Math.max(6, Math.floor(cy - ry - 3));
+    const y1 = Math.min(R - 5, Math.ceil(cy + ry + 3));
     for (let r = y0; r <= y1; r++) {
       for (let c = x0; c <= x1; c++) {
         const ang = Math.atan2(r - cy, c - cx);
-        const wob = 1.0 + 0.14 * Math.sin(ang * 3 + ph1) + 0.09 * Math.cos(ang * 5 + ph2);
+        const wob = 1.0 + 0.15 * Math.sin(ang * 3 + ph1) + 0.10 * Math.cos(ang * 5 + ph2);
         const d2 = ((c - cx) / (rx * wob)) ** 2 + ((r - cy) / (ry * wob)) ** 2;
-        if (d2 <= 1.0) grid[r][c] = 0;
+        if (d2 <= 1.0) grid[r][c] = val;
       }
     }
   };
 
-  // 1) Esculpir clareiras multi-lobulares orgânicas
+  // 1) Esculpir grandes clareiras multi-lobulares orgânicas
   for (const nd of nodes) {
     const p1 = between(0, 6.28), p2 = between(0, 6.28);
-    carveDisk(nd.cx, nd.cy, nd.rx, nd.ry, p1, p2);
-    // Lóbulos secundários para quebrar qualquer simetria elíptica
-    for (let k = 0; k < 2; k++) {
+    carveDisk(nd.cx, nd.cy, nd.rx, nd.ry, p1, p2, 0);
+    const lobes = nd.kind === "ALCOVE_LOOT" ? 2 : 3;
+    for (let k = 0; k < lobes; k++) {
       const a = between(0, 6.28);
-      const ox = nd.cx + Math.cos(a) * nd.rx * 0.48;
-      const oy = nd.cy + Math.sin(a) * nd.ry * 0.42;
-      carveDisk(ox, oy, nd.rx * 0.55, nd.ry * 0.52, p1 + k, p2 - k);
+      const ox = nd.cx + Math.cos(a) * nd.rx * 0.52;
+      const oy = nd.cy + Math.sin(a) * nd.ry * 0.46;
+      carveDisk(ox, oy, nd.rx * 0.62, nd.ry * 0.58, p1 + k * 1.7, p2 - k * 1.3, 0);
     }
   }
 
-  // 2) Esculpir túneis orgânicos curvos (curvas de Bézier com largura variável)
+  // 2) Esculpir galerias curvas largas entre as clareiras (e fendas mais estreitas para as alcovas de baú)
   for (const [i, j] of edges) {
     const A = nodes[i], B = nodes[j];
     const isAlcove = A.kind === "ALCOVE_LOOT" || B.kind === "ALCOVE_LOOT";
-    const mx = (A.cx + B.cx) * 0.5 + between(-6, 6);
+    const mx = (A.cx + B.cx) * 0.5 + between(-7, 7);
     const my = (A.cy + B.cy) * 0.5 + between(-5, 5);
-    const steps = 44;
+    const steps = 52;
     const ph = between(0, 6.28);
     for (let s = 0; s <= steps; s++) {
       const t = s / steps, u = 1 - t;
       const x = u * u * A.cx + 2 * u * t * mx + t * t * B.cx;
       const y = u * u * A.cy + 2 * u * t * my + t * t * B.cy;
-      const wRx = (isAlcove ? 2.1 : 2.6) + 0.45 * Math.sin(t * Math.PI * 3 + ph);
-      const wRy = (isAlcove ? 1.9 : 2.3) + 0.35 * Math.cos(t * Math.PI * 2 + ph);
-      carveDisk(x, y, wRx, wRy, ph, ph * 0.5);
+      const wRx = (isAlcove ? 2.4 : 3.8) + 0.55 * Math.sin(t * Math.PI * 3 + ph);
+      const wRy = (isAlcove ? 2.1 : 3.2) + 0.45 * Math.cos(t * Math.PI * 2 + ph);
+      carveDisk(x, y, wRx, wRy, ph, ph * 0.6, 0);
     }
   }
 
-  // 3) Garantir nicho de entrada no topo da Fenda de Entrada para o Portal de Retorno
+  // 2b) Inserir penínsulas/ilhas rochosas abissais entre os grandes salões (como na Imagem 3)
+  for (const isl of rockIslands) {
+    carveDisk(isl.cx, isl.cy, isl.rx, isl.ry, between(0, 6.28), between(0, 6.28), 1);
+  }
+
+  // 3) Garantir nicho de entrada norte para o Arco do Portal de Entrada
   const st = nodes[0];
   let spCol = Math.round(st.cx), spRow = Math.round(st.cy) - 1;
   while (spRow > 6 && grid[spRow - 1][spCol] === 0) spRow--;
-  // Parede norte reta de 4 colunas apenas para encaixar o arco de pedra da entrada
   for (let dc = -2; dc <= 1; dc++) {
     const cc = Math.max(5, Math.min(C - 6, spCol + dc));
     for (let r = 0; r < spRow; r++) grid[r][cc] = 1;
@@ -262,12 +411,12 @@ function __buildDorfCaveLevel(runCfg = {}) {
   }
   const playerSpawn = { col: spCol, row: spRow + 2 };
 
-  // 4) Suavização celular (Cellular Automata) para eliminar pontas quadradas
+  // 4) Suavização celular (Cellular Automata) para contornos 100% naturais
   for (let pass = 0; pass < 2; pass++) {
     const next = grid.map((r) => r.slice());
     for (let r = 6; r < R - 4; r++) {
       for (let c = 4; c < C - 4; c++) {
-        if (Math.abs(c - spCol) <= 2 && Math.abs(r - spRow) <= 3) continue;
+        if (Math.abs(c - spCol) <= 3 && Math.abs(r - spRow) <= 3) continue;
         let floors = 0;
         for (let dy = -1; dy <= 1; dy++) {
           for (let dx = -1; dx <= 1; dx++) {
@@ -282,16 +431,16 @@ function __buildDorfCaveLevel(runCfg = {}) {
     for (let r = 6; r < R - 4; r++) for (let c = 4; c < C - 4; c++) grid[r][c] = next[r][c];
   }
 
-  // 5) Quebrar paredes horizontais longas (> 3 colunas) para manter o efeito em degraus das imagens de referência
+  // 5) Quebrar paredes horizontais longas (> 3 colunas) para criar o efeito de falésias de basalto em degraus
   for (let r = 6; r < R - 5; r++) {
     let run = 0;
     for (let c = 4; c < C - 4; c++) {
       if (Math.abs(c - spCol) <= 3 && Math.abs(r - spRow) <= 3) { run = 0; continue; }
       if (grid[r][c] === 0 && grid[r - 1][c] === 1) {
         run++;
-        if (run >= 3 && rnd() < 0.65) {
+        if (run >= 3 && rnd() < 0.62) {
           if (r + 3 < R - 4 && grid[r + 1][c] === 0 && grid[r + 2][c] === 0) {
-            grid[r][c] = 1; // degrau de basalto descendo 1 tile
+            grid[r][c] = 1;
           }
           run = 0;
         }
@@ -301,8 +450,7 @@ function __buildDorfCaveLevel(runCfg = {}) {
     }
   }
 
-  // 6) Regra de espessura vertical de parede (>= 5 tiles) para que as colunas de basalto de 3 tiles
-  //    + borda sul de 1 tile + abismo escuro nunca se sobreponham a pisos caminháveis!
+  // 6) Regra de espessura vertical de parede (>= 5 tiles) para falésias de basalto de 3 tiles + borda sul + abismo
   for (let c = 0; c < C; c++) {
     for (let r = 0; r < 5; r++) grid[r][c] = 1;
     for (let r = R - 3; r < R; r++) grid[r][c] = 1;
@@ -338,31 +486,55 @@ function __buildDorfCaveLevel(runCfg = {}) {
   }
 
   // 7) Garantir conectividade total a partir de playerSpawn via Flood Fill (BFS)
-  const vis = Array.from({ length: R }, () => new Array(C).fill(false));
-  const q = [[playerSpawn.col, playerSpawn.row]];
-  grid[playerSpawn.row][playerSpawn.col] = 0;
-  vis[playerSpawn.row][playerSpawn.col] = true;
-  while (q.length) {
-    const [cx, cy] = q.shift();
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-      const nx = cx + dx, ny = cy + dy;
-      if (nx >= 3 && nx < C - 3 && ny >= 5 && ny < R - 3 && !vis[ny][nx] && grid[ny][nx] === 0) {
-        vis[ny][nx] = true;
-        q.push([nx, ny]);
+  const ensureConnected = () => {
+    const vis = Array.from({ length: R }, () => new Array(C).fill(false));
+    const q = [[playerSpawn.col, playerSpawn.row]];
+    grid[playerSpawn.row][playerSpawn.col] = 0;
+    vis[playerSpawn.row][playerSpawn.col] = true;
+    while (q.length) {
+      const [cx, cy] = q.shift();
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = cx + dx, ny = cy + dy;
+        if (nx >= 3 && nx < C - 3 && ny >= 5 && ny < R - 3 && !vis[ny][nx] && grid[ny][nx] === 0) {
+          vis[ny][nx] = true;
+          q.push([nx, ny]);
+        }
+      }
+    }
+    return vis;
+  };
+
+  let vis = ensureConnected();
+  // Se algum nó importante ficou desconectado por uma ilha rochosa, abrir passagem de 3 tiles até playerSpawn
+  for (const nd of nodes) {
+    const nc = Math.max(5, Math.min(C - 6, Math.round(nd.cx)));
+    const nr = Math.max(7, Math.min(R - 6, Math.round(nd.cy)));
+    if (!vis[nr]?.[nc]) {
+      const steps = 40;
+      for (let s = 0; s <= steps; s++) {
+        const t = s / steps;
+        const x = Math.round(playerSpawn.col + (nc - playerSpawn.col) * t);
+        const y = Math.round(playerSpawn.row + (nr - playerSpawn.row) * t);
+        for (let dy = -2; dy <= 2; dy++) {
+          for (let dx = -2; dx <= 2; dx++) {
+            if (y + dy >= 6 && y + dy < R - 4 && x + dx >= 4 && x + dx < C - 4) {
+              grid[y + dy][x + dx] = 0;
+            }
+          }
+        }
       }
     }
   }
-  // Fechar bolhas isoladas inacessíveis
+  vis = ensureConnected();
   for (let r = 0; r < R; r++) {
     for (let c = 0; c < C; c++) {
       if (grid[r][c] === 0 && !vis[r][c]) grid[r][c] = 1;
     }
   }
 
-  // Helper para achar o piso válido mais próximo de (tc, tr)
   const nearestFloor = (tc, tr, minClear = 1) => {
     tc = Math.round(tc); tr = Math.round(tr);
-    for (let rad = 0; rad < 18; rad++) {
+    for (let rad = 0; rad < 22; rad++) {
       for (let dy = -rad; dy <= rad; dy++) {
         for (let dx = -rad; dx <= rad; dx++) {
           const c = tc + dx, r = tr + dy;
@@ -380,7 +552,7 @@ function __buildDorfCaveLevel(runCfg = {}) {
     return { col: playerSpawn.col, row: playerSpawn.row + 1 };
   };
 
-  // 8) Converter a malha orgânica em spans horizontais em `corridors` (para _l.prototype.carve)
+  // 8) Spans horizontais em `corridors` (usados pelo minimapa orgânico)
   const corridors = [];
   for (let r = 0; r < R; r++) {
     let c = 0;
@@ -395,144 +567,145 @@ function __buildDorfCaveLevel(runCfg = {}) {
     }
   }
 
-  // 9) Definir as zonas orgânicas (sem portas!), inimigos de patrulha e os 2-3 baús raros nas alcovas
+  // 9) Inimigos reais do jogo (chaves validadas em `ee`) e poucos baús valiosos nas fendas ocultas
   const enemyPools = {
-    common: ["BAT", "SPIDER", "GOBLIN", "SKELETON", "SLIME"],
-    mid: ["GHOUL", "WRAITH", "GARGOYLE", "DARK_MAGE"],
-    elite: ["GOLEM", "VOID_STALKER", "DEATH_KNIGHT"]
+    common: ["GOBLIN", "GOBLIN_ARCHER", "GOBLIN_ASSASSIN", "SKELETON", "SKELETON_WARRIOR", "ORC"],
+    mid: ["ORC_WARRIOR", "ORC_BRUTE", "SKELETON_MAGE", "NECRO_SHADE", "MB_CINDER_STALKER", "MB_CRYSTAL_SAGE"],
+    elite: ["MB_BASALT_COLOSSUS", "TROLL", "CYCLOPS", "DEMON"]
   };
 
-  const rooms = [];
   const mossZones = [];
   const darkZones = [];
+  const decor = [];
+  const caveEnemies = [];
+  let sanctuaryNode = null;
 
-  nodes.forEach((nd, idx) => {
+  // Escolher no máximo 2 ou 3 alcovas para conter os baús raros (escassos e valiosos!)
+  const alcoveNodes = nodes.filter((n) => n.kind === "ALCOVE_LOOT");
+  const maxAlcoveChests = rnd() < 0.45 ? 3 : 2;
+  const activeChestAlcoves = new Set(alcoveNodes.slice(0, maxAlcoveChests).map((n) => n.id));
+
+  nodes.forEach((nd) => {
     const center = nearestFloor(nd.cx, nd.cy, 1);
     nd.cx = center.col;
     nd.cy = center.row;
 
-    const rw = Math.max(6, Math.round(nd.rx * 1.8));
-    const rh = Math.max(5, Math.round(nd.ry * 1.8));
-    const rx = Math.max(3, Math.min(C - rw - 3, center.col - Math.floor(rw / 2)));
-    const ry = Math.max(5, Math.min(R - rh - 3, center.row - Math.floor(rh / 2)));
-
-    // Paredes internas dentro do bounding box da zona para que _l.prototype.carve mantenha o formato 100% orgânico!
-    const walls = [];
-    for (let r = ry; r < ry + rh; r++) {
-      for (let c = rx; c < rx + rw; c++) {
-        if (grid[r][c] === 1) walls.push({ x: c, y: r, w: 1, h: 1 });
-      }
-    }
-
     if (nd.kind === "MOSS") {
-      mossZones.push({ cx: center.col, cy: center.row, rx: nd.rx * 0.68, ry: nd.ry * 0.62 });
-    } else if (nd.kind === "DARK_ROCK" || nd.kind === "EXIT") {
-      darkZones.push({ cx: center.col, cy: center.row, rx: nd.rx * 0.72, ry: nd.ry * 0.68 });
+      mossZones.push({ cx: center.col, cy: center.row, rx: nd.rx * 0.72, ry: nd.ry * 0.66 });
+    } else if (nd.kind === "DARK_ROCK" || nd.kind === "SANCTUARY") {
+      darkZones.push({ cx: center.col, cy: center.row, rx: nd.rx * 0.76, ry: nd.ry * 0.72 });
     }
-
-    const enemies = [];
-    const decor = [];
 
     if (nd.kind === "START") {
-      // Zona inicial tranquila
-    } else if (nd.kind === "ALCOVE_LOOT") {
-      // Alcova oculta: guarda 1 Baú Valioso com Moedas do Ferreiro + 1-2 guardiões
-      const chSpot = nearestFloor(center.col, center.row - 1, 1);
-      const tier = depth >= 3 || rnd() < 0.42 ? "EPIC" : "RARE";
-      decor.push({
-        type: "chest",
-        col: chSpot.col,
-        row: chSpot.row,
-        tier: tier,
-        noMimic: true,
-        dorfCache: true
-      });
-      const guardCount = 1 + (rnd() < 0.55 ? 1 : 0);
+      // Entrada pacífica junto ao portal
+      return;
+    }
+
+    if (nd.kind === "ALCOVE_LOOT") {
+      if (activeChestAlcoves.has(nd.id)) {
+        const chSpot = nearestFloor(center.col, center.row - 1, 1);
+        const tier = rnd() < 0.18 ? "LEGENDARY" : rnd() < 0.55 ? "EPIC" : "RARE";
+        decor.push({
+          type: "chest",
+          col: chSpot.col,
+          row: chSpot.row,
+          tier: tier,
+          noMimic: true,
+          dorfCache: true
+        });
+      }
+      const guardCount = 2;
       for (let k = 0; k < guardCount; k++) {
         const ep = nearestFloor(center.col + (k ? 2 : -2), center.row + 1, 0);
-        enemies.push({
-          type: pick(depth >= 2 ? enemyPools.mid : enemyPools.common),
+        caveEnemies.push({
+          type: pick(k === 0 ? enemyPools.mid : enemyPools.common),
           col: ep.col,
           row: ep.row,
           elite: k === 0 && rnd() < 0.35
         });
       }
-    } else if (nd.kind === "EXIT") {
-      // Abismo Profundo: Guardião de Elite + lacaios + portal de descida ao limpar
+    } else if (nd.kind === "SANCTUARY") {
+      sanctuaryNode = nd;
       const bossSpot = nearestFloor(center.col, center.row, 1);
-      enemies.push({
+      caveEnemies.push({
         type: pick(enemyPools.elite),
         col: bossSpot.col,
         row: bossSpot.row,
         elite: true
       });
-      const minionCount = 2 + Math.min(2, Math.floor(depth / 2));
-      for (let k = 0; k < minionCount; k++) {
-        const ang = (k / minionCount) * Math.PI * 2;
-        const ep = nearestFloor(center.col + Math.cos(ang) * 3, center.row + Math.sin(ang) * 2, 0);
-        enemies.push({
+      for (let k = 0; k < 3; k++) {
+        const ang = (k / 3) * Math.PI * 2;
+        const ep = nearestFloor(center.col + Math.cos(ang) * 3.5, center.row + Math.sin(ang) * 2.5, 0);
+        caveEnemies.push({
           type: pick(rnd() < 0.5 ? enemyPools.mid : enemyPools.common),
           col: ep.col,
-          row: ep.row
+          row: ep.row,
+          elite: false
         });
       }
-      // Chance de 1 relíquia ancestral extra no fundo do abismo a cada 2 níveis
-      if (depth % 2 === 0 || rnd() < 0.35) {
-        const cSpot = nearestFloor(center.col + 3, center.row - 2, 1);
+      // 1 Arca Ancestral guardada pelo Elite no Santuário se houver apenas 2 alcovas ativas
+      if (activeChestAlcoves.size <= 2) {
+        const cSpot = nearestFloor(center.col + 3, center.row - 1, 1);
         decor.push({
           type: "chest",
           col: cSpot.col,
           row: cSpot.row,
-          tier: depth >= 4 ? "LEGENDARY" : "EPIC",
+          tier: rnd() < 0.35 ? "LEGENDARY" : "EPIC",
           noMimic: true,
           dorfCache: true
         });
       }
     } else {
-      // Clareiras principais de exploração: patrulhas moderadas
-      const count = 2 + (rnd() < 0.6 ? 1 : 0) + (depth >= 3 && rnd() < 0.4 ? 1 : 0);
+      // Grandes clareiras abertas de exploração: patrulhas naturais espalhadas
+      const count = 2 + (rnd() < 0.65 ? 1 : 0);
       for (let k = 0; k < count; k++) {
-        const ang = (k / count) * Math.PI * 2 + between(-0.3, 0.3);
-        const ep = nearestFloor(center.col + Math.cos(ang) * 3.2, center.row + Math.sin(ang) * 2.2, 0);
-        enemies.push({
-          type: pick(k === 0 && rnd() < 0.45 ? enemyPools.mid : enemyPools.common),
+        const ang = (k / count) * Math.PI * 2 + between(-0.4, 0.4);
+        const ep = nearestFloor(center.col + Math.cos(ang) * 4.0, center.row + Math.sin(ang) * 2.8, 0);
+        caveEnemies.push({
+          type: pick(k === 0 && rnd() < 0.5 ? enemyPools.mid : enemyPools.common),
           col: ep.col,
           row: ep.row,
-          elite: k === 0 && depth >= 2 && rnd() < 0.2
+          elite: k === 0 && rnd() < 0.18
         });
       }
     }
-
-    rooms.push({
-      id: nd.id + "_" + idx,
-      name: nd.name,
-      roomType: nd.kind === "START" ? "START" : nd.kind === "ALCOVE_LOOT" ? "TREASURE" : nd.kind === "EXIT" ? "ELITE" : "COMBAT",
-      rect: { x: rx, y: ry, w: rw, h: rh },
-      walls: walls,
-      enemies: enemies,
-      decor: decor,
-      ambient: 0.56,
-      exit: nd.kind === "EXIT"
-    });
   });
+
+  // 1 única zona contínua abrangendo toda a caverna para não existir transição/trancamento de salas!
+  const rooms = [
+    {
+      id: "dorf_expanse",
+      name: "Cavernas da Montanha Dorf",
+      roomType: "START",
+      rect: { x: 2, y: 2, w: C - 4, h: R - 4 },
+      walls: [],
+      enemies: [],
+      decor: decor,
+      ambient: 0.62,
+      exit: false
+    }
+  ];
 
   return {
     id: "dorf_cave",
     biome: "dorf_cave",
-    name: "Cavernas da Montanha Dorf" + (depth > 1 ? ` · Nível ${depth}` : ""),
-    depth: depth,
+    name: "Cavernas da Montanha Dorf",
+    depth: 1,
     seed: seedStr,
-    endless: true,
+    endless: false,
+    next: null,
     theme: Ls.dorf_cave,
     world: { cols: C, rows: R },
     playerSpawn: playerSpawn,
     rooms: rooms,
     corridors: corridors,
-    doors: [], // Zero portas: cenário 100% exploratório e contínuo!
+    doors: [], // Zero portas: cenário exploratório contínuo!
     __organicGrid: grid,
     __mossZones: mossZones,
     __darkZones: darkZones,
-    __nodes: nodes
+    __nodes: nodes,
+    __sanctuaryNode: sanctuaryNode,
+    __caveEnemies: caveEnemies
   };
 }
 
@@ -545,7 +718,6 @@ function __dorfBake(B) {
   const S = B.scene, M = S.cache.json.get("dorf-atlas");
   if (!M || !S.textures.exists("dorf-atlas")) return false;
 
-  // Garantir que a malha de colisão B.grid seja exatamente a malha orgânica se presente
   if (B.level?.__organicGrid) {
     for (let r = 0; r < B.rows; r++) {
       for (let c = 0; c < B.cols; c++) {
@@ -566,7 +738,7 @@ function __dorfBake(B) {
   const tx = S.textures.createCanvas(key, C * T, R * T), g = tx.getContext();
   g.imageSmoothingEnabled = false;
 
-  let sd = (String(B.level.seed ?? "dorf") + "_" + (B.level.depth || 1))
+  let sd = String(B.level.seed ?? "dorf")
     .split("")
     .reduce((a, c) => ((a * 31 + c.charCodeAt(0)) | 0), 13) >>> 0;
   const rnd = () => (sd = (sd * 1664525 + 1013904223) >>> 0) / 4294967296;
@@ -581,7 +753,7 @@ function __dorfBake(B) {
   g.fillStyle = "#0d0a10";
   g.fillRect(0, 0, C * T, R * T);
 
-  // 2) Mapa de musgo hexagonal orgânico e terraços
+  // 2) Mapa de musgo hexagonal orgânico e solo vulcânico escuro
   const isMoss = Array.from({ length: R }, () => new Array(C).fill(false));
   const isDark = Array.from({ length: R }, () => new Array(C).fill(false));
   const mossZones = B.level.__mossZones || [];
@@ -590,10 +762,9 @@ function __dorfBake(B) {
   for (let r = 0; r < R; r++) {
     for (let c = 0; c < C; c++) {
       if (!F(c, r)) continue;
-      // O musgo hexagonal fica a pelo menos 1 tile de distância das paredes norte para o terraço respirar
       for (const mz of mossZones) {
         const ang = Math.atan2(r - mz.cy, c - mz.cx);
-        const wob = 1.0 + 0.12 * Math.sin(ang * 3 + mz.cx) + 0.08 * Math.cos(ang * 4 - mz.cy);
+        const wob = 1.0 + 0.14 * Math.sin(ang * 3 + mz.cx) + 0.09 * Math.cos(ang * 4 - mz.cy);
         const d2 = ((c - mz.cx) / (mz.rx * wob)) ** 2 + ((r - mz.cy) / (mz.ry * wob)) ** 2;
         if (d2 <= 1.0 && F(c, r - 1) && F(c, r + 1) && F(c - 1, r) && F(c + 1, r)) {
           isMoss[r][c] = true;
@@ -636,9 +807,9 @@ function __dorfBake(B) {
         D(pick(M.floor.dark), x, y);
       } else {
         const p = rnd();
-        if (p < 0.065 && M.floor.craters?.length) {
+        if (p < 0.068 && M.floor.craters?.length) {
           D(pick(M.floor.craters), x, y);
-        } else if (p < 0.145 && M.floor.tufts?.length) {
+        } else if (p < 0.155 && M.floor.tufts?.length) {
           D(pick(M.floor.tufts), x, y);
         } else {
           D(pick(M.floor.dirt), x, y);
@@ -659,13 +830,12 @@ function __dorfBake(B) {
     }
   }
 
-  // 5) Bordas Laterais (Leste/Oeste) e Borda Sul de Basalto (desenhadas antes das colunas norte)
+  // 5) Bordas Laterais (Leste/Oeste) e Borda Sul de Basalto (incluindo penínsulas rochosas internas!)
   if (M.wall.south && M.wall.sideL && M.wall.sideR) {
     for (let r = 0; r < R; r++) {
       for (let c = 0; c < C; c++) {
         if (F(c, r) || hasNCol[r][c]) continue;
         const fn = F(c, r - 1);
-        const fs = F(c, r + 1);
         const fw = F(c - 1, r);
         const fe = F(c + 1, r);
         const x = c * T, y = r * T;
@@ -690,13 +860,13 @@ function __dorfBake(B) {
 
   // 6) Paredes Norte de Basalto de 3 Tiles de Altura (cap + mid + base + vinhas luminescentes)
   const grottoSpots = [];
-  const sp = B.level.playerSpawn || { col: 14, row: 14 };
+  const sp = B.level.playerSpawn || { col: 18, row: 14 };
 
   for (let r = 1; r < R; r++) {
     for (let c = 0; c < C; c++) {
       if (!F(c, r) || F(c, r - 1)) continue;
       const x = c * T;
-      const useGlow = rnd() < 0.24 && M.wall.glowCap?.length;
+      const useGlow = rnd() < 0.26 && M.wall.glowCap?.length;
       const k = (c * 3 + r * 5) % M.wall.cap.length;
       const gk = (c * 3 + r * 5) % (M.wall.glowCap?.length || 1);
 
@@ -710,16 +880,14 @@ function __dorfBake(B) {
         D(M.wall.base[k], x, (r - 1) * T);
       }
 
-      // Sombra de oclusão suave no pé da falésia de basalto
       g.fillStyle = "rgba(8, 5, 12, 0.34)";
       g.fillRect(x, r * T, T, 6);
 
-      // Candidato para grota escura embutida na parede norte (2 colunas alinhadas longe do spawn)
       if (
         c > 5 && c < C - 6 &&
-        Math.hypot(c - sp.col, r - sp.row) > 8 &&
+        Math.hypot(c - sp.col, r - sp.row) > 9 &&
         F(c + 1, r) && !F(c + 1, r - 1) &&
-        rnd() < 0.14
+        rnd() < 0.16
       ) {
         grottoSpots.push({ col: c, row: r });
       }
@@ -730,8 +898,8 @@ function __dorfBake(B) {
   if (M.arches?.grotto) {
     let placedGrottos = 0;
     for (const gs of grottoSpots) {
-      if (placedGrottos >= 3) break;
-      if (grottoSpots.some((o) => o !== gs && o.__used && Math.hypot(o.col - gs.col, o.row - gs.row) < 12)) continue;
+      if (placedGrottos >= 4) break;
+      if (grottoSpots.some((o) => o !== gs && o.__used && Math.hypot(o.col - gs.col, o.row - gs.row) < 11)) continue;
       gs.__used = true;
       placedGrottos++;
       D(M.arches.grotto, gs.col * T, (gs.row - 3) * T);
@@ -743,7 +911,6 @@ function __dorfBake(B) {
   if (M.ledge) {
     for (const mz of mossZones) {
       const sc = Math.round(mz.cx);
-      // Encontrar a borda sul do musgo para posicionar a escadaria de pedra de 2 tiles
       let sRow = Math.round(mz.cy);
       while (sRow < R - 4 && isMoss[sRow]?.[sc]) sRow++;
       if (F(sc, sRow) && F(sc + 1, sRow)) {
@@ -753,7 +920,6 @@ function __dorfBake(B) {
         stairTiles.add(`${sc},${sRow - 1}`);
         stairTiles.add(`${sc + 1},${sRow - 1}`);
       }
-      // Pilares laterais de pedra cinza nas extremidades oeste e leste do terraço
       let wCol = Math.round(mz.cx);
       while (wCol > 4 && isMoss[Math.round(mz.cy)]?.[wCol]) wCol--;
       let eCol = Math.round(mz.cx);
@@ -784,42 +950,38 @@ function __dorfBake(B) {
     }
   }
 
-  // 9) Animações de Chamas de Cristal Ciano e Verde
-  if (!S.anims.exists("dorf-light-cyan")) {
-    ["cyan", "green", "fire"].forEach((colKey) => {
-      const frames = M.lights[colKey];
-      if (!frames) return;
-      frames.forEach((rect, idx) => {
-        const fKey = `dorf-l-${colKey}-${idx}`;
-        if (!S.textures.exists(fKey)) {
-          const c = S.textures.createCanvas(fKey, rect[2], rect[3]);
-          const ctx = c.getContext();
-          ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(src, rect[0], rect[1], rect[2], rect[3], 0, 0, rect[2], rect[3]);
-          c.refresh();
-        }
-      });
+  // 9) Animações de Chamas de Cristal Ciano e Verde (32x64 por frame, 6 frames suaves sem piscar!)
+  ["cyan", "green", "fire"].forEach((colKey) => {
+    const frames = M.lights[colKey];
+    if (!frames || !frames.length) return;
+    frames.forEach((rect, idx) => {
+      const fKey = `dorf-l32-${colKey}-${idx}`;
+      if (!S.textures.exists(fKey)) {
+        const c = S.textures.createCanvas(fKey, rect[2], rect[3]);
+        const ctx = c.getContext();
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(src, rect[0], rect[1], rect[2], rect[3], 0, 0, rect[2], rect[3]);
+        c.refresh();
+      }
+    });
+    const animKey = `dorf-light32-${colKey}`;
+    if (!S.anims.exists(animKey)) {
       S.anims.create({
-        key: `dorf-light-${colKey}`,
-        frames: [
-          { key: `dorf-l-${colKey}-0` },
-          { key: `dorf-l-${colKey}-1` },
-          { key: `dorf-l-${colKey}-2` },
-          { key: `dorf-l-${colKey}-1` }
-        ],
-        frameRate: 6,
+        key: animKey,
+        frames: frames.map((_, idx) => ({ key: `dorf-l32-${colKey}-${idx}` })),
+        frameRate: 8,
         repeat: -1
       });
-    });
-  }
+    }
+  });
 
   const spawnBrazier = (wx, wy, colKey = "cyan") => {
-    const spr = S.add.sprite(wx, wy, `dorf-l-${colKey}-0`)
-      .setOrigin(0.5, 0.72)
+    const spr = S.add.sprite(wx, wy, `dorf-l32-${colKey}-0`)
+      .setOrigin(0.5, 0.92)
       .setDepth(wy + 4);
-    spr.play(`dorf-light-${colKey}`);
+    spr.play(`dorf-light32-${colKey}`);
     const tint = colKey === "cyan" ? 0x38bdf8 : colKey === "green" ? 0x4ade80 : 0xfbbf24;
-    const gl = S.add.image(wx, wy - 8, "light")
+    const gl = S.add.image(wx, wy - 16, "light")
       .setBlendMode(j.BlendModes.ADD)
       .setTint(tint)
       .setScale(0.52)
@@ -827,17 +989,17 @@ function __dorfBake(B) {
       .setDepth(wy + 3);
     S.tweens.add({
       targets: gl,
-      alpha: { from: 0.18, to: 0.34 },
-      scale: { from: 0.46, to: 0.58 },
-      duration: 950 + Math.random() * 400,
+      alpha: { from: 0.20, to: 0.34 },
+      scale: { from: 0.48, to: 0.56 },
+      duration: 1100 + Math.random() * 400,
       yoyo: true,
       repeat: -1
     });
-    B.lightSources?.push({ x: wx, y: wy - 6, type: "MAGIC_CRYSTAL", color: tint, radius: 135 });
+    B.lightSources?.push({ x: wx, y: wy - 14, type: "MAGIC_CRYSTAL", color: tint, radius: 140 });
     return spr;
   };
 
-  // 10) Portal de Entrada/Retorno embutido na parede norte do spawn + Braseiros Ciano
+  // 10) Portais de Retorno ao Refúgio (Entrada Norte + Santuário Distante)
   let wallRow = sp.row;
   while (wallRow > 3 && F(sp.col, wallRow - 1)) wallRow--;
   const archX = (sp.col - 2) * T;
@@ -848,8 +1010,22 @@ function __dorfBake(B) {
   const spX = sp.col * T;
   const spY = wallRow * T + 8;
 
-  spawnBrazier(spX - 36, spY - 6, "cyan");
-  spawnBrazier(spX + 36, spY - 6, "cyan");
+  spawnBrazier(spX - 38, spY + 2, "cyan");
+  spawnBrazier(spX + 38, spY + 2, "cyan");
+
+  // Segundo Portal de Retorno no Santuário Distante (para sair após explorar sem precisar voltar tudo a pé)
+  let farPortalPos = null;
+  const sNode = B.level.__sanctuaryNode;
+  if (sNode) {
+    let fCol = Math.round(sNode.cx), fRow = Math.round(sNode.cy);
+    while (fRow > 5 && F(fCol, fRow - 1)) fRow--;
+    if (!F(fCol, fRow - 1) && F(fCol - 1, fRow) && F(fCol + 1, fRow)) {
+      if (M.portalArch) D(M.portalArch, (fCol - 2) * T, (fRow - 3) * T);
+      farPortalPos = { x: fCol * T, y: fRow * T + 8, col: fCol, row: fRow };
+      spawnBrazier(farPortalPos.x - 38, farPortalPos.y + 2, "cyan");
+      spawnBrazier(farPortalPos.x + 38, farPortalPos.y + 2, "cyan");
+    }
+  }
 
   // 11) Adereços 2.5D com Y-Sorting Real e Proporções 1:1 (Estalagmites, Cogumelos, Samambaias, Vasos)
   const usedCells = new Set();
@@ -860,9 +1036,12 @@ function __dorfBake(B) {
   };
   markUsed(sp.col, sp.row, 3);
   markUsed(sp.col, wallRow, 3);
+  if (farPortalPos) markUsed(farPortalPos.col, farPortalPos.row, 3);
   for (const rm of B.level.rooms || []) {
     for (const dc of rm.decor || []) markUsed(dc.col, dc.row, 2);
-    for (const en of rm.enemies || []) markUsed(en.col, en.row, 1);
+  }
+  for (const en of B.level.__caveEnemies || []) {
+    markUsed(en.col, en.row, 1);
   }
 
   if (!B.__dorfSolids && S.physics?.add) {
@@ -882,21 +1061,22 @@ function __dorfBake(B) {
     return im;
   };
 
-  // A) Grandes formações de estalagmites encostadas nas falésias norte e curvas da caverna
+  // A) Grandes formações de estalagmites encostadas nas falésias norte e curvas da caverna (Imagens 1, 2 e 3)
   const cliffCols = [
-    "p-col-red-tall-fern", "p-col-red-spire-fern", "p-col-tall-fern",
-    "p-col-spire-fern", "p-col-wide-fern", "p-col-cluster", "p-col-red-cluster"
+    "p-col-red-tall-fern", "p-col-red-spire-fern", "p-col-red-massive", "p-col-tall-fern",
+    "p-col-spire-fern", "p-col-wide-fern", "p-col-massive-fern", "p-col-cluster", "p-col-red-cluster"
   ];
   for (let r = 6; r < R - 5; r++) {
     for (let c = 5; c < C - 5; c++) {
       if (!F(c, r) || F(c, r - 1)) continue;
       if (usedCells.has(`${c},${r}`)) continue;
-      // Garantir que há espaço livre ao sul para nunca bloquear um corredor estreito
       if (!F(c, r + 1) || !F(c, r + 2) || !F(c, r + 3) || !F(c - 1, r + 1) || !F(c + 1, r + 1)) continue;
-      if (rnd() < 0.13) {
-        const fk = pick(cliffCols);
+      if (rnd() < 0.16) {
+        const fk = isMoss[r + 1]?.[c]
+          ? pick(["p-col-red-tall-fern", "p-col-red-spire-fern", "p-col-red-massive", "p-col-red-cluster"])
+          : pick(cliffCols);
         const wx = c * T + T * 0.5;
-        const wy = r * T + 22;
+        const wy = r * T + 24;
         spawnProp25D(fk, wx, wy, 28, 14, 0);
         markUsed(c, r, 3);
       }
@@ -904,7 +1084,7 @@ function __dorfBake(B) {
   }
 
   // B) Pilares de rocha internos nas clareiras amplas + Vasos de Brotos no Musgo Hexagonal
-  const midCols = ["p-col-trio", "p-col-red-trio", "p-col-cone", "p-col-red-cone", "p-col-pillar", "p-col-twin-fern"];
+  const midCols = ["p-col-trio", "p-col-red-trio", "p-col-cone", "p-col-red-cone", "p-col-pillar", "p-col-twin-fern", "p-rock-trio", "p-rock-red-trio"];
   const shroomKeys = ["p-shroom-big", "p-shroom-big-2", "p-shroom-cluster", "p-shroom-med-1", "p-shroom-med-2", "p-shroom-tiny"];
   const fernKeys = ["p-fern-big", "p-fern-med", "p-fern-small", "p-reeds-big", "p-reeds-small"];
 
@@ -914,7 +1094,6 @@ function __dorfBake(B) {
       const wx = c * T + (rnd() - 0.5) * 8 + T * 0.5;
       const wy = r * T + (rnd() - 0.5) * 8 + T * 0.75;
 
-      // Verificar se é interior amplo (3x3 livre ao redor)
       let open3x3 = true;
       for (let dy = -1; dy <= 1 && open3x3; dy++) {
         for (let dx = -1; dx <= 1 && open3x3; dx++) {
@@ -923,22 +1102,20 @@ function __dorfBake(B) {
       }
 
       if (isMoss[r][c]) {
-        // Dentro da clareira de musgo: vasos luminescentes (sprout-pot) como nas Imagens 2 e 3
-        if (open3x3 && rnd() < 0.055) {
+        if (open3x3 && rnd() < 0.065) {
           spawnProp25D(rnd() < 0.5 ? "p-sprout-pot-1" : "p-sprout-pot-2", wx, wy, 14, 10, 0);
           markUsed(c, r, 2);
-        } else if (rnd() < 0.045) {
+        } else if (rnd() < 0.05) {
           spawnProp25D(pick(["p-reeds-small", "p-fern-tiny"]), wx, wy, 0, 0, -12);
           markUsed(c, r, 1);
         }
       } else {
-        // Nas bordas de parede lateral/sul ou clareiras abertas: cogumelos, samambaias e colunas menores
         const nearWall = !F(c - 1, r) || !F(c + 1, r) || !F(c, r - 1) || !F(c, r + 1);
-        if (open3x3 && rnd() < 0.025 && F(c, r + 2) && F(c, r - 2)) {
+        if (open3x3 && rnd() < 0.032 && F(c, r + 2) && F(c, r - 2)) {
           const fk = pick(midCols);
           spawnProp25D(fk, wx, wy, 20, 12, 0);
           markUsed(c, r, 2);
-        } else if (nearWall && rnd() < 0.11) {
+        } else if (nearWall && rnd() < 0.12) {
           const sk = pick(shroomKeys);
           const isBig = sk.includes("big") || sk.includes("cluster");
           spawnProp25D(sk, wx, wy, isBig ? 14 : 0, isBig ? 10 : 0, isBig ? 0 : -8);
@@ -952,7 +1129,7 @@ function __dorfBake(B) {
             S.tweens.add({ targets: sgl, alpha: 0.09, duration: 1300 + Math.random() * 500, yoyo: true, repeat: -1 });
           }
           markUsed(c, r, 1);
-        } else if (rnd() < 0.075) {
+        } else if (rnd() < 0.08) {
           spawnProp25D(pick(fernKeys), wx, wy, 0, 0, -12);
           markUsed(c, r, 1);
         }
@@ -960,13 +1137,13 @@ function __dorfBake(B) {
     }
   }
 
-  // C) Braseiros de Cristal Ciano distribuídos nos pontos estratégicos (escadas dos terraços, alcovas e encruzilhadas)
+  // C) Braseiros de Cristal Ciano/Verde distribuídos nas escadarias dos terraços, fendas e encruzilhadas
   for (const mz of mossZones) {
     const sc = Math.round(mz.cx);
     let sRow = Math.round(mz.cy);
     while (sRow < R - 4 && isMoss[sRow]?.[sc]) sRow++;
-    if (F(sc - 2, sRow)) spawnBrazier((sc - 2) * T + 16, sRow * T + 10, "cyan");
-    if (F(sc + 3, sRow)) spawnBrazier((sc + 3) * T + 16, sRow * T + 10, "cyan");
+    if (F(sc - 2, sRow)) spawnBrazier((sc - 2) * T + 16, sRow * T + 14, "cyan");
+    if (F(sc + 3, sRow)) spawnBrazier((sc + 3) * T + 16, sRow * T + 14, "cyan");
   }
   for (const nd of B.level.__nodes || []) {
     if (nd.kind === "START") continue;
@@ -982,32 +1159,73 @@ function __dorfBake(B) {
   B.groundLayer?.setVisible?.(false);
   B.wallLayer?.setVisible?.(false);
 
-  // 12) Configurar Portal de Retorno ao Refúgio, Colisões 2.5D, Economia de Moedas do Ferreiro e HUD
+  // 12) Configurar Portais de Retorno ao Refúgio, Inimigos de Patrulha, Colisões 2.5D e Moedas do Ferreiro
   if (S.isDorfCave) {
-    S.__dorfReturnPortal = { x: spX, y: spY, r: 44 };
-    const retVortex = S.add.sprite(spX, spY - 12, "portal", 0)
-      .setScale(0.85)
-      .setTint(0x38bdf8)
-      .setAlpha(0.75)
-      .setDepth(spY - 2);
-    if (S.anims.exists("portal-spin")) retVortex.play("portal-spin");
-
     const L3 = typeof __L3 === "function" ? __L3 : (pt) => pt;
-    S.add.text(spX, spY - 56, L3("SAÍDA · REFÚGIO", "EXIT · REFUGE", "SALIDA · REFUGIO"), {
-      fontFamily: "'Cinzel', Georgia, serif",
-      fontSize: "8px",
-      color: "#7dd3fc",
-      stroke: "#090d16",
-      strokeThickness: 3
-    }).setOrigin(0.5, 1).setDepth(9100);
+    S.__dorfReturnPortal = { x: spX, y: spY - 52, r: 44 };
+    S.__dorfPortals = [S.__dorfReturnPortal];
 
-    // Ativar colisão física entre o jogador/inimigos e a base das estalagmites 2.5D + hooks de economia
-    S.time?.delayedCall(120, () => {
-      if (!S.scene?.isActive()) return;
+    const addReturnVortex = (px, py) => {
+      const retVortex = S.add.sprite(px, py - 4, "portal", 0)
+        .setScale(0.85)
+        .setTint(0x38bdf8)
+        .setAlpha(0.78)
+        .setDepth(py - 2);
+      if (S.anims.exists("portal-spin")) retVortex.play("portal-spin");
+      S.add.text(px, py - 34, L3("SAÍDA · REFÚGIO", "EXIT · REFUGE", "SALIDA · REFUGIO"), {
+        fontFamily: "'Cinzel', Georgia, serif",
+        fontSize: "8px",
+        color: "#7dd3fc",
+        stroke: "#090d16",
+        strokeThickness: 3
+      }).setOrigin(0.5, 1).setDepth(9100);
+    };
+
+    addReturnVortex(spX, spY - 52);
+    if (farPortalPos) {
+      const fp = { x: farPortalPos.x, y: farPortalPos.y - 44, r: 44 };
+      S.__dorfPortals.push(fp);
+      addReturnVortex(fp.x, fp.y);
+    }
+
+    let postInitDone = false;
+    const runPostInit = () => {
+      if (postInitDone || !S.scene?.isActive()) return;
+      postInitDone = true;
       if (B.__dorfSolids && S.player) {
         S.physics.add.collider(S.player, B.__dorfSolids);
         if (S.enemies) S.physics.add.collider(S.enemies, B.__dorfSolids);
       }
+
+      // Instanciar criaturas patrulhando naturalmente pela caverna ampla (sem trancar salas)
+      if (!S.__dorfEnemiesSpawned && Array.isArray(B.level.__caveEnemies)) {
+        S.__dorfEnemiesSpawned = true;
+        for (const en of B.level.__caveEnemies) {
+          try {
+            const validType = typeof ee !== "undefined" && ee[en.type] ? en.type : "SKELETON_WARRIOR";
+            S.spawnEnemy?.(validType, en.col, en.row, { elite: !!en.elite, eliteRoll: false });
+          } catch (e) {}
+        }
+        if (B.__dorfSolids && S.enemies) {
+          S.physics.add.collider(S.enemies, B.__dorfSolids);
+        }
+      }
+
+      // Atualizar HUD superior direito para exibir EXPLORAÇÃO LIVRE em vez de SALAS: 0/0
+      try {
+        const uiScene = S.scene?.get?.("UI");
+        if (uiScene && uiScene.hud && !uiScene.hud.__dorfPatched) {
+          uiScene.hud.__dorfPatched = true;
+          const origHudRedraw = uiScene.hud.redraw.bind(uiScene.hud);
+          uiScene.hud.redraw = function () {
+            origHudRedraw();
+            if (S.isDorfCave && this.statusText) {
+              this.statusText.setText(L3("EXPLORAÇÃO LIVRE", "FREE EXPLORATION", "EXPLORACIÓN LIBRE"));
+            }
+          };
+          uiScene.hud.redraw();
+        }
+      } catch (e) {}
 
       // Indicador de Moedas do Ferreiro na HUD da caverna
       if (!S.__dorfCoinTxt) {
@@ -1032,9 +1250,8 @@ function __dorfBake(B) {
           origOpenChest(chest);
           if (S.isDorfCave && !chest.__dorfCoinGiven) {
             chest.__dorfCoinGiven = true;
-            // 1 a 2 moedas por arca oculta para manter o incentivo de explorar várias fendas!
-            const depth = S.levelDepth || 1;
-            const coins = (depth >= 3 && Math.random() < 0.45) || Math.random() < 0.25 ? 2 : 1;
+            // 1 a 2 moedas por arca oculta para manter o incentivo de explorar novas cavernas!
+            const coins = Math.random() < 0.35 ? 2 : 1;
             __addForgeCoins(coins, S, chest.x, chest.y);
           }
         };
@@ -1042,38 +1259,17 @@ function __dorfBake(B) {
         const origDropEnemy = S.lootSystem.dropFromEnemy.bind(S.lootSystem);
         S.lootSystem.dropFromEnemy = function (enemy) {
           if (S.isDorfCave && enemy) {
-            // Reduzir drop comum de inimigos normais para evitar poluição de loot
-            enemy.goldMult = (enemy.goldMult ?? 1) * 0.28;
-            if (enemy.isElite && !enemy.respawned && Math.random() < 0.45) {
+            enemy.goldMult = (enemy.goldMult ?? 1) * 0.3;
+            if (enemy.isElite && !enemy.respawned && Math.random() < 0.5) {
               __addForgeCoins(1, S, enemy.x, enemy.y);
             }
           }
           return origDropEnemy(enemy);
         };
       }
-    });
-
-    // Diálogo da Guardiã na primeira vez
-    try {
-      if (typeof localStorage !== "undefined" && !localStorage.getItem("depthgate:dorf_cave_guardian_voice")) {
-        localStorage.setItem("depthgate:dorf_cave_guardian_voice", "1");
-        S.time?.delayedCall(900, () => {
-          if (!S.scene?.isActive()) return;
-          const msg = " A Montanha de Dorf guarda segredos antigos, tenha cuidado";
-          try { if (typeof window !== "undefined" && window.__dubHas?.(msg)) window.__dub(msg); } catch (_) {}
-          S.game?.events?.emit("story:show", {
-            title: L3("GUARDIÃ · CAVERNAS DE DORF", "GUARDIAN · DORF CAVES", "GUARDIANA · CAVERNAS DE DORF"),
-            lines: [
-              L3(
-                "A Montanha de Dorf guarda segredos antigos, tenha cuidado.",
-                "Dorf Mountain holds ancient secrets, be careful.",
-                "La Montaña de Dorf guarda secretos antiguos, ten cuidado."
-              )
-            ]
-          });
-        });
-      }
-    } catch (e) {}
+    };
+    S.time?.delayedCall(120, runPostInit);
+    setTimeout(runPostInit, 160);
   }
 
   return true;
@@ -1095,7 +1291,8 @@ function __dorfReturnToRefuge(S) {
       if (res?.ok && res.data) {
         const d = res.data;
         d.player = d.player || {};
-        if (typeof S.player?.gold === "number") d.player.gold = S.player.gold;
+        if (typeof S.stats?.gold === "number") d.player.gold = S.stats.gold;
+        else if (typeof S.player?.gold === "number") d.player.gold = S.player.gold;
         d.player.forgeCoins = curForgeCoins;
         if (S.inventory?.serialize) {
           const inv = S.inventory.serialize();
@@ -1116,7 +1313,10 @@ function __dorfReturnToRefuge(S) {
     console.warn("[dorf_cave] erro ao salvar retorno:", e);
   }
 
-  S.cameraSys?.fadeOut(380, () => {
+  let returned = false;
+  const doReturn = () => {
+    if (returned) return;
+    returned = true;
     try { S.scene.stop("UI"); } catch (e) {}
     if (isCamp) {
       S.game.registry.set("hub:fromForest", { slot: slot });
@@ -1125,5 +1325,9 @@ function __dorfReturnToRefuge(S) {
     }
     S.game.registry.set("hub:classId", S.classDef?.id || "WARRIOR");
     S.scene.start("Hub");
-  });
+  };
+  try { S.cameras?.main?.fadeEffect?.reset?.(); } catch (e) {}
+  S.cameraSys?.fadeOut(350, doReturn);
+  setTimeout(doReturn, 420);
 }
+try { if (typeof window !== "undefined") window.__dorfReturnToRefuge = __dorfReturnToRefuge; } catch (e) {}
