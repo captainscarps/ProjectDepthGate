@@ -19,7 +19,7 @@ mk("vh-ht","vh-hunter-tans",0,5,6,-1);this.textures.exists("vh-herb-boil")&&mk("
 this.textures.exists("peasant-1")&&(mk("peasant-1-idle","peasant-1",0,11,6),mk("peasant-1-talk","peasant-1",48,58,7));this.textures.exists("peasant-3")&&(mk("peasant-3-idle","peasant-3",0,6,6),mk("peasant-3-talk","peasant-3",32,40,7));this.textures.exists("elf-1")&&(mk("elf-1-idle","elf-1",0,5,6),mk("elf-1-talk","elf-1",48,54,7));this.textures.exists("dorf-brazier")&&mk("dorf-brazier-a","dorf-brazier",0,5,8,-1);A.exists("hub-portal-a")||A.create({key:"hub-portal-a",frames:A.generateFrameNumbers("hub-portal",{start:0,end:13}),frameRate:10,repeat:-1})}
 create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
 const __F=this.game.registry.get("hub:fromForest");this.game.registry.remove("hub:fromForest");this.fromForest=!!__F;this.retSlot=__F?.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main;cam.setZoom(Pt*1.5);const z=cam.zoom;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);this.__us=Pt/z;cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
-const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];
+const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];this.title=null;this.shade=null;this.hud=null;this.smith=null;this.hunter=null;this.herb=null;this.panel=null;this.panelRows=null;this.__pz=null;this.__hs=null;this.__bub=null;this.dummies=[];
 /* chão, casa, props */
 this.add.image(0,0,"vh-ground").setOrigin(0).setDepth(-50);const H=M.house;
 this.house=this.add.sprite(H.x,H.y,"vh-house",0).setOrigin(0).setDepth(H.base);this.house.play("vh-house-c");this.doorOpen=!1;
@@ -36,7 +36,7 @@ this.add.image(S.shrine[0],S.shrine[1],"hub-shrine").setOrigin(.5,1).setDepth(S.
 this.add.image(S.campfire[0],S.campfire[1],"hub-campfire").setOrigin(.5,1).setDepth(S.campfire[1]-2);this.add.sprite(S.campfire[0],S.campfire[1]-8,"torch-flame",0).play("torch-flame-burn").setScale(1.7).setOrigin(.5,1).setDepth(S.campfire[1]);this.__glow(S.campfire[0],S.campfire[1]-12,.85,16750130,.42,800);
 this.time.addEvent({delay:320,loop:!0,callback:()=>{if(this.area!=="out")return;const e=this.add.rectangle(S.campfire[0]+j.Math.Between(-6,6),S.campfire[1]-14,2,2,16761418).setAlpha(.9).setDepth(S.campfire[1]+1).setBlendMode(ADD);this.tweens.add({targets:e,y:e.y-40-Math.random()*30,x:e.x+j.Math.Between(-10,10),alpha:0,duration:1700,onComplete:()=>e.destroy()})}});
 /* portal */
-this.add.image(S.portal[0],S.portal[1]-4,"dorf-portal-arch").setOrigin(.5,1).setDepth(S.portal[1]-.2);const po=this.add.sprite(S.portal[0],S.portal[1]-42,"hub-portal",0).setOrigin(.5,.5).setDepth(S.portal[1]-.1).setScale(.62).setTint(3718648);po.play("hub-portal-a");const po2=this.add.sprite(S.portal[0],S.portal[1]-42,"hub-portal",0).setOrigin(.5,.5).setDepth(S.portal[1]-.05).setScale(.62).setTint(9684477).setBlendMode(ADD).setAlpha(.35);po2.play("hub-portal-a");this.tweens.add({targets:po2,alpha:.75,duration:1200,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});this.add.sprite(S.portal[0]-42,S.portal[1]-6,"dorf-brazier",0).setOrigin(.5,1).setDepth(S.portal[1]).play("dorf-brazier-a");this.add.sprite(S.portal[0]+42,S.portal[1]-6,"dorf-brazier",0).setOrigin(.5,1).setDepth(S.portal[1]).play("dorf-brazier-a");this.__glow(S.portal[0]-42,S.portal[1]-22,.35,3718648,.4,900);this.__glow(S.portal[0]+42,S.portal[1]-22,.35,3718648,.4,900);this.__glow(S.portal[0],S.portal[1]-42,.75,3718648,.45,1100);
+const po=this.add.sprite(S.portal[0],S.portal[1]-6,"hub-portal",0).setOrigin(.5,1).setDepth(S.portal[1]).setScale(1.25).setTint(10125264);po.play("hub-portal-a");this.__glow(S.portal[0],S.portal[1]-34,.85,10125264,.42,1100);
 /* postes de luz */
 for(const[x,y]of M.lamps){const g=this.add.graphics().setDepth(y);g.fillStyle(0,.3).fillEllipse(x,y,12,4);g.fillStyle(3816992,1).fillRect(x-2,y-26,4,26);g.fillStyle(5922356,1).fillRect(x-1,y-26,1,26);g.fillStyle(2763306,1).fillRect(x-4,y-30,8,4);this.add.sprite(x,y-30,"torch-flame",0).play("torch-flame-burn").setOrigin(.5,1).setDepth(y+1);this.__glow(x,y-34,.42,16750130,.35,700+Math.random()*400)}
 /* janelas da forja brilhando */
@@ -56,14 +56,14 @@ const cid=this.game.registry.get("hub:classId")??"WARRIOR";this.classDef=pe[cid]
 this.__inters();
 /* placas com nomes */
 const lab=(x,y,t,c="#e8c873")=>{const o=this.add.text(x,y,t,{...Le,fontSize:"8px",color:c,stroke:"#120c08",strokeThickness:3}).setOrigin(.5,1).setScale(.7).setDepth(9100).setAlpha(.9);this.labels.push(o);return o};
-lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-108,L3("CAVERNAS DA MONTANHA DORF","DORF MOUNTAIN CAVES","CAVERNAS DE LA MONTAÑA DORF"),"#38bdf8");lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),this.fromForest?"#9fe08a":"#e8c873");lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");M.herb&&this.fromForest&&lab(M.herb.boiler[0],M.herb.boiler[1]-74,L3("HERBORISTA","HERBALIST","HERBOLARIA"),"#b8f0a0");
-/* câmera */
-this.__area("out",!0);
+lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-62,W("hub.portal"));lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),this.fromForest?"#9fe08a":"#e8c873");lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");M.herb&&this.fromForest&&lab(M.herb.boiler[0],M.herb.boiler[1]-74,L3("HERBORISTA","HERBALIST","HERBOLARIA"),"#b8f0a0");
 /* HUD */
 this.hud=this.add.container(this.__ox,this.__oy).setScrollFactor(0).setDepth(9600).setScale(this.__us);const g=this.add.graphics();Dt(g,8,8,250,40);this.hud.add(g);this.hud.add(this.add.image(24,28,"icon-fragment"));this.fragText=this.add.text(38,16,"",{...ti,fontSize:"11px",color:"#b08ae0"});this.hud.add(this.fragText);this.hud.add(this.add.text(38,32,this.fromForest?__L3("OURO · SÓ ESTA CAMPANHA","GOLD · THIS CAMPAIGN ONLY","ORO · SOLO ESTA CAMPAÑA"):__L3("FRAGMENTOS · MODO INFINITO","FRAGMENTS · ENDLESS MODE","FRAGMENTOS · MODO INFINITO"),{...Le,fontSize:"8px"}));
 this.title=this.add.text(_/2,12,W("hub.title"),{...la,fontSize:"18px"}).setOrigin(.5,0);this.hud.add(this.title);this.hint=this.add.text(_/2,62,"",{...Le,fontSize:"10px",color:"#ffd24a",stroke:"#120c08",strokeThickness:3}).setOrigin(.5,1);this.hud.add(this.hint);
 /* o botão START (pausa) fica na camada de controles (HubUI): aqui, dentro do HUD com zoom, o toque não acertava o botão */
 this.prompt=this.add.text(0,0,"",{...Le,fontSize:"9px",color:"#fff3c4",backgroundColor:"#1a1410cc",padding:{x:5,y:3}}).setOrigin(.5,1).setScale(.7).setDepth(9500).setVisible(!1);
+/* câmera */
+this.__area("out",!0);
 /* entrada */
 this.input.on("pointerdown",p=>{if(this.panel||this.__busy)return;if(this.__uiTap){this.__uiTap=!1;return}if(this.__joyStart(p))return;if(!this.__tapMove)return;if(this.game.inputManager?.wasTouchConsumed?.())return;const sx=p.x/(cam.zoom||Pt),sy=p.y/(cam.zoom||Pt);if(sy<52&&(sx<262||sx>_-110))return;const wx=p.worldX,wy=p.worldY;const it=this.inters.filter(o=>o.area===this.area&&Math.hypot(o.x-wx,(o.y-wy)*.9)<(o.tap??26)).sort((a,b)=>Math.hypot(a.x-wx,a.y-wy)-Math.hypot(b.x-wx,b.y-wy))[0];
 if(it){if(Math.hypot(it.x-this.playerX,it.y-this.playerY)<=it.r){this.__do(it);return}this.pending=it;this.__goto(it.ax??it.x,it.ay??it.y+14)}else{this.pending=null;this.__goto(wx,wy)}});
@@ -81,15 +81,15 @@ ff&&o.add(this.add.text(d,Y+H-14,L3("Seu progresso na campanha fica salvo.","You
 this.panel=o;this.panelRows=null;this.__pz={sel:0,opts,items};this.__padPv={a:!0,x:!0,s:!0,u:!0,d:!0};this.__pzDraw();this.game.audioEngine?.sfx?.("sfx-ui-open")}
 __pzDraw(){const P=this.__pz;if(!P)return;P.items.forEach((t,k)=>{const on=k===P.sel;t.setText(on?`»  ${P.opts[k][0]}  «`:P.opts[k][0]).setColor(on?"#ffd24a":"#d8cdb4")})}
 __pzNav(dir){const P=this.__pz;if(!P)return;P.sel=(P.sel+dir+P.opts.length)%P.opts.length;this.__pzDraw();this.game.audioEngine?.sfx?.("sfx-ui-tab")}
-__pzConfirm(){const P=this.__pz;if(!P)return;this.game.audioEngine?.sfx?.("sfx-ui-confirm");P.opts[P.sel][1]()}
-__pzClose(){if(!this.__pz)return;this.__pz=null;this.closePanel();this.__padPv={a:!0,x:!0,s:!0};this.__stPv=!0}
+__pzClose(){this.closePanel();this.__padPv={a:!0,x:!0,s:!0};this.__stPv=!0}
+closePanel(){this.panel?.destroy?.();this.panel=null;this.panelRows=null;this.__pz=null;this.__hs=null;}
 __backToForest(){if(this.__busy)return;this.__busy=!0;this.game.audioEngine?.sfx("sfx-endless-start");try{if(Dn(this.retSlot).ok){$o.prototype.continueGame.call(this,this.retSlot);return}}catch(e){}this.__busy=!1;this.exitToMenu()}
 __padPanel(){let g=null;try{g=Array.from(navigator.getGamepads?.()??[]).find(p=>p&&p.connected)}catch(e){}if(!g)return;const b=k=>!!(g.buttons[k]?.pressed||g.buttons[k]?.value>.5),ay=g.axes[1]??0,ax=g.axes[0]??0,now={u:b(12)||ay<-.6,d:b(13)||ay>.6,l:b(14)||ax<-.6,r:b(15)||ax>.6,a:b(0),x:b(1),s:b(9)||b(8)},pv=this.__padPv||{};this.__padPv=now;if(this.__pz){if(now.u&&!pv.u)this.__pzNav(-1);if(now.d&&!pv.d)this.__pzNav(1);if(now.a&&!pv.a)this.__pzConfirm();else if((now.x&&!pv.x)||(now.s&&!pv.s))this.__pzClose();return}if(this.__hs){if(now.u&&!pv.u)this.__hsNav(-1);if(now.d&&!pv.d)this.__hsNav(1);if(now.l&&!pv.l)this.__hsQty(-1);if(now.r&&!pv.r)this.__hsQty(1);if(now.a&&!pv.a)this.__hsBuy();if(now.x&&!pv.x)this.closePanel();return}if(now.u&&!pv.u)this.panelNav(-1);if(now.d&&!pv.d)this.panelNav(1);if(now.a&&!pv.a){this.panelRows?.length?this.panelConfirm():this.closePanel()}if(now.x&&!pv.x)this.closePanel()}
 __glow(x,y,s,c,a,d,dp){const o=this.add.image(x,y,"light").setScale(s).setBlendMode(j.BlendModes.ADD).setTint(c).setAlpha(a).setDepth(dp??9001);this.tweens.add({targets:o,alpha:a*.55,duration:d,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});return o}
 __area(a,instant){this.area=a;const cam=this.cameras.main,M=this.M,vw=cam.width/cam.zoom,vh=cam.height/cam.zoom;cam.stopFollow();
-if(a==="out"){const bx=M.w<vw?(M.w-vw)/2:0,bw=Math.max(M.w,vw),by=M.h<vh?(M.h-vh)/2:0,bh=Math.max(M.h,vh);cam.setBounds(bx,by,bw,bh);cam.startFollow(this.rig.container,!0,instant?1:.14,instant?1:.14);this.shade.setAlpha(.26);this.title?.setText(W("hub.title"))}
-else{const I=M.interior;cam.removeBounds?.();cam.useBounds=!1;cam.centerOn(I.x+I.w/2,I.y+I.h/2);this.shade.setAlpha(.12);this.title?.setText(__L3("FORJA","FORGE","FORJA"))}
-for(const o of this.labels)o.setVisible(a==="out");this.rig?.container?.setScale(a==="in"?.88:.6);const sm=this.smith;sm&&[sm.f,sm.a,sm.w].forEach(o=>o?.setScale(a==="in"?.65:.45))}
+if(a==="out"){const bx=M.w<vw?(M.w-vw)/2:0,bw=Math.max(M.w,vw),by=M.h<vh?(M.h-vh)/2:0,bh=Math.max(M.h,vh);cam.setBounds(bx,by,bw,bh);cam.startFollow(this.rig.container,!0,instant?1:.14,instant?1:.14);this.shade?.setAlpha?.(.26);if(this.title?.active)try{this.title.setText(W("hub.title"))}catch(_){}}
+else{const I=M.interior;cam.removeBounds?.();cam.useBounds=!1;cam.centerOn(I.x+I.w/2,I.y+I.h/2);this.shade?.setAlpha?.(.12);if(this.title?.active)try{this.title.setText(__L3("FORJA","FORGE","FORJA"))}catch(_){}}
+for(const o of this.labels)o.setVisible(a==="out");this.rig?.container?.setScale(a==="in"?.88:.6);const sm=this.smith;this.smith?.f?.setScale(a==="in"?.65:.45)}
 /* grade de colisão */
 __solid(x,y){const M=this.M,g=M.g;if(this.area==="in"){const I=M.interior,gx=Math.floor((x-I.x)/g),gy=Math.floor((y-I.y)/g);const r=I.coll[gy];return!r||gx<0||gx>=r.length||r[gx]==="1"}const gx=Math.floor(x/g),gy=Math.floor(y/g),r=M.coll[gy];return!r||gx<0||gx>=r.length||r[gx]==="1"}
 __free(x,y){return!this.__solid(x-3.5,y-1)&&!this.__solid(x+3.5,y-1)&&!this.__solid(x-3.5,y-5)&&!this.__solid(x+3.5,y-5)}
@@ -110,7 +110,7 @@ add({id:"girl",x:S.girl[0],y:S.girl[1],ay:S.girl[1]+16,r:32,label:L3("APRENDIZ",
 add({id:"board",x:S.board[0],y:S.board[1],ay:S.board[1]+14,r:30,label:L3("MURAL","NOTICE BOARD","TABLÓN"),desc:L3("Ler os avisos","Read the notices","Leer los avisos"),act:()=>this.__board()});
 add({id:"shrine",x:S.shrine[0],y:S.shrine[1],ay:S.shrine[1]+14,r:34,label:W("hub.shrine"),desc:W("hub.shrineDesc"),act:()=>{this.game.audioEngine?.sfx("sfx-shrine-use");this.openMetaPanel(W("hub.shrine"),W("hub.shrineQuote"),this.fromForest?["VITALITY","SWIFTNESS"]:["VITALITY","SWIFTNESS","ALCHEMY","PRECISION","MIGHT"])}});
 add({id:"campfire",x:S.campfire[0],y:S.campfire[1],ay:S.campfire[1]+16,r:34,label:L3("FOGUEIRA","CAMPFIRE","HOGUERA"),desc:L3("Descansar um pouco","Rest for a while","Descansar un poco"),act:()=>this.__rest()});
-add({id:"cave_npc",x:S.portal[0]-62,y:S.portal[1]+2,ay:S.portal[1]+16,r:36,tap:30,label:L3("EXPLORADOR","EXPLORER","EXPLORADOR"),desc:L3("Conversar","Talk","Hablar"),act:()=>this.__talkCaveNpc(()=>this.__enterDorfCave())});add({id:"portal",x:S.portal[0],y:S.portal[1]-8,ay:S.portal[1]+10,r:44,tap:50,label:L3("CAVERNAS DA MONTANHA DORF","DORF MOUNTAIN CAVES","CAVERNAS DE LA MONTAÑA DORF"),desc:this.fromForest?L3("Entrar nas Cavernas da Montanha Dorf (salva na Campanha)","Enter Dorf Mountain Caves (saves to Campaign)","Entrar en Cavernas de la Montaña Dorf (guarda en Campaña)"):L3("Entrar nas Cavernas da Montanha Dorf (Modo Infinito)","Enter Dorf Mountain Caves (Endless Mode)","Entrar en Cavernas de la Montaña Dorf (Modo Infinito)"),act:()=>this.__talkCaveNpc(()=>this.__enterDorfCave())});
+add({id:"portal",x:S.portal[0],y:S.portal[1]-8,ay:S.portal[1]+10,r:34,tap:40,label:W("hub.portal"),desc:this.fromForest?L3("Voltar ao Coração da Floresta (campanha)","Back to the Heart of the Forest (campaign)","Volver al Corazón del Bosque (campaña)"):W("hub.portalDesc"),act:()=>this.fromForest?this.__backToForest():this.enterPortal()});
 add({id:"sign",x:S.sign[0],y:S.sign[1],ay:S.sign[1]+12,r:28,label:this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),desc:this.fromForest?L3("Voltar ao Coração da Floresta","Back to the Heart of the Forest","Volver al Corazón del Bosque"):L3("Voltar ao menu","Back to the menu","Volver al menú"),act:()=>this.fromForest?this.__backToForest():this.exitToMenu()});
 M.herb&&this.fromForest&&add({id:"herb",x:M.herb.boiler[0],y:M.herb.boiler[1]-10,ay:M.herb.boiler[1]+16,r:46,tap:30,label:L3("HERBORISTA","HERBALIST","HERBOLARIA"),desc:L3("Comprar poções","Buy potions","Comprar pociones"),act:()=>this.__herbShop()});
 add({id:"hunter",x:S.hunter[0],y:S.hunter[1],ay:S.hunter[1]+16,r:32,label:L3("CURTIDOR","TANNER","CURTIDOR"),desc:L3("Conversar","Talk","Hablar"),act:()=>this.__talk("hunter")});
@@ -147,8 +147,7 @@ __steam(x,y){for(let i=0;i<6;i++){const p=this.add.image(x+j.Math.Between(-8,8),
 __caveExplorerInit(){
   const p=this.M?.spots?.portal;
   if(!p||!this.textures.exists("peasant-3"))return;
-  const cx=p[0]-62,cy=p[1]+2;
-  this.caveExplorer=this.add.sprite(cx,cy,"peasant-3",0).setOrigin(.5,1).setScale(.45).setDepth(cy).play("peasant-3-idle");
+  return; // Oculto por enquanto
 }
 __talkCaveNpc(onComplete){
   const s=this.caveExplorer,L3=__L3;
@@ -201,18 +200,13 @@ __enterDorfCave(){
   });
 }
 
-/* ── ferreiro: forja na bigorna, larga as ferramentas, anda pela oficina e volta ── */
-__smith(){const I=this.M.interior,A=I.smith.anvil;const s=this.smith={x:A[0],y:A[1]-20,state:"forge",t:7+Math.random()*4,walking:!1};
-s.f=this.add.sprite(A[0],A[1]+2,"peasant-1",0).setOrigin(.5,1).setScale(.65).setDepth(A[1]).play("peasant-1-idle");s.a=this.add.sprite(A[0],A[1],"vh-anvil",0).setOrigin(.5,1).setDepth(A[1]).setVisible(!1);
-s.w=this.add.sprite(I.smith.stand[0],I.smith.stand[1],"vh-smith-idle",0).setOrigin(.5,.9).setDepth(I.smith.stand[1]).setVisible(!1);
-s.f.on("animationrepeat",()=>{if(this.area==="in"&&s.state==="forge"){this.__sparks(A[0]+4,A[1]-22,6);window.__advancedAudio?.playMetalClang?.("E5")}})}
-__smithTick(dt){const s=this.smith;if(!s)return;const I=this.M.interior,P=I.smith;
+/* ── ferreiro: permanece na bigorna trabalhando e conversando como peasant-1 permanente ── */
+__smith(){const I=this.M.interior,A=I.smith.anvil;const s=this.smith={x:A[0],y:A[1]-20,state:"forge",t:3,talk:0,walking:!1};
+s.f=this.add.sprite(A[0],A[1]+2,"peasant-1",0).setOrigin(.5,1).setScale(.65).setDepth(A[1]).play("peasant-1-idle");
+s.f.on("animationrepeat",()=>{if(this.area==="in"){this.__sparks(A[0]+4,A[1]-22,6);window.__advancedAudio?.playMetalClang?.("E5")}})}
+__smithTick(dt){const s=this.smith;if(!s)return;const P=this.M.interior.smith;
 if(s.talk>0){s.talk-=dt;if(s.talk<=0&&!this.panel){s.f.play("peasant-1-idle",!0)}return}
-if(s.state==="forge"){s.t-=dt;if(s.t<=0){s.state="leave";s.f.play("vh-sl");s.f.once("animationcomplete",()=>{s.f.setVisible(!1);s.a.setVisible(!0);s.walking=!0;s.w.setVisible(!0).setPosition(P.stand[0],P.stand[1]);const opts=[["forge","u"],["tub","d"],["grind","r"]],o=opts[Math.floor(Math.random()*opts.length)];s.route=[[P.stand[0],P[o[0]][1]],P[o[0]]];s.goal=o;s.state="walk"})}}
-else if(s.state==="walk"||s.state==="back"){const w=s.w,tgt=s.route[0];if(!tgt){if(s.state==="walk"){s.state="work";s.t=2.6+Math.random()*2;s.face=s.goal[1];w.play("vh-si-"+s.face,!0)}else{s.state="take";s.walking=!1;w.setVisible(!1);s.a.setVisible(!1);s.f.setVisible(!0).play("vh-st");s.f.once("animationcomplete",()=>{s.state="forge";s.t=8+Math.random()*5;s.f.play("vh-sf")})}return}
-const dx=tgt[0]-w.x,dy=tgt[1]-w.y,d=Math.hypot(dx,dy),sp=34*dt;if(d<=sp){w.setPosition(tgt[0],tgt[1]);s.route.shift()}else{w.x+=dx/d*sp;w.y+=dy/d*sp;const f=Math.abs(dx)>Math.abs(dy)?dx<0?"l":"r":dy<0?"u":"d";w.anims.currentAnim?.key!=="vh-sw-"+f&&w.play("vh-sw-"+f,!0);s.face=f}w.setDepth(w.y);s.x=w.x;s.y=w.y}
-else if(s.state==="work"){s.t-=dt;const g=s.goal[0],sp=I.spots[g==="grind"?"grind":g];if(this.area==="in"&&Math.random()<dt*2){g==="tub"?this.__steam(sp[0],sp[1]):this.__sparks(sp[0],sp[1]-10,4)}if(s.t<=0){s.state="back";s.route=[[P.stand[0],s.w.y],P.stand]}}
-if(!s.walking){s.x=P.anvil[0];s.y=P.anvil[1]-20}}
+s.x=P.anvil[0];s.y=P.anvil[1]-20}
 __smithTalk(){const s=this.smith,L3=__L3;s.talk=1e9;s.f.play("peasant-1-talk",!0);
 this.__say(s.x,s.y-38,[L3("Aço bom pede fogo paciente. Em que posso ajudar?","Good steel needs patient fire. How can I help?","El buen acero pide fuego paciente. ¿En qué te ayudo?"),L3("Traga fragmentos e eu deixo sua lâmina digna do Abismo.","Bring fragments and I'll make your blade worthy of the Abyss.","Trae fragmentos y haré tu hoja digna del Abismo.")][Math.floor(Math.random()*2)],1800,"#ffd9a0","old");this.time.delayedCall(350,()=>{this.__forgeWeaponsShop();this.__resumeSmith=!0})}
 /* ── curtidor: trabalha no varal, larga a faca, descansa e volta ── */
@@ -313,11 +307,11 @@ this.inters.push({area:"out",id:"hero-"+id,x,y,ay:y+14,r:30,label:name,desc:L3("
 __heroTalk(h){const L3=__L3,first=h.n++%2===0,t=h.visited?(first?h.after:h.about):h.about;h.face={x:Math.sign(this.playerX-h.x)||1,y:0};this.__say(h.x,h.y-40,`${(__HN[h.id]??h.id).toUpperCase()}: ${t}`,3600,h.visited&&first?"#b8f0a0":"#fff3c4",/ROGUE|MAGE|SHAMAN/.test(h.id)?"female":"male")}
 __heroesTick(e){for(const h of this.heroes||[]){if(this.area==="out"&&Math.hypot(this.playerX-h.x,this.playerY-h.y)<60){const dx=this.playerX-h.x,dy=this.playerY-h.y;h.face=Math.abs(dx)>Math.abs(dy)?{x:Math.sign(dx),y:0}:{x:0,y:Math.sign(dy)}}h.rig.update(e,{x:h.x,y:h.y,facing:h.face,body:h.body,dead:!1,invuln:0})}}
 /* ── Herborista: cabana, canteiro, estante e o caldeirão; loja de poções sem limite ── */
-__herbInit(){const B=this.M.herb;if(!B||!this.textures.exists("vh-herb-hut"))return;const ADD=j.BlendModes.ADD;
+__herbInit(){if(!this.fromForest)return;const B=this.M.herb;if(!B||!this.textures.exists("vh-herb-hut"))return;const ADD=j.BlendModes.ADD;
 this.add.image(B.hut[0],B.hut[1],"vh-herb-hut").setOrigin(.5,1).setDepth(B.hut[1]);this.add.image(B.bed[0],B.bed[1],"vh-herb-bed").setOrigin(.5,1).setDepth(B.bed[1]);this.add.image(B.shelf[0],B.shelf[1],"vh-herb-shelf").setOrigin(.5,1).setDepth(B.shelf[1]);
 this.add.sprite(B.boiler[0],B.boiler[1],"vh-herb-caul",0).setOrigin(.5,1).setDepth(B.boiler[1]+1).play("vh-herb-c");const s=this.add.sprite(B.boiler[0]-14,B.boiler[1]+2,"elf-1",0).setOrigin(.5,1).setScale(.44).setDepth(B.boiler[1]).play("elf-1-idle");this.herb={s,x:B.boiler[0],y:B.boiler[1],hi:!1,bt:0,on:!0};
 this.__glow(B.boiler[0],B.boiler[1]-20,.32,9101402,.32,900);this.__glow(B.hut[0]+14,B.hut[1]-24,.22,16764006,.18,1300)}
-__herbTick(e){const h=this.herb;if(!h||this.area!=="out")return;const top=27;h.bt-=e;if(h.bt<=0){h.bt=.28+Math.random()*.3;const b=this.add.circle(h.x+j.Math.Between(-7,7),h.y-top,j.Math.Between(1,2),j.Math.RND.pick([9101402,11206570,7522632])).setDepth(h.y+1).setAlpha(.9);this.tweens.add({targets:b,y:b.y-14-Math.random()*12,x:b.x+j.Math.Between(-4,4),alpha:0,duration:900+Math.random()*500,onComplete:()=>b.destroy()})}
+__herbTick(e){if(!this.fromForest)return;const h=this.herb;if(!h||this.area!=="out")return;const top=27;h.bt-=e;if(h.bt<=0){h.bt=.28+Math.random()*.3;const b=this.add.circle(h.x+j.Math.Between(-7,7),h.y-top,j.Math.Between(1,2),j.Math.RND.pick([9101402,11206570,7522632])).setDepth(h.y+1).setAlpha(.9);this.tweens.add({targets:b,y:b.y-14-Math.random()*12,x:b.x+j.Math.Between(-4,4),alpha:0,duration:900+Math.random()*500,onComplete:()=>b.destroy()})}
 if(!h.hi&&!this.panel&&Math.hypot(this.playerX-h.x,this.playerY-h.y)<84){h.hi=!0;h.s&&h.s.play("elf-1-talk",!0);this.time.delayedCall(2800,()=>h.s&&h.s.play("elf-1-idle",!0));this.__say(h.x,h.y-38,__L3("Psst! Poções fresquinhas, direto do caldeirão!","Psst! Fresh potions, straight from the cauldron!","¡Psst! ¡Pociones frescas, recién salidas del caldero!"),2800,"#c8f0b0","female")}}
 __hbPrice(k){return{c:20,p:55,v:80,d:70,a:90}[k]}
 __hbStore(){if(!this.fromForest)return null;const c=__cData(this);if(!c)return null;c.d.campaign??={};const ref=c.d.campaign.refuge??={upgrades:{}};ref.herb=Object.assign({c:0,p:0,v:0,d:0,a:0,s:"p"},ref.herb||{});const pl=c.d.player??={};return{h:ref.herb,money:pl.gold??0,run:pl.potions??0,max:5+(ref.upgrades?.SATCHEL??0),addRun:n=>{pl.potions=(pl.potions??0)+n},pay:n=>{c.d.player.gold=(c.d.player.gold??0)-n;try{localStorage.setItem(Wt("campaign",c.sl),JSON.stringify(c.d))}catch(e){return!1}this.game.registry.set("campaign:refuge",ref);return!0}}}

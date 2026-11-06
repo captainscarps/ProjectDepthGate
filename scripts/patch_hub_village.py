@@ -50,6 +50,7 @@ for _o, _n in [
     ('n=a?"—":`${er(t,o)}◆`', 'n=a?"—":this.fromForest?`${__cCost(t,o)}●`:`${er(t,o)}◆`'),
     ("if(Ol(i)){", "if(this.fromForest?__cBuy(this,i):Ol(i)){"),
     ('this.panelMsg.setText(W("hub.noFrags"))', 'this.panelMsg.setText(this.fromForest?__L3("Ouro da campanha insuficiente.","Not enough campaign gold.","Oro de campaña insuficiente."):W("hub.noFrags"))'),
+    ("closePanel(){this.panel?.destroy(),this.panel=null,this.panelRows=null}", "closePanel(){this.panel?.destroy(),this.panel=null,this.panelRows=null,this.__pz=null,this.__hs=null}"),
 ]:
     if _n not in panel:
         assert panel.count(_o) == 1, _o
