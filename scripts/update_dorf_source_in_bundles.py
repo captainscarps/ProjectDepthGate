@@ -27,6 +27,10 @@ for p in FILES:
     idx1 = s.index(ANCHOR_BEFORE) + len(ANCHOR_BEFORE)
     idx2 = s.index(ANCHOR_AFTER, idx1)
     s = s[:idx1] + SRC + s[idx2:]
+    old_lvl = 'const runCfg={depth:this.levelDepth,seed:"dorf_"+this.dorfSlot+"_"+this.levelDepth,biome:"dorf_cave",originMode:this.originMode};this.level=md(runCfg);'
+    new_lvl = 'const runCfg={depth:this.levelDepth,seed:"dorf_"+this.dorfSlot+"_"+this.levelDepth,biome:"dorf_cave",originMode:this.originMode};this.level=typeof __buildDorfCaveLevel==="function"?__buildDorfCaveLevel(runCfg):md(runCfg);'
+    if old_lvl in s:
+        s = s.replace(old_lvl, new_lvl)
     open(p, "w", encoding="utf-8").write(s)
     print(f"Updated dorf-caves.js in {p} successfully.")
 

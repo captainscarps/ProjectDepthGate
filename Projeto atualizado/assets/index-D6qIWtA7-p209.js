@@ -1950,9 +1950,9 @@ const cid=this.game.registry.get("hub:classId")??"WARRIOR";this.classDef=pe[cid]
 this.__inters();
 /* placas com nomes */
 const lab=(x,y,t,c="#e8c873")=>{const o=this.add.text(x,y,t,{...Le,fontSize:"8px",color:c,stroke:"#120c08",strokeThickness:3}).setOrigin(.5,1).setScale(.7).setDepth(9100).setAlpha(.9);this.labels.push(o);return o};
-lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-62,W("hub.portal"));lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),this.fromForest?"#9fe08a":"#e8c873");lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");M.herb&&this.fromForest&&lab(M.herb.boiler[0],M.herb.boiler[1]-74,L3("HERBORISTA","HERBALIST","HERBOLARIA"),"#b8f0a0");
+lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-62,W("hub.portal"));lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),this.fromForest?"#9fe08a":"#e8c873");lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");M.herb&&this.fromForest&&lab(M.herb.boiler[0],M.herb.boiler[1]-74,L3("HERBORISTA","HERBALIST","HERBOLARIA"),"#b8f0a0");lab(900,590,L3("CAVERNAS DORF","DORF CAVES","CAVERNAS DORF"),"#7dd3fc");lab(846,612,L3("EXPLORADOR","EXPLORER","EXPLORADOR"),"#fef08a");
 /* HUD */
-this.hud=this.add.container(this.__ox,this.__oy).setScrollFactor(0).setDepth(9600).setScale(this.__us);const g=this.add.graphics();Dt(g,8,8,250,40);this.hud.add(g);this.hud.add(this.add.image(24,28,"icon-fragment"));this.fragText=this.add.text(38,16,"",{...ti,fontSize:"11px",color:"#b08ae0"});this.hud.add(this.fragText);this.hud.add(this.add.text(38,32,this.fromForest?__L3("OURO · SÓ ESTA CAMPANHA","GOLD · THIS CAMPAIGN ONLY","ORO · SOLO ESTA CAMPAÑA"):__L3("FRAGMENTOS · MODO INFINITO","FRAGMENTS · ENDLESS MODE","FRAGMENTOS · MODO INFINITO"),{...Le,fontSize:"8px"}));
+this.hud=this.add.container(this.__ox,this.__oy).setScrollFactor(0).setDepth(9600).setScale(this.__us);const g=this.add.graphics();Dt(g,8,8,250,40);this.hud.add(g);this.hud.add(this.add.image(24,28,"icon-fragment"));this.fragText=this.add.text(38,16,"",{...ti,fontSize:"11px",color:"#b08ae0"});this.hud.add(this.fragText);this.forgeCoinHud=this.add.text(248,16,`🪙 ${typeof window!=="undefined"&&window.__getForgeCoins?window.__getForgeCoins(this):0}`,{...ti,fontSize:"10px",color:"#ffd24a"}).setOrigin(1,0);this.hud.add(this.forgeCoinHud);this.hud.add(this.add.text(38,32,this.fromForest?__L3("OURO · SÓ ESTA CAMPANHA","GOLD · THIS CAMPAIGN ONLY","ORO · SOLO ESTA CAMPAÑA"):__L3("FRAGMENTOS · MODO INFINITO","FRAGMENTS · ENDLESS MODE","FRAGMENTOS · MODO INFINITO"),{...Le,fontSize:"8px"}));
 this.title=this.add.text(_/2,12,W("hub.title"),{...la,fontSize:"18px"}).setOrigin(.5,0);this.hud.add(this.title);this.hint=this.add.text(_/2,62,"",{...Le,fontSize:"10px",color:"#ffd24a",stroke:"#120c08",strokeThickness:3}).setOrigin(.5,1);this.hud.add(this.hint);
 /* o botão START (pausa) fica na camada de controles (HubUI): aqui, dentro do HUD com zoom, o toque não acertava o botão */
 this.prompt=this.add.text(0,0,"",{...Le,fontSize:"9px",color:"#fff3c4",backgroundColor:"#1a1410cc",padding:{x:5,y:3}}).setOrigin(.5,1).setScale(.7).setDepth(9500).setVisible(!1);
@@ -2008,6 +2008,8 @@ add({id:"shrine",x:S.shrine[0],y:S.shrine[1],ay:S.shrine[1]+14,r:34,label:W("hub
 add({id:"campfire",x:S.campfire[0],y:S.campfire[1],ay:S.campfire[1]+16,r:34,label:L3("FOGUEIRA","CAMPFIRE","HOGUERA"),desc:L3("Descansar um pouco","Rest for a while","Descansar un poco"),act:()=>this.__rest()});
 add({id:"portal",x:S.portal[0],y:S.portal[1]-8,ay:S.portal[1]+10,r:34,tap:40,label:W("hub.portal"),desc:this.fromForest?L3("Voltar ao Coração da Floresta (campanha)","Back to the Heart of the Forest (campaign)","Volver al Corazón del Bosque (campaña)"):W("hub.portalDesc"),act:()=>this.fromForest?this.__backToForest():this.enterPortal()});
 add({id:"sign",x:S.sign[0],y:S.sign[1],ay:S.sign[1]+12,r:28,label:this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),desc:this.fromForest?L3("Voltar ao Coração da Floresta","Back to the Heart of the Forest","Volver al Corazón del Bosque"):L3("Voltar ao menu","Back to the menu","Volver al menú"),act:()=>this.fromForest?this.__backToForest():this.exitToMenu()});
+add({id:"cave_portal",x:900,y:654,ay:666,r:36,tap:42,label:L3("CAVERNAS DORF","DORF CAVES","CAVERNAS DORF"),desc:L3("Entrar na Caverna Procedural (Moedas do Ferreiro 🪙)","Enter the Procedural Cave (Blacksmith Coins 🪙)","Entrar en la Caverna Procedural (Monedas del Herrero 🪙)"),act:()=>this.__caveWarned?this.__enterDorfCave():(this.__caveWarned=!0,this.__talkCaveNpc(()=>this.__enterDorfCave()))});
+add({id:"cave_npc",x:846,y:658,ay:670,r:32,tap:34,label:L3("EXPLORADOR","EXPLORER","EXPLORADOR"),desc:L3("Conversar sobre as Cavernas Dorf","Talk about the Dorf Caves","Hablar sobre las Cavernas Dorf"),act:()=>this.__talkCaveNpc()});
 M.herb&&this.fromForest&&add({id:"herb",x:M.herb.boiler[0],y:M.herb.boiler[1]-10,ay:M.herb.boiler[1]+16,r:46,tap:30,label:L3("HERBORISTA","HERBALIST","HERBOLARIA"),desc:L3("Comprar poções","Buy potions","Comprar pociones"),act:()=>this.__herbShop()});
 add({id:"hunter",x:S.hunter[0],y:S.hunter[1],ay:S.hunter[1]+16,r:32,label:L3("CURTIDOR","TANNER","CURTIDOR"),desc:L3("Conversar","Talk","Hablar"),act:()=>this.__talk("hunter")});
 add({id:"cabin",x:S.cabin[0]-12,y:S.cabin[1],ay:S.cabin[1]+12,r:26,label:L3("CABANA","CABIN","CABAÑA"),desc:L3("Bater na porta","Knock on the door","Llamar a la puerta"),act:()=>{this.game.audioEngine?.sfx("sfx-door-locked");this.__say(S.cabin[0]-12,S.cabin[1]-40,L3("Trancada. O curtidor guarda as peles lá dentro.","Locked. The tanner keeps his hides inside.","Cerrada. El curtidor guarda las pieles dentro."))}});
@@ -2017,7 +2019,7 @@ const ins=o=>this.inters.push({area:"in",r:30,...o});
 ins({id:"smith",x:I.smith.anvil[0],y:I.smith.anvil[1]-6,ay:I.smith.anvil[1]+10,r:36,tap:30,dyn:()=>this.smith.walking?this.smith.w:null,label:W("hub.smith"),desc:W("hub.smithDesc"),act:()=>this.__smithTalk()});
 ins({id:"exit",x:I.door[0],y:I.door[1]-6,r:20,label:L3("SAIR","EXIT","SALIR"),desc:L3("Voltar para a vila","Back to the village","Volver a la aldea"),act:()=>this.__leave()});
 ins({id:"forge",x:I.spots.forge[0],y:I.spots.forge[1],ay:I.spots.forge[1]+14,r:28,label:L3("FORNALHA","FURNACE","FRAGUA"),desc:L3("Olhar o fogo","Look at the fire","Mirar el fuego"),act:()=>{this.__sparks(I.spots.forge[0],I.spots.forge[1]-14,14);this.__say(I.spots.forge[0],I.spots.forge[1]-30,L3("O calor quase queima as sobrancelhas.","The heat almost singes your eyebrows.","El calor casi quema las cejas."))}});
-ins({id:"rack",x:I.spots.rack[0],y:I.spots.rack[1],ay:I.spots.rack[1]-12,r:30,label:L3("ARMAS ÚNICAS","UNIQUE WEAPONS","ARMAS ÚNICAS"),desc:L3("Armaria do Ferreiro (Ouro)","Blacksmith Armory (Gold)","Armería del Herrero (Oro)"),act:()=>this.__forgeWeaponsShop()});
+ins({id:"rack",x:I.spots.rack[0],y:I.spots.rack[1],ay:I.spots.rack[1]-12,r:30,label:L3("ARMAS ÚNICAS","UNIQUE WEAPONS","ARMAS ÚNICAS"),desc:L3("Armaria do Ferreiro (Moedas 🪙)","Blacksmith Armory (Coins 🪙)","Armería del Herrero (Monedas 🪙)"),act:()=>this.__forgeWeaponsShop()});
 ins({id:"tub",x:I.spots.tub[0],y:I.spots.tub[1],ay:I.spots.tub[1]-12,r:28,label:L3("TINA","QUENCH TUB","TINA"),desc:L3("Olhar a água","Look at the water","Mirar el agua"),act:()=>{this.__steam(I.spots.tub[0],I.spots.tub[1]-8);this.__say(I.spots.tub[0],I.spots.tub[1]-30,L3("A água ainda chia do último aço temperado.","The water still hisses from the last quench.","El agua aún chisporrotea del último temple."))}})}
 nearestStation(){let best=null,bd=1e9;for(const o of this.inters){if(o.area!==this.area)continue;const t=o.dyn?.();if(o.dyn&&o.id==="dog"&&!t)continue;const x=t?t.x:o.x,y=t?t.y:o.y,d=Math.hypot(x-this.playerX,(y-this.playerY)*1.1);d<o.r&&d<bd&&(bd=d,best=o)}return best}
 tryInteract(){const o=this.nearestStation();o?this.__do(o):this.__attack()}
@@ -2039,30 +2041,77 @@ __pet(){const d=this.dog;if(!d)return;d.state="sit";d.t=3;d.s.play("vh-di-"+(thi
 __hit(d){const dx=d.x-this.playerX;Math.abs(dx)>3&&(this.facing={x:Math.sign(dx),y:0});this.__attack()}
 __sparks(x,y,n=10,c=16759610){for(let i=0;i<n;i++){const p=this.add.rectangle(x,y,1.5,1.5,c).setBlendMode(j.BlendModes.ADD).setDepth(9400);this.tweens.add({targets:p,x:x+j.Math.Between(-18,18),y:y-j.Math.Between(4,26),alpha:0,duration:380+Math.random()*400,onComplete:()=>p.destroy()})}}
 __steam(x,y){for(let i=0;i<6;i++){const p=this.add.image(x+j.Math.Between(-8,8),y,"light").setScale(.05).setTint(13421772).setAlpha(.35).setDepth(9400);this.tweens.add({targets:p,y:y-24-Math.random()*14,scale:.12,alpha:0,delay:i*90,duration:900,onComplete:()=>p.destroy()})}}
-/* explorador da caverna Dorf */
+/* explorador e portal da caverna Dorf no canto inferior direito do mapa */
 __caveExplorerInit(){
-  const p=this.M?.spots?.portal;
-  if(!p||!this.textures.exists("peasant-3"))return;
-  return; // Oculto por enquanto
+  const M=this.M;
+  if(!M)return;
+  // Limpar células de colisão da pedra antiga em (840, 640) para abrir caminho livre até o canto inferior direito
+  if(Array.isArray(M.coll)){
+    for(let gy=77;gy<=84;gy++){
+      if(!M.coll[gy])continue;
+      const chars=M.coll[gy].split("");
+      for(let gx=101;gx<=118;gx++)if(gx<chars.length)chars[gx]="0";
+      M.coll[gy]=chars.join("");
+    }
+  }
+  const oldRock=this.children.list.find(o=>o.texture?.key==="vh-props"&&o.frame?.name==="rock-b"&&Math.abs(o.x-840)<6&&Math.abs(o.y-640)<6);
+  oldRock&&oldRock.setPosition(792,642).setDepth(642);
+
+  const cpX=900,cpY=654,npcX=846,npcY=658;
+  this.cavePortalPos=[cpX,cpY];
+
+  // Arco de basalto da Caverna Dorf + vórtice ciano + braseiros de cristal
+  if(this.textures.exists("dorf-portal-arch")){
+    this.add.image(cpX,cpY+4,"dorf-portal-arch").setOrigin(.5,1).setScale(.62).setDepth(cpY-2);
+  }
+  if(this.textures.exists("hub-portal")){
+    const cpo=this.add.sprite(cpX,cpY-4,"hub-portal",0).setOrigin(.5,1).setScale(.88).setTint(0x38bdf8).setDepth(cpY-1);
+    cpo.play("hub-portal-a");
+  }
+  this.__glow(cpX,cpY-26,.72,0x38bdf8,.38,1000);
+  if(this.textures.exists("dorf-brazier")){
+    const b1=this.add.sprite(cpX-32,cpY+4,"dorf-brazier",0).setOrigin(.5,1).setScale(.78).setDepth(cpY+1);
+    const b2=this.add.sprite(cpX+32,cpY+4,"dorf-brazier",0).setOrigin(.5,1).setScale(.78).setDepth(cpY+1);
+    b1.play("dorf-brazier-a");b2.play("dorf-brazier-a");
+  }
+
+  // NPC Explorador ao lado do portal (mesma proporção 0.45 dos outros NPCs da vila)
+  if(this.textures.exists("peasant-3")){
+    this.caveExplorer=this.add.sprite(npcX,npcY,"peasant-3",0).setOrigin(.5,1).setScale(.45).setDepth(npcY).play("peasant-3-idle");
+  }
 }
 __talkCaveNpc(onComplete){
   const s=this.caveExplorer,L3=__L3;
   s&&s.active&&s.play("peasant-3-talk",!0);
-  const line=L3(
-    "Essa caverna é traiçoeira, ela sempre muda a cada entrada, explore com cuidado.",
-    "This cave is treacherous, it always changes with every entrance, explore with caution.",
-    "Esta caverna es traicionera, cambia con cada entrada, explora con cuidado."
-  );
-  let dur=4600;
+  this.__caveTalkIdx=((this.__caveTalkIdx??-1)+1);
+  const lines=[
+    L3(
+      "Essa caverna é traiçoeira, ela sempre muda a cada entrada, explore com cuidado.",
+      "This cave is treacherous, it always changes with every entrance, explore with caution.",
+      "Esta caverna es traicionera, cambia con cada entrada, explora con cuidado."
+    ),
+    L3(
+      "Não há salas trancadas lá embaixo, mas os túneis de basalto escondem poucas arcas com as Moedas do Ferreiro 🪙.",
+      "There are no locked rooms down there, but the basalt tunnels hide a few chests with the Blacksmith's Coins 🪙.",
+      "No hay salas cerradas allá abajo, pero los túneles de basalto esconden pocos cofres con las Monedas del Herrero 🪙."
+    ),
+    L3(
+      "Cada fenda oculta guarda apenas 1 ou 2 moedas antigas. Vasculhe os recantos se quiser forjar uma Arma Única!",
+      "Each hidden rift holds only 1 or 2 ancient coins. Search every alcove if you want to forge a Unique Weapon!",
+      "Cada grieta oculta guarda solo 1 o 2 monedas antiguas. ¡Explora cada rincón si quieres forjar un Arma Única!"
+    )
+  ];
+  const line=onComplete?lines[0]:lines[this.__caveTalkIdx%lines.length];
+  let dur=4200;
   try{
     const vd=window.__dubDur?.(line);
     if(vd&&isFinite(vd))dur=Math.max(dur,Math.round(vd*1000+700));
   }catch(_) {}
-  const sx=s?s.x:(this.M.spots.portal[0]-62),sy=s?(s.y-38):(this.M.spots.portal[1]-38);
+  const sx=s?s.x:846,sy=s?(s.y-38):620;
   this.__say(sx,sy,line,dur,"#fef08a","male");
   if(onComplete){
     this.__busy=!0;
-    this.time.delayedCall(dur,()=>{
+    this.time.delayedCall(Math.min(dur,2200),()=>{
       this.__busy=!1;
       s&&s.active&&s.play("peasant-3-idle",!0);
       onComplete();
@@ -2241,30 +2290,36 @@ __forgeWeaponsShop(){
   if(!isCamp){
     for(const s of [1,2,3,4]){if(Nn(s).ok){slot=s;break;}}
   }
-  const getGold=()=>{
-    if(isCamp){
-      const c=__cData(this);
-      return c?.d?.player?.gold??0;
-    }else{
-      const e=Nn(slot);
-      return e.ok?(e.data.player?.gold??0):0;
+  const getCoins=()=>{
+    if(typeof window!=="undefined"&&typeof window.__getForgeCoins==="function"){
+      return window.__getForgeCoins(this);
     }
+    try{
+      return Math.max(0,parseInt(localStorage.getItem("depthgate:forge_coins")||"0",10)||0);
+    }catch(e){return 0;}
   };
-  let curGold=getGold();
+  const setCoins=(val)=>{
+    if(typeof window!=="undefined"&&typeof window.__setForgeCoins==="function"){
+      return window.__setForgeCoins(val,this);
+    }
+    try{localStorage.setItem("depthgate:forge_coins",String(Math.max(0,val|0)));}catch(e){}
+    return Math.max(0,val|0);
+  };
+  let curCoins=getCoins();
 
   o.add(this.add.text(d,Y+16,L3("FORJA ANCESTRAL · ARMARIA LENDÁRIA","ANCIENT FORGE · LEGENDARY ARMORY","FORJA ANCESTRAL · ARMERÍA LEGENDARIA"),{...ti,fontSize:"12px",color:"#ffd24a"}).setOrigin(.5));
-  o.add(this.add.text(d,Y+30,L3("Armas únicas de imenso poder. Quebram-se se você morrer em uma run!","Unique weapons of immense power. They break if you die in a run!","¡Armas únicas de inmenso poder. ¡Se rompen si mueres en una run!"),{...Le,fontSize:"8px",fontStyle:"italic",color:"#f87171"}).setOrigin(.5));
+  o.add(this.add.text(d,Y+30,L3("Forjadas com Moedas do Ferreiro (🪙) das Cavernas Dorf · Quebram se morrer na run!","Forged with Blacksmith Coins (🪙) from Dorf Caves · Break if you die in a run!","¡Forjadas con Monedas del Herrero (🪙) de las Cavernas Dorf · Se rompen si mueres!"),{...Le,fontSize:"8px",fontStyle:"italic",color:"#f87171"}).setOrigin(.5));
 
   const weaponsList=[
-    {id:"unique_forge_eclipse",name:L3("Lâmina do Eclipse Negro","Dark Eclipse Blade","Hoja del Eclipse Oscuro"),price:350,icon:"icon-sword",stats:"+16 DANO · +22% CRÍTICO · +5 DANO MÁGICO",color:"#c084fc"},
-    {id:"unique_forge_cataclysm",name:L3("Machado do Cataclismo","Cataclysm Axe","Hacha del Cataclismo"),price:380,icon:"icon-axe",stats:"+24 DANO · +4 DEFESA · +15% CRÍTICO",color:"#f87171"},
-    {id:"unique_forge_shadowfangs",name:L3("Presas do Vácuo Eterno","Fangs of the Void","Colmillos del Vacío"),price:360,icon:"icon-twin-fangs",stats:"+12 DANO · +35% CRÍTICO · +25 VEL · +12% ESQUIVA",color:"#38bdf8"},
-    {id:"unique_forge_starfall",name:L3("Arco Estelar de Dorf","Dorf Starfall Bow","Arco Estelar de Dorf"),price:370,icon:"icon-long-bow",stats:"+18 DANO · +25% CRÍTICO · +40 ALCANCE",color:"#fbbf24"},
-    {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:390,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"},
-    {id:"unique_forge_aegis",name:L3("Espada-Baluarte da Aurora","Aurora Bastion Edge","Espada Baluarte de la Aurora"),price:340,icon:"icon-dragon-sword",stats:"+15 DANO · +8 DEFESA · +4 VIDA · +18% BLOQUEIO",color:"#34d399"}
+    {id:"unique_forge_aegis",name:L3("Espada-Baluarte da Aurora","Aurora Bastion Edge","Espada Baluarte de la Aurora"),price:12,icon:"icon-dragon-sword",stats:"+15 DANO · +8 DEFESA · +4 VIDA · +18% BLOQUEIO",color:"#34d399"},
+    {id:"unique_forge_eclipse",name:L3("Lâmina do Eclipse Negro","Dark Eclipse Blade","Hoja del Eclipse Oscuro"),price:14,icon:"icon-sword",stats:"+16 DANO · +22% CRÍTICO · +5 DANO MÁGICO",color:"#c084fc"},
+    {id:"unique_forge_shadowfangs",name:L3("Presas do Vácuo Eterno","Fangs of the Void","Colmillos del Vacío"),price:15,icon:"icon-twin-fangs",stats:"+12 DANO · +35% CRÍTICO · +25 VEL · +12% ESQUIVA",color:"#38bdf8"},
+    {id:"unique_forge_starfall",name:L3("Arco Estelar de Dorf","Dorf Starfall Bow","Arco Estelar de Dorf"),price:16,icon:"icon-long-bow",stats:"+18 DANO · +25% CRÍTICO · +40 ALCANCE",color:"#fbbf24"},
+    {id:"unique_forge_cataclysm",name:L3("Machado do Cataclismo","Cataclysm Axe","Hacha del Cataclismo"),price:17,icon:"icon-axe",stats:"+24 DANO · +4 DEFESA · +15% CRÍTICO",color:"#f87171"},
+    {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:18,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"}
   ];
 
-  const goldText=this.add.text(d,Y+276,`${L3("SEU OURO","YOUR GOLD","TU ORO")}: ${curGold} 🪙`,{...ti,fontSize:"11px",color:"#ffd24a"}).setOrigin(.5);
+  const goldText=this.add.text(d,Y+276,`${L3("MOEDAS DO FERREIRO","BLACKSMITH COINS","MONEDAS DEL HERRERO")}: ${curCoins} 🪙`,{...ti,fontSize:"11px",color:"#ffd24a"}).setOrigin(.5);
   const msgText=this.add.text(d,Y+292,"",{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(.5);
   o.add([goldText,msgText]);
 
@@ -2290,17 +2345,18 @@ __forgeWeaponsShop(){
     z.on("pointerover",()=>drawRow(!0));
     z.on("pointerout",()=>drawRow(!1));
     z.on("pointerdown",()=>{
-      curGold=getGold();
-      if(curGold<wp.price){
-        msgText.setText(L3("Ouro insuficiente para forjar esta arma!","Not enough gold to forge this weapon!","¡Oro insuficiente para forjar esta arma!")).setColor("#f87171");
+      curCoins=getCoins();
+      if(curCoins<wp.price){
+        msgText.setText(L3("Moedas do Ferreiro insuficientes! Explore as Cavernas Dorf (portal à direita).","Not enough Blacksmith Coins! Explore the Dorf Caves (portal on the right).","¡Monedas del Herrero insuficientes! Explora las Cavernas Dorf.")).setColor("#f87171");
         this.game.audioEngine?.sfx?.("sfx-door-locked");
         return;
       }
+      curCoins=setCoins(curCoins-wp.price);
       if(isCamp){
         const c=__cData(this);
         if(c&&c.d){
           c.d.player=c.d.player||{};
-          c.d.player.gold=(c.d.player.gold||0)-wp.price;
+          c.d.player.forgeCoins=curCoins;
           c.d.player.items=c.d.player.items||[];
           c.d.player.items.push({id:wp.id,rarity:"UNIQUE",seed:Date.now(),uniqueForge:!0,breaksOnDeath:!0});
           localStorage.setItem(Wt("campaign",c.sl),JSON.stringify(c.d));
@@ -2309,14 +2365,14 @@ __forgeWeaponsShop(){
         let e=Nn(slot);
         if(e.ok){
           e.data.player=e.data.player||{};
-          e.data.player.gold=(e.data.player.gold||0)-wp.price;
+          e.data.player.forgeCoins=curCoins;
           e.data.player.items=e.data.player.items||[];
           e.data.player.items.push({id:wp.id,rarity:"UNIQUE",seed:Date.now(),uniqueForge:!0,breaksOnDeath:!0});
           localStorage.setItem(Wt("endless",slot),JSON.stringify(e.data));
         }
       }
-      curGold=getGold();
-      goldText.setText(`${L3("SEU OURO","YOUR GOLD","TU ORO")}: ${curGold} 🪙`);
+      this.forgeCoinHud?.active&&this.forgeCoinHud.setText(`🪙 ${curCoins}`);
+      goldText.setText(`${L3("MOEDAS DO FERREIRO","BLACKSMITH COINS","MONEDAS DEL HERRERO")}: ${curCoins} 🪙`);
       msgText.setText(L3(`Forjado: ${wp.name}! (Quebra se morrer na run)`,`Forged: ${wp.name}! (Breaks on death in run)`,`¡Forjado: ${wp.name}! (Se rompe si mueres en run)`)).setColor("#4ade80");
       window.__advancedAudio?.playMetalClang?.("E5");
       this.game.audioEngine?.sfx?.("sfx-item-pickup");
@@ -3012,7 +3068,7 @@ C.__potR.forEach((r,n)=>{const on=n===C.__pSel,eq=r.k===k2;g.fillStyle(on?381340
 C.__potT.setText(camp?__L3("↑↓ escolher · ENTER / A equipar no slot 2 · Compre mais com a Herborista do Refúgio","↑↓ choose · ENTER / A equip in slot 2 · Buy more from the Refuge Herbalist","↑↓ elegir · ENTER / A equipar en ranura 2 · Compra más a la Herbolaria del Refugio"):__L3("A Herborista só atende na campanha.","The Herbalist only trades in the campaign.","La Herbolaria solo atiende en la campaña."))}
 function __potEquip(C){const S=C.gs(),H=__hbGet(S),k=__HBK[C.__pSel|0];if(H.s!==k){H.s=k;__hbPut(S);__hbHud(S);C.ui.game.audioEngine?.sfx?.("sfx-equip")}__potDraw(C)}
 function __potKey(C,i){if(i==="ArrowUp"||i==="w"||i==="ArrowDown"||i==="s"){C.__pSel=((C.__pSel|0)+(i==="ArrowUp"||i==="w"?-1:1)+__HBK.length)%__HBK.length;C.ui.game.audioEngine?.sfx?.("sfx-ui-tab");__potDraw(C);return!0}if(i==="Enter"||i===" "){__potEquip(C);return!0}return i==="ArrowLeft"||i==="ArrowRight"||i==="Delete"}
-class Sd extends j.Scene{constructor(){super("Game")}create(){window.DepthGateUser?.hideBadge?.();this.__cdP=null;const i=this.scene.settings.data||{};if(this.classDef=pe[i.classId??"WARRIOR"],this.carry=i.carry??null,this.restoreData=i.restore??null,this.restoreEndless=i.restoreEndless??null,i.endless){let r=this.game.registry.get("endless:run");if(!r){r=Wn(this.heroClass?this.heroClass:"WARRIOR",1,Date.now());this.game.registry.set("endless:run",r)}this.level=md(r),this.levelId=this.level.id,this.arrivedNewBiome=r.currentBiomeTheme!==this.level.biome,r.currentBiomeTheme=this.level.biome}/*__DORF_CAVES__*/else if(i.isDorfCave){this.isDorfCave=!0;this.originMode=i.originMode||(i.endless?"endless":"campaign");this.dorfSlot=i.slot||this.game.registry.get("save:slot")||1;this.levelDepth=i.depth||1;this.classDef=pe[i.classId||"WARRIOR"];const runCfg={depth:this.levelDepth,seed:"dorf_"+this.dorfSlot+"_"+this.levelDepth,biome:"dorf_cave",originMode:this.originMode};this.level=md(runCfg);this.level.id="dorf_cave";this.level.name="Cavernas da Montanha Dorf"+(this.levelDepth>1?` · Nível ${this.levelDepth}`:"");this.level.endless=!0;this.levelId="dorf_cave";ki.dorf_cave=this.level;}/*__DORF_CAVES__*/else if(i.isRift){this.isRift=!0;this.level=__buildRiftLevel(this);this.levelId="rift";ki.rift=this.level;}else this.levelId=i.levelId??Zn,/*__CASTLE2__*/this.level=__cdLevel(this,(window.__castleLevel?.(this,this.levelId,i,ki[this.levelId]))||ki[this.levelId])/*§dGhpcy5sZXZlbD1fX2NkTGV2ZWwodGhpcyxraVt0aGlzLmxldmVsSWRdKQ==*//*__CASTLE2__*/;this.state="playing",this.uiOpen=!1,this.transitioning=!1,this.dashCooldown=0,this.meleeSlots=new Set,this.groundItems=[],this.boss=null,this.boss2=null,this.player2=null,this.freezeTimer=0,this.minions=[],this.potionCooldown=0,/*__CREF__*/this.metaBonuses=i.endless?Pl():this.game.registry.get("mode")==="campaign"?__cBon(this.game.registry.get("campaign:refuge")):{},(!i.carry&&!i.restore&&!i.endless&&(this.completedDungeons=[],this.__cryDropped=null))/*__CREF__*/,this.__hbE=null,this.__hbI=0,this.__hbAura=null,this.potions={count:i.carry?.potions??i.restore?.player?.potions??i.restoreEndless?.player?.potions??1,max:5+(this.metaBonuses.potionMax??0)},this.dungeon=new _l(this,this.level).build();const{widthPx:t,heightPx:e}=this.dungeon;this.player=new oh(this,this.level.playerSpawn.col*dt+dt/2,this.level.playerSpawn.row*dt+dt/2,this.classDef),
+class Sd extends j.Scene{constructor(){super("Game")}create(){window.DepthGateUser?.hideBadge?.();this.__cdP=null;const i=this.scene.settings.data||{};if(this.classDef=pe[i.classId??"WARRIOR"],this.carry=i.carry??null,this.restoreData=i.restore??null,this.restoreEndless=i.restoreEndless??null,i.endless){let r=this.game.registry.get("endless:run");if(!r){r=Wn(this.heroClass?this.heroClass:"WARRIOR",1,Date.now());this.game.registry.set("endless:run",r)}this.level=md(r),this.levelId=this.level.id,this.arrivedNewBiome=r.currentBiomeTheme!==this.level.biome,r.currentBiomeTheme=this.level.biome}/*__DORF_CAVES__*/else if(i.isDorfCave){this.isDorfCave=!0;this.originMode=i.originMode||(i.endless?"endless":"campaign");this.dorfSlot=i.slot||this.game.registry.get("save:slot")||1;this.levelDepth=i.depth||1;this.classDef=pe[i.classId||"WARRIOR"];const runCfg={depth:this.levelDepth,seed:"dorf_"+this.dorfSlot+"_"+this.levelDepth,biome:"dorf_cave",originMode:this.originMode};this.level=typeof __buildDorfCaveLevel==="function"?__buildDorfCaveLevel(runCfg):md(runCfg);this.level.id="dorf_cave";this.level.name="Cavernas da Montanha Dorf"+(this.levelDepth>1?` · Nível ${this.levelDepth}`:"");this.level.endless=!0;this.levelId="dorf_cave";ki.dorf_cave=this.level;}/*__DORF_CAVES__*/else if(i.isRift){this.isRift=!0;this.level=__buildRiftLevel(this);this.levelId="rift";ki.rift=this.level;}else this.levelId=i.levelId??Zn,/*__CASTLE2__*/this.level=__cdLevel(this,(window.__castleLevel?.(this,this.levelId,i,ki[this.levelId]))||ki[this.levelId])/*§dGhpcy5sZXZlbD1fX2NkTGV2ZWwodGhpcyxraVt0aGlzLmxldmVsSWRdKQ==*//*__CASTLE2__*/;this.state="playing",this.uiOpen=!1,this.transitioning=!1,this.dashCooldown=0,this.meleeSlots=new Set,this.groundItems=[],this.boss=null,this.boss2=null,this.player2=null,this.freezeTimer=0,this.minions=[],this.potionCooldown=0,/*__CREF__*/this.metaBonuses=i.endless?Pl():this.game.registry.get("mode")==="campaign"?__cBon(this.game.registry.get("campaign:refuge")):{},(!i.carry&&!i.restore&&!i.endless&&(this.completedDungeons=[],this.__cryDropped=null))/*__CREF__*/,this.__hbE=null,this.__hbI=0,this.__hbAura=null,this.potions={count:i.carry?.potions??i.restore?.player?.potions??i.restoreEndless?.player?.potions??1,max:5+(this.metaBonuses.potionMax??0)},this.dungeon=new _l(this,this.level).build();const{widthPx:t,heightPx:e}=this.dungeon;this.player=new oh(this,this.level.playerSpawn.col*dt+dt/2,this.level.playerSpawn.row*dt+dt/2,this.classDef),
 (()=>{
   this.player2=null;this.boss2=null;const isEndlessCoop=this.game.registry.get("mode")==="endless"&&!!this.game.registry.get("endless:coop");
   if(isEndlessCoop){
@@ -11774,436 +11830,1133 @@ function __exPost(L) {
 
 /* 3) biomas novos */
 /*__DORF_CAVES__*/
-/* ══ Cavernas da Montanha Dorf ══
-   - Masmorra procedural baseada no pack Szadi art RPG Worlds Deep Cave.
-   - Portal sempre ativo no Refúgio (Hub da vila).
-   - Modo Campanha: itens e ouro acumulados são guardados diretamente no save da campanha.
-   - Modo Infinito (pelo Menu): joga com o personagem vigente do modo infinito e acumula no perfil infinito.
-   - Cenário com paredes de basalto colunar, chão de terra e lajotas hexagonais de musgo,
-     estalagmites, cogumelos brilhantes, plantas de caverna e tochas de cristal ciano. */
-
+/* ── Bioma: Cavernas da Montanha Dorf (RPG Worlds Deep Cave - Szadi art) ─────────────────────────
+   Cenário exploratório orgânico e procedural (sem salas retangulares e sem portas trancadas):
+   - Paredes de basalto de 3 tiles de altura em degraus curvos com vinhas luminescentes
+   - Clareiras de musgo hexagonal com bordas orgânicas, terraços de pedra cinza e escadarias
+   - Formações de estalagmites 2.5D com ordenação de profundidade Y (Y-sorting) e colisão na base
+   - Economia de exploração: poucos baús escondidos em fendas profundas, porém valiosos,
+     contendo as Moedas do Ferreiro (🪙) usadas para forjar as Armas Únicas no Refúgio.
+────────────────────────────────────────────────────────────────────────────────────────────────── */
 let __dorfN = 0;
 
-/* 1) Registro do bioma Cavernas da Montanha Dorf */
-if (typeof Ls !== "undefined" && typeof Xn !== "undefined") {
+/* 0) Economia global das Moedas do Ferreiro (🪙) */
+const __DORF_COIN_KEY = "depthgate:forge_coins";
+
+function __getForgeCoins(S) {
+  let v = 0;
+  try {
+    v = parseInt(localStorage.getItem(__DORF_COIN_KEY) || "0", 10);
+    if (!isFinite(v) || v < 0) v = 0;
+  } catch (e) { v = 0; }
+  try {
+    const sl = S?.dorfSlot || S?.retSlot || S?.game?.registry?.get("save:slot") || 1;
+    if (typeof Dn === "function") {
+      const cr = Dn(sl);
+      if (cr?.ok && typeof cr.data?.player?.forgeCoins === "number") {
+        v = Math.max(v, cr.data.player.forgeCoins | 0);
+      }
+    }
+    if (typeof Nn === "function") {
+      const er = Nn(sl);
+      if (er?.ok && typeof er.data?.player?.forgeCoins === "number") {
+        v = Math.max(v, er.data.player.forgeCoins | 0);
+      }
+    }
+  } catch (e) {}
+  return v;
+}
+
+function __setForgeCoins(n, S) {
+  const val = Math.max(0, n | 0);
+  try { localStorage.setItem(__DORF_COIN_KEY, String(val)); } catch (e) {}
+  try {
+    const sl = S?.dorfSlot || S?.retSlot || S?.game?.registry?.get("save:slot") || 1;
+    if (typeof Dn === "function") {
+      const cr = Dn(sl);
+      if (cr?.ok && cr.data) {
+        cr.data.player = cr.data.player || {};
+        cr.data.player.forgeCoins = val;
+        localStorage.setItem(Wt("campaign", sl), JSON.stringify(cr.data));
+      }
+    }
+    if (typeof Nn === "function") {
+      const er = Nn(sl);
+      if (er?.ok && er.data) {
+        er.data.player = er.data.player || {};
+        er.data.player.forgeCoins = val;
+        localStorage.setItem(Wt("endless", sl), JSON.stringify(er.data));
+      }
+    }
+  } catch (e) {}
+  return val;
+}
+
+function __addForgeCoins(delta, S, wx, wy) {
+  const cur = __getForgeCoins(S);
+  const next = __setForgeCoins(cur + (delta | 0), S);
+  if (S) {
+    try {
+      if (S.__dorfCoinTxt?.active) {
+        const L3 = typeof __L3 === "function" ? __L3 : (pt) => pt;
+        S.__dorfCoinTxt.setText(`🪙 ${L3("Moedas do Ferreiro", "Blacksmith Coins", "Monedas del Herrero")}: ${next}`);
+        S.tweens?.add({ targets: S.__dorfCoinTxt, scale: { from: 1.18, to: 1 }, duration: 260, ease: "Back.easeOut" });
+      }
+      if (wx != null && wy != null && S.add) {
+        const L3 = typeof __L3 === "function" ? __L3 : (pt) => pt;
+        const label = delta > 1
+          ? L3(`+${delta} 🪙 MOEDAS DO FERREIRO!`, `+${delta} 🪙 BLACKSMITH COINS!`, `¡+${delta} 🪙 MONEDAS DEL HERRERO!`)
+          : L3(`+1 🪙 MOEDA DO FERREIRO!`, `+1 🪙 BLACKSMITH COIN!`, `¡+1 🪙 MONEDA DEL HERRERO!`);
+        const t = S.add.text(wx, wy - 18, label, {
+          fontFamily: "'Cinzel', Georgia, serif",
+          fontSize: "11px",
+          fontStyle: "bold",
+          color: "#ffd24a",
+          stroke: "#120c08",
+          strokeThickness: 4
+        }).setOrigin(0.5).setDepth(9500);
+        S.tweens?.add({
+          targets: t,
+          y: wy - 48,
+          alpha: { from: 1, to: 0 },
+          duration: 1800,
+          ease: "Cubic.easeOut",
+          onComplete: () => t.destroy()
+        });
+      }
+      window.__advancedAudio?.playMetalClang?.("E5");
+    } catch (e) {}
+  }
+  return next;
+}
+
+if (typeof window !== "undefined") {
+  window.__getForgeCoins = __getForgeCoins;
+  window.__setForgeCoins = __setForgeCoins;
+  window.__addForgeCoins = __addForgeCoins;
+}
+
+/* 1) Registro de Tema, Inimigos e Tabelas de Loot Escasso e Valioso */
+(function __registerDorfBiome() {
+  if (typeof Ls === "undefined") return;
+  const baseTheme = Ls.catacombs || Ls.ruins || Object.values(Ls)[0];
   Ls.dorf_cave = {
-    ...Xn,
+    ...baseTheme,
     id: "dorf_cave",
     name: "Cavernas da Montanha Dorf",
     tilesetKey: "tiles-dorf-cave",
+    ambient: 0.56,
+    fogColor: 0x0d0a10,
+    fogDensity: 0.008,
+    music: "catacombs-theme",
     palette: {
-      ...Xn.palette,
-      stoneBase: 34,
-      stoneMortar: "#0d0b12",
-      stoneShadow: "rgba(5, 4, 8, 0.78)",
-      bone: "#c0b8ac",
-      magic: 3718648,        // #38bdf8 ciano
-      magicBright: 9684477,  // #93c5fd
-      fire: 3718648,
-      fireCore: 14744511,
-      gold: 16434453,        // #facc15
-      goldBright: 16773530
+      floor: 0x4b3834,
+      wall: 0x5c4454,
+      accent: 0x38bdf8,
+      light: 0x67e8f9
     },
-    lights: {
-      ...Xn.lights,
-      TORCH: { color: 3718648, radius: 125, intensity: 1.15, flicker: 0.85 },
-      CANDLE: { color: 3718648, radius: 70, intensity: 0.9, flicker: 1.2 },
-      PLAYER: { ...Xn.lights.PLAYER, radius: 215, warm: false }
-    },
-    music: { explore: "catacombs-ambience", boss: "boss-ambience" }
+    lightPreset: {
+      color: 0x67e8f9,
+      radius: 145,
+      intensity: 0.95
+    }
   };
 
   if (typeof ud !== "undefined") ud.dorf_cave = "Cavernas da Montanha Dorf";
   try {
+    if (typeof Ns !== "undefined") Ns["biome.dorf_cave"] = "Cavernas da Montanha Dorf";
     if (typeof _s !== "undefined") _s["biome.dorf_cave"] = "Dorf Mountain Caves";
     if (typeof Io !== "undefined") Io["biome.dorf_cave"] = "Cavernas de la Montaña Dorf";
   } catch (e) {}
 
-  if (typeof ga !== "undefined") {
-    // Grupos de inimigos das cavernas
-    for (const g of Object.values(ga)) {
-      if ((g.biomes?.includes("ruins") || g.biomes?.includes("catacombs")) && !g.biomes.includes("dorf_cave")) {
-        g.biomes.push("dorf_cave");
+  try {
+    if (typeof td !== "undefined" && Array.isArray(td)) {
+      for (const g of td) {
+        if ((g.biomes?.includes("ruins") || g.biomes?.includes("catacombs")) && !g.biomes.includes("dorf_cave")) {
+          g.biomes.push("dorf_cave");
+        }
+      }
+    }
+    if (typeof js !== "undefined") {
+      // Poucos baús, mas com itens raros/épicos/lendários garantidos
+      js.dorf_cave = {
+        rolls: 2,
+        gold: { min: 18, max: 34 },
+        pools: ["weapons_tier2", "weapons_tier3", "armor_tier2", "armor_tier3", "rings", "amulets", "relics_pool"],
+        rarities: { COMMON: 0, UNCOMMON: 12, RARE: 52, EPIC: 26, LEGENDARY: 10 }
+      };
+    }
+    if (typeof ed !== "undefined") {
+      ed.dorf_cave = {
+        common: ["BAT", "SPIDER", "GOBLIN", "SKELETON", "SLIME"],
+        uncommon: ["CAVE_TROLL", "GHOUL", "DARK_MAGE", "WRAITH", "GARGOYLE"],
+        elite: ["GOLEM", "VOID_STALKER", "DEATH_KNIGHT", "LICH"],
+        bosses: ["ANCIENT_COLOSSUS", "ABYSS_GUARDIAN", "BEHOLDER"]
+      };
+    }
+  } catch (e) {}
+})();
+
+/* 2) Gerador Procedural Orgânico Sem Salas Retangulares (__buildDorfCaveLevel) */
+function __buildDorfCaveLevel(runCfg = {}) {
+  const depth = Math.max(1, runCfg.depth || 1);
+  // Semente muda a cada expedição para que os túneis sempre se transformem
+  const salt = runCfg.freshSeed || Math.floor(Date.now() / 1000);
+  const seedStr = `${runCfg.seed || "dorf"}_${depth}_${salt}`;
+  let sd = seedStr.split("").reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 17) >>> 0;
+  const rnd = () => (sd = (sd * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const pick = (a) => a[(rnd() * a.length) | 0];
+  const between = (a, b) => a + rnd() * (b - a);
+
+  const C = 76, R = 62;
+  const grid = Array.from({ length: R }, () => new Array(C).fill(1));
+
+  // Centros das clareiras orgânicas (dispostas em rede exploratória sinuosa, nunca em grade reta)
+  const flipX = rnd() < 0.5;
+  const tx = (x) => (flipX ? C - 1 - x : x);
+
+  const nodes = [
+    { id: "fenda_entrada", name: "Fenda de Basalto", cx: tx(14), cy: 13, rx: 6.2, ry: 4.5, kind: "START" },
+    { id: "clareira_musgo_1", name: "Clareira do Musgo Antigo", cx: tx(31), cy: Math.round(between(14, 17)), rx: 7.8, ry: 5.4, kind: "MOSS" },
+    { id: "galeria_colunas", name: "Galeria das Estalagmites", cx: tx(50), cy: Math.round(between(15, 19)), rx: 7.2, ry: 5.0, kind: "DARK_ROCK", pillar: true },
+    { id: "alcova_norte", name: "Recanto Oculto da Forja", cx: tx(64), cy: Math.round(between(12, 15)), rx: 5.2, ry: 4.2, kind: "ALCOVE_LOOT" },
+    { id: "jardim_subterraneo", name: "Terraço Subterrâneo de Dorf", cx: tx(42), cy: Math.round(between(33, 36)), rx: 8.2, ry: 5.6, kind: "MOSS", pillar: rnd() < 0.5 },
+    { id: "alcova_sul", name: "Fenda Esquecida do Ferreiro", cx: tx(16), cy: Math.round(between(35, 39)), rx: 5.4, ry: 4.3, kind: "ALCOVE_LOOT" },
+    { id: "abismo_profundo", name: "Coração da Montanha Dorf", cx: tx(58), cy: Math.round(between(46, 49)), rx: 7.6, ry: 5.2, kind: "EXIT" }
+  ];
+
+  // Arestas de túneis sinuosos conectando as clareiras e alcovas
+  const edges = [
+    [0, 1],
+    [1, 2],
+    [2, 3], // túnel estreito para a alcova de loot 1
+    [1, 4],
+    [2, 4],
+    [4, 5], // túnel sinuoso para a alcova de loot 2
+    [4, 6]  // descida para o abismo profundo (saída)
+  ];
+
+  const carveDisk = (cx, cy, rx, ry, ph1 = 0, ph2 = 0) => {
+    const x0 = Math.max(4, Math.floor(cx - rx - 2));
+    const x1 = Math.min(C - 5, Math.ceil(cx + rx + 2));
+    const y0 = Math.max(6, Math.floor(cy - ry - 2));
+    const y1 = Math.min(R - 5, Math.ceil(cy + ry + 2));
+    for (let r = y0; r <= y1; r++) {
+      for (let c = x0; c <= x1; c++) {
+        const ang = Math.atan2(r - cy, c - cx);
+        const wob = 1.0 + 0.14 * Math.sin(ang * 3 + ph1) + 0.09 * Math.cos(ang * 5 + ph2);
+        const d2 = ((c - cx) / (rx * wob)) ** 2 + ((r - cy) / (ry * wob)) ** 2;
+        if (d2 <= 1.0) grid[r][c] = 0;
+      }
+    }
+  };
+
+  // 1) Esculpir clareiras multi-lobulares orgânicas
+  for (const nd of nodes) {
+    const p1 = between(0, 6.28), p2 = between(0, 6.28);
+    carveDisk(nd.cx, nd.cy, nd.rx, nd.ry, p1, p2);
+    // Lóbulos secundários para quebrar qualquer simetria elíptica
+    for (let k = 0; k < 2; k++) {
+      const a = between(0, 6.28);
+      const ox = nd.cx + Math.cos(a) * nd.rx * 0.48;
+      const oy = nd.cy + Math.sin(a) * nd.ry * 0.42;
+      carveDisk(ox, oy, nd.rx * 0.55, nd.ry * 0.52, p1 + k, p2 - k);
+    }
+  }
+
+  // 2) Esculpir túneis orgânicos curvos (curvas de Bézier com largura variável)
+  for (const [i, j] of edges) {
+    const A = nodes[i], B = nodes[j];
+    const isAlcove = A.kind === "ALCOVE_LOOT" || B.kind === "ALCOVE_LOOT";
+    const mx = (A.cx + B.cx) * 0.5 + between(-6, 6);
+    const my = (A.cy + B.cy) * 0.5 + between(-5, 5);
+    const steps = 44;
+    const ph = between(0, 6.28);
+    for (let s = 0; s <= steps; s++) {
+      const t = s / steps, u = 1 - t;
+      const x = u * u * A.cx + 2 * u * t * mx + t * t * B.cx;
+      const y = u * u * A.cy + 2 * u * t * my + t * t * B.cy;
+      const wRx = (isAlcove ? 2.1 : 2.6) + 0.45 * Math.sin(t * Math.PI * 3 + ph);
+      const wRy = (isAlcove ? 1.9 : 2.3) + 0.35 * Math.cos(t * Math.PI * 2 + ph);
+      carveDisk(x, y, wRx, wRy, ph, ph * 0.5);
+    }
+  }
+
+  // 3) Garantir nicho de entrada no topo da Fenda de Entrada para o Portal de Retorno
+  const st = nodes[0];
+  let spCol = Math.round(st.cx), spRow = Math.round(st.cy) - 1;
+  while (spRow > 6 && grid[spRow - 1][spCol] === 0) spRow--;
+  // Parede norte reta de 4 colunas apenas para encaixar o arco de pedra da entrada
+  for (let dc = -2; dc <= 1; dc++) {
+    const cc = Math.max(5, Math.min(C - 6, spCol + dc));
+    for (let r = 0; r < spRow; r++) grid[r][cc] = 1;
+    for (let r = spRow; r <= spRow + 4 && r < R - 4; r++) grid[r][cc] = 0;
+  }
+  const playerSpawn = { col: spCol, row: spRow + 2 };
+
+  // 4) Suavização celular (Cellular Automata) para eliminar pontas quadradas
+  for (let pass = 0; pass < 2; pass++) {
+    const next = grid.map((r) => r.slice());
+    for (let r = 6; r < R - 4; r++) {
+      for (let c = 4; c < C - 4; c++) {
+        if (Math.abs(c - spCol) <= 2 && Math.abs(r - spRow) <= 3) continue;
+        let floors = 0;
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            if (dx === 0 && dy === 0) continue;
+            if (grid[r + dy][c + dx] === 0) floors++;
+          }
+        }
+        if (grid[r][c] === 1 && floors >= 5) next[r][c] = 0;
+        else if (grid[r][c] === 0 && floors <= 2) next[r][c] = 1;
+      }
+    }
+    for (let r = 6; r < R - 4; r++) for (let c = 4; c < C - 4; c++) grid[r][c] = next[r][c];
+  }
+
+  // 5) Quebrar paredes horizontais longas (> 3 colunas) para manter o efeito em degraus das imagens de referência
+  for (let r = 6; r < R - 5; r++) {
+    let run = 0;
+    for (let c = 4; c < C - 4; c++) {
+      if (Math.abs(c - spCol) <= 3 && Math.abs(r - spRow) <= 3) { run = 0; continue; }
+      if (grid[r][c] === 0 && grid[r - 1][c] === 1) {
+        run++;
+        if (run >= 3 && rnd() < 0.65) {
+          if (r + 3 < R - 4 && grid[r + 1][c] === 0 && grid[r + 2][c] === 0) {
+            grid[r][c] = 1; // degrau de basalto descendo 1 tile
+          }
+          run = 0;
+        }
+      } else {
+        run = 0;
       }
     }
   }
 
-  if (typeof js !== "undefined") {
-    js.dorf_cave = {
-      gold: { min: 25, max: 70 },
-      rolls: 3,
-      pools: [
-        "sword", "dagger", "axe", "mace", "iron_shield", "spiked_shield",
-        "great_sword", "great_axe", "war_hammer", "bow", "long_bow",
-        "staff", "arcane_staff", "shadow_dagger", "shadow_cloak",
-        "helmet", "armor", "boots", "ring", "amulet", "potion"
-      ],
-      rarities: { COMMON: 15, UNCOMMON: 40, RARE: 32, EPIC: 11, LEGENDARY: 2 }
-    };
+  // 6) Regra de espessura vertical de parede (>= 5 tiles) para que as colunas de basalto de 3 tiles
+  //    + borda sul de 1 tile + abismo escuro nunca se sobreponham a pisos caminháveis!
+  for (let c = 0; c < C; c++) {
+    for (let r = 0; r < 5; r++) grid[r][c] = 1;
+    for (let r = R - 3; r < R; r++) grid[r][c] = 1;
+  }
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < 3; c++) grid[r][c] = 1;
+    for (let c = C - 3; c < C; c++) grid[r][c] = 1;
+  }
+  for (let iter = 0; iter < 3; iter++) {
+    for (let c = 3; c < C - 3; c++) {
+      let r = 0;
+      while (r < R) {
+        if (grid[r][c] === 1) {
+          const r0 = r;
+          while (r < R && grid[r][c] === 1) r++;
+          const r1 = r;
+          if (r0 > 0 && r1 < R) {
+            const h = r1 - r0;
+            if (h <= 2) {
+              for (let rr = r0; rr < r1; rr++) grid[rr][c] = 0;
+            } else if (h < 5) {
+              const need = 5 - h;
+              for (let k = 0; k < need; k++) {
+                if (r1 + k < R - 3) grid[r1 + k][c] = 1;
+              }
+            }
+          }
+        } else {
+          r++;
+        }
+      }
+    }
   }
 
-  if (typeof ed !== "undefined") {
-    ed.dorf_cave = {
-      wallTop: ["torch"],
-      onWall: [],
-      solid: ["col-single", "col-trio", "col-cluster"],
-      flat: ["shroom-big", "shroom-cluster", "fern-1"],
-      lightExtra: ["brazier"]
-    };
+  // 7) Garantir conectividade total a partir de playerSpawn via Flood Fill (BFS)
+  const vis = Array.from({ length: R }, () => new Array(C).fill(false));
+  const q = [[playerSpawn.col, playerSpawn.row]];
+  grid[playerSpawn.row][playerSpawn.col] = 0;
+  vis[playerSpawn.row][playerSpawn.col] = true;
+  while (q.length) {
+    const [cx, cy] = q.shift();
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nx = cx + dx, ny = cy + dy;
+      if (nx >= 3 && nx < C - 3 && ny >= 5 && ny < R - 3 && !vis[ny][nx] && grid[ny][nx] === 0) {
+        vis[ny][nx] = true;
+        q.push([nx, ny]);
+      }
+    }
   }
+  // Fechar bolhas isoladas inacessíveis
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      if (grid[r][c] === 0 && !vis[r][c]) grid[r][c] = 1;
+    }
+  }
+
+  // Helper para achar o piso válido mais próximo de (tc, tr)
+  const nearestFloor = (tc, tr, minClear = 1) => {
+    tc = Math.round(tc); tr = Math.round(tr);
+    for (let rad = 0; rad < 18; rad++) {
+      for (let dy = -rad; dy <= rad; dy++) {
+        for (let dx = -rad; dx <= rad; dx++) {
+          const c = tc + dx, r = tr + dy;
+          if (c < 4 || c >= C - 4 || r < 6 || r >= R - 4) continue;
+          let ok = true;
+          for (let yy = -minClear; yy <= minClear && ok; yy++) {
+            for (let xx = -minClear; xx <= minClear && ok; xx++) {
+              if (grid[r + yy]?.[c + xx] !== 0) ok = false;
+            }
+          }
+          if (ok) return { col: c, row: r };
+        }
+      }
+    }
+    return { col: playerSpawn.col, row: playerSpawn.row + 1 };
+  };
+
+  // 8) Converter a malha orgânica em spans horizontais em `corridors` (para _l.prototype.carve)
+  const corridors = [];
+  for (let r = 0; r < R; r++) {
+    let c = 0;
+    while (c < C) {
+      if (grid[r][c] === 0) {
+        const c0 = c;
+        while (c < C && grid[r][c] === 0) c++;
+        corridors.push({ x: c0, y: r, w: c - c0, h: 1 });
+      } else {
+        c++;
+      }
+    }
+  }
+
+  // 9) Definir as zonas orgânicas (sem portas!), inimigos de patrulha e os 2-3 baús raros nas alcovas
+  const enemyPools = {
+    common: ["BAT", "SPIDER", "GOBLIN", "SKELETON", "SLIME"],
+    mid: ["GHOUL", "WRAITH", "GARGOYLE", "DARK_MAGE"],
+    elite: ["GOLEM", "VOID_STALKER", "DEATH_KNIGHT"]
+  };
+
+  const rooms = [];
+  const mossZones = [];
+  const darkZones = [];
+
+  nodes.forEach((nd, idx) => {
+    const center = nearestFloor(nd.cx, nd.cy, 1);
+    nd.cx = center.col;
+    nd.cy = center.row;
+
+    const rw = Math.max(6, Math.round(nd.rx * 1.8));
+    const rh = Math.max(5, Math.round(nd.ry * 1.8));
+    const rx = Math.max(3, Math.min(C - rw - 3, center.col - Math.floor(rw / 2)));
+    const ry = Math.max(5, Math.min(R - rh - 3, center.row - Math.floor(rh / 2)));
+
+    // Paredes internas dentro do bounding box da zona para que _l.prototype.carve mantenha o formato 100% orgânico!
+    const walls = [];
+    for (let r = ry; r < ry + rh; r++) {
+      for (let c = rx; c < rx + rw; c++) {
+        if (grid[r][c] === 1) walls.push({ x: c, y: r, w: 1, h: 1 });
+      }
+    }
+
+    if (nd.kind === "MOSS") {
+      mossZones.push({ cx: center.col, cy: center.row, rx: nd.rx * 0.68, ry: nd.ry * 0.62 });
+    } else if (nd.kind === "DARK_ROCK" || nd.kind === "EXIT") {
+      darkZones.push({ cx: center.col, cy: center.row, rx: nd.rx * 0.72, ry: nd.ry * 0.68 });
+    }
+
+    const enemies = [];
+    const decor = [];
+
+    if (nd.kind === "START") {
+      // Zona inicial tranquila
+    } else if (nd.kind === "ALCOVE_LOOT") {
+      // Alcova oculta: guarda 1 Baú Valioso com Moedas do Ferreiro + 1-2 guardiões
+      const chSpot = nearestFloor(center.col, center.row - 1, 1);
+      const tier = depth >= 3 || rnd() < 0.42 ? "EPIC" : "RARE";
+      decor.push({
+        type: "chest",
+        col: chSpot.col,
+        row: chSpot.row,
+        tier: tier,
+        noMimic: true,
+        dorfCache: true
+      });
+      const guardCount = 1 + (rnd() < 0.55 ? 1 : 0);
+      for (let k = 0; k < guardCount; k++) {
+        const ep = nearestFloor(center.col + (k ? 2 : -2), center.row + 1, 0);
+        enemies.push({
+          type: pick(depth >= 2 ? enemyPools.mid : enemyPools.common),
+          col: ep.col,
+          row: ep.row,
+          elite: k === 0 && rnd() < 0.35
+        });
+      }
+    } else if (nd.kind === "EXIT") {
+      // Abismo Profundo: Guardião de Elite + lacaios + portal de descida ao limpar
+      const bossSpot = nearestFloor(center.col, center.row, 1);
+      enemies.push({
+        type: pick(enemyPools.elite),
+        col: bossSpot.col,
+        row: bossSpot.row,
+        elite: true
+      });
+      const minionCount = 2 + Math.min(2, Math.floor(depth / 2));
+      for (let k = 0; k < minionCount; k++) {
+        const ang = (k / minionCount) * Math.PI * 2;
+        const ep = nearestFloor(center.col + Math.cos(ang) * 3, center.row + Math.sin(ang) * 2, 0);
+        enemies.push({
+          type: pick(rnd() < 0.5 ? enemyPools.mid : enemyPools.common),
+          col: ep.col,
+          row: ep.row
+        });
+      }
+      // Chance de 1 relíquia ancestral extra no fundo do abismo a cada 2 níveis
+      if (depth % 2 === 0 || rnd() < 0.35) {
+        const cSpot = nearestFloor(center.col + 3, center.row - 2, 1);
+        decor.push({
+          type: "chest",
+          col: cSpot.col,
+          row: cSpot.row,
+          tier: depth >= 4 ? "LEGENDARY" : "EPIC",
+          noMimic: true,
+          dorfCache: true
+        });
+      }
+    } else {
+      // Clareiras principais de exploração: patrulhas moderadas
+      const count = 2 + (rnd() < 0.6 ? 1 : 0) + (depth >= 3 && rnd() < 0.4 ? 1 : 0);
+      for (let k = 0; k < count; k++) {
+        const ang = (k / count) * Math.PI * 2 + between(-0.3, 0.3);
+        const ep = nearestFloor(center.col + Math.cos(ang) * 3.2, center.row + Math.sin(ang) * 2.2, 0);
+        enemies.push({
+          type: pick(k === 0 && rnd() < 0.45 ? enemyPools.mid : enemyPools.common),
+          col: ep.col,
+          row: ep.row,
+          elite: k === 0 && depth >= 2 && rnd() < 0.2
+        });
+      }
+    }
+
+    rooms.push({
+      id: nd.id + "_" + idx,
+      name: nd.name,
+      roomType: nd.kind === "START" ? "START" : nd.kind === "ALCOVE_LOOT" ? "TREASURE" : nd.kind === "EXIT" ? "ELITE" : "COMBAT",
+      rect: { x: rx, y: ry, w: rw, h: rh },
+      walls: walls,
+      enemies: enemies,
+      decor: decor,
+      ambient: 0.56,
+      exit: nd.kind === "EXIT"
+    });
+  });
+
+  return {
+    id: "dorf_cave",
+    biome: "dorf_cave",
+    name: "Cavernas da Montanha Dorf" + (depth > 1 ? ` · Nível ${depth}` : ""),
+    depth: depth,
+    seed: seedStr,
+    endless: true,
+    theme: Ls.dorf_cave,
+    world: { cols: C, rows: R },
+    playerSpawn: playerSpawn,
+    rooms: rooms,
+    corridors: corridors,
+    doors: [], // Zero portas: cenário 100% exploratório e contínuo!
+    __organicGrid: grid,
+    __mossZones: mossZones,
+    __darkZones: darkZones,
+    __nodes: nodes
+  };
 }
 
-/* 2) Gerador e montagem procedural do cenário (__dorfBake) */
+if (typeof window !== "undefined") {
+  window.__buildDorfCaveLevel = __buildDorfCaveLevel;
+}
+
+/* 3) Renderizador 2.5D Realista das Cavernas Dorf (__dorfBake) */
 function __dorfBake(B) {
-  const S = B.scene;
-  const M = S.cache.json.get("dorf-atlas");
+  const S = B.scene, M = S.cache.json.get("dorf-atlas");
   if (!M || !S.textures.exists("dorf-atlas")) return false;
 
-  const src = S.textures.get("dorf-atlas").getSourceImage();
+  // Garantir que a malha de colisão B.grid seja exatamente a malha orgânica se presente
+  if (B.level?.__organicGrid) {
+    for (let r = 0; r < B.rows; r++) {
+      for (let c = 0; c < B.cols; c++) {
+        B.grid[r][c] = B.level.__organicGrid[r]?.[c] ?? 1;
+      }
+    }
+  }
+
+  const texObj = S.textures.get("dorf-atlas");
+  if (M.frames && texObj && !texObj.has("p-col-tall-fern")) {
+    for (const [k, rect] of Object.entries(M.frames)) {
+      if (!texObj.has(k)) texObj.add(k, 0, rect[0], rect[1], rect[2], rect[3]);
+    }
+  }
+
+  const src = texObj.getSourceImage();
   const C = B.cols, R = B.rows, T = dt || 32, key = "dorfb-" + ++__dorfN;
   const tx = S.textures.createCanvas(key, C * T, R * T), g = tx.getContext();
   g.imageSmoothingEnabled = false;
 
-  let sd = (String(B.level.seed ?? "dorf") + (B.level.depth || 1)).split("").reduce((a, c) => (a * 31 + c.charCodeAt(0) | 0), 17) >>> 0;
-  const rnd = () => (sd = (sd * 1664525 + 1013904223 >>> 0)) / 4294967296;
-  const pick = a => a[Math.floor(rnd() * a.length)];
+  let sd = (String(B.level.seed ?? "dorf") + "_" + (B.level.depth || 1))
+    .split("")
+    .reduce((a, c) => ((a * 31 + c.charCodeAt(0)) | 0), 13) >>> 0;
+  const rnd = () => (sd = (sd * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const pick = (a) => a[(rnd() * a.length) | 0];
   const F = (c, r) => c >= 0 && r >= 0 && c < C && r < R && !B.isWallTile(c, r);
-  const D = (q, x, y, sx = 0, sy = 0, sw = q[2], sh = q[3]) => {
+  const D = (q, x, y, sw = q[2], sh = q[3]) => {
     if (!q) return;
-    g.drawImage(src, q[0] + sx, q[1] + sy, sw, sh, x, y, sw, sh);
+    g.drawImage(src, q[0], q[1], q[2], q[3], Math.round(x), Math.round(y), Math.round(sw), Math.round(sh));
   };
 
-  // Fundo geral da caverna: rocha escura profunda
-  g.fillStyle = "rgb(10, 8, 14)";
+  // 1) Fundo abissal escuro (#0d0a10)
+  g.fillStyle = "#0d0a10";
   g.fillRect(0, 0, C * T, R * T);
 
-  const rooms = B.level.rooms || [];
+  // 2) Mapa de musgo hexagonal orgânico e terraços
+  const isMoss = Array.from({ length: R }, () => new Array(C).fill(false));
+  const isDark = Array.from({ length: R }, () => new Array(C).fill(false));
+  const mossZones = B.level.__mossZones || [];
+  const darkZones = B.level.__darkZones || [];
 
-  // Mapear piso de cada ladrilho
-  // Salas de combate/chefe: lajotas de musgo verde no centro e terra escura na borda
-  // Salas especiais (LOJA, TESOURO): piso de pedra polida
-  const kind = new Array(C * R).fill("dirt");
-  for (const rm of rooms) {
-    const t = rm.roomType, r = rm.rect;
-    if (!r) continue;
-    const isSpecial = ["SHOP", "REST", "TREASURE", "MERCHANT"].includes(t);
-    const cx = r.x + Math.floor(r.w / 2), cy = r.y + Math.floor(r.h / 2);
-    const radiusMoss = Math.max(1, Math.min(Math.floor(r.w / 2) - 1, Math.floor(r.h / 2) - 1));
-
-    for (let y = r.y; y < r.y + r.h; y++) {
-      for (let x = r.x; x < r.x + r.w; x++) {
-        if (!F(x, y)) continue;
-        if (isSpecial) {
-          kind[y * C + x] = "pave";
-        } else {
-          const dx = x - cx, dy = y - cy;
-          // mancha hexagonal de musgo no centro
-          if (Math.abs(dx) + Math.abs(dy) <= radiusMoss + (rnd() < 0.3 ? 1 : 0)) {
-            kind[y * C + x] = "moss";
-          } else {
-            kind[y * C + x] = "dirt";
-          }
-        }
-      }
-    }
-  }
-
-  // Pintar ladrilhos de chão
-  for (let r = 0; r < R; r++) {
-    for (let c = 0; c < C; c++) {
-      if (F(c, r)) {
-        const k = kind[r * C + c];
-        const tilePool = M.floor[k] || M.floor.dirt;
-        D(pick(tilePool), c * T, r * T);
-      }
-    }
-  }
-
-  // Paredes: colunas de basalto vertical
-  // Para ladrilhos de parede diretamente acima do chão: 2 fileiras de face de basalto + 1 topo facetado
-  const face = new Int8Array(C * R);
-  for (let x = 0; x < C; x++) {
-    for (let y = 1; y < R; y++) {
-      if (F(x, y) && !F(x, y - 1)) {
-        for (const [k, v] of [[1, 1], [2, 1], [3, 2]]) {
-          const yy = y - k;
-          if (yy < 0 || F(x, yy)) break;
-          face[yy * C + x] = v;
-        }
-      }
-    }
-  }
-
-  const isBot = (x, y) => face[y * C + x] === 1 && (y + 1 >= R || face[(y + 1) * C + x] !== 1);
-  const wallSpots = [];
-
-  for (let y = 0; y < R; y++) {
-    for (let x = 0; x < C;) {
-      if (!isBot(x, y)) { x++; continue; }
-      const x0 = x;
-      while (x < C && isBot(x, y)) x++;
-      for (let c = x0; c < x; c++) {
-        const glowFace = rnd() < 0.25;
-        const facePool = glowFace ? M.wall.faceGlow : M.wall.face;
-        D(pick(facePool), c * T, (y - 1) * T);
-        if (glowFace && y < R && F(c, y)) {
-          // Luz suave da vinha brilhante
-          S.lighting?.addLight?.({ x: c * T + 16, y: (y - 0.5) * T, radius: 45, color: 0x4ade80, intensity: 0.6, flicker: 0.5 });
-        }
-      }
-      for (let c = x0 + 1; c < x - 1; c++) {
-        if (face[(y - 1) * C + c] === 1) wallSpots.push([c, y]);
-      }
-    }
-  }
-
-  // Topo das paredes de basalto (facetas hexagonais arredondadas)
-  for (let y = 0; y < R; y++) {
-    for (let x = 0; x < C;) {
-      if (face[y * C + x] !== 2) { x++; continue; }
-      const x0 = x;
-      while (x < C && face[y * C + x] === 2) x++;
-      for (let c = x0; c < x; c++) {
-        D(pick(M.wall.top), c * T, y * T);
-      }
-    }
-  }
-
-  // Sombras ao pé das paredes e profundidade da caverna
   for (let r = 0; r < R; r++) {
     for (let c = 0; c < C; c++) {
       if (!F(c, r)) continue;
-      if (!F(c, r - 1)) {
-        const q = g.createLinearGradient(0, r * T, 0, r * T + 14);
-        q.addColorStop(0, "rgba(5, 3, 8, 0.65)");
-        q.addColorStop(1, "rgba(5, 3, 8, 0)");
-        g.fillStyle = q;
-        g.fillRect(c * T, r * T, T, 14);
-      }
-      if (!F(c - 1, r)) {
-        const q = g.createLinearGradient(c * T, 0, c * T + 10, 0);
-        q.addColorStop(0, "rgba(5, 3, 8, 0.45)");
-        q.addColorStop(1, "rgba(5, 3, 8, 0)");
-        g.fillStyle = q;
-        g.fillRect(c * T, r * T, 10, T);
-      }
-      if (!F(c + 1, r)) {
-        const q = g.createLinearGradient(c * T + 22, 0, c * T + 32, 0);
-        q.addColorStop(0, "rgba(5, 3, 8, 0)");
-        q.addColorStop(1, "rgba(5, 3, 8, 0.45)");
-        g.fillStyle = q;
-        g.fillRect(c * T + 22, r * T, 10, T);
-      }
-    }
-  }
-
-  tx.refresh();
-  S.add.image(0, 0, key).setOrigin(0).setDepth(-2);
-  B.groundLayer?.setVisible(false);
-  B.wallLayer?.setVisible(false);
-  S.cameras.main.setBackgroundColor("rgb(10, 8, 14)");
-
-  // 3) Adereços cênicos (estalagmites, cogumelos, plantas de caverna)
-  const propList = Object.keys(M.props || {});
-  const shrooms = propList.filter(k => k.startsWith("shroom"));
-  const columns = propList.filter(k => k.startsWith("col"));
-  const ferns = propList.filter(k => k.startsWith("fern") || k.startsWith("sprout"));
-
-  for (const rm of rooms) {
-    const r = rm.rect;
-    if (!r) continue;
-
-    // Colunas de estalagmite nos cantos da sala
-    for (const [dx, dy] of [[1, 1], [r.w - 2, 1], [1, r.h - 2], [r.w - 2, r.h - 2]]) {
-      const px = r.x + dx, py = r.y + dy;
-      if (F(px, py) && rnd() < 0.7) {
-        const pKey = pick(columns);
-        const rect = M.props[pKey];
-        if (rect) {
-          const sp = S.add.image(px * T + 16, py * T + 24, "dorf-atlas", `p-${pKey}`)
-            .setOrigin(0.5, 1)
-            .setDepth(py * T + 16);
-          // Adicionar corpo sólido para colunas grandes
-          if (pKey.includes("cluster") || pKey.includes("tall") || pKey.includes("massive")) {
-            const solid = B.solids?.create(px * T + 16, py * T + 16, "rock");
-            if (solid) {
-              solid.setVisible(false).setDisplaySize(rect[2] * 0.7, rect[3] * 0.4);
-              solid.refreshBody?.();
-            }
-          }
+      // O musgo hexagonal fica a pelo menos 1 tile de distância das paredes norte para o terraço respirar
+      for (const mz of mossZones) {
+        const ang = Math.atan2(r - mz.cy, c - mz.cx);
+        const wob = 1.0 + 0.12 * Math.sin(ang * 3 + mz.cx) + 0.08 * Math.cos(ang * 4 - mz.cy);
+        const d2 = ((c - mz.cx) / (mz.rx * wob)) ** 2 + ((r - mz.cy) / (mz.ry * wob)) ** 2;
+        if (d2 <= 1.0 && F(c, r - 1) && F(c, r + 1) && F(c - 1, r) && F(c + 1, r)) {
+          isMoss[r][c] = true;
+          break;
         }
       }
-    }
-
-    // Cogumelos brilhantes e plantas espalhadas nas bordas
-    for (let y = r.y + 1; y < r.y + r.h - 1; y++) {
-      for (let x = r.x + 1; x < r.x + r.w - 1; x++) {
-        if (!F(x, y)) continue;
-        const nearW = !F(x - 1, y) || !F(x + 1, y) || !F(x, y - 1) || !F(x, y + 1);
-        if (nearW && rnd() < 0.18) {
-          const isShroom = rnd() < 0.6;
-          const pKey = isShroom ? pick(shrooms) : pick(ferns);
-          const sp = S.add.image(x * T + 8 + rnd() * 16, y * T + 20, "dorf-atlas", `p-${pKey}`)
-            .setOrigin(0.5, 1)
-            .setDepth(y * T + 10);
-          if (isShroom) {
-            // Respiração luminosa sutil nos cogumelos
-            S.tweens.add({
-              targets: sp,
-              alpha: { from: 1, to: 0.72 },
-              duration: 1200 + rnd() * 800,
-              yoyo: true,
-              repeat: -1
-            });
-            S.lighting?.addLight?.({
-              x: sp.x,
-              y: sp.y - 8,
-              radius: 40,
-              color: 0x86efac,
-              intensity: 0.5,
-              flicker: 0.3
-            });
+      if (!isMoss[r][c]) {
+        for (const dz of darkZones) {
+          const d2 = ((c - dz.cx) / dz.rx) ** 2 + ((r - dz.cy) / dz.ry) ** 2;
+          if (d2 <= 1.0) {
+            isDark[r][c] = true;
+            break;
           }
         }
       }
     }
   }
 
-  // 4) Tochas de cristal ciano nas paredes
-  const takenWalls = new Set();
-  for (const [c, y] of wallSpots) {
-    if (rnd() > 0.35 || takenWalls.has(c - 1 + "," + y) || takenWalls.has(c + "," + y) || takenWalls.has(c + 1 + "," + y)) continue;
-    takenWalls.add(c + "," + y);
-    const bx = c * T + 16, by = (y + 1) * T - 12;
+  // 3) Desenhar Pisos (Terra Marrom, Solo Escuro, Musgo Hexagonal com Bordas Autotile, Crateras e Tufos)
+  const mb = M.floor.mossBorder;
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      if (!F(c, r)) continue;
+      const x = c * T, y = r * T;
+      if (isMoss[r][c] && mb) {
+        const mn = isMoss[r - 1]?.[c] ?? false;
+        const ms = isMoss[r + 1]?.[c] ?? false;
+        const mw = isMoss[r]?.[c - 1] ?? false;
+        const me = isMoss[r]?.[c + 1] ?? false;
+        if (!mn && !mw) D(mb.nw, x, y);
+        else if (!mn && !me) D(mb.ne, x, y);
+        else if (!ms && !mw) D(mb.sw, x, y);
+        else if (!ms && !me) D(mb.se, x, y);
+        else if (!mn) D(pick(mb.n), x, y);
+        else if (!ms) D(pick(mb.s), x, y);
+        else if (!mw) D(pick(mb.w), x, y);
+        else if (!me) D(pick(mb.e), x, y);
+        else D(pick(M.floor.moss), x, y);
+      } else if (isDark[r][c] && M.floor.dark?.length) {
+        D(pick(M.floor.dark), x, y);
+      } else {
+        const p = rnd();
+        if (p < 0.065 && M.floor.craters?.length) {
+          D(pick(M.floor.craters), x, y);
+        } else if (p < 0.145 && M.floor.tufts?.length) {
+          D(pick(M.floor.tufts), x, y);
+        } else {
+          D(pick(M.floor.dirt), x, y);
+        }
+      }
+    }
+  }
 
-    // Tocha de cristal ciano (light1C)
-    const bz = S.add.sprite(bx, by, "dorf-atlas", "light-cyan-0").setOrigin(0.5, 1).setDepth(by + 1);
-    if (!S.anims.exists("dorf-light-cyan")) {
+  // 4) Marcar células ocupadas pelas paredes norte de basalto (3 tiles de altura: r-1, r-2, r-3)
+  const hasNCol = Array.from({ length: R }, () => new Array(C).fill(false));
+  for (let r = 1; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      if (F(c, r) && !F(c, r - 1)) {
+        for (let k = 1; k <= 3; k++) {
+          if (r - k >= 0) hasNCol[r - k][c] = true;
+        }
+      }
+    }
+  }
+
+  // 5) Bordas Laterais (Leste/Oeste) e Borda Sul de Basalto (desenhadas antes das colunas norte)
+  if (M.wall.south && M.wall.sideL && M.wall.sideR) {
+    for (let r = 0; r < R; r++) {
+      for (let c = 0; c < C; c++) {
+        if (F(c, r) || hasNCol[r][c]) continue;
+        const fn = F(c, r - 1);
+        const fs = F(c, r + 1);
+        const fw = F(c - 1, r);
+        const fe = F(c + 1, r);
+        const x = c * T, y = r * T;
+        if (fn) {
+          D(M.wall.south[(c + r) % M.wall.south.length], x, y);
+        } else if (fe) {
+          D(M.wall.sideL[r % M.wall.sideL.length], x, y);
+        } else if (fw) {
+          D(M.wall.sideR[r % M.wall.sideR.length], x, y);
+        } else if (F(c + 1, r - 1) && M.wall.cornerSW) {
+          D(M.wall.cornerSW, x, y);
+        } else if (F(c - 1, r - 1) && M.wall.cornerSE) {
+          D(M.wall.cornerSE, x, y);
+        } else if (F(c + 1, r + 1) && M.wall.cornerNW) {
+          D(M.wall.cornerNW, x, y);
+        } else if (F(c - 1, r + 1) && M.wall.cornerNE) {
+          D(M.wall.cornerNE, x, y);
+        }
+      }
+    }
+  }
+
+  // 6) Paredes Norte de Basalto de 3 Tiles de Altura (cap + mid + base + vinhas luminescentes)
+  const grottoSpots = [];
+  const sp = B.level.playerSpawn || { col: 14, row: 14 };
+
+  for (let r = 1; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      if (!F(c, r) || F(c, r - 1)) continue;
+      const x = c * T;
+      const useGlow = rnd() < 0.24 && M.wall.glowCap?.length;
+      const k = (c * 3 + r * 5) % M.wall.cap.length;
+      const gk = (c * 3 + r * 5) % (M.wall.glowCap?.length || 1);
+
+      if (useGlow) {
+        if (r - 3 >= 0) D(M.wall.glowCap[gk], x, (r - 3) * T);
+        if (r - 2 >= 0) D(M.wall.faceGlow[gk], x, (r - 2) * T);
+        D(M.wall.glowBase[gk], x, (r - 1) * T);
+      } else {
+        if (r - 3 >= 0) D(M.wall.cap[k], x, (r - 3) * T);
+        if (r - 2 >= 0) D(M.wall.mid[k], x, (r - 2) * T);
+        D(M.wall.base[k], x, (r - 1) * T);
+      }
+
+      // Sombra de oclusão suave no pé da falésia de basalto
+      g.fillStyle = "rgba(8, 5, 12, 0.34)";
+      g.fillRect(x, r * T, T, 6);
+
+      // Candidato para grota escura embutida na parede norte (2 colunas alinhadas longe do spawn)
+      if (
+        c > 5 && c < C - 6 &&
+        Math.hypot(c - sp.col, r - sp.row) > 8 &&
+        F(c + 1, r) && !F(c + 1, r - 1) &&
+        rnd() < 0.14
+      ) {
+        grottoSpots.push({ col: c, row: r });
+      }
+    }
+  }
+
+  // 7) Embutir Grotas Escuras (cave-grotto) na parede norte (como na Imagem de Referência 3)
+  if (M.arches?.grotto) {
+    let placedGrottos = 0;
+    for (const gs of grottoSpots) {
+      if (placedGrottos >= 3) break;
+      if (grottoSpots.some((o) => o !== gs && o.__used && Math.hypot(o.col - gs.col, o.row - gs.row) < 12)) continue;
+      gs.__used = true;
+      placedGrottos++;
+      D(M.arches.grotto, gs.col * T, (gs.row - 3) * T);
+    }
+  }
+
+  // 8) Terraços de Pedra Cinza e Escadarias ao redor das Clareiras de Musgo (Imagens de Referência 2 e 3)
+  const stairTiles = new Set();
+  if (M.ledge) {
+    for (const mz of mossZones) {
+      const sc = Math.round(mz.cx);
+      // Encontrar a borda sul do musgo para posicionar a escadaria de pedra de 2 tiles
+      let sRow = Math.round(mz.cy);
+      while (sRow < R - 4 && isMoss[sRow]?.[sc]) sRow++;
+      if (F(sc, sRow) && F(sc + 1, sRow)) {
+        D(M.stairs, sc * T, (sRow - 1) * T + 12);
+        stairTiles.add(`${sc},${sRow}`);
+        stairTiles.add(`${sc + 1},${sRow}`);
+        stairTiles.add(`${sc},${sRow - 1}`);
+        stairTiles.add(`${sc + 1},${sRow - 1}`);
+      }
+      // Pilares laterais de pedra cinza nas extremidades oeste e leste do terraço
+      let wCol = Math.round(mz.cx);
+      while (wCol > 4 && isMoss[Math.round(mz.cy)]?.[wCol]) wCol--;
+      let eCol = Math.round(mz.cx);
+      while (eCol < C - 5 && isMoss[Math.round(mz.cy)]?.[eCol]) eCol++;
+      if (F(wCol - 1, Math.round(mz.cy)) && M.ledge.pillarL) {
+        D(M.ledge.pillarL, (wCol - 1) * T, (Math.round(mz.cy) - 1) * T);
+      }
+      if (F(eCol, Math.round(mz.cy)) && M.ledge.pillarR) {
+        D(M.ledge.pillarR, eCol * T, (Math.round(mz.cy) - 1) * T);
+      }
+    }
+
+    for (let r = 2; r < R - 2; r++) {
+      for (let c = 2; c < C - 2; c++) {
+        if (!F(c, r) || isMoss[r][c] || stairTiles.has(`${c},${r}`)) continue;
+        const mn = isMoss[r - 1]?.[c] ?? false;
+        const ms = isMoss[r + 1]?.[c] ?? false;
+        const mw = isMoss[r]?.[c - 1] ?? false;
+        const me = isMoss[r]?.[c + 1] ?? false;
+        if (mn) {
+          D(M.ledge.s[(c + r) % M.ledge.s.length], c * T, r * T);
+        } else if (me && !mn && !ms) {
+          D(M.ledge.l[r % M.ledge.l.length], c * T, r * T);
+        } else if (mw && !mn && !ms) {
+          D(M.ledge.r[r % M.ledge.r.length], c * T, r * T);
+        }
+      }
+    }
+  }
+
+  // 9) Animações de Chamas de Cristal Ciano e Verde
+  if (!S.anims.exists("dorf-light-cyan")) {
+    ["cyan", "green", "fire"].forEach((colKey) => {
+      const frames = M.lights[colKey];
+      if (!frames) return;
+      frames.forEach((rect, idx) => {
+        const fKey = `dorf-l-${colKey}-${idx}`;
+        if (!S.textures.exists(fKey)) {
+          const c = S.textures.createCanvas(fKey, rect[2], rect[3]);
+          const ctx = c.getContext();
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(src, rect[0], rect[1], rect[2], rect[3], 0, 0, rect[2], rect[3]);
+          c.refresh();
+        }
+      });
       S.anims.create({
-        key: "dorf-light-cyan",
+        key: `dorf-light-${colKey}`,
         frames: [
-          { key: "dorf-atlas", frame: "light-cyan-0" },
-          { key: "dorf-atlas", frame: "light-cyan-1" },
-          { key: "dorf-atlas", frame: "light-cyan-2" }
+          { key: `dorf-l-${colKey}-0` },
+          { key: `dorf-l-${colKey}-1` },
+          { key: `dorf-l-${colKey}-2` },
+          { key: `dorf-l-${colKey}-1` }
         ],
         frameRate: 6,
         repeat: -1
       });
+    });
+  }
+
+  const spawnBrazier = (wx, wy, colKey = "cyan") => {
+    const spr = S.add.sprite(wx, wy, `dorf-l-${colKey}-0`)
+      .setOrigin(0.5, 0.72)
+      .setDepth(wy + 4);
+    spr.play(`dorf-light-${colKey}`);
+    const tint = colKey === "cyan" ? 0x38bdf8 : colKey === "green" ? 0x4ade80 : 0xfbbf24;
+    const gl = S.add.image(wx, wy - 8, "light")
+      .setBlendMode(j.BlendModes.ADD)
+      .setTint(tint)
+      .setScale(0.52)
+      .setAlpha(0.28)
+      .setDepth(wy + 3);
+    S.tweens.add({
+      targets: gl,
+      alpha: { from: 0.18, to: 0.34 },
+      scale: { from: 0.46, to: 0.58 },
+      duration: 950 + Math.random() * 400,
+      yoyo: true,
+      repeat: -1
+    });
+    B.lightSources?.push({ x: wx, y: wy - 6, type: "MAGIC_CRYSTAL", color: tint, radius: 135 });
+    return spr;
+  };
+
+  // 10) Portal de Entrada/Retorno embutido na parede norte do spawn + Braseiros Ciano
+  let wallRow = sp.row;
+  while (wallRow > 3 && F(sp.col, wallRow - 1)) wallRow--;
+  const archX = (sp.col - 2) * T;
+  const archY = (wallRow - 3) * T;
+  if (M.portalArch) {
+    D(M.portalArch, archX, archY);
+  }
+  const spX = sp.col * T;
+  const spY = wallRow * T + 8;
+
+  spawnBrazier(spX - 36, spY - 6, "cyan");
+  spawnBrazier(spX + 36, spY - 6, "cyan");
+
+  // 11) Adereços 2.5D com Y-Sorting Real e Proporções 1:1 (Estalagmites, Cogumelos, Samambaias, Vasos)
+  const usedCells = new Set();
+  const markUsed = (c, r, rad = 1) => {
+    for (let dy = -rad; dy <= rad; dy++) {
+      for (let dx = -rad; dx <= rad; dx++) usedCells.add(`${c + dx},${r + dy}`);
     }
-    bz.play("dorf-light-cyan");
-
-    // Luz dinâmica ciano e brilho sutil
-    const gl = S.add.image(bx, by - 16, "light")
-      .setScale(0.35)
-      .setBlendMode(Phaser.BlendModes.ADD)
-      .setTint(0x38bdf8)
-      .setAlpha(0.4)
-      .setDepth(by);
-    S.tweens.add({ targets: gl, alpha: 0.22, scale: 0.3, duration: 800 + rnd() * 400, yoyo: true, repeat: -1 });
-    S.lighting?.addLight?.({ x: bx, y: by - 16, radius: 110, color: 0x38bdf8, intensity: 1.1, flicker: 0.8 });
+  };
+  markUsed(sp.col, sp.row, 3);
+  markUsed(sp.col, wallRow, 3);
+  for (const rm of B.level.rooms || []) {
+    for (const dc of rm.decor || []) markUsed(dc.col, dc.row, 2);
+    for (const en of rm.enemies || []) markUsed(en.col, en.row, 1);
   }
 
-  // 5) Na sala de INÍCIO: colocar o portal de retorno ao Refúgio!
-  const startRoom = rooms.find(rm => rm.roomType === "START") || rooms[0];
-  if (startRoom) {
-    const spX = (startRoom.rect.x + Math.floor(startRoom.rect.w / 2)) * T + 16;
-    const spY = (startRoom.rect.y + 2) * T;
-
-    // Portal de retorno com a arte do portal arch de Dorf
-    const retGate = S.add.image(spX, spY + 4, "dorf-portal-arch").setOrigin(0.5, 1).setDepth(spY - 0.2);
-    const swirl = S.add.sprite(spX, spY - 40, "hub-portal", 0).setOrigin(0.5, 0.5).setDepth(spY).setScale(0.75).setTint(0x38bdf8);
-    swirl.play("hub-portal-a");
-    const swirlAdd = S.add.sprite(spX, spY - 40, "hub-portal", 0).setOrigin(0.5, 0.5).setDepth(spY + 0.1).setScale(0.75).setTint(0x93c5fd).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.35);
-    swirlAdd.play("hub-portal-a");
-    S.tweens.add({ targets: swirlAdd, alpha: 0.7, duration: 1200, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
-    S.lighting?.addLight?.({ x: spX, y: spY - 40, radius: 95, color: 0x38bdf8, intensity: 1, flicker: 0.6 });
-
-    // Rótulo flutuante
-    const labTxt = typeof __L3 === "function" ?
-      __L3("PORTAL DO REFÚGIO [E]", "REFUGE PORTAL [E]", "PORTAL DEL REFUGIO [E]") : "PORTAL DO REFÚGIO [E]";
-    const lab = S.add.text(spX, spY - 110, labTxt, {
-      fontFamily: "'Courier New', monospace",
-      fontSize: "10px",
-      fontStyle: "bold",
-      color: "#38bdf8",
-      backgroundColor: "#0a080ee0",
-      padding: { x: 6, y: 3 }
-    }).setOrigin(0.5).setDepth(8999);
-
-    // Registro para interação
-    S.__dorfReturnPortal = { x: spX, y: spY, r: 44 };
+  if (!B.__dorfSolids && S.physics?.add) {
+    B.__dorfSolids = S.physics.add.staticGroup();
   }
 
-  // Fala da Guardiã ao entrar pela primeira vez no cenário da caverna
-  try {
-    if (typeof localStorage !== "undefined" && !localStorage.getItem("depthgate:dorf_cave_guardian_voice")) {
-      localStorage.setItem("depthgate:dorf_cave_guardian_voice", "1");
-      S.time.delayedCall(1200, () => {
-        if (!S.scene.isActive()) return;
-        const gText = "Explore com cuidado, herói. Não se preocupe, se acontecer algo, eu abro um portal e te trago de volta pro Refúgio.";
-        const gName = typeof __GN !== "undefined" ? __GN : "A GUARDIÃ";
-        if (typeof __dlg === "function") {
-          __dlg(S, [{ who: "guardia", expr: "calm", name: gName, text: gText }]);
+  const spawnProp25D = (frameKey, wx, wy, solidW = 0, solidH = 0, depthOffset = 0) => {
+    if (!texObj.has(frameKey)) return null;
+    const im = S.add.image(wx, wy, "dorf-atlas", frameKey)
+      .setOrigin(0.5, 1)
+      .setDepth(wy + depthOffset);
+    if (solidW > 0 && solidH > 0 && B.__dorfSolids) {
+      const z = S.add.zone(wx, wy - solidH * 0.5, solidW, solidH);
+      S.physics.add.existing(z, true);
+      B.__dorfSolids.add(z);
+    }
+    return im;
+  };
+
+  // A) Grandes formações de estalagmites encostadas nas falésias norte e curvas da caverna
+  const cliffCols = [
+    "p-col-red-tall-fern", "p-col-red-spire-fern", "p-col-tall-fern",
+    "p-col-spire-fern", "p-col-wide-fern", "p-col-cluster", "p-col-red-cluster"
+  ];
+  for (let r = 6; r < R - 5; r++) {
+    for (let c = 5; c < C - 5; c++) {
+      if (!F(c, r) || F(c, r - 1)) continue;
+      if (usedCells.has(`${c},${r}`)) continue;
+      // Garantir que há espaço livre ao sul para nunca bloquear um corredor estreito
+      if (!F(c, r + 1) || !F(c, r + 2) || !F(c, r + 3) || !F(c - 1, r + 1) || !F(c + 1, r + 1)) continue;
+      if (rnd() < 0.13) {
+        const fk = pick(cliffCols);
+        const wx = c * T + T * 0.5;
+        const wy = r * T + 22;
+        spawnProp25D(fk, wx, wy, 28, 14, 0);
+        markUsed(c, r, 3);
+      }
+    }
+  }
+
+  // B) Pilares de rocha internos nas clareiras amplas + Vasos de Brotos no Musgo Hexagonal
+  const midCols = ["p-col-trio", "p-col-red-trio", "p-col-cone", "p-col-red-cone", "p-col-pillar", "p-col-twin-fern"];
+  const shroomKeys = ["p-shroom-big", "p-shroom-big-2", "p-shroom-cluster", "p-shroom-med-1", "p-shroom-med-2", "p-shroom-tiny"];
+  const fernKeys = ["p-fern-big", "p-fern-med", "p-fern-small", "p-reeds-big", "p-reeds-small"];
+
+  for (let r = 7; r < R - 5; r++) {
+    for (let c = 5; c < C - 5; c++) {
+      if (!F(c, r) || usedCells.has(`${c},${r}`)) continue;
+      const wx = c * T + (rnd() - 0.5) * 8 + T * 0.5;
+      const wy = r * T + (rnd() - 0.5) * 8 + T * 0.75;
+
+      // Verificar se é interior amplo (3x3 livre ao redor)
+      let open3x3 = true;
+      for (let dy = -1; dy <= 1 && open3x3; dy++) {
+        for (let dx = -1; dx <= 1 && open3x3; dx++) {
+          if (!F(c + dx, r + dy)) open3x3 = false;
         }
-      });
+      }
+
+      if (isMoss[r][c]) {
+        // Dentro da clareira de musgo: vasos luminescentes (sprout-pot) como nas Imagens 2 e 3
+        if (open3x3 && rnd() < 0.055) {
+          spawnProp25D(rnd() < 0.5 ? "p-sprout-pot-1" : "p-sprout-pot-2", wx, wy, 14, 10, 0);
+          markUsed(c, r, 2);
+        } else if (rnd() < 0.045) {
+          spawnProp25D(pick(["p-reeds-small", "p-fern-tiny"]), wx, wy, 0, 0, -12);
+          markUsed(c, r, 1);
+        }
+      } else {
+        // Nas bordas de parede lateral/sul ou clareiras abertas: cogumelos, samambaias e colunas menores
+        const nearWall = !F(c - 1, r) || !F(c + 1, r) || !F(c, r - 1) || !F(c, r + 1);
+        if (open3x3 && rnd() < 0.025 && F(c, r + 2) && F(c, r - 2)) {
+          const fk = pick(midCols);
+          spawnProp25D(fk, wx, wy, 20, 12, 0);
+          markUsed(c, r, 2);
+        } else if (nearWall && rnd() < 0.11) {
+          const sk = pick(shroomKeys);
+          const isBig = sk.includes("big") || sk.includes("cluster");
+          spawnProp25D(sk, wx, wy, isBig ? 14 : 0, isBig ? 10 : 0, isBig ? 0 : -8);
+          if (isBig) {
+            const sgl = S.add.image(wx, wy - 12, "light")
+              .setBlendMode(j.BlendModes.ADD)
+              .setTint(0xa7f3d0)
+              .setScale(0.24)
+              .setAlpha(0.18)
+              .setDepth(wy - 1);
+            S.tweens.add({ targets: sgl, alpha: 0.09, duration: 1300 + Math.random() * 500, yoyo: true, repeat: -1 });
+          }
+          markUsed(c, r, 1);
+        } else if (rnd() < 0.075) {
+          spawnProp25D(pick(fernKeys), wx, wy, 0, 0, -12);
+          markUsed(c, r, 1);
+        }
+      }
     }
-  } catch (e) {
-    console.warn("[dorf_cave] erro ao disparar diálogo da Guardiã:", e);
   }
 
-  S.events.once("shutdown", () => {
-    if (S.textures.exists(key)) S.textures.remove(key);
-  });
+  // C) Braseiros de Cristal Ciano distribuídos nos pontos estratégicos (escadas dos terraços, alcovas e encruzilhadas)
+  for (const mz of mossZones) {
+    const sc = Math.round(mz.cx);
+    let sRow = Math.round(mz.cy);
+    while (sRow < R - 4 && isMoss[sRow]?.[sc]) sRow++;
+    if (F(sc - 2, sRow)) spawnBrazier((sc - 2) * T + 16, sRow * T + 10, "cyan");
+    if (F(sc + 3, sRow)) spawnBrazier((sc + 3) * T + 16, sRow * T + 10, "cyan");
+  }
+  for (const nd of B.level.__nodes || []) {
+    if (nd.kind === "START") continue;
+    const bx = (nd.cx + (rnd() < 0.5 ? -2 : 2)) * T + 16;
+    const by = (nd.cy - 1) * T + 16;
+    if (F(Math.floor(bx / T), Math.floor(by / T))) {
+      spawnBrazier(bx, by, nd.kind === "ALCOVE_LOOT" ? "green" : "cyan");
+    }
+  }
+
+  tx.refresh();
+  S.add.image(0, 0, key).setOrigin(0, 0).setDepth(0.5);
+  B.groundLayer?.setVisible?.(false);
+  B.wallLayer?.setVisible?.(false);
+
+  // 12) Configurar Portal de Retorno ao Refúgio, Colisões 2.5D, Economia de Moedas do Ferreiro e HUD
+  if (S.isDorfCave) {
+    S.__dorfReturnPortal = { x: spX, y: spY, r: 44 };
+    const retVortex = S.add.sprite(spX, spY - 12, "portal", 0)
+      .setScale(0.85)
+      .setTint(0x38bdf8)
+      .setAlpha(0.75)
+      .setDepth(spY - 2);
+    if (S.anims.exists("portal-spin")) retVortex.play("portal-spin");
+
+    const L3 = typeof __L3 === "function" ? __L3 : (pt) => pt;
+    S.add.text(spX, spY - 56, L3("SAÍDA · REFÚGIO", "EXIT · REFUGE", "SALIDA · REFUGIO"), {
+      fontFamily: "'Cinzel', Georgia, serif",
+      fontSize: "8px",
+      color: "#7dd3fc",
+      stroke: "#090d16",
+      strokeThickness: 3
+    }).setOrigin(0.5, 1).setDepth(9100);
+
+    // Ativar colisão física entre o jogador/inimigos e a base das estalagmites 2.5D + hooks de economia
+    S.time?.delayedCall(120, () => {
+      if (!S.scene?.isActive()) return;
+      if (B.__dorfSolids && S.player) {
+        S.physics.add.collider(S.player, B.__dorfSolids);
+        if (S.enemies) S.physics.add.collider(S.enemies, B.__dorfSolids);
+      }
+
+      // Indicador de Moedas do Ferreiro na HUD da caverna
+      if (!S.__dorfCoinTxt) {
+        const curCoins = __getForgeCoins(S);
+        S.__dorfCoinTxt = S.add.text(16, 54, `🪙 ${L3("Moedas do Ferreiro", "Blacksmith Coins", "Monedas del Herrero")}: ${curCoins}`, {
+          fontFamily: "'Cinzel', Georgia, serif",
+          fontSize: "10px",
+          fontStyle: "bold",
+          color: "#ffd24a",
+          backgroundColor: "#120c08cc",
+          padding: { x: 7, y: 4 },
+          stroke: "#000000",
+          strokeThickness: 2
+        }).setScrollFactor(0).setDepth(9600);
+      }
+
+      // Hook no sistema de loot para entregar as Moedas do Ferreiro (escassas e valiosas!)
+      if (S.lootSystem && !S.lootSystem.__dorfHooked) {
+        S.lootSystem.__dorfHooked = true;
+        const origOpenChest = S.lootSystem.openChest.bind(S.lootSystem);
+        S.lootSystem.openChest = function (chest) {
+          origOpenChest(chest);
+          if (S.isDorfCave && !chest.__dorfCoinGiven) {
+            chest.__dorfCoinGiven = true;
+            // 1 a 2 moedas por arca oculta para manter o incentivo de explorar várias fendas!
+            const depth = S.levelDepth || 1;
+            const coins = (depth >= 3 && Math.random() < 0.45) || Math.random() < 0.25 ? 2 : 1;
+            __addForgeCoins(coins, S, chest.x, chest.y);
+          }
+        };
+
+        const origDropEnemy = S.lootSystem.dropFromEnemy.bind(S.lootSystem);
+        S.lootSystem.dropFromEnemy = function (enemy) {
+          if (S.isDorfCave && enemy) {
+            // Reduzir drop comum de inimigos normais para evitar poluição de loot
+            enemy.goldMult = (enemy.goldMult ?? 1) * 0.28;
+            if (enemy.isElite && !enemy.respawned && Math.random() < 0.45) {
+              __addForgeCoins(1, S, enemy.x, enemy.y);
+            }
+          }
+          return origDropEnemy(enemy);
+        };
+      }
+    });
+
+    // Diálogo da Guardiã na primeira vez
+    try {
+      if (typeof localStorage !== "undefined" && !localStorage.getItem("depthgate:dorf_cave_guardian_voice")) {
+        localStorage.setItem("depthgate:dorf_cave_guardian_voice", "1");
+        S.time?.delayedCall(900, () => {
+          if (!S.scene?.isActive()) return;
+          const msg = " A Montanha de Dorf guarda segredos antigos, tenha cuidado";
+          try { if (typeof window !== "undefined" && window.__dubHas?.(msg)) window.__dub(msg); } catch (_) {}
+          S.game?.events?.emit("story:show", {
+            title: L3("GUARDIÃ · CAVERNAS DE DORF", "GUARDIAN · DORF CAVES", "GUARDIANA · CAVERNAS DE DORF"),
+            lines: [
+              L3(
+                "A Montanha de Dorf guarda segredos antigos, tenha cuidado.",
+                "Dorf Mountain holds ancient secrets, be careful.",
+                "La Montaña de Dorf guarda secretos antiguos, ten cuidado."
+              )
+            ]
+          });
+        });
+      }
+    } catch (e) {}
+  }
 
   return true;
 }
 
-/* 3) Função de retorno ao Refúgio com persistência da economia */
+/* 4) Retorno seguro das Cavernas de Dorf para o Refúgio (salvando ouro, itens e Moedas do Ferreiro) */
 function __dorfReturnToRefuge(S) {
-  if (S.__leavingDorf) return;
-  S.__leavingDorf = true;
+  if (!S || S.__dorfExiting) return;
+  S.__dorfExiting = true;
+  S.audio?.play?.("portal") || S.game?.audioEngine?.sfx?.("portal");
 
-  const L3 = typeof __L3 === "function" ? __L3 : (pt, en) => pt;
-  const isCamp = S.originMode === "campaign" || (!S.endlessRun && S.dorfSlot);
-  const sl = S.dorfSlot || S.game?.registry?.get("save:slot") || 1;
+  const isCamp = S.originMode === "campaign";
+  const slot = S.dorfSlot || S.game?.registry?.get("save:slot") || 1;
+  const curForgeCoins = __getForgeCoins(S);
 
-  // Persistir ouro, itens e progresso
-  if (isCamp && typeof Dn === "function" && typeof Wt === "function") {
-    try {
-      const r = Dn(sl);
-      if (r.ok && r.data) {
-        if (typeof S.player?.gold === "number") {
-          r.data.player.gold = S.player.gold;
-        }
+  try {
+    if (isCamp && typeof Dn === "function") {
+      const res = Dn(slot);
+      if (res?.ok && res.data) {
+        const d = res.data;
+        d.player = d.player || {};
+        if (typeof S.player?.gold === "number") d.player.gold = S.player.gold;
+        d.player.forgeCoins = curForgeCoins;
         if (S.inventory?.serialize) {
-          r.data.player.inventory = S.inventory.serialize();
+          const inv = S.inventory.serialize();
+          d.player.inventory = inv;
+          if (inv.items) d.player.items = inv.items;
+          if (inv.equipment) d.player.equipment = inv.equipment;
+          if (typeof inv.potions === "number") d.player.potions = inv.potions;
         }
-        if (S.player?.xp) {
-          r.data.player.xp = S.player.xp;
-          r.data.player.level = S.player.level || r.data.player.level;
-        }
-        localStorage.setItem(Wt("campaign", sl), JSON.stringify(r.data));
+        if (typeof S.stats?.xp === "number") d.player.xp = S.stats.xp;
+        if (typeof S.stats?.level === "number") d.player.level = S.stats.level;
+        localStorage.setItem(Wt("campaign", slot), JSON.stringify(d));
       }
-    } catch (e) {
-      console.warn("[dorf_cave] erro ao salvar campanha:", e);
+    } else if (!isCamp && typeof In === "function") {
+      try { In(S); } catch (e) {}
+      __setForgeCoins(curForgeCoins, S);
     }
-  } else if (typeof In === "function") {
-    try {
-      In(S);
-    } catch (e) {}
+  } catch (e) {
+    console.warn("[dorf_cave] erro ao salvar retorno:", e);
   }
 
-  S.game?.audioEngine?.stinger?.("portal") || S.audio?.play?.("portal");
-  S.game?.events?.emit("ui:banner", L3("RETORNANDO AO REFÚGIO COM SEUS TESOUROS!", "RETURNING TO REFUGE WITH YOUR LOOT!", "¡REGRESANDO AL REFUGIO CON TUS TESOROS!"), "#38bdf8");
-
-  S.time?.delayedCall(900, () => {
-    S.cameraSys?.fadeOut(500, () => {
-      S.scene.stop("UI");
-      S.scene.start("Hub", {
-        fromForest: isCamp,
-        slot: sl
-      });
-    });
+  S.cameraSys?.fadeOut(380, () => {
+    try { S.scene.stop("UI"); } catch (e) {}
+    if (isCamp) {
+      S.game.registry.set("hub:fromForest", { slot: slot });
+    } else {
+      S.game.registry.remove("hub:fromForest");
+    }
+    S.game.registry.set("hub:classId", S.classDef?.id || "WARRIOR");
+    S.scene.start("Hub");
   });
 }
 /*__DORF_CAVES__*/

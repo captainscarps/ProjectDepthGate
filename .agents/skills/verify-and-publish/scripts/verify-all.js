@@ -120,8 +120,70 @@ try {
   hub.__pzConfirm(); // Confirmar Continuar (Resume)
   if (hub.panel !== null) throw new Error('__pzConfirm falhou em fechar o menu ao selecionar Continuar');
   logPass('Ciclo do menu de pausa (abrir, navegar, confirmar e fechar) validado com sucesso.');
+
+  // Validar Portal da Caverna e NPC Explorador no canto inferior direito do Refúgio
+  hub.M = {
+    coll: Array.from({ length: 88 }, () => '0'.repeat(128)),
+    spots: { vendor: [400, 420], shrine: [820, 282], campfire: [512, 458], portal: [512, 646], sign: [952, 620], hunter: [232, 302], board: [648, 300], cabin: [150, 300], girl: [544, 304] },
+    house: { door: [464, 292] },
+    interior: { door: [1248, 258], smith: { anvil: [1352, 200] }, spots: { forge: [1352, 124], rack: [1416, 220], tub: [1304, 156] } }
+  };
+  hub.textures = { exists: () => true };
+  hub.children = { list: [] };
+  hub.add.image = () => ({ setOrigin: function(){return this;}, setScale: function(){return this;}, setDepth: function(){return this;}, setBlendMode: function(){return this;}, setTint: function(){return this;}, setAlpha: function(){return this;} });
+  hub.add.sprite = () => ({ setOrigin: function(){return this;}, setScale: function(){return this;}, setDepth: function(){return this;}, setTint: function(){return this;}, play: function(){return this;}, active: true });
+  hub.__caveExplorerInit();
+  hub.__inters();
+  const cavePortalInter = hub.inters.find(i => i.id === 'cave_portal');
+  const caveNpcInter = hub.inters.find(i => i.id === 'cave_npc');
+  if (!cavePortalInter || cavePortalInter.x < 800 || cavePortalInter.y < 600) {
+    throw new Error('Portal da Caverna Dorf não encontrado no canto inferior direito do Refúgio');
+  }
+  if (!caveNpcInter || !hub.caveExplorer) {
+    throw new Error('NPC Explorador da Caverna não inicializado ao lado do portal');
+  }
+  logPass('Portal da Caverna Dorf e NPC Explorador validados no canto inferior direito do Refúgio.');
 } catch (err) {
   logFail(`Falha no teste funcional do Refúgio: ${err.message}`);
+}
+
+// 3.5 Teste Funcional do Gerador Procedural Orgânico da Caverna Dorf e Atlas
+console.log('\n--- 3.5. Verificação das Cavernas Dorf (Atlas + Gerador Procedural Orgânico + Economia) ---');
+try {
+  const dorfAtlasPath = path.join(ROOT, 'assets', 'pixel-art', 'deepcave', 'dorf-atlas.json');
+  const dorfPngPath = path.join(ROOT, 'assets', 'pixel-art', 'deepcave', 'dorf-atlas.png');
+  if (!fs.existsSync(dorfAtlasPath) || !fs.existsSync(dorfPngPath)) {
+    throw new Error('dorf-atlas.json ou dorf-atlas.png não encontrados');
+  }
+  const atlasMeta = JSON.parse(fs.readFileSync(dorfAtlasPath, 'utf8'));
+  for (const key of ['floor', 'wall', 'ledge', 'arches', 'props', 'lights', 'portalArch']) {
+    if (!atlasMeta[key]) throw new Error(`Chave ausente em dorf-atlas.json: ${key}`);
+  }
+  if (!atlasMeta.wall.cap || !atlasMeta.wall.mid || !atlasMeta.wall.base || !atlasMeta.wall.glowCap) {
+    throw new Error('Paredes de basalto de 3 tiles (cap/mid/base/glowCap) ausentes no atlas');
+  }
+  logPass('Atlas Deep Cave (dorf-atlas.json + dorf-atlas.png) íntegro e completo.');
+
+  const dorfSrc = fs.readFileSync(path.join(ROOT, 'scripts', 'source', 'dorf-caves.js'), 'utf8');
+  const dorfFn = new Function('Ls', 'window', dorfSrc + '\nreturn { __buildDorfCaveLevel, __getForgeCoins, __setForgeCoins };');
+  const mockWin = {};
+  const { __buildDorfCaveLevel } = dorfFn({ catacombs: { id: 'catacombs' } }, mockWin);
+  const lvl = __buildDorfCaveLevel({ depth: 1, seed: 'qa_test' });
+  if (!lvl || !lvl.__organicGrid || !Array.isArray(lvl.doors) || lvl.doors.length !== 0) {
+    throw new Error('A caverna gerada deve ser orgânica e sem portas trancadas (doors.length === 0)');
+  }
+  let chestCount = 0;
+  for (const rm of lvl.rooms) {
+    for (const dc of rm.decor || []) {
+      if (dc.type === 'chest') chestCount++;
+    }
+  }
+  if (chestCount < 2 || chestCount > 4) {
+    throw new Error(`Quantidade de baús fora do esperado para economia escassa: ${chestCount}`);
+  }
+  logPass(`Gerador orgânico Cavernas Dorf validado (${lvl.world.cols}x${lvl.world.rows}, 0 portas, ${chestCount} baús valiosos em alcovas).`);
+} catch (err) {
+  logFail(`Falha na verificação das Cavernas Dorf: ${err.message}`);
 }
 
 // 4. Auditoria de Listeners e Promises

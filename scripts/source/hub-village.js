@@ -56,9 +56,9 @@ const cid=this.game.registry.get("hub:classId")??"WARRIOR";this.classDef=pe[cid]
 this.__inters();
 /* placas com nomes */
 const lab=(x,y,t,c="#e8c873")=>{const o=this.add.text(x,y,t,{...Le,fontSize:"8px",color:c,stroke:"#120c08",strokeThickness:3}).setOrigin(.5,1).setScale(.7).setDepth(9100).setAlpha(.9);this.labels.push(o);return o};
-lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-62,W("hub.portal"));lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),this.fromForest?"#9fe08a":"#e8c873");lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");M.herb&&this.fromForest&&lab(M.herb.boiler[0],M.herb.boiler[1]-74,L3("HERBORISTA","HERBALIST","HERBOLARIA"),"#b8f0a0");
+lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-62,W("hub.portal"));lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),this.fromForest?"#9fe08a":"#e8c873");lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");M.herb&&this.fromForest&&lab(M.herb.boiler[0],M.herb.boiler[1]-74,L3("HERBORISTA","HERBALIST","HERBOLARIA"),"#b8f0a0");lab(900,590,L3("CAVERNAS DORF","DORF CAVES","CAVERNAS DORF"),"#7dd3fc");lab(846,612,L3("EXPLORADOR","EXPLORER","EXPLORADOR"),"#fef08a");
 /* HUD */
-this.hud=this.add.container(this.__ox,this.__oy).setScrollFactor(0).setDepth(9600).setScale(this.__us);const g=this.add.graphics();Dt(g,8,8,250,40);this.hud.add(g);this.hud.add(this.add.image(24,28,"icon-fragment"));this.fragText=this.add.text(38,16,"",{...ti,fontSize:"11px",color:"#b08ae0"});this.hud.add(this.fragText);this.hud.add(this.add.text(38,32,this.fromForest?__L3("OURO · SÓ ESTA CAMPANHA","GOLD · THIS CAMPAIGN ONLY","ORO · SOLO ESTA CAMPAÑA"):__L3("FRAGMENTOS · MODO INFINITO","FRAGMENTS · ENDLESS MODE","FRAGMENTOS · MODO INFINITO"),{...Le,fontSize:"8px"}));
+this.hud=this.add.container(this.__ox,this.__oy).setScrollFactor(0).setDepth(9600).setScale(this.__us);const g=this.add.graphics();Dt(g,8,8,250,40);this.hud.add(g);this.hud.add(this.add.image(24,28,"icon-fragment"));this.fragText=this.add.text(38,16,"",{...ti,fontSize:"11px",color:"#b08ae0"});this.hud.add(this.fragText);this.forgeCoinHud=this.add.text(248,16,`🪙 ${typeof window!=="undefined"&&window.__getForgeCoins?window.__getForgeCoins(this):0}`,{...ti,fontSize:"10px",color:"#ffd24a"}).setOrigin(1,0);this.hud.add(this.forgeCoinHud);this.hud.add(this.add.text(38,32,this.fromForest?__L3("OURO · SÓ ESTA CAMPANHA","GOLD · THIS CAMPAIGN ONLY","ORO · SOLO ESTA CAMPAÑA"):__L3("FRAGMENTOS · MODO INFINITO","FRAGMENTS · ENDLESS MODE","FRAGMENTOS · MODO INFINITO"),{...Le,fontSize:"8px"}));
 this.title=this.add.text(_/2,12,W("hub.title"),{...la,fontSize:"18px"}).setOrigin(.5,0);this.hud.add(this.title);this.hint=this.add.text(_/2,62,"",{...Le,fontSize:"10px",color:"#ffd24a",stroke:"#120c08",strokeThickness:3}).setOrigin(.5,1);this.hud.add(this.hint);
 /* o botão START (pausa) fica na camada de controles (HubUI): aqui, dentro do HUD com zoom, o toque não acertava o botão */
 this.prompt=this.add.text(0,0,"",{...Le,fontSize:"9px",color:"#fff3c4",backgroundColor:"#1a1410cc",padding:{x:5,y:3}}).setOrigin(.5,1).setScale(.7).setDepth(9500).setVisible(!1);
@@ -114,6 +114,8 @@ add({id:"shrine",x:S.shrine[0],y:S.shrine[1],ay:S.shrine[1]+14,r:34,label:W("hub
 add({id:"campfire",x:S.campfire[0],y:S.campfire[1],ay:S.campfire[1]+16,r:34,label:L3("FOGUEIRA","CAMPFIRE","HOGUERA"),desc:L3("Descansar um pouco","Rest for a while","Descansar un poco"),act:()=>this.__rest()});
 add({id:"portal",x:S.portal[0],y:S.portal[1]-8,ay:S.portal[1]+10,r:34,tap:40,label:W("hub.portal"),desc:this.fromForest?L3("Voltar ao Coração da Floresta (campanha)","Back to the Heart of the Forest (campaign)","Volver al Corazón del Bosque (campaña)"):W("hub.portalDesc"),act:()=>this.fromForest?this.__backToForest():this.enterPortal()});
 add({id:"sign",x:S.sign[0],y:S.sign[1],ay:S.sign[1]+12,r:28,label:this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),desc:this.fromForest?L3("Voltar ao Coração da Floresta","Back to the Heart of the Forest","Volver al Corazón del Bosque"):L3("Voltar ao menu","Back to the menu","Volver al menú"),act:()=>this.fromForest?this.__backToForest():this.exitToMenu()});
+add({id:"cave_portal",x:900,y:654,ay:666,r:36,tap:42,label:L3("CAVERNAS DORF","DORF CAVES","CAVERNAS DORF"),desc:L3("Entrar na Caverna Procedural (Moedas do Ferreiro 🪙)","Enter the Procedural Cave (Blacksmith Coins 🪙)","Entrar en la Caverna Procedural (Monedas del Herrero 🪙)"),act:()=>this.__caveWarned?this.__enterDorfCave():(this.__caveWarned=!0,this.__talkCaveNpc(()=>this.__enterDorfCave()))});
+add({id:"cave_npc",x:846,y:658,ay:670,r:32,tap:34,label:L3("EXPLORADOR","EXPLORER","EXPLORADOR"),desc:L3("Conversar sobre as Cavernas Dorf","Talk about the Dorf Caves","Hablar sobre las Cavernas Dorf"),act:()=>this.__talkCaveNpc()});
 M.herb&&this.fromForest&&add({id:"herb",x:M.herb.boiler[0],y:M.herb.boiler[1]-10,ay:M.herb.boiler[1]+16,r:46,tap:30,label:L3("HERBORISTA","HERBALIST","HERBOLARIA"),desc:L3("Comprar poções","Buy potions","Comprar pociones"),act:()=>this.__herbShop()});
 add({id:"hunter",x:S.hunter[0],y:S.hunter[1],ay:S.hunter[1]+16,r:32,label:L3("CURTIDOR","TANNER","CURTIDOR"),desc:L3("Conversar","Talk","Hablar"),act:()=>this.__talk("hunter")});
 add({id:"cabin",x:S.cabin[0]-12,y:S.cabin[1],ay:S.cabin[1]+12,r:26,label:L3("CABANA","CABIN","CABAÑA"),desc:L3("Bater na porta","Knock on the door","Llamar a la puerta"),act:()=>{this.game.audioEngine?.sfx("sfx-door-locked");this.__say(S.cabin[0]-12,S.cabin[1]-40,L3("Trancada. O curtidor guarda as peles lá dentro.","Locked. The tanner keeps his hides inside.","Cerrada. El curtidor guarda las pieles dentro."))}});
@@ -123,7 +125,7 @@ const ins=o=>this.inters.push({area:"in",r:30,...o});
 ins({id:"smith",x:I.smith.anvil[0],y:I.smith.anvil[1]-6,ay:I.smith.anvil[1]+10,r:36,tap:30,dyn:()=>this.smith.walking?this.smith.w:null,label:W("hub.smith"),desc:W("hub.smithDesc"),act:()=>this.__smithTalk()});
 ins({id:"exit",x:I.door[0],y:I.door[1]-6,r:20,label:L3("SAIR","EXIT","SALIR"),desc:L3("Voltar para a vila","Back to the village","Volver a la aldea"),act:()=>this.__leave()});
 ins({id:"forge",x:I.spots.forge[0],y:I.spots.forge[1],ay:I.spots.forge[1]+14,r:28,label:L3("FORNALHA","FURNACE","FRAGUA"),desc:L3("Olhar o fogo","Look at the fire","Mirar el fuego"),act:()=>{this.__sparks(I.spots.forge[0],I.spots.forge[1]-14,14);this.__say(I.spots.forge[0],I.spots.forge[1]-30,L3("O calor quase queima as sobrancelhas.","The heat almost singes your eyebrows.","El calor casi quema las cejas."))}});
-ins({id:"rack",x:I.spots.rack[0],y:I.spots.rack[1],ay:I.spots.rack[1]-12,r:30,label:L3("ARMAS ÚNICAS","UNIQUE WEAPONS","ARMAS ÚNICAS"),desc:L3("Armaria do Ferreiro (Ouro)","Blacksmith Armory (Gold)","Armería del Herrero (Oro)"),act:()=>this.__forgeWeaponsShop()});
+ins({id:"rack",x:I.spots.rack[0],y:I.spots.rack[1],ay:I.spots.rack[1]-12,r:30,label:L3("ARMAS ÚNICAS","UNIQUE WEAPONS","ARMAS ÚNICAS"),desc:L3("Armaria do Ferreiro (Moedas 🪙)","Blacksmith Armory (Coins 🪙)","Armería del Herrero (Monedas 🪙)"),act:()=>this.__forgeWeaponsShop()});
 ins({id:"tub",x:I.spots.tub[0],y:I.spots.tub[1],ay:I.spots.tub[1]-12,r:28,label:L3("TINA","QUENCH TUB","TINA"),desc:L3("Olhar a água","Look at the water","Mirar el agua"),act:()=>{this.__steam(I.spots.tub[0],I.spots.tub[1]-8);this.__say(I.spots.tub[0],I.spots.tub[1]-30,L3("A água ainda chia do último aço temperado.","The water still hisses from the last quench.","El agua aún chisporrotea del último temple."))}})}
 nearestStation(){let best=null,bd=1e9;for(const o of this.inters){if(o.area!==this.area)continue;const t=o.dyn?.();if(o.dyn&&o.id==="dog"&&!t)continue;const x=t?t.x:o.x,y=t?t.y:o.y,d=Math.hypot(x-this.playerX,(y-this.playerY)*1.1);d<o.r&&d<bd&&(bd=d,best=o)}return best}
 tryInteract(){const o=this.nearestStation();o?this.__do(o):this.__attack()}
@@ -145,30 +147,77 @@ __pet(){const d=this.dog;if(!d)return;d.state="sit";d.t=3;d.s.play("vh-di-"+(thi
 __hit(d){const dx=d.x-this.playerX;Math.abs(dx)>3&&(this.facing={x:Math.sign(dx),y:0});this.__attack()}
 __sparks(x,y,n=10,c=16759610){for(let i=0;i<n;i++){const p=this.add.rectangle(x,y,1.5,1.5,c).setBlendMode(j.BlendModes.ADD).setDepth(9400);this.tweens.add({targets:p,x:x+j.Math.Between(-18,18),y:y-j.Math.Between(4,26),alpha:0,duration:380+Math.random()*400,onComplete:()=>p.destroy()})}}
 __steam(x,y){for(let i=0;i<6;i++){const p=this.add.image(x+j.Math.Between(-8,8),y,"light").setScale(.05).setTint(13421772).setAlpha(.35).setDepth(9400);this.tweens.add({targets:p,y:y-24-Math.random()*14,scale:.12,alpha:0,delay:i*90,duration:900,onComplete:()=>p.destroy()})}}
-/* explorador da caverna Dorf */
+/* explorador e portal da caverna Dorf no canto inferior direito do mapa */
 __caveExplorerInit(){
-  const p=this.M?.spots?.portal;
-  if(!p||!this.textures.exists("peasant-3"))return;
-  return; // Oculto por enquanto
+  const M=this.M;
+  if(!M)return;
+  // Limpar células de colisão da pedra antiga em (840, 640) para abrir caminho livre até o canto inferior direito
+  if(Array.isArray(M.coll)){
+    for(let gy=77;gy<=84;gy++){
+      if(!M.coll[gy])continue;
+      const chars=M.coll[gy].split("");
+      for(let gx=101;gx<=118;gx++)if(gx<chars.length)chars[gx]="0";
+      M.coll[gy]=chars.join("");
+    }
+  }
+  const oldRock=this.children.list.find(o=>o.texture?.key==="vh-props"&&o.frame?.name==="rock-b"&&Math.abs(o.x-840)<6&&Math.abs(o.y-640)<6);
+  oldRock&&oldRock.setPosition(792,642).setDepth(642);
+
+  const cpX=900,cpY=654,npcX=846,npcY=658;
+  this.cavePortalPos=[cpX,cpY];
+
+  // Arco de basalto da Caverna Dorf + vórtice ciano + braseiros de cristal
+  if(this.textures.exists("dorf-portal-arch")){
+    this.add.image(cpX,cpY+4,"dorf-portal-arch").setOrigin(.5,1).setScale(.62).setDepth(cpY-2);
+  }
+  if(this.textures.exists("hub-portal")){
+    const cpo=this.add.sprite(cpX,cpY-4,"hub-portal",0).setOrigin(.5,1).setScale(.88).setTint(0x38bdf8).setDepth(cpY-1);
+    cpo.play("hub-portal-a");
+  }
+  this.__glow(cpX,cpY-26,.72,0x38bdf8,.38,1000);
+  if(this.textures.exists("dorf-brazier")){
+    const b1=this.add.sprite(cpX-32,cpY+4,"dorf-brazier",0).setOrigin(.5,1).setScale(.78).setDepth(cpY+1);
+    const b2=this.add.sprite(cpX+32,cpY+4,"dorf-brazier",0).setOrigin(.5,1).setScale(.78).setDepth(cpY+1);
+    b1.play("dorf-brazier-a");b2.play("dorf-brazier-a");
+  }
+
+  // NPC Explorador ao lado do portal (mesma proporção 0.45 dos outros NPCs da vila)
+  if(this.textures.exists("peasant-3")){
+    this.caveExplorer=this.add.sprite(npcX,npcY,"peasant-3",0).setOrigin(.5,1).setScale(.45).setDepth(npcY).play("peasant-3-idle");
+  }
 }
 __talkCaveNpc(onComplete){
   const s=this.caveExplorer,L3=__L3;
   s&&s.active&&s.play("peasant-3-talk",!0);
-  const line=L3(
-    "Essa caverna é traiçoeira, ela sempre muda a cada entrada, explore com cuidado.",
-    "This cave is treacherous, it always changes with every entrance, explore with caution.",
-    "Esta caverna es traicionera, cambia con cada entrada, explora con cuidado."
-  );
-  let dur=4600;
+  this.__caveTalkIdx=((this.__caveTalkIdx??-1)+1);
+  const lines=[
+    L3(
+      "Essa caverna é traiçoeira, ela sempre muda a cada entrada, explore com cuidado.",
+      "This cave is treacherous, it always changes with every entrance, explore with caution.",
+      "Esta caverna es traicionera, cambia con cada entrada, explora con cuidado."
+    ),
+    L3(
+      "Não há salas trancadas lá embaixo, mas os túneis de basalto escondem poucas arcas com as Moedas do Ferreiro 🪙.",
+      "There are no locked rooms down there, but the basalt tunnels hide a few chests with the Blacksmith's Coins 🪙.",
+      "No hay salas cerradas allá abajo, pero los túneles de basalto esconden pocos cofres con las Monedas del Herrero 🪙."
+    ),
+    L3(
+      "Cada fenda oculta guarda apenas 1 ou 2 moedas antigas. Vasculhe os recantos se quiser forjar uma Arma Única!",
+      "Each hidden rift holds only 1 or 2 ancient coins. Search every alcove if you want to forge a Unique Weapon!",
+      "Cada grieta oculta guarda solo 1 o 2 monedas antiguas. ¡Explora cada rincón si quieres forjar un Arma Única!"
+    )
+  ];
+  const line=onComplete?lines[0]:lines[this.__caveTalkIdx%lines.length];
+  let dur=4200;
   try{
     const vd=window.__dubDur?.(line);
     if(vd&&isFinite(vd))dur=Math.max(dur,Math.round(vd*1000+700));
   }catch(_) {}
-  const sx=s?s.x:(this.M.spots.portal[0]-62),sy=s?(s.y-38):(this.M.spots.portal[1]-38);
+  const sx=s?s.x:846,sy=s?(s.y-38):620;
   this.__say(sx,sy,line,dur,"#fef08a","male");
   if(onComplete){
     this.__busy=!0;
-    this.time.delayedCall(dur,()=>{
+    this.time.delayedCall(Math.min(dur,2200),()=>{
       this.__busy=!1;
       s&&s.active&&s.play("peasant-3-idle",!0);
       onComplete();
@@ -347,30 +396,36 @@ __forgeWeaponsShop(){
   if(!isCamp){
     for(const s of [1,2,3,4]){if(Nn(s).ok){slot=s;break;}}
   }
-  const getGold=()=>{
-    if(isCamp){
-      const c=__cData(this);
-      return c?.d?.player?.gold??0;
-    }else{
-      const e=Nn(slot);
-      return e.ok?(e.data.player?.gold??0):0;
+  const getCoins=()=>{
+    if(typeof window!=="undefined"&&typeof window.__getForgeCoins==="function"){
+      return window.__getForgeCoins(this);
     }
+    try{
+      return Math.max(0,parseInt(localStorage.getItem("depthgate:forge_coins")||"0",10)||0);
+    }catch(e){return 0;}
   };
-  let curGold=getGold();
+  const setCoins=(val)=>{
+    if(typeof window!=="undefined"&&typeof window.__setForgeCoins==="function"){
+      return window.__setForgeCoins(val,this);
+    }
+    try{localStorage.setItem("depthgate:forge_coins",String(Math.max(0,val|0)));}catch(e){}
+    return Math.max(0,val|0);
+  };
+  let curCoins=getCoins();
 
   o.add(this.add.text(d,Y+16,L3("FORJA ANCESTRAL · ARMARIA LENDÁRIA","ANCIENT FORGE · LEGENDARY ARMORY","FORJA ANCESTRAL · ARMERÍA LEGENDARIA"),{...ti,fontSize:"12px",color:"#ffd24a"}).setOrigin(.5));
-  o.add(this.add.text(d,Y+30,L3("Armas únicas de imenso poder. Quebram-se se você morrer em uma run!","Unique weapons of immense power. They break if you die in a run!","¡Armas únicas de inmenso poder. ¡Se rompen si mueres en una run!"),{...Le,fontSize:"8px",fontStyle:"italic",color:"#f87171"}).setOrigin(.5));
+  o.add(this.add.text(d,Y+30,L3("Forjadas com Moedas do Ferreiro (🪙) das Cavernas Dorf · Quebram se morrer na run!","Forged with Blacksmith Coins (🪙) from Dorf Caves · Break if you die in a run!","¡Forjadas con Monedas del Herrero (🪙) de las Cavernas Dorf · Se rompen si mueres!"),{...Le,fontSize:"8px",fontStyle:"italic",color:"#f87171"}).setOrigin(.5));
 
   const weaponsList=[
-    {id:"unique_forge_eclipse",name:L3("Lâmina do Eclipse Negro","Dark Eclipse Blade","Hoja del Eclipse Oscuro"),price:350,icon:"icon-sword",stats:"+16 DANO · +22% CRÍTICO · +5 DANO MÁGICO",color:"#c084fc"},
-    {id:"unique_forge_cataclysm",name:L3("Machado do Cataclismo","Cataclysm Axe","Hacha del Cataclismo"),price:380,icon:"icon-axe",stats:"+24 DANO · +4 DEFESA · +15% CRÍTICO",color:"#f87171"},
-    {id:"unique_forge_shadowfangs",name:L3("Presas do Vácuo Eterno","Fangs of the Void","Colmillos del Vacío"),price:360,icon:"icon-twin-fangs",stats:"+12 DANO · +35% CRÍTICO · +25 VEL · +12% ESQUIVA",color:"#38bdf8"},
-    {id:"unique_forge_starfall",name:L3("Arco Estelar de Dorf","Dorf Starfall Bow","Arco Estelar de Dorf"),price:370,icon:"icon-long-bow",stats:"+18 DANO · +25% CRÍTICO · +40 ALCANCE",color:"#fbbf24"},
-    {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:390,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"},
-    {id:"unique_forge_aegis",name:L3("Espada-Baluarte da Aurora","Aurora Bastion Edge","Espada Baluarte de la Aurora"),price:340,icon:"icon-dragon-sword",stats:"+15 DANO · +8 DEFESA · +4 VIDA · +18% BLOQUEIO",color:"#34d399"}
+    {id:"unique_forge_aegis",name:L3("Espada-Baluarte da Aurora","Aurora Bastion Edge","Espada Baluarte de la Aurora"),price:12,icon:"icon-dragon-sword",stats:"+15 DANO · +8 DEFESA · +4 VIDA · +18% BLOQUEIO",color:"#34d399"},
+    {id:"unique_forge_eclipse",name:L3("Lâmina do Eclipse Negro","Dark Eclipse Blade","Hoja del Eclipse Oscuro"),price:14,icon:"icon-sword",stats:"+16 DANO · +22% CRÍTICO · +5 DANO MÁGICO",color:"#c084fc"},
+    {id:"unique_forge_shadowfangs",name:L3("Presas do Vácuo Eterno","Fangs of the Void","Colmillos del Vacío"),price:15,icon:"icon-twin-fangs",stats:"+12 DANO · +35% CRÍTICO · +25 VEL · +12% ESQUIVA",color:"#38bdf8"},
+    {id:"unique_forge_starfall",name:L3("Arco Estelar de Dorf","Dorf Starfall Bow","Arco Estelar de Dorf"),price:16,icon:"icon-long-bow",stats:"+18 DANO · +25% CRÍTICO · +40 ALCANCE",color:"#fbbf24"},
+    {id:"unique_forge_cataclysm",name:L3("Machado do Cataclismo","Cataclysm Axe","Hacha del Cataclismo"),price:17,icon:"icon-axe",stats:"+24 DANO · +4 DEFESA · +15% CRÍTICO",color:"#f87171"},
+    {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:18,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"}
   ];
 
-  const goldText=this.add.text(d,Y+276,`${L3("SEU OURO","YOUR GOLD","TU ORO")}: ${curGold} 🪙`,{...ti,fontSize:"11px",color:"#ffd24a"}).setOrigin(.5);
+  const goldText=this.add.text(d,Y+276,`${L3("MOEDAS DO FERREIRO","BLACKSMITH COINS","MONEDAS DEL HERRERO")}: ${curCoins} 🪙`,{...ti,fontSize:"11px",color:"#ffd24a"}).setOrigin(.5);
   const msgText=this.add.text(d,Y+292,"",{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(.5);
   o.add([goldText,msgText]);
 
@@ -396,17 +451,18 @@ __forgeWeaponsShop(){
     z.on("pointerover",()=>drawRow(!0));
     z.on("pointerout",()=>drawRow(!1));
     z.on("pointerdown",()=>{
-      curGold=getGold();
-      if(curGold<wp.price){
-        msgText.setText(L3("Ouro insuficiente para forjar esta arma!","Not enough gold to forge this weapon!","¡Oro insuficiente para forjar esta arma!")).setColor("#f87171");
+      curCoins=getCoins();
+      if(curCoins<wp.price){
+        msgText.setText(L3("Moedas do Ferreiro insuficientes! Explore as Cavernas Dorf (portal à direita).","Not enough Blacksmith Coins! Explore the Dorf Caves (portal on the right).","¡Monedas del Herrero insuficientes! Explora las Cavernas Dorf.")).setColor("#f87171");
         this.game.audioEngine?.sfx?.("sfx-door-locked");
         return;
       }
+      curCoins=setCoins(curCoins-wp.price);
       if(isCamp){
         const c=__cData(this);
         if(c&&c.d){
           c.d.player=c.d.player||{};
-          c.d.player.gold=(c.d.player.gold||0)-wp.price;
+          c.d.player.forgeCoins=curCoins;
           c.d.player.items=c.d.player.items||[];
           c.d.player.items.push({id:wp.id,rarity:"UNIQUE",seed:Date.now(),uniqueForge:!0,breaksOnDeath:!0});
           localStorage.setItem(Wt("campaign",c.sl),JSON.stringify(c.d));
@@ -415,14 +471,14 @@ __forgeWeaponsShop(){
         let e=Nn(slot);
         if(e.ok){
           e.data.player=e.data.player||{};
-          e.data.player.gold=(e.data.player.gold||0)-wp.price;
+          e.data.player.forgeCoins=curCoins;
           e.data.player.items=e.data.player.items||[];
           e.data.player.items.push({id:wp.id,rarity:"UNIQUE",seed:Date.now(),uniqueForge:!0,breaksOnDeath:!0});
           localStorage.setItem(Wt("endless",slot),JSON.stringify(e.data));
         }
       }
-      curGold=getGold();
-      goldText.setText(`${L3("SEU OURO","YOUR GOLD","TU ORO")}: ${curGold} 🪙`);
+      this.forgeCoinHud?.active&&this.forgeCoinHud.setText(`🪙 ${curCoins}`);
+      goldText.setText(`${L3("MOEDAS DO FERREIRO","BLACKSMITH COINS","MONEDAS DEL HERRERO")}: ${curCoins} 🪙`);
       msgText.setText(L3(`Forjado: ${wp.name}! (Quebra se morrer na run)`,`Forged: ${wp.name}! (Breaks on death in run)`,`¡Forjado: ${wp.name}! (Se rompe si mueres en run)`)).setColor("#4ade80");
       window.__advancedAudio?.playMetalClang?.("E5");
       this.game.audioEngine?.sfx?.("sfx-item-pickup");

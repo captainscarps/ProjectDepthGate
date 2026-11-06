@@ -63,7 +63,7 @@ def patch_file(p):
         'this.levelDepth=i.depth||1;'
         'this.classDef=pe[i.classId||"WARRIOR"];'
         'const runCfg={depth:this.levelDepth,seed:"dorf_"+this.dorfSlot+"_"+this.levelDepth,biome:"dorf_cave",originMode:this.originMode};'
-        'this.level=md(runCfg);'
+        'this.level=typeof __buildDorfCaveLevel==="function"?__buildDorfCaveLevel(runCfg):md(runCfg);'
         'this.level.id="dorf_cave";'
         'this.level.name="Cavernas da Montanha Dorf"+(this.levelDepth>1?` · Nível ${this.levelDepth}`:"");'
         'this.level.endless=!0;'
