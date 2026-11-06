@@ -84,7 +84,7 @@ __dub=function(text,onEnd){__dubInit();if(__DUB.a){try{__DUB.a.onended=null;__DU
   return!0};
  if(Object.keys(__DUB.m?.k||{}).length&&__DUB.n)return go();
  /* lista ainda carregando: espera um pouco em vez de perder a fala */
- let done=!1;const t=setTimeout(()=>{done||(done=!0,go()||0)},4e3);Promise.all([manP,natP]).then(()=>{if(!done){done=!0;clearTimeout(t);go()}});return!0};
+ let done=!1;const t=setTimeout(()=>{done||(done=!0,go()||0)},4e3);Promise.all([manP,natP]).then(()=>{if(!done){done=!0;clearTimeout(t);go()}}).catch(()=>{if(!done){done=!0;clearTimeout(t);go()}});return!0};
 
 /* voz e texto juntos: quanto do texto já deveria aparecer (0..1) pelo ponto em que a voz está */
 window.__dubProg=function(full){if(!full||__DUB.cur!==full)return null;const H=__DUB.a;if(!H||H._text!==full)return performance.now()-(__DUB.t0||0)<1200?0:null;
