@@ -128,10 +128,17 @@
     (function() {
       try {
         if ("caches" in window) {
+          caches.keys().then(function(keys) {
+            keys.forEach(function(k) {
+              if (k.indexOf("ded-web-") === 0 && k !== "ded-web-v5.76.0-dorf-cave-portal") {
+                caches.delete(k);
+              }
+            });
+          }).catch(function() {});
           caches.open("ded-assets-v1").then(function(c) {
             c.keys().then(function(reqs) {
               reqs.forEach(function(q) {
-                if (q.url && (q.url.indexOf(".js") !== -1 || q.url.indexOf(".mjs") !== -1)) {
+                if (q.url && (q.url.indexOf(".js") !== -1 || q.url.indexOf(".mjs") !== -1 || q.url.indexOf("deepcave/") !== -1 || q.url.indexOf("village.json") !== -1)) {
                   c.delete(q);
                 }
               });
@@ -146,17 +153,17 @@
       } catch(e) {}
     })();
   </script>
-  <script src="./assets/user-auth.js?v=5.75"></script>
+  <script src="./assets/user-auth.js?v=5.76"></script>
   <script src="./assets/howler.min.js"></script>
   <script src="./assets/tone.min.js"></script>
-  <script src="./assets/abyss-puzzles.js?v=5.75"></script>
-  <script src="./assets/abyss-portals-and-pacts.js?v=5.75"></script>
-  <script src="./assets/abyss-cards.js?v=5.75"></script>
-  <script src="./assets/castle-floors.js?v=5.75"></script>
-  <script src="./assets/hall-of-fame-ui.js?v=5.75"></script>
-  <script src="./assets/network-coop.js?v=5.75"></script>
-  <script src="./assets/environmental-interactions.js?v=5.75"></script>
-  <script type="module" crossorigin src="./assets/index-D6qIWtA7-p209.js?v=5.75"></script>
+  <script src="./assets/abyss-puzzles.js?v=5.76"></script>
+  <script src="./assets/abyss-portals-and-pacts.js?v=5.76"></script>
+  <script src="./assets/abyss-cards.js?v=5.76"></script>
+  <script src="./assets/castle-floors.js?v=5.76"></script>
+  <script src="./assets/hall-of-fame-ui.js?v=5.76"></script>
+  <script src="./assets/network-coop.js?v=5.76"></script>
+  <script src="./assets/environmental-interactions.js?v=5.76"></script>
+  <script type="module" crossorigin src="./assets/index-D6qIWtA7-p209.js?v=5.76"></script>
 </head>
 <body>
   <div id="game"></div>

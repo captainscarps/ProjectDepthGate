@@ -1950,7 +1950,7 @@ const cid=this.game.registry.get("hub:classId")??"WARRIOR";this.classDef=pe[cid]
 this.__inters();
 /* placas com nomes */
 const lab=(x,y,t,c="#e8c873")=>{const o=this.add.text(x,y,t,{...Le,fontSize:"8px",color:c,stroke:"#120c08",strokeThickness:3}).setOrigin(.5,1).setScale(.7).setDepth(9100).setAlpha(.9);this.labels.push(o);return o};
-lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-62,W("hub.portal"));lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),this.fromForest?"#9fe08a":"#e8c873");lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");M.herb&&this.fromForest&&lab(M.herb.boiler[0],M.herb.boiler[1]-74,L3("HERBORISTA","HERBALIST","HERBOLARIA"),"#b8f0a0");lab(900,590,L3("CAVERNAS DORF","DORF CAVES","CAVERNAS DORF"),"#7dd3fc");lab(846,612,L3("EXPLORADOR","EXPLORER","EXPLORADOR"),"#fef08a");
+lab(S.vendor[0],S.vendor[1]-62,W("hub.vendor"));lab(H.door[0],H.door[1]-40,L3("FORJA","FORGE","FORJA"));lab(S.shrine[0],S.shrine[1]-62,W("hub.shrine"));lab(S.portal[0],S.portal[1]-62,W("hub.portal"));lab(S.board[0],S.board[1]-46,L3("MURAL","NOTICE BOARD","TABLÓN"));lab(S.dummy2[0],S.dummy2[1]-52,L3("TREINO","TRAINING","ENTRENAMIENTO"));lab(S.sign[0],S.sign[1]-44,this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),this.fromForest?"#9fe08a":"#e8c873");lab(S.hunter[0],S.hunter[1]-50,L3("CURTIDOR","TANNER","CURTIDOR"),"#cfe0a0");M.herb&&this.fromForest&&lab(M.herb.boiler[0],M.herb.boiler[1]-74,L3("HERBORISTA","HERBALIST","HERBOLARIA"),"#b8f0a0");lab(836,542,L3("CAVERNAS DA MONTANHA DORF","DORF MOUNTAIN CAVES","CAVERNAS DE LA MONTAÑA DORF"),"#38bdf8");lab(768,604,L3("EXPLORADOR","EXPLORER","EXPLORADOR"),"#fef08a");
 /* HUD */
 this.hud=this.add.container(this.__ox,this.__oy).setScrollFactor(0).setDepth(9600).setScale(this.__us);const g=this.add.graphics();Dt(g,8,8,250,40);this.hud.add(g);this.hud.add(this.add.image(24,28,"icon-fragment"));this.fragText=this.add.text(38,16,"",{...ti,fontSize:"11px",color:"#b08ae0"});this.hud.add(this.fragText);this.forgeCoinHud=this.add.text(248,16,`🪙 ${typeof window!=="undefined"&&window.__getForgeCoins?window.__getForgeCoins(this):0}`,{...ti,fontSize:"10px",color:"#ffd24a"}).setOrigin(1,0);this.hud.add(this.forgeCoinHud);this.hud.add(this.add.text(38,32,this.fromForest?__L3("OURO · SÓ ESTA CAMPANHA","GOLD · THIS CAMPAIGN ONLY","ORO · SOLO ESTA CAMPAÑA"):__L3("FRAGMENTOS · MODO INFINITO","FRAGMENTS · ENDLESS MODE","FRAGMENTOS · MODO INFINITO"),{...Le,fontSize:"8px"}));
 this.title=this.add.text(_/2,12,W("hub.title"),{...la,fontSize:"18px"}).setOrigin(.5,0);this.hud.add(this.title);this.hint=this.add.text(_/2,62,"",{...Le,fontSize:"10px",color:"#ffd24a",stroke:"#120c08",strokeThickness:3}).setOrigin(.5,1);this.hud.add(this.hint);
@@ -2008,8 +2008,8 @@ add({id:"shrine",x:S.shrine[0],y:S.shrine[1],ay:S.shrine[1]+14,r:34,label:W("hub
 add({id:"campfire",x:S.campfire[0],y:S.campfire[1],ay:S.campfire[1]+16,r:34,label:L3("FOGUEIRA","CAMPFIRE","HOGUERA"),desc:L3("Descansar um pouco","Rest for a while","Descansar un poco"),act:()=>this.__rest()});
 add({id:"portal",x:S.portal[0],y:S.portal[1]-8,ay:S.portal[1]+10,r:34,tap:40,label:W("hub.portal"),desc:this.fromForest?L3("Voltar ao Coração da Floresta (campanha)","Back to the Heart of the Forest (campaign)","Volver al Corazón del Bosque (campaña)"):W("hub.portalDesc"),act:()=>this.fromForest?this.__backToForest():this.enterPortal()});
 add({id:"sign",x:S.sign[0],y:S.sign[1],ay:S.sign[1]+12,r:28,label:this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),desc:this.fromForest?L3("Voltar ao Coração da Floresta","Back to the Heart of the Forest","Volver al Corazón del Bosque"):L3("Voltar ao menu","Back to the menu","Volver al menú"),act:()=>this.fromForest?this.__backToForest():this.exitToMenu()});
-add({id:"cave_portal",x:900,y:654,ay:666,r:36,tap:42,label:L3("CAVERNAS DORF","DORF CAVES","CAVERNAS DORF"),desc:L3("Entrar na Caverna Procedural (Moedas do Ferreiro 🪙)","Enter the Procedural Cave (Blacksmith Coins 🪙)","Entrar en la Caverna Procedural (Monedas del Herrero 🪙)"),act:()=>this.__caveWarned?this.__enterDorfCave():(this.__caveWarned=!0,this.__talkCaveNpc(()=>this.__enterDorfCave()))});
-add({id:"cave_npc",x:846,y:658,ay:670,r:32,tap:34,label:L3("EXPLORADOR","EXPLORER","EXPLORADOR"),desc:L3("Conversar sobre as Cavernas Dorf","Talk about the Dorf Caves","Hablar sobre las Cavernas Dorf"),act:()=>this.__talkCaveNpc()});
+add({id:"cave_portal",x:836,y:642,ay:660,r:38,tap:44,label:L3("CAVERNAS DA MONTANHA DORF","DORF MOUNTAIN CAVES","CAVERNAS DE LA MONTAÑA DORF"),desc:L3("Entrar na Caverna Procedural (Moedas do Ferreiro 🪙)","Enter the Procedural Cave (Blacksmith Coins 🪙)","Entrar en la Caverna Procedural (Monedas del Herrero 🪙)"),act:()=>this.__caveWarned?this.__enterDorfCave():(this.__caveWarned=!0,this.__talkCaveNpc(()=>this.__enterDorfCave()))});
+add({id:"cave_npc",x:768,y:648,ay:662,r:36,tap:36,label:L3("EXPLORADOR","EXPLORER","EXPLORADOR"),desc:L3("Conversar sobre as Cavernas Dorf","Talk about the Dorf Caves","Hablar sobre las Cavernas Dorf"),act:()=>this.__talkCaveNpc()});
 M.herb&&this.fromForest&&add({id:"herb",x:M.herb.boiler[0],y:M.herb.boiler[1]-10,ay:M.herb.boiler[1]+16,r:46,tap:30,label:L3("HERBORISTA","HERBALIST","HERBOLARIA"),desc:L3("Comprar poções","Buy potions","Comprar pociones"),act:()=>this.__herbShop()});
 add({id:"hunter",x:S.hunter[0],y:S.hunter[1],ay:S.hunter[1]+16,r:32,label:L3("CURTIDOR","TANNER","CURTIDOR"),desc:L3("Conversar","Talk","Hablar"),act:()=>this.__talk("hunter")});
 add({id:"cabin",x:S.cabin[0]-12,y:S.cabin[1],ay:S.cabin[1]+12,r:26,label:L3("CABANA","CABIN","CABAÑA"),desc:L3("Bater na porta","Knock on the door","Llamar a la puerta"),act:()=>{this.game.audioEngine?.sfx("sfx-door-locked");this.__say(S.cabin[0]-12,S.cabin[1]-40,L3("Trancada. O curtidor guarda as peles lá dentro.","Locked. The tanner keeps his hides inside.","Cerrada. El curtidor guarda las pieles dentro."))}});
@@ -2045,35 +2045,51 @@ __steam(x,y){for(let i=0;i<6;i++){const p=this.add.image(x+j.Math.Between(-8,8),
 __caveExplorerInit(){
   const M=this.M;
   if(!M)return;
-  // Limpar células de colisão da pedra antiga em (840, 640) para abrir caminho livre até o canto inferior direito
+  // Limpar células de colisão entre a praça e o canto inferior direito para caminho livre até o portal e NPC
   if(Array.isArray(M.coll)){
-    for(let gy=77;gy<=84;gy++){
+    for(let gy=70;gy<=85;gy++){
       if(!M.coll[gy])continue;
       const chars=M.coll[gy].split("");
-      for(let gx=101;gx<=118;gx++)if(gx<chars.length)chars[gx]="0";
+      for(let gx=88;gx<=118;gx++)if(gx<chars.length)chars[gx]="0";
       M.coll[gy]=chars.join("");
     }
   }
-  const oldRock=this.children.list.find(o=>o.texture?.key==="vh-props"&&o.frame?.name==="rock-b"&&Math.abs(o.x-840)<6&&Math.abs(o.y-640)<6);
-  oldRock&&oldRock.setPosition(792,642).setDepth(642);
+  // Remover pedras e árvores que obstruíam a visão ou o caminho no canto inferior direito
+  for(const o of [...this.children.list]){
+    if(o?.texture?.key!=="vh-props")continue;
+    const fn=o.frame?.name;
+    if(
+      (fn==="rock-b"&&Math.abs(o.x-840)<10&&Math.abs(o.y-640)<10)||
+      (fn==="tree-c"&&Math.abs(o.x-760)<10&&Math.abs(o.y-600)<10)||
+      (fn==="tree-s5"&&Math.abs(o.x-810)<10&&Math.abs(o.y-700)<10)||
+      (fn==="tree-s2"&&Math.abs(o.x-860)<10&&Math.abs(o.y-700)<10)||
+      (fn==="bush-b"&&Math.abs(o.x-916)<10&&Math.abs(o.y-600)<10)
+    ){
+      o.destroy();
+    }
+  }
 
-  const cpX=900,cpY=654,npcX=846,npcY=658;
+  const cpX=836,cpY=646,npcX=768,npcY=648,ADD=j.BlendModes.ADD;
   this.cavePortalPos=[cpX,cpY];
 
-  // Arco de basalto da Caverna Dorf + vórtice ciano + braseiros de cristal
+  // Arco de basalto da Caverna Dorf (180x96 transparente) + vórtice ciano duplo + braseiros de cristal
   if(this.textures.exists("dorf-portal-arch")){
-    this.add.image(cpX,cpY+4,"dorf-portal-arch").setOrigin(.5,1).setScale(.62).setDepth(cpY-2);
+    this.add.image(cpX,cpY-4,"dorf-portal-arch").setOrigin(.5,1).setDepth(cpY-.2);
   }
   if(this.textures.exists("hub-portal")){
-    const cpo=this.add.sprite(cpX,cpY-4,"hub-portal",0).setOrigin(.5,1).setScale(.88).setTint(0x38bdf8).setDepth(cpY-1);
+    const cpo=this.add.sprite(cpX,cpY-42,"hub-portal",0).setOrigin(.5,.5).setDepth(cpY-.1).setScale(.62).setTint(3718648);
     cpo.play("hub-portal-a");
+    const cpo2=this.add.sprite(cpX,cpY-42,"hub-portal",0).setOrigin(.5,.5).setDepth(cpY-.05).setScale(.62).setTint(9684477).setBlendMode(ADD).setAlpha(.35);
+    cpo2.play("hub-portal-a");
+    this.tweens.add({targets:cpo2,alpha:.75,duration:1200,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});
   }
-  this.__glow(cpX,cpY-26,.72,0x38bdf8,.38,1000);
   if(this.textures.exists("dorf-brazier")){
-    const b1=this.add.sprite(cpX-32,cpY+4,"dorf-brazier",0).setOrigin(.5,1).setScale(.78).setDepth(cpY+1);
-    const b2=this.add.sprite(cpX+32,cpY+4,"dorf-brazier",0).setOrigin(.5,1).setScale(.78).setDepth(cpY+1);
-    b1.play("dorf-brazier-a");b2.play("dorf-brazier-a");
+    this.add.sprite(cpX-42,cpY-6,"dorf-brazier",0).setOrigin(.5,1).setDepth(cpY).play("dorf-brazier-a");
+    this.add.sprite(cpX+42,cpY-6,"dorf-brazier",0).setOrigin(.5,1).setDepth(cpY).play("dorf-brazier-a");
+    this.__glow(cpX-42,cpY-22,.35,3718648,.4,900);
+    this.__glow(cpX+42,cpY-22,.35,3718648,.4,900);
   }
+  this.__glow(cpX,cpY-42,.75,3718648,.45,1100);
 
   // NPC Explorador ao lado do portal (mesma proporção 0.45 dos outros NPCs da vila)
   if(this.textures.exists("peasant-3")){
@@ -2107,7 +2123,7 @@ __talkCaveNpc(onComplete){
     const vd=window.__dubDur?.(line);
     if(vd&&isFinite(vd))dur=Math.max(dur,Math.round(vd*1000+700));
   }catch(_) {}
-  const sx=s?s.x:846,sy=s?(s.y-38):620;
+  const sx=s?s.x:768,sy=s?(s.y-38):610;
   this.__say(sx,sy,line,dur,"#fef08a","male");
   if(onComplete){
     this.__busy=!0;

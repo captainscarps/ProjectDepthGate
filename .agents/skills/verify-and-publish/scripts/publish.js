@@ -1,5 +1,7 @@
 import { execSync } from 'child_process';
+import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -23,8 +25,40 @@ function run(cmd, desc) {
   }
 }
 
+// 0. Atualiza asset-versions.json para invalidar cache do Service Worker
+console.log('Passo 0: Sincronizando hashes em asset-versions.json...');
+try {
+  const avPath = path.join(ROOT, 'asset-versions.json');
+  const mirrorAvPath = path.join(ROOT, 'Projeto atualizado', 'asset-versions.json');
+  if (fs.existsSync(avPath)) {
+    const av = JSON.parse(fs.readFileSync(avPath, 'utf8'));
+    const tracked = [
+      'assets/index-D6qIWtA7-p209.js',
+      'assets/pixel-art/deepcave/dorf-atlas.png',
+      'assets/pixel-art/deepcave/dorf-atlas.json',
+      'assets/pixel-art/deepcave/dorf-portal-arch.png',
+      'assets/pixel-art/deepcave/dorf-brazier.png',
+      'assets/pixel-art/hub/village/village.json'
+    ];
+    for (const rel of tracked) {
+      const full = path.join(ROOT, rel);
+      if (fs.existsSync(full)) {
+        av[rel] = crypto.createHash('md5').update(fs.readFileSync(full)).digest('hex').slice(0, 10);
+      }
+    }
+    const outJson = JSON.stringify(av);
+    fs.writeFileSync(avPath, outJson, 'utf8');
+    if (fs.existsSync(path.dirname(mirrorAvPath))) {
+      fs.writeFileSync(mirrorAvPath, outJson, 'utf8');
+    }
+    console.log('✓ asset-versions.json sincronizado.');
+  }
+} catch (e) {
+  console.warn('Aviso ao atualizar asset-versions.json:', e.message);
+}
+
 // 1. Executa suite de testes QA
-console.log('Passo 1: Executando suite de testes de integridade e sintaxe...');
+console.log('\nPasso 1: Executando suite de testes de integridade e sintaxe...');
 const verify = run('node --experimental-vm-modules ".agents/skills/verify-and-publish/scripts/verify-all.js"', 'Verificação QA');
 if (!verify.ok) {
   console.error('\n[ABORTADO] A publicação foi cancelada porque a suite de QA encontrou erros.');

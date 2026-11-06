@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import vm from 'vm';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -131,7 +132,7 @@ try {
   hub.textures = { exists: () => true };
   hub.children = { list: [] };
   hub.add.image = () => ({ setOrigin: function(){return this;}, setScale: function(){return this;}, setDepth: function(){return this;}, setBlendMode: function(){return this;}, setTint: function(){return this;}, setAlpha: function(){return this;} });
-  hub.add.sprite = () => ({ setOrigin: function(){return this;}, setScale: function(){return this;}, setDepth: function(){return this;}, setTint: function(){return this;}, play: function(){return this;}, active: true });
+  hub.add.sprite = () => ({ setOrigin: function(){return this;}, setScale: function(){return this;}, setDepth: function(){return this;}, setTint: function(){return this;}, setBlendMode: function(){return this;}, setAlpha: function(){return this;}, play: function(){return this;}, active: true });
   hub.__caveExplorerInit();
   hub.__inters();
   const cavePortalInter = hub.inters.find(i => i.id === 'cave_portal');
@@ -182,6 +183,16 @@ try {
     throw new Error(`Quantidade de baús fora do esperado para economia escassa: ${chestCount}`);
   }
   logPass(`Gerador orgânico Cavernas Dorf validado (${lvl.world.cols}x${lvl.world.rows}, 0 portas, ${chestCount} baús valiosos em alcovas).`);
+
+  const avPath = path.join(ROOT, 'asset-versions.json');
+  if (fs.existsSync(avPath)) {
+    const av = JSON.parse(fs.readFileSync(avPath, 'utf8'));
+    const bundleHash = crypto.createHash('md5').update(fs.readFileSync(path.join(ROOT, 'assets/index-D6qIWtA7-p209.js'))).digest('hex').slice(0, 10);
+    if (av['assets/index-D6qIWtA7-p209.js'] !== bundleHash) {
+      throw new Error(`asset-versions.json desatualizado para index-D6qIWtA7-p209.js (${av['assets/index-D6qIWtA7-p209.js']} vs ${bundleHash})`);
+    }
+    logPass(`asset-versions.json sincronizado com o bundle atual (${bundleHash}).`);
+  }
 } catch (err) {
   logFail(`Falha na verificação das Cavernas Dorf: ${err.message}`);
 }

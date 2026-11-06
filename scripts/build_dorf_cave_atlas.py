@@ -320,9 +320,7 @@ def main():
         os.makedirs(d, exist_ok=True)
         atlas_path = os.path.join(d, "dorf-atlas.png")
         json_path = os.path.join(d, "dorf-atlas.json")
-        arch_path = os.path.join(d, "dorf-portal-arch.png")
         atlas.save(atlas_path, optimize=True)
-        arch_im.save(arch_path, optimize=True)
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(meta, f, indent=2)
         print(f"Saved {atlas_path} ({os.path.getsize(atlas_path)} bytes, {atlas.size[0]}x{atlas.size[1]})")
