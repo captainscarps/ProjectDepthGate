@@ -2714,167 +2714,372 @@
     },
     "47a8c4e7": {
       "pt": 3.85,
-      "en": 3.61
+      "en": 3.61,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 2.6
+        }
+      }
     },
     "5de361e5": {
       "pt": 2.89,
-      "en": 3.53
+      "en": 3.53,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 2.56
+        }
+      }
     },
     "1c0b8f01": {
       "pt": 5.41,
-      "en": 6.45
+      "en": 6.45,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.44
+        }
+      }
     },
     "8707e6fc": {
       "pt": 4.53,
-      "en": 4.29
+      "en": 4.29,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.16
+        }
+      }
     },
     "ecc53c38": {
       "pt": 9.09,
-      "en": 7.13
+      "en": 7.13,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 5.52
+        }
+      }
     },
     "48fb5d34": {
       "pt": 5.73,
-      "en": 6.17
+      "en": 6.17,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.32
+        }
+      }
     },
     "32d6ac62": {
       "pt": 5.01,
-      "en": 4.17
+      "en": 4.17,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.0
+        }
+      }
     },
     "e3655ff6": {
       "pt": 4.25,
-      "en": 4.37
+      "en": 4.37,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.2
+        }
+      }
     },
     "2cf75c4c": {
       "pt": 2.29,
-      "en": 3.69
+      "en": 3.69,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 1.96
+        }
+      }
     },
     "b7263ee5": {
       "pt": 4.33,
-      "en": 4.65
+      "en": 4.65,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.24
+        }
+      }
     },
     "5da873e6": {
       "pt": 4.01,
-      "en": 3.33
+      "en": 3.33,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.52
+        }
+      }
     },
     "6e420bff": {
       "pt": 4.41,
-      "en": 7.72
+      "en": 7.72,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.48
+        }
+      }
     },
     "ca1a166c": {
       "pt": 3.33,
-      "en": 3.05
+      "en": 3.05,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.44
+        }
+      }
     },
     "d93a3fa5": {
       "pt": 4.53,
-      "en": 4.77
+      "en": 4.77,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.32
+        }
+      }
     },
     "05b10dc4": {
       "pt": 6.05,
-      "en": 6.97
+      "en": 6.97,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.84
+        }
+      }
     },
     "e9a58e2e": {
       "pt": 5.77,
-      "en": 7.53
+      "en": 7.53,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 5.08
+        }
+      }
     },
     "814770f5": {
       "pt": 5.65,
-      "en": 5.29
+      "en": 5.29,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.84
+        }
+      }
     },
     "86f461e6": {
       "pt": 6.49,
-      "en": 6.37
+      "en": 6.37,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 5.24
+        }
+      }
     },
     "a789e686": {
       "pt": 5.65,
-      "en": 6.65
+      "en": 6.65,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 6.0
+        }
+      }
     },
     "6b629dcb": {
       "pt": 4.49,
-      "en": 4.97
+      "en": 4.97,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 5.4
+        }
+      }
     },
     "a6ac06fd": {
       "pt": 5.77,
-      "en": 7.4
+      "en": 7.4,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.48
+        }
+      }
     },
     "a3043c6e": {
       "pt": 3.21,
-      "en": 3.69
+      "en": 3.69,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.56
+        }
+      }
     },
     "5fc59cba": {
       "pt": 3.77,
-      "en": 5.09
+      "en": 5.09,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.04
+        }
+      }
     },
     "a19991f7": {
       "pt": 3.41,
-      "en": 3.85
+      "en": 3.85,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.24
+        }
+      }
     },
     "c3558df0": {
       "pt": 3.33,
-      "en": 2.65
+      "en": 2.65,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.32
+        }
+      }
     },
     "b0cda755": {
       "pt": 5.89,
-      "en": 7.12
+      "en": 7.12,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.0
+        }
+      }
     },
     "e86dbb72": {
       "pt": 5.88,
-      "en": 5.0
+      "en": 5.0,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.84
+        }
+      }
     },
     "c2e1bb08": {
       "pt": 3.29,
-      "en": 5.24
+      "en": 5.24,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 2.8
+        }
+      }
     },
     "26838783": {
       "pt": 7.56,
-      "en": 7.84
+      "en": 7.84,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.48
+        }
+      }
     },
     "8660d473": {
       "pt": 3.48,
-      "en": 3.32
+      "en": 3.32,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 1.36
+        }
+      }
     },
     "b88eb3cb": {
       "pt": 4.56,
-      "en": 5.28
+      "en": 5.28,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 1.6
+        }
+      }
     },
     "89a9e18e": {
       "pt": 7.0,
-      "en": 7.12
+      "en": 7.12,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.92
+        }
+      }
     },
     "458b00a2": {
       "pt": 6.48,
-      "en": 5.92
+      "en": 5.92,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 2.68
+        }
+      }
     },
     "951675a6": {
       "pt": 7.48,
-      "en": 5.8
+      "en": 5.8,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.32
+        }
+      }
     },
     "5b30a0d1": {
       "pt": 11.08,
-      "en": 10.0
+      "en": 10.0,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 6.8
+        }
+      }
     },
     "7dddefcf": {
       "pt": 5.8,
-      "en": 4.6
+      "en": 4.6,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 1.72
+        }
+      }
     },
     "0358ee46": {
       "pt": 6.96,
-      "en": 7.12
+      "en": 7.12,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 2.88
+        }
+      }
     },
     "79e01c91": {
       "pt": 8.24,
-      "en": 7.24
+      "en": 7.24,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.92
+        }
+      }
     },
     "be268be4": {
       "pt": 6.76,
-      "en": 6.92
+      "en": 6.92,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.04
+        }
+      }
     },
     "6e833bf7": {
       "pt": 6.76,
-      "en": 7.36
+      "en": 7.36,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 5.04
+        }
+      }
     },
     "b8decd05": {
       "pt": 6.56,
-      "en": 8.48
+      "en": 8.48,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 4.12
+        }
+      }
     },
     "07d8d8cf": {
       "pt": 10.56,
