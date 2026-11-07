@@ -13385,7 +13385,6 @@ function __dorfReturnToRefuge(S, fell = false) {
   const isCamp = S.originMode === "campaign";
   const slot = S.dorfSlot || S.game?.registry?.get("save:slot") || 1;
   const curForgeCoins = __getForgeCoins(S);
-  let savedCamp = null;
 
   try {
     if (isCamp && typeof Dn === "function") {
@@ -13409,9 +13408,7 @@ function __dorfReturnToRefuge(S, fell = false) {
         }
         if (typeof S.stats?.xp === "number") d.player.xp = S.stats.xp;
         if (typeof S.stats?.level === "number") d.player.level = S.stats.level;
-        if (fell) { d.campaign = d.campaign || {}; d.campaign.levelId = "forest" }
         localStorage.setItem(Wt("campaign", slot), JSON.stringify(d));
-        savedCamp = d;
       }
     } else if (!isCamp && typeof In === "function") {
       try { In(S); } catch (e) {}
@@ -13427,31 +13424,23 @@ function __dorfReturnToRefuge(S, fell = false) {
     returned = true;
     try { S.scene.stop("UI"); } catch (e) {}
     const FELL = typeof __L3 === "function" ? __L3("Você caiu, herói. Eu te trouxe para se recuperar.", "You fell, hero. I brought you here to recover.", "Caíste, héroe. Te traje para que te recuperes.") : "Você caiu, herói. Eu te trouxe para se recuperar.";
-    if (fell && isCamp && savedCamp) {
-      // A Guardiã leva o herói caído ao Coração da Floresta e fala com ele lá
-      const oldP = S.player;
-      S.game.registry.set("hub:classId", S.classDef?.id || "WARRIOR");
-      S.scene.start("Game", { levelId: "forest", classId: savedCamp.player?.classId || S.classDef?.id || "WARRIOR", restore: savedCamp });
-      const tryForest = (n) => {
-        const g = S.game.scene.getScene("Game");
-        if (g?.levelId === "forest" && g.state === "playing" && g.player && g.player !== oldP && g.scene.isActive()) {
-          g.time.delayedCall(1300, () => {
-            if (!g.scene.isActive()) return;
-            try {
-              const line = [{ who: "guardia", expr: "sadness", name: typeof __GN !== "undefined" ? __GN : "A GUARDIÃ", text: FELL }];
-              typeof __gSay === "function" ? __gSay(g, line) : __dlg(g, line);
-            } catch (e) { g.game.events.emit("ui:banner", FELL, "#e8f4ff") }
-          });
-        } else if (n < 80) setTimeout(() => tryForest(n + 1), 150);
-      };
-      tryForest(0);
-      return;
-    }
     if (fell) {
+      // A Guardiã traz o herói caído de volta pelo portal branco do Refúgio
+      const GN = typeof __L3 === "function" ? __L3("A Guardiã", "The Guardian", "La Guardiana") : "A Guardiã";
       const tryHub = (n) => {
         const H = S.game.scene.getScene("Hub");
-        if (H?.sys?.isActive?.() && H.__say && H.playerX != null) H.time.delayedCall(1000, () => { try { H.__say(H.playerX, H.playerY - 42, FELL, 4800, "#e8f4ff", "female") } catch (e) {} });
-        else if (n < 80) setTimeout(() => tryHub(n + 1), 150);
+        if (H?.sys?.isActive?.() && H.__say && H.rig?.container && H.playerX != null) {
+          const [cx, cy] = H.cavePortalPos || [836, 646];
+          H.area = H.area || "out";
+          H.playerX = cx - 50; H.playerY = cy - 8; H.facing = { x: 1, y: 0 };
+          try { H.rig.container.setPosition(H.playerX, H.playerY); H.cameras.main.centerOn(H.playerX, H.playerY) } catch (e) {}
+          try {
+            const fl = H.add.image(cx, cy - 34, "light").setBlendMode(j.BlendModes.ADD).setTint(0xffffff).setScale(0.1).setAlpha(0.9).setDepth(cy + 50);
+            H.tweens.add({ targets: fl, scale: 0.9, alpha: 0, duration: 900, ease: "Quad.easeOut", onComplete: () => fl.destroy() });
+            H.rig.container.setAlpha(0.2); H.tweens.add({ targets: H.rig.container, alpha: 1, duration: 700 });
+          } catch (e) {}
+          H.time.delayedCall(900, () => { try { H.__say(cx, cy - 92, `${GN}: ${FELL}`, 5200, "#e8f4ff", "female") } catch (e) {} });
+        } else if (n < 80) setTimeout(() => tryHub(n + 1), 150);
       };
       setTimeout(() => tryHub(0), 300);
     }
