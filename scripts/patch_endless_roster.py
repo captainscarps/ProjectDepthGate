@@ -75,6 +75,22 @@ SIMPLE = [
     # 7) excluir o slot também apaga a durabilidade e as armas quebradas daquele herói
     ('function Kr(c=1,i="campaign"){localStorage.removeItem(Wt(i,c));',
      'function Kr(c=1,i="campaign"){localStorage.removeItem(Wt(i,c));if(i==="endless")try{localStorage.removeItem("depthgate:forgeDur:"+c);localStorage.removeItem("depthgate:forgeBroken:"+c)}catch(e){}/*__ROSTER__*/'),
+    # 8) menu principal sem o botão do Refúgio (agora se entra pelo modo infinito)
+    ('{label:W("menu.refuge"),enabled:!0,action:()=>this.goToHub()},',
+     '/*__ROSTER_NOREFUGE__*/'),
+    # 9) continuar um herói do modo infinito leva ao Refúgio (se arma, conserta, e entra pelo portal)
+    ('e.set("endless:run",{...t.data.run,finished:!1}),this.cameras.main.fadeOut(400,0,0,0),this.cameras.main.once("camerafadeoutcomplete",()=>{this.scene.start("Game",{endless:!0,classId:t.data.player.classId,restoreEndless:t.data})})}',
+     'e.set("endless:run",{...t.data.run,finished:!1}),e.set("hub:endlessSlot",i),e.remove("hub:fromForest")/*__ROSTER__*/,this.cameras.main.fadeOut(400,0,0,0),this.cameras.main.once("camerafadeoutcomplete",()=>{this.scene.start("Hub")})}'),
+    # 10) o portal do Refúgio começa a run com o herói escolhido (sem herói carregado: novo jogo, como antes)
+    ('enterPortal(){this.game.registry.set("mode","endless");const i=ke.find(t=>!Fn(t))??1;',
+     'enterPortal(){const __es=this.game.registry.get("hub:endlessSlot"),__sv=__es?Nn(__es):null;'
+     'if(__sv?.ok){const R=this.game.registry;R.set("mode","endless");R.set("save:slot",__es);R.set("endless:run",{...__sv.data.run,finished:!1});'
+     'this.game.audioEngine?.sfx("sfx-endless-start");this.cameras.main.fadeOut(500,0,0,0);'
+     'this.cameras.main.once("camerafadeoutcomplete",()=>this.scene.start("Game",{endless:!0,classId:__sv.data.player.classId,restoreEndless:__sv.data}));return}/*__ROSTER__*/'
+     'this.game.registry.set("mode","endless");const i=ke.find(t=>!Fn(t))??1;'),
+    # 11) depois de cair na run, o herói volta ao Refúgio (para se armar e consertar antes da próxima)
+    ('if(isEndless&&sv?.ok){this.cameraSys.fadeOut(350,()=>{this.scene.stop("UI");this.scene.start("Game",{endless:!0,classId:sv.data.player.classId,restoreEndless:sv.data});});return;}',
+     'if(isEndless&&sv?.ok){this.cameraSys.fadeOut(350,()=>{this.scene.stop("UI");this.game.registry.set("hub:endlessSlot",sl);this.game.registry.set("hub:classId",sv.data.player.classId);this.game.registry.remove("hub:fromForest");this.scene.start("Hub")/*__ROSTER__*/;});return;}'),
 ]
 
 
