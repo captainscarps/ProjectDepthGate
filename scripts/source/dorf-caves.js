@@ -106,6 +106,15 @@ if (typeof window !== "undefined") {
   window.__addForgeCoins = __addForgeCoins;
 }
 
+/* 0a) Durabilidade das armas do ferreiro no modo infinito (máximo de 3 runs, conserto com Pedra Cobalto) */
+const __FORGE_MAX_RUNS = 3;
+function __forgeDurGet(slot) { try { return JSON.parse(localStorage.getItem("depthgate:forgeDur:" + slot) || "{}") || {} } catch (e) { return {} } }
+function __forgeDurSet(slot, m) { try { localStorage.setItem("depthgate:forgeDur:" + slot, JSON.stringify(m || {})) } catch (e) {} }
+function __forgeBrokenGet(slot) { try { const v = JSON.parse(localStorage.getItem("depthgate:forgeBroken:" + slot) || "[]"); return Array.isArray(v) ? v : [] } catch (e) { return [] } }
+function __forgeBrokenSet(slot, l) { try { localStorage.setItem("depthgate:forgeBroken:" + slot, JSON.stringify(l || [])) } catch (e) {} }
+function __forgeBrokenAdd(slot, l) { __forgeBrokenSet(slot, __forgeBrokenGet(slot).concat(l || [])) }
+try { if (typeof window !== "undefined") Object.assign(window, { __FORGE_MAX_RUNS, __forgeDurGet, __forgeDurSet, __forgeBrokenGet, __forgeBrokenSet, __forgeBrokenAdd }) } catch (e) {}
+
 /* 0b) Pedra Cobalto: texturas em pixel art, pepitas para juntar e veios para minerar */
 function __cobaltTex(S) {
   const T = S.textures;
