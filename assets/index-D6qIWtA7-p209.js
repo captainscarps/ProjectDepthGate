@@ -12116,6 +12116,19 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
 }
 try { if (typeof window !== "undefined") window.__FORGE_FX = __FORGE_FX; } catch (e) {}
 
+/* 0a3) Caverna é só exploração: não existe XP de nível lá (nem o texto "+N XP" nem a escolha de habilidade) */
+if (typeof Eh !== "undefined" && Eh.prototype?.addXp) {
+  const AX = Eh.prototype.addXp;
+  Eh.prototype.addXp = function (i) { if (this.scene?.isDorfCave) return; return AX.apply(this, arguments) };
+}
+function __dorfNoXpFx(S) {
+  try {
+    const fx = S.effects; if (!fx || fx.__dorfNoXp) return; fx.__dorfNoXp = true;
+    const ft = fx.floatText?.bind(fx);
+    if (ft) fx.floatText = function (x, y, t, ...r) { if (S.isDorfCave && /\bXP\b/.test(String(t))) return; return ft(x, y, t, ...r) };
+  } catch (e) {}
+}
+
 /* 0b) Pedra Cobalto: texturas em pixel art, pepitas para juntar e veios para minerar */
 function __cobaltTex(S) {
   const T = S.textures;
@@ -13419,6 +13432,7 @@ function __dorfBake(B) {
     const runPostInit = () => {
       if (postInitDone || !S.scene?.isActive()) return;
       postInitDone = true;
+      __dorfNoXpFx(S);
       S.time?.delayedCall?.(1600, () => { if (S.scene?.isActive() && S.isDorfCave) S.game.events.emit("ui:banner", L3("SAIA POR UM PORTAL BRANCO PARA LEVAR TODA A PEDRA · SE CAIR, METADE FICA AQUI", "LEAVE THROUGH A WHITE PORTAL TO KEEP ALL STONE · FALL AND HALF STAYS HERE", "SAL POR UN PORTAL BLANCO PARA CONSERVAR TODA LA PIEDRA · SI CAES, LA MITAD SE QUEDA"), "#e8f4ff") });
 
       // Limpar qualquer pendência ou estado aberto de __SPPanel na caverna Dorf

@@ -184,7 +184,7 @@ class __SPPanel {
 function __spUI(U) { return U.__etp instanceof __SPPanel ? U.__etp : (U.__etp = new __SPPanel(U)) }
 function __spCheck(S, delay = 0) {
   try {
-    if (!S?.skillState || !S.classDef || S.isRift) return;
+    if (!S?.skillState || !S.classDef || S.isRift || S.isDorfCave) return;
     const U = S.scene.get("UI"); if (!U) return;
     const P = __spUI(U);
     setTimeout(() => { if (!S.sys?.isActive?.()) return; for (const q of __spPending(S)) P.push(q) }, delay);
