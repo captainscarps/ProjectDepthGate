@@ -13,7 +13,8 @@ Sem instrução de direção: com ela o Gemini às vezes lê a instrução em vo
 Uso (a chave nunca é gravada em arquivo):
     GEMINI_API_KEY=... python3 scripts/generate_hero_voice.py all            # PT de todos (+ EN das heroínas)
     GEMINI_API_KEY=... python3 scripts/generate_hero_voice.py MAGE --en      # inglês também para os homens
-    --force regrava o que já existe · --workers N (padrão 4)
+    --force regrava o que já existe · --workers N (padrão 4) · --model <modelo TTS>
+    A cota diária é por modelo (Tier 1: 100/dia no flash); gemini-2.5-pro-preview-tts tem cota própria.
 """
 import concurrent.futures as cf
 import importlib.util
@@ -65,6 +66,9 @@ def main():
     force, en_all = "--force" in argv, "--en" in argv
     workers = int(argv[argv.index("--workers") + 1]) if "--workers" in argv else 4
     skip = {argv[argv.index("--workers") + 1]} if "--workers" in argv else set()
+    if "--model" in argv:
+        V.MODELS_QUEUE = [argv[argv.index("--model") + 1]]
+        skip.add(argv[argv.index("--model") + 1])
     names = [a.upper() for a in argv if not a.startswith("--") and a not in skip]
     classes = list(VOICES) if not names or "ALL" in names else names
     bad = [c for c in classes if c not in VOICES]
@@ -111,6 +115,8 @@ def main():
                 if not force and not redo and bc.get(cls) and os.path.isfile(os.path.join(out, name)):
                     continue
                 jobs.append((lid, cls, L, text, out, mir, name))
+    # heroínas primeiro (antes falavam com voz masculina), depois os demais
+    jobs.sort(key=lambda j: (j[1] not in FEMALE, j[2] != "pt"))
     print(f"{len(jobs)} áudios para gerar; {removed} versões de falas exclusivas removidas", flush=True)
     save()
 
