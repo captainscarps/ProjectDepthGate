@@ -128,7 +128,7 @@ try {
   if (hub.panel !== null) throw new Error('__pzConfirm falhou em fechar o menu ao selecionar Continuar');
   logPass('Ciclo do menu de pausa (abrir, navegar, confirmar e fechar) validado com sucesso.');
 
-  // Validar Portal da Caverna e NPC Explorador no canto inferior direito do Refúgio
+  // Validar o portal branco da Caverna no canto inferior direito do Refúgio
   hub.M = {
     coll: Array.from({ length: 88 }, () => '0'.repeat(128)),
     spots: { vendor: [400, 420], shrine: [820, 282], campfire: [512, 458], portal: [512, 646], sign: [952, 620], hunter: [232, 302], board: [648, 300], cabin: [150, 300], girl: [544, 304] },
@@ -146,10 +146,11 @@ try {
   if (!cavePortalInter || cavePortalInter.x < 800 || cavePortalInter.y < 600) {
     throw new Error('Portal da Caverna Dorf não encontrado no canto inferior direito do Refúgio');
   }
-  if (!caveNpcInter || !hub.caveExplorer) {
-    throw new Error('NPC Explorador da Caverna não inicializado ao lado do portal');
+  // Pedido do usuário: no Refúgio fica só o portal branco padrão, sem explorador
+  if (caveNpcInter || hub.caveExplorer) {
+    throw new Error('O Refúgio não deve ter o NPC Explorador; só o portal branco padrão');
   }
-  logPass('Portal da Caverna Dorf e NPC Explorador validados no canto inferior direito do Refúgio.');
+  logPass('Portal branco da Caverna Dorf validado no canto inferior direito do Refúgio (sem explorador).');
 } catch (err) {
   logFail(`Falha no teste funcional do Refúgio: ${err.message}`);
 }

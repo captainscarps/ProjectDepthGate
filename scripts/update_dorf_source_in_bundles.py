@@ -50,8 +50,7 @@ NEW_GAMEOVER_BLOCK = (
     'if(this.isDorfCave){'
     'this.state="dorf_defeat";'
     'const L3=typeof __L3==="function"?__L3:(pt,en)=>pt;'
-    'this.game.events.emit("ui:banner",L3("VOCÊ CAIU NAS CAVERNAS! Retornando ao Refúgio com seus tesouros...","YOU FELL IN THE CAVES! Returning to Refuge with saved loot...","¡CAÍSTE EN LAS CAVERNAS! Regresando al Refugio..."),"#38bdf8");'
-    '__dorfReturnToRefuge(this);'
+    'typeof __dorfFall==="function"?__dorfFall(this):__dorfReturnToRefuge(this);'
     'return;}' +
     TAG
 )
