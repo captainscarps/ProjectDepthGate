@@ -91,6 +91,24 @@ SIMPLE = [
     # 11) depois de cair na run, o herói volta ao Refúgio (para se armar e consertar antes da próxima)
     ('if(isEndless&&sv?.ok){this.cameraSys.fadeOut(350,()=>{this.scene.stop("UI");this.scene.start("Game",{endless:!0,classId:sv.data.player.classId,restoreEndless:sv.data});});return;}',
      'if(isEndless&&sv?.ok){this.cameraSys.fadeOut(350,()=>{this.scene.stop("UI");this.game.registry.set("hub:endlessSlot",sl);this.game.registry.set("hub:classId",sv.data.player.classId);this.game.registry.remove("hub:fromForest");this.scene.start("Hub")/*__ROSTER__*/;});return;}'),
+    # 12) cada herói tem as próprias chaves: campanha "1".."4", modo infinito "e1".."e4" (antes os dois modos dividiam o slot)
+    ('function __stKey(S){return"depthgate:story:"+(S.game.registry.get("save:slot")??0)}',
+     'function __stKey(S){return"depthgate:story:"+(window.__heroTag?window.__heroTag(S.game.registry,0):(S.game.registry.get("save:slot")??0))/*__HEROTAG__*/}'),
+    ('function __chKey(S){const sl=S?.game?.registry?.get("save:slot")??1;',
+     'function __chKey(S){const sl=window.__heroTag?window.__heroTag(S?.game?.registry,1,S):(S?.game?.registry?.get("save:slot")??1)/*__HEROTAG__*/;'),
+    ('function __metaKey(){let s=1;try{const g=window.__DED_GAME;s=g?.registry?.get("save:slot")??1}catch(e){}return"dungeon-crawler:meta:slot_"+s}',
+     'function __metaKey(){let s=1;try{const g=window.__DED_GAME;s=window.__heroTag?window.__heroTag(g?.registry,1):(g?.registry?.get("save:slot")??1);'
+     'const nk="dungeon-crawler:meta:slot_"+s;if(String(s)[0]==="e"&&localStorage.getItem(nk)==null&&!localStorage.getItem(nk+":mig")){const ok=localStorage.getItem("dungeon-crawler:meta:slot_"+String(s).slice(1));ok!=null&&localStorage.setItem(nk,ok);localStorage.setItem(nk+":mig","1")}}catch(e){}return"dungeon-crawler:meta:slot_"+s/*__HEROTAG__*/}'),
+    ('const k=__metaKey(),c=localStorage.getItem(k)||localStorage.getItem(_n)',
+     'const k=__metaKey(),c=localStorage.getItem(k)||(/slot_e/.test(k)?null:localStorage.getItem(_n))/*__HEROTAG__*/'),
+    ('function __relicKey(S){return"depthgate:relics:"+(S?.game?.registry?.get("save:slot")??1)}',
+     'function __relicKey(S){const s=window.__heroTag?window.__heroTag(S?.game?.registry,1,S):(S?.game?.registry?.get("save:slot")??1),nk="depthgate:relics:"+s;'
+     'try{if(String(s)[0]==="e"&&localStorage.getItem(nk)==null&&!localStorage.getItem(nk+":mig")){const ok=localStorage.getItem("depthgate:relics:"+String(s).slice(1));ok!=null&&localStorage.setItem(nk,ok);localStorage.setItem(nk+":mig","1")}}catch(e){}return nk/*__HEROTAG__*/}'),
+    # 13) excluir um herói apaga tudo dele (e só dele)
+    ('try{localStorage.removeItem("dungeon-crawler:meta:slot_"+c)}catch(e){}}',
+     'try{const tg=(i==="endless"?"e":"")+c;for(const k of Object.keys(localStorage)){'
+     'if(k==="dungeon-crawler:meta:slot_"+tg||k==="dungeon-crawler:meta:slot_"+tg+":mig"||k==="depthgate:forge_coins:"+tg||k==="depthgate:story:"+tg||k==="depthgate:relics:"+tg||k==="depthgate:relics:"+tg+":mig"||k==="depthgate:chron:"+tg||k.startsWith("depthgate:chron:"+tg+":")'
+     '||(i!=="endless"&&(k==="depthgate:portals:slot_"+c||k.startsWith("depthgate:portals:"+c+":")||k==="depthgate:guardian_magic_slot_"+c)))localStorage.removeItem(k)}}catch(e){}/*__HEROTAG__*/}'),
 ]
 
 

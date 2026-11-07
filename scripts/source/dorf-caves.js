@@ -12,55 +12,45 @@ let __dorfN = 0;
 
 /* 0) Economia global das Moedas do Ferreiro (🪙) */
 const __DORF_COIN_KEY = "depthgate:forge_coins"; /* saldo de Pedra Cobalto (nome antigo: Moedas do Ferreiro) */
-let __cobaltMig = false;
+/* Etiqueta única de cada herói: "1".."4" na campanha e "e1".."e4" no modo infinito.
+   Tudo que é do herói (Pedra Cobalto, missões, relíquias, melhorias do Refúgio) usa essa etiqueta. */
+function __heroTag(R, def = 1, S = null) {
+  try {
+    let mode = R?.get?.("mode"), slot = R?.get?.("save:slot");
+    if (S?.isDorfCave && S.originMode) mode = S.originMode;
+    if (S?.dorfSlot) slot = S.dorfSlot;
+    if (S?.fromForest) { mode = "campaign"; slot = S.retSlot ?? slot }
+    return (mode === "endless" ? "e" : "") + (slot ?? def);
+  } catch (e) { return String(def) }
+}
+try { if (typeof window !== "undefined") window.__heroTag = __heroTag; } catch (e) {}
 
+function __cobaltKey(S) { return "depthgate:forge_coins:" + __heroTag(S?.game?.registry, 1, S) }
 function __getForgeCoins(S) {
-  if (!__cobaltMig) { __cobaltMig = true; try { if (!localStorage.getItem("depthgate:cobalt_mig")) { localStorage.setItem("depthgate:cobalt_mig", "1"); const old = __getForgeCoins(S); if (old > 0) __setForgeCoins(old * 10, S) } } catch (e) {} }
-  let v = 0;
-  try {
-    v = parseInt(localStorage.getItem(__DORF_COIN_KEY) || "0", 10);
-    if (!isFinite(v) || v < 0) v = 0;
-  } catch (e) { v = 0; }
-  try {
-    const sl = S?.dorfSlot || S?.retSlot || S?.game?.registry?.get("save:slot") || 1;
-    if (typeof Dn === "function") {
-      const cr = Dn(sl);
-      if (cr?.ok && typeof cr.data?.player?.forgeCoins === "number") {
-        v = Math.max(v, cr.data.player.forgeCoins | 0);
+  const k = __cobaltKey(S);
+  let raw = null;
+  try { raw = localStorage.getItem(k) } catch (e) {}
+  if (raw == null) {
+    // migração: o saldo antigo era um só para todos; ele vai para o primeiro herói que abrir o jogo
+    let v = 0;
+    try {
+      if (!localStorage.getItem("depthgate:forge_coins:claimed")) {
+        v = parseInt(localStorage.getItem(__DORF_COIN_KEY) || "0", 10) || 0;
+        if (!localStorage.getItem("depthgate:cobalt_mig")) v *= 10;
+        localStorage.setItem("depthgate:forge_coins:claimed", "1");
+        localStorage.setItem("depthgate:cobalt_mig", "1");
       }
-    }
-    if (typeof Nn === "function") {
-      const er = Nn(sl);
-      if (er?.ok && typeof er.data?.player?.forgeCoins === "number") {
-        v = Math.max(v, er.data.player.forgeCoins | 0);
-      }
-    }
-  } catch (e) {}
-  return v;
+      localStorage.setItem(k, String(Math.max(0, v)));
+    } catch (e) {}
+    return Math.max(0, v);
+  }
+  const v = parseInt(raw, 10);
+  return isFinite(v) && v > 0 ? v : 0;
 }
 
 function __setForgeCoins(n, S) {
   const val = Math.max(0, n | 0);
-  try { localStorage.setItem(__DORF_COIN_KEY, String(val)); } catch (e) {}
-  try {
-    const sl = S?.dorfSlot || S?.retSlot || S?.game?.registry?.get("save:slot") || 1;
-    if (typeof Dn === "function") {
-      const cr = Dn(sl);
-      if (cr?.ok && cr.data) {
-        cr.data.player = cr.data.player || {};
-        cr.data.player.forgeCoins = val;
-        localStorage.setItem(Wt("campaign", sl), JSON.stringify(cr.data));
-      }
-    }
-    if (typeof Nn === "function") {
-      const er = Nn(sl);
-      if (er?.ok && er.data) {
-        er.data.player = er.data.player || {};
-        er.data.player.forgeCoins = val;
-        localStorage.setItem(Wt("endless", sl), JSON.stringify(er.data));
-      }
-    }
-  } catch (e) {}
+  try { localStorage.setItem(__cobaltKey(S), String(val)); } catch (e) {}
   return val;
 }
 

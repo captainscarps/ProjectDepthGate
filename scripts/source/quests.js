@@ -77,23 +77,37 @@ function __qDiary(S) {
     const t = ui.add.text(x0 + 34, y + 16, txt, { fontFamily: F, fontSize: "10px", color: done ? "#9a9488" : "#e8dcc0", wordWrap: { width: W - 52 } }); R.add(t);
     y += 22 + t.height + 6;
   }
-  R.add(ui.add.text(_ / 2, y0 + H - 18, __L3("[J] ou toque para fechar", "[J] or tap to close", "[J] o toca para cerrar"), { fontFamily: F, fontSize: "9px", color: "#8a7f66" }).setOrigin(.5));
+  R.add(ui.add.text(_ / 2, y0 + H - 18, __L3("[L] / B ou toque para fechar", "[L] / B or tap to close", "[L] / B o toca para cerrar"), { fontFamily: F, fontSize: "9px", color: "#8a7f66" }).setOrigin(.5));
   const was = !!S.uiOpen; S.uiOpen = !0; try { S.physics?.pause?.() } catch (e) {}
   const close = () => { if (!ui.__qDia) return; R.destroy(); ui.__qDia = null; window.removeEventListener("keydown", kd); S.uiOpen = was; try { was || S.physics?.resume?.() } catch (e) {} S.__uiClosedAt = performance.now() };
-  const kd = (e) => { if (e.key === "j" || e.key === "J" || e.key === "Escape") close() };
+  const kd = (e) => { if (e.key === "l" || e.key === "L" || e.key === "Escape") close() };
   setTimeout(() => window.addEventListener("keydown", kd), 50);
   R.list[0].on("pointerdown", close);
 }
 {
   window.addEventListener("keydown", (e) => {
-    if (e.key !== "j" && e.key !== "J") return;
+    if (e.key !== "l" && e.key !== "L") return;
     try { const S = window.__DED_GAME?.scene?.getScene("Game"); if (!S?.scene?.isActive() || !__Q.camp(S) || S.uiOpen) return; __qDiary(S) } catch (er) {}
   });
+}
+{
+  // controle: direcional esquerdo (botão 14, livre no mapeamento padrão) abre o diário na campanha
+  let pv14 = false;
+  const loop = () => {
+    requestAnimationFrame(loop);
+    try {
+      const g = Array.from(navigator.getGamepads?.() ?? []).find((q) => q && q.connected); if (!g) { pv14 = false; return }
+      const on = !!(g.buttons[14]?.pressed || (g.buttons[14]?.value ?? 0) > 0.5);
+      if (on && !pv14) { const S = window.__DED_GAME?.scene?.getScene("Game"); if (S?.scene?.isActive() && S.state === "playing" && __Q.camp(S) && !S.uiOpen) __qDiary(S) }
+      pv14 = on;
+    } catch (e) {}
+  };
+  typeof requestAnimationFrame === "function" && requestAnimationFrame(loop);
 }
 /* botão do diário no HUD (toque) */
 function __qDiaryBtn(S) {
   const ui = S.scene.get("UI"); if (!ui || ui.__qBtn?.active) return;
-  const b = ui.add.text(_ - 10, 64, "DIÁRIO [J]", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "10px", color: "#f2d98a", backgroundColor: "#140d08cc", padding: { x: 5, y: 3 } }).setOrigin(1, 0).setDepth(120).setInteractive({ useHandCursor: !0 });
+  const b = ui.add.text(_ - 10, 64, "DIÁRIO [L / ◀]", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "10px", color: "#f2d98a", backgroundColor: "#140d08cc", padding: { x: 5, y: 3 } }).setOrigin(1, 0).setDepth(120).setInteractive({ useHandCursor: !0 });
   b.on("pointerdown", () => { try { __Q.camp(S) && !S.uiOpen && __qDiary(S) } catch (e) {} });
   ui.__qBtn = b;
   S.events.once("shutdown", () => { b.destroy(); ui.__qBtn = null });
@@ -214,7 +228,7 @@ function __qPajeTalk(S, npc) {
       const open = __HUBD.filter((id) => !__isPortalDone(S, id)), pref = ["rio", "bosque", "morta"];
       const lv = [...pref.filter((l) => open.includes(l)), ...open.filter((l) => !pref.includes(l))].slice(0, 3);
       __Q.set(S, "pjL", lv); __Q.set(S, "pj", 1); S.requestSave?.(10);
-      S.game.events.emit("ui:banner", "NOVA MISSÃO: O ÚLTIMO PAJÉ (J para o diário)", "#9fe0a8");
+      S.game.events.emit("ui:banner", "NOVA MISSÃO: O ÚLTIMO PAJÉ (L ou ◀ no controle para o diário)", "#9fe0a8");
     });
     return;
   }

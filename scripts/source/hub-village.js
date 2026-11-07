@@ -68,7 +68,7 @@ this.__area("out",!0);
 /* entrada */
 this.input.on("pointerdown",p=>{if(this.panel||this.__busy)return;if(this.__uiTap){this.__uiTap=!1;return}if(this.__joyStart(p))return;if(!this.__tapMove)return;if(this.game.inputManager?.wasTouchConsumed?.())return;const sx=p.x/(cam.zoom||Pt),sy=p.y/(cam.zoom||Pt);if(sy<52&&(sx<262||sx>_-110))return;const wx=p.worldX,wy=p.worldY;const it=this.inters.filter(o=>o.area===this.area&&Math.hypot(o.x-wx,(o.y-wy)*.9)<(o.tap??26)).sort((a,b)=>Math.hypot(a.x-wx,a.y-wy)-Math.hypot(b.x-wx,b.y-wy))[0];
 if(it){if(Math.hypot(it.x-this.playerX,it.y-this.playerY)<=it.r){this.__do(it);return}this.pending=it;this.__goto(it.ax??it.x,it.ay??it.y+14)}else{this.pending=null;this.__goto(wx,wy)}});
-this.input.keyboard.on("keydown-ESC",()=>{this.__pz?this.__pzClose():this.panel?this.closePanel():this.__pzOpen()});this.input.keyboard.on("keydown-ENTER",()=>{this.__pz?this.__pzConfirm():this.__hs?this.__hsBuy():this.panel?(this.panelRows?.length?this.panelConfirm():this.closePanel()):this.tryInteract()});this.input.keyboard.on("keydown-SPACE",()=>{this.__pz&&this.__pzConfirm()});this.input.keyboard.on("keydown-E",()=>{this.panel||this.tryInteract()});this.input.keyboard.on("keydown-UP",()=>this.__pz?this.__pzNav(-1):this.__hs?this.__hsNav(-1):this.panelNav(-1)),this.input.keyboard.on("keydown-DOWN",()=>this.__pz?this.__pzNav(1):this.__hs?this.__hsNav(1):this.panelNav(1));this.input.keyboard.on("keydown-LEFT",()=>this.__hs&&this.__hsQty(-1));this.input.keyboard.on("keydown-RIGHT",()=>this.__hs&&this.__hsQty(1));
+this.input.keyboard.on("keydown-ESC",()=>{this.__fn?.o?.active?this.__fnClose():this.__pz?this.__pzClose():this.panel?this.closePanel():this.__pzOpen()});this.input.keyboard.on("keydown-ENTER",()=>{this.__fn?.o?.active?this.__fnOk():this.__pz?this.__pzConfirm():this.__hs?this.__hsBuy():this.panel?(this.panelRows?.length?this.panelConfirm():this.closePanel()):this.tryInteract()});this.input.keyboard.on("keydown-SPACE",()=>{this.__pz&&this.__pzConfirm()});this.input.keyboard.on("keydown-E",()=>{this.panel||this.tryInteract()});this.input.keyboard.on("keydown-UP",()=>this.__fn?.o?.active?this.__fnNav(-1):this.__pz?this.__pzNav(-1):this.__hs?this.__hsNav(-1):this.panelNav(-1)),this.input.keyboard.on("keydown-DOWN",()=>this.__fn?.o?.active?this.__fnNav(1):this.__pz?this.__pzNav(1):this.__hs?this.__hsNav(1):this.panelNav(1));this.input.keyboard.on("keydown-LEFT",()=>this.__fn?.o?.active?this.__fnNav(-1):this.__hs&&this.__hsQty(-1));this.input.keyboard.on("keydown-RIGHT",()=>this.__fn?.o?.active?this.__fnNav(1):this.__hs&&this.__hsQty(1));
 /* toques nos painéis (pausa, lojas, HUD): os filhos dos painéis fixos na tela precisam do mesmo "fixo na tela"
    do painel, senão o toque é calculado com a câmera (com zoom) e erra o botão */
 this.refreshFragments();this.__combatHud();this.__joyInit();try{this.scene.get("HubUI")?this.scene.launch("HubUI"):this.scene.add("HubUI",__HubUI,!0);this.scene.bringToTop("HubUI")}catch(e){}this.events.once("shutdown",()=>{this.__busy=!1;try{this.scene.stop("HubUI")}catch(e){}});cam.fadeIn(400,0,0,0);
@@ -85,9 +85,26 @@ __pzNav(dir){const P=this.__pz;if(!P)return;P.sel=(P.sel+dir+P.opts.length)%P.op
 __pzConfirm(){const P=this.__pz;if(!P)return;const opt=P.opts[P.sel];if(opt&&typeof opt[1]==="function"){this.game.audioEngine?.sfx?.("sfx-ui-confirm");opt[1]()}}
 __pzClose(){this.closePanel();this.__padPv={a:!0,x:!0,s:!0};this.__stPv=!0}
 __fixScroll(o){if(!o)return;for(const c of o.list||[]){c.scrollFactorX!==0&&c.setScrollFactor?.(0);c.list&&this.__fixScroll(c)}}
-closePanel(){this.panel?.destroy?.();this.panel=null;this.panelRows=null;this.__pz=null;this.__hs=null;}
+closePanel(){this.panel?.destroy?.();this.panel=null;this.__fn=null;this.panelRows=null;this.__pz=null;this.__hs=null;}
 __backToForest(){if(this.__busy)return;this.__busy=!0;this.game.audioEngine?.sfx("sfx-endless-start");try{if(Dn(this.retSlot).ok){$o.prototype.continueGame.call(this,this.retSlot);return}}catch(e){}this.__busy=!1;this.exitToMenu()}
-__padPanel(){let g=null;try{g=Array.from(navigator.getGamepads?.()??[]).find(p=>p&&p.connected)}catch(e){}if(!g)return;const b=k=>!!(g.buttons[k]?.pressed||g.buttons[k]?.value>.5),ay=g.axes[1]??0,ax=g.axes[0]??0,now={u:b(12)||ay<-.6,d:b(13)||ay>.6,l:b(14)||ax<-.6,r:b(15)||ax>.6,a:b(0),x:b(1),s:b(9)||b(8)},pv=this.__padPv||{};this.__padPv=now;if(this.__pz){if(now.u&&!pv.u)this.__pzNav(-1);if(now.d&&!pv.d)this.__pzNav(1);if(now.a&&!pv.a)this.__pzConfirm();else if((now.x&&!pv.x)||(now.s&&!pv.s))this.__pzClose();return}if(this.__hs){if(now.u&&!pv.u)this.__hsNav(-1);if(now.d&&!pv.d)this.__hsNav(1);if(now.l&&!pv.l)this.__hsQty(-1);if(now.r&&!pv.r)this.__hsQty(1);if(now.a&&!pv.a)this.__hsBuy();if(now.x&&!pv.x)this.closePanel();return}if(now.u&&!pv.u)this.panelNav(-1);if(now.d&&!pv.d)this.panelNav(1);if(now.a&&!pv.a){this.panelRows?.length?this.panelConfirm():this.closePanel()}if(now.x&&!pv.x)this.closePanel()}
+/* ── navegação por foco (gamepad/teclado) para painéis feitos só de botões clicáveis ── */
+__fnAuto(o,closeObj,keepSel){
+  const items=o.list.filter(x=>x.input?.enabled&&x.active&&!(x.type==="Rectangle"&&x.width>=_)&&!x.__fnSkip);
+  if(!items.length)return;
+  if(!this.__fnHl||!this.__fnHl.active||this.__fnHl.parentContainer!==o){this.__fnHl=this.add.graphics();o.add(this.__fnHl)}else o.bringToTop(this.__fnHl);
+  const prev=this.__fn?.sel??0;
+  this.__fn={o,items,sel:keepSel?Math.min(prev,items.length-1):0,close:closeObj};
+  this.panelRows=null;this.__padPv={a:!0,x:!0,s:!0,u:!0,d:!0,l:!0,r:!0};
+  this.__fnDraw();
+}
+__fnDraw(){const F=this.__fn,g=this.__fnHl;if(!F||!g?.active)return;g.clear();const b=F.items[F.sel];if(!b?.active)return;
+  const w=b.displayWidth||b.width||20,h=b.displayHeight||b.height||12,x=b.x-w*(b.originX??.5),y=b.y-h*(b.originY??.5);
+  g.fillStyle(16765514,.1).fillRoundedRect(x-4,y-3,w+8,h+6,4);g.lineStyle(2,16765514,1).strokeRoundedRect(x-4,y-3,w+8,h+6,4);
+  F.items.forEach(it=>it!==b&&it.emit?.("pointerout"));b.emit?.("pointerover")}
+__fnNav(d){const F=this.__fn;if(!F)return;F.sel=(F.sel+d+F.items.length)%F.items.length;this.__fnDraw();this.game.audioEngine?.sfx?.("sfx-ui-move")}
+__fnOk(){const F=this.__fn;const b=F?.items[F.sel];b?.active&&b.emit("pointerdown",{x:b.x,y:b.y},0,0,{stopPropagation(){}})}
+__fnClose(){const F=this.__fn;if(F?.close?.active)F.close.emit("pointerdown",{},0,0,{stopPropagation(){}});else{this.__fn=null;this.closePanel();this.__busy=!1}}
+__padPanel(){let g=null;try{g=Array.from(navigator.getGamepads?.()??[]).find(p=>p&&p.connected)}catch(e){}if(!g)return;const b=k=>!!(g.buttons[k]?.pressed||g.buttons[k]?.value>.5),ay=g.axes[1]??0,ax=g.axes[0]??0,now={u:b(12)||ay<-.6,d:b(13)||ay>.6,l:b(14)||ax<-.6,r:b(15)||ax>.6,a:b(0),x:b(1),s:b(9)||b(8)},pv=this.__padPv||{};this.__padPv=now;if(this.__fn&&!this.__fn.o?.active)this.__fn=null;if(this.__fn){if((now.u&&!pv.u)||(now.l&&!pv.l))this.__fnNav(-1);if((now.d&&!pv.d)||(now.r&&!pv.r))this.__fnNav(1);if(now.a&&!pv.a)this.__fnOk();else if((now.x&&!pv.x)||(now.s&&!pv.s))this.__fnClose();return}if(this.__pz){if(now.u&&!pv.u)this.__pzNav(-1);if(now.d&&!pv.d)this.__pzNav(1);if(now.a&&!pv.a)this.__pzConfirm();else if((now.x&&!pv.x)||(now.s&&!pv.s))this.__pzClose();return}if(this.__hs){if(now.u&&!pv.u)this.__hsNav(-1);if(now.d&&!pv.d)this.__hsNav(1);if(now.l&&!pv.l)this.__hsQty(-1);if(now.r&&!pv.r)this.__hsQty(1);if(now.a&&!pv.a)this.__hsBuy();if(now.x&&!pv.x)this.closePanel();return}if(now.u&&!pv.u)this.panelNav(-1);if(now.d&&!pv.d)this.panelNav(1);if(now.a&&!pv.a){this.panelRows?.length?this.panelConfirm():this.closePanel()}if(now.x&&!pv.x)this.closePanel()}
 __glow(x,y,s,c,a,d,dp){const o=this.add.image(x,y,"light").setScale(s).setBlendMode(j.BlendModes.ADD).setTint(c).setAlpha(a).setDepth(dp??9001);this.tweens.add({targets:o,alpha:a*.55,duration:d,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});return o}
 __area(a,instant){this.area=a;const cam=this.cameras.main,M=this.M,vw=cam.width/cam.zoom,vh=cam.height/cam.zoom;cam.stopFollow();
 if(a==="out"){const bx=M.w<vw?(M.w-vw)/2:0,bw=Math.max(M.w,vw),by=M.h<vh?(M.h-vh)/2:0,bh=Math.max(M.h,vh);cam.setBounds(bx,by,bw,bh);cam.startFollow(this.rig.container,!0,instant?1:.14,instant?1:.14);this.shade?.setAlpha?.(.26);if(this.title?.active)try{this.title.setText(W("hub.title"))}catch(_){}}
@@ -411,6 +428,7 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
       }else parts.push(this.add.text(d+186,ry+16,L3("INTACTA","INTACT","INTACTA"),{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(1,.5));
       o.add(parts);rows.push(...parts);
     });
+    this.__fn?.o===o&&this.__fnAuto(o,this.__fn.close,!0);
   };
   render();
   const bk=this.add.text(d-100,Y+HH-16,L3("◂ ARMARIA","◂ ARMORY","◂ ARMERÍA"),{...ti,fontSize:"10px",color:"#ffd24a"}).setOrigin(.5).setInteractive({useHandCursor:!0});
@@ -418,12 +436,13 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
   const cB=this.add.text(d+100,Y+HH-16,L3("✕ FECHAR","✕ CLOSE","✕ CERRAR"),{...ti,fontSize:"10px",color:"#d8cdb4"}).setOrigin(.5).setInteractive({useHandCursor:!0});
   cB.on("pointerdown",()=>{o.destroy();this.panel=null;this.__busy=!1});
   o.add([bk,cB]);this.panel=o;
+  this.__fnAuto(o,cB);
 }
 
 __forgeWeaponsShop(){
   if(this.panel||this.__busy)return;
   const L3=__L3,d=_/2,Y=12,HH=336;
-  try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Só forjo com Pedra Cobalto. Essas armas são feitas dela, por isso são tão raras.","I only forge with Cobalt Stone. These weapons are made of it, that's why they're so rare.","Solo forjo con Piedra Cobalto. Estas armas están hechas de ella, por eso son tan raras."),4200,"#bcd4ff","male")}catch(_){}
+  try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Só forjo com Pedra Cobalto. Essas armas são feitas dela, por isso são tão raras. E ela só existe nas Cavernas Dorf; o portal branco fica logo ali no canto.","I only forge with Cobalt Stone. These weapons are made of it, that's why they're so rare. And it's only found in the Dorf Caves; the white portal is right there in the corner.","Solo forjo con Piedra Cobalto. Estas armas están hechas de ella, por eso son tan raras. Y solo existe en las Cavernas Dorf; el portal blanco está ahí en la esquina."),6200,"#bcd4ff","male")}catch(_){}
   const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
   const bg=this.add.rectangle(d,st/2,_,st,328450,.82).setInteractive();
   const n=this.add.graphics();
@@ -509,6 +528,7 @@ __forgeWeaponsShop(){
       curCoins=getCoins();
       if(curCoins<wp.price){
         msgText.setText(L3("Pedra Cobalto insuficiente! Minere nas Cavernas Dorf (portal branco à direita).","Not enough Cobalt Stone! Mine it in the Dorf Caves (white portal on the right).","¡Piedra Cobalto insuficiente! Mina en las Cavernas Dorf.")).setColor("#f87171");
+        if(!o.__toldNoCobalt){o.__toldNoCobalt=!0;try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Sem Pedra Cobalto, sem forja. Desça às Cavernas Dorf e minere os veios azuis.","No Cobalt Stone, no forging. Go down to the Dorf Caves and mine the blue veins.","Sin Piedra Cobalto, no hay forja. Baja a las Cavernas Dorf y mina las vetas azules."),4600,"#bcd4ff","male")}catch(_){}}
         this.game.audioEngine?.sfx?.("sfx-door-locked");
         return;
       }
@@ -564,4 +584,5 @@ __forgeWeaponsShop(){
   o.add([swBtn,cBtn]);
   this.__fixScroll?.(o);
   this.panel=o;
+  this.__fnAuto(o,cBtn);
 }
