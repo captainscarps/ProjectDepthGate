@@ -954,7 +954,20 @@ function __dorfBake(B) {
     }
   }
 
-  const src = texObj.getSourceImage();
+  // o pack pinta o vazio de preto (15,15,15) dentro dos tiles de parede e borda: vira transparente
+  // para a rocha texturizada do fundo aparecer entre as pedras (sem quadrados pretos de borda reta)
+  const src = (() => {
+    const im0 = texObj.getSourceImage();
+    if (S.__dorfSrcClean && S.__dorfSrcClean.__from === im0) return S.__dorfSrcClean;
+    try {
+      const cv = document.createElement("canvas"); cv.width = im0.width; cv.height = im0.height;
+      const cx = cv.getContext("2d"); cx.drawImage(im0, 0, 0);
+      const id = cx.getImageData(0, 0, cv.width, cv.height), d = id.data;
+      for (let i = 0; i < d.length; i += 4) if (d[i] === 15 && d[i + 1] === 15 && d[i + 2] === 15) d[i + 3] = 0;
+      cx.putImageData(id, 0, 0); cv.__from = im0; S.__dorfSrcClean = cv;
+      return cv;
+    } catch (e) { return im0 }
+  })();
   const C = B.cols, R = B.rows, T = dt || 32, key = "dorfb-" + ++__dorfN;
   const tx = S.textures.createCanvas(key, C * T, R * T), g = tx.getContext();
   g.imageSmoothingEnabled = false;
@@ -970,9 +983,46 @@ function __dorfBake(B) {
     g.drawImage(src, q[0], q[1], q[2], q[3], Math.round(x), Math.round(y), Math.round(sw), Math.round(sh));
   };
 
-  // 1) Fundo abissal escuro (#0d0a10)
-  g.fillStyle = "#0d0a10";
+  // 1) Fundo abissal: rocha escura texturizada que vai escurecendo longe das bordas (sem preto chapado nem cortes retos)
+  g.fillStyle = "#07050a";
   g.fillRect(0, 0, C * T, R * T);
+  try {
+    // distância (em tiles) de cada célula de rocha até o que é visível (piso ou parede norte de 3 tiles)
+    const vis = (c, r) => F(c, r) || F(c, r + 1) || F(c, r + 2) || F(c, r + 3);
+    const dist = Array.from({ length: R }, () => new Array(C).fill(9));
+    const q = [];
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (vis(c, r)) { dist[r][c] = 0; q.push([c, r]) }
+    for (let h = 0; h < q.length; h++) {
+      const [c, r] = q[h], d = dist[r][c];
+      if (d >= 5) continue;
+      for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+        const nc = c + dc, nr = r + dr;
+        if (nc < 0 || nr < 0 || nc >= C || nr >= R || dist[nr][nc] <= d + 1) continue;
+        dist[nr][nc] = d + 1; q.push([nc, nr]);
+      }
+    }
+    const hs = (x, y) => { let h = (x * 374761393 + y * 668265263 + (sd & 0xffff) * 977) | 0; h = (h ^ (h >>> 13)) * 1274126177 | 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967296 };
+    const vn = (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+      const a0 = hs(xi, yi), b0 = hs(xi + 1, yi), c0 = hs(xi, yi + 1), d0 = hs(xi + 1, yi + 1); return a0 + (b0 - a0) * u + (c0 - a0) * v + (a0 - b0 - c0 + d0) * u * v };
+    const P = 4, MW = (C * T) / P, MH = (R * T) / P;
+    const cv = document.createElement("canvas"); cv.width = MW; cv.height = MH;
+    const cg = cv.getContext("2d"), id = cg.createImageData(MW, MH), dd = id.data;
+    // distância suave por bloco (interpola a grade de tiles) para o degradê não ter degraus retos
+    const dAt = (fx, fy) => { const c = Math.floor(fx), r = Math.floor(fy), tx = fx - c, ty = fy - r, gd = (cc, rr) => dist[Math.min(R - 1, Math.max(0, rr))][Math.min(C - 1, Math.max(0, cc))];
+      return gd(c, r) * (1 - tx) * (1 - ty) + gd(c + 1, r) * tx * (1 - ty) + gd(c, r + 1) * (1 - tx) * ty + gd(c + 1, r + 1) * tx * ty };
+    for (let my = 0; my < MH; my++) for (let mx = 0; mx < MW; mx++) {
+      const fx = (mx * P) / T - 0.5, fy = (my * P) / T - 0.5;
+      const n = vn(mx / 9, my / 9) * 0.6 + vn(mx / 3.5, my / 3.5) * 0.4;
+      const d = dAt(fx, fy) + (n - 0.5) * 1.6;           // borda irregular, nunca reta
+      const k = Math.max(0, Math.min(1, 1 - (d - 0.6) / 3.2)); // 1 perto do visível, 0 no fundo
+      if (k <= 0.02) continue;
+      const grain = hs(mx, my) < 0.08 ? 10 : 0;          // pontinhos de rocha
+      const o = (my * MW + mx) * 4, b = k * (0.75 + n * 0.5);
+      dd[o] = 7 + b * 30 + grain; dd[o + 1] = 5 + b * 21 + grain * 0.7; dd[o + 2] = 10 + b * 32 + grain; dd[o + 3] = 255;
+    }
+    cg.putImageData(id, 0, 0);
+    g.save(); g.imageSmoothingEnabled = false; g.drawImage(cv, 0, 0, MW, MH, 0, 0, C * T, R * T); g.restore();
+  } catch (e) { console.warn("[dorf_cave] fundo", e) }
 
   // 2) Mapa de musgo hexagonal orgânico e solo vulcânico escuro
   const isMoss = Array.from({ length: R }, () => new Array(C).fill(false));
@@ -1114,6 +1164,13 @@ function __dorfBake(B) {
           D(M.wall.cornerNW, x, y);
         } else if (F(c - 1, r + 1) && M.wall.cornerNE) {
           D(M.wall.cornerNE, x, y);
+        } else if (hasNCol[r]?.[c + 1] && !hasNCol[r - 1]?.[c + 1] && r > 0 && !F(c + 1, r - 1) && M.wall.sideL) {
+          // ponta de cima da parede: deixa a pedra de borda contornar o topo
+          D(M.wall.sideL[r % M.wall.sideL.length], x, y);
+        } else if (hasNCol[r]?.[c + 1] && M.wall.sideL) {
+          D(M.wall.sideL[r % M.wall.sideL.length], x, y);
+        } else if (hasNCol[r]?.[c - 1] && M.wall.sideR) {
+          D(M.wall.sideR[r % M.wall.sideR.length], x, y);
         }
       }
     }
