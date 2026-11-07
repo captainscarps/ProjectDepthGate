@@ -13159,17 +13159,37 @@ function __dorfBake(B) {
   spawnBrazier(spX - 38, spY + 2, "cyan");
   spawnBrazier(spX + 38, spY + 2, "cyan");
 
-  // Segundo Portal de Retorno no Santuário Distante (para sair após explorar sem precisar voltar tudo a pé)
+  // Portais de saída extras: um num salão do meio do caminho e outro no salão mais distante (sempre há chance de sair)
   let farPortalPos = null;
-  const sNode = B.level.__sanctuaryNode;
-  if (sNode) {
-    let fCol = Math.round(sNode.cx), fRow = Math.round(sNode.cy);
-    while (fRow > 5 && F(fCol, fRow - 1)) fRow--;
-    if (!F(fCol, fRow - 1) && F(fCol - 1, fRow) && F(fCol + 1, fRow)) {
-      if (M.portalArch) D(M.portalArch, (fCol - 2) * T, (fRow - 3) * T);
-      farPortalPos = { x: fCol * T, y: fRow * T + 8, col: fCol, row: fRow };
-      spawnBrazier(farPortalPos.x - 38, farPortalPos.y + 2, "cyan");
-      spawnBrazier(farPortalPos.x + 38, farPortalPos.y + 2, "cyan");
+  const exitSpots = [];
+  {
+    const spotIn = (nd) => {
+      let best = null, bd = 1e9;
+      const x0 = Math.max(2, Math.floor(nd.cx - nd.rx - 1)), x1 = Math.min(C - 3, Math.ceil(nd.cx + nd.rx + 1));
+      const y0 = Math.max(5, Math.floor(nd.cy - nd.ry - 2)), y1 = Math.min(R - 3, Math.ceil(nd.cy + nd.ry + 1));
+      for (let r = y0; r <= y1; r++) for (let c = x0; c <= x1; c++) {
+        if (!F(c, r) || F(c, r - 1) || !F(c - 1, r) || !F(c + 1, r) || !F(c, r + 1) || !F(c - 1, r + 1) || !F(c + 1, r + 1)) continue;
+        const d = Math.hypot(c - nd.cx, (r - nd.cy) * 1.3);
+        if (d < bd) { bd = d; best = [c, r] }
+      }
+      if (!best) { const c = Math.round(nd.cx), r = Math.round(nd.cy); if (F(c, r)) best = [c, r] }
+      return best;
+    };
+    const nodesAll = (B.level.__nodes || []).filter((n) => n.kind !== "START");
+    const dSp = (n) => Math.hypot(n.cx - sp.col, n.cy - sp.row);
+    const far = B.level.__sanctuaryNode || nodesAll.slice().sort((a, b) => dSp(b) - dSp(a))[0];
+    const mids = nodesAll.filter((n) => n !== far && n.kind !== "ALCOVE_LOOT").sort((a, b) => dSp(a) - dSp(b));
+    const mid = mids[Math.floor(mids.length * 0.45)] || mids[0];
+    for (const nd of [mid, far]) {
+      if (!nd) continue;
+      const sp2 = spotIn(nd); if (!sp2) continue;
+      const [fCol, fRow] = sp2, walled = !F(fCol, fRow - 1);
+      if (walled && M.portalArch) D(M.portalArch, (fCol - 2) * T, (fRow - 3) * T);
+      const pos = { x: fCol * T + 16, y: fRow * T + 8, col: fCol, row: fRow };
+      exitSpots.push(pos);
+      spawnBrazier(pos.x - 38, pos.y + 2, "cyan");
+      spawnBrazier(pos.x + 38, pos.y + 2, "cyan");
+      if (nd === far) farPortalPos = pos;
     }
   }
 
@@ -13182,7 +13202,7 @@ function __dorfBake(B) {
   };
   markUsed(sp.col, sp.row, 3);
   markUsed(sp.col, wallRow, 3);
-  if (farPortalPos) markUsed(farPortalPos.col, farPortalPos.row, 3);
+  for (const ep of exitSpots) markUsed(ep.col, ep.row, 3);
   for (const rm of B.level.rooms || []) {
     for (const dc of rm.decor || []) markUsed(dc.col, dc.row, 2);
   }
@@ -13311,24 +13331,29 @@ function __dorfBake(B) {
     S.__dorfPortals = [S.__dorfReturnPortal];
 
     const addReturnVortex = (px, py) => {
-      const retVortex = S.add.sprite(px, py - 4, "portal", 0)
-        .setScale(0.85)
-        .setTint(0x38bdf8)
-        .setAlpha(0.78)
-        .setDepth(py - 2);
-      if (S.anims.exists("portal-spin")) retVortex.play("portal-spin");
-      S.add.text(px, py - 34, L3("SAÍDA · REFÚGIO", "EXIT · REFUGE", "SALIDA · REFUGIO"), {
+      // portal branco padrão (o mesmo da Guardiã e do Refúgio)
+      let ok = false;
+      try {
+        if (typeof __PP !== "undefined" && __PP.anims(S)) { __PP.make(S, px, py + 30, "w", 0.95, 0xf2f7ff, py + 28); ok = true }
+      } catch (e) {}
+      if (!ok) {
+        const retVortex = S.add.sprite(px, py - 4, "portal", 0).setScale(0.85).setAlpha(0.85).setDepth(py - 2);
+        if (S.anims.exists("portal-spin")) retVortex.play("portal-spin");
+      }
+      S.add.image(px, py - 4, "light").setBlendMode(j.BlendModes.ADD).setTint(0xffffff).setScale(0.32).setAlpha(0.35).setDepth(py - 3);
+      try { S.lighting?.addLight?.({ x: px, y: py - 10, radius: 120, flicker: 0.06, color: 0xffffff }) } catch (e) {}
+      S.add.text(px, py - 38, L3("SAÍDA · LEVA TODA A PEDRA", "EXIT · KEEP ALL STONE", "SALIDA · CONSERVA TODA LA PIEDRA"), {
         fontFamily: "'Cinzel', Georgia, serif",
         fontSize: "8px",
-        color: "#7dd3fc",
+        color: "#e8f4ff",
         stroke: "#090d16",
         strokeThickness: 3
       }).setOrigin(0.5, 1).setDepth(9100);
     };
 
     addReturnVortex(spX, spY - 52);
-    if (farPortalPos) {
-      const fp = { x: farPortalPos.x, y: farPortalPos.y - 44, r: 44 };
+    for (const ep of exitSpots) {
+      const fp = { x: ep.x, y: ep.y - 44, r: 44 };
       S.__dorfPortals.push(fp);
       addReturnVortex(fp.x, fp.y);
     }
@@ -13337,6 +13362,7 @@ function __dorfBake(B) {
     const runPostInit = () => {
       if (postInitDone || !S.scene?.isActive()) return;
       postInitDone = true;
+      S.time?.delayedCall?.(1600, () => { if (S.scene?.isActive() && S.isDorfCave) S.game.events.emit("ui:banner", L3("SAIA POR UM PORTAL BRANCO PARA LEVAR TODA A PEDRA · SE CAIR, METADE FICA AQUI", "LEAVE THROUGH A WHITE PORTAL TO KEEP ALL STONE · FALL AND HALF STAYS HERE", "SAL POR UN PORTAL BLANCO PARA CONSERVAR TODA LA PIEDRA · SI CAES, LA MITAD SE QUEDA"), "#e8f4ff") });
 
       // Limpar qualquer pendência ou estado aberto de __SPPanel na caverna Dorf
       try {
@@ -13602,7 +13628,7 @@ function __dorfGuardianVisit(H, cx, cy, line) {
     H.tweens.add({ targets: g, alpha: 1, x: gx, duration: 700, ease: "Quad.easeOut" });
     H.tweens.add({ targets: sh, alpha: 0.32, duration: 700 });
     H.tweens.add({ targets: au, alpha: 0.3, duration: 700, onComplete: () => H.tweens.add({ targets: au, alpha: 0.15, scale: 0.36, duration: 1400, yoyo: true, repeat: -1 }) });
-    const bub = 5600;
+    const bub = Math.max(5600, Math.round(line.length * 72));
     H.time.delayedCall(900, () => {
       H.anims.exists("guardia-a-talk") && g.play("guardia-a-talk");
       try { H.__say(gx, gy - 80, line, bub, "#e8f4ff", "female") } catch (e) {}
@@ -13639,6 +13665,12 @@ function __dorfGuardianVisit(H, cx, cy, line) {
 function __dorfReturnToRefuge(S, fell = false) {
   if (!S || S.__dorfExiting) return;
   S.__dorfExiting = true;
+
+  // Pedra Cobalto da run: quem sai por um portal leva tudo; quem cai deixa metade na caverna
+  const runStone = Math.max(0, S.__cobaltRun | 0);
+  const lostStone = fell ? Math.floor(runStone / 2) : 0;
+  if (lostStone > 0) { try { __setForgeCoins(__getForgeCoins(S) - lostStone, S) } catch (e) {} }
+  S.__cobaltRun = 0;
 
   // Descongelar timers, física, tweens e flags de UI para evitar qualquer travamento
   try {
@@ -13707,7 +13739,18 @@ function __dorfReturnToRefuge(S, fell = false) {
     if (returned) return;
     returned = true;
     try { S.scene.stop("UI"); } catch (e) {}
-    const FELL = typeof __L3 === "function" ? __L3("Você caiu, herói. Eu te trouxe para se recuperar.", "You fell, hero. I brought you here to recover.", "Caíste, héroe. Te traje para que te recuperes.") : "Você caiu, herói. Eu te trouxe para se recuperar.";
+    const L3f = typeof __L3 === "function" ? __L3 : (pt) => pt;
+    const FELL = lostStone > 0
+      ? L3f("Você caiu, herói. Eu te trouxe para se recuperar, mas metade da Pedra Cobalto que você juntou ficou caída na caverna.", "You fell, hero. I brought you here to recover, but half of the Cobalt Stone you gathered was left behind in the cave.", "Caíste, héroe. Te traje para que te recuperes, pero la mitad de la Piedra Cobalto que juntaste quedó en la caverna.")
+      : L3f("Você caiu, herói. Eu te trouxe para se recuperar.", "You fell, hero. I brought you here to recover.", "Caíste, héroe. Te traje para que te recuperes.");
+    {
+      const msg = lostStone > 0 ? L3f(`-${lostStone} ◆ PEDRA COBALTO PERDIDA NA QUEDA (FICOU ${runStone - lostStone})`, `-${lostStone} ◆ COBALT STONE LOST IN THE FALL (KEPT ${runStone - lostStone})`, `-${lostStone} ◆ PIEDRA COBALTO PERDIDA (QUEDARON ${runStone - lostStone})`)
+        : (!fell && runStone > 0) ? L3f(`+${runStone} ◆ PEDRA COBALTO TRAZIDA DA CAVERNA`, `+${runStone} ◆ COBALT STONE BROUGHT BACK`, `+${runStone} ◆ PIEDRA COBALTO TRAÍDA DE LA CAVERNA`) : null;
+      if (msg) {
+        const tryMsg = (n) => { const H = S.game.scene.getScene("Hub"); if (H?.sys?.isActive?.() && H.add) H.time.delayedCall(fell ? 7200 : 900, () => { try { const t = H.add.text(H.cameras.main.width / 2, 90, msg, { fontFamily: "'Cinzel', Georgia, serif", fontSize: "12px", fontStyle: "bold", color: lostStone ? "#f87171" : "#9cc2ff", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5).setScrollFactor(0).setDepth(99999); H.tweens.add({ targets: t, alpha: 0, y: 70, delay: 3200, duration: 900, onComplete: () => t.destroy() }) } catch (e) {} }); else if (n < 80) setTimeout(() => tryMsg(n + 1), 150) };
+        setTimeout(() => tryMsg(0), 300);
+      }
+    }
     if (fell) {
       // A Guardiã traz o herói caído de volta pelo portal branco do Refúgio
       const GN = typeof __L3 === "function" ? __L3("A Guardiã", "The Guardian", "La Guardiana") : "A Guardiã";
