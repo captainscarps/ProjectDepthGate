@@ -1575,6 +1575,56 @@ function __dorfFall(S) {
 }
 try { if (typeof window !== "undefined") window.__dorfFall = __dorfFall; } catch (e) {}
 
+/* 3c) A Guardiã aparece no Refúgio junto do herói, fala e some num efeito mágico */
+function __dorfGuardianVisit(H, cx, cy, line) {
+  const ADD = j.BlendModes.ADD;
+  const gx = cx + 46, gy = cy + 2;
+  const fallback = () => { try { H.__say(cx, cy - 92, line, 5200, "#e8f4ff", "female") } catch (e) {} };
+  try {
+    typeof __stAnims === "function" && __stAnims(H);
+    if (!H.textures.exists("guardia-sp-idle")) { H.time.delayedCall(900, fallback); return }
+    const sc = 0.62;
+    const g = H.add.sprite(cx, gy, "guardia-sp-idle", 0).setOrigin(0.5, 124 / 128).setScale(sc).setDepth(gy).setAlpha(0).setFlipX(true);
+    H.anims.exists("guardia-a-idle") && g.play("guardia-a-idle");
+    const sh = H.add.ellipse(gx, gy + 1, 24, 7, 0, 0).setDepth(gy - 1);
+    const au = H.add.image(gx, gy - 30, "light").setBlendMode(ADD).setTint(0xfff3c4).setScale(0.3).setAlpha(0).setDepth(gy - 1);
+    // sai do portal junto com o herói
+    H.tweens.add({ targets: g, alpha: 1, x: gx, duration: 700, ease: "Quad.easeOut" });
+    H.tweens.add({ targets: sh, alpha: 0.32, duration: 700 });
+    H.tweens.add({ targets: au, alpha: 0.3, duration: 700, onComplete: () => H.tweens.add({ targets: au, alpha: 0.15, scale: 0.36, duration: 1400, yoyo: true, repeat: -1 }) });
+    const bub = 5600;
+    H.time.delayedCall(900, () => {
+      H.anims.exists("guardia-a-talk") && g.play("guardia-a-talk");
+      try { H.__say(gx, gy - 80, line, bub, "#e8f4ff", "female") } catch (e) {}
+    });
+    H.time.delayedCall(900 + bub - 600, () => {
+      if (!g.active) return;
+      H.anims.exists("guardia-a-idle") && g.play("guardia-a-idle");
+      // efeito mágico: espiral de luz, brilho e desaparecimento
+      const cols = [0xffffff, 0xfff3c4, 0xbfe3ff, 0xffd98a];
+      for (let i = 0; i < 26; i++) {
+        const a0 = (i / 26) * Math.PI * 2, r0 = 16 + Math.random() * 10, del = i * 28;
+        const p = H.add.image(gx + Math.cos(a0) * r0, gy - 4 + Math.sin(a0) * r0 * 0.4, "light").setBlendMode(ADD).setTint(cols[i % 4]).setScale(0.014 + Math.random() * 0.016).setAlpha(0).setDepth(gy + 2);
+        const st = { t: 0 };
+        H.tweens.add({ targets: st, t: 1, duration: 1100, delay: del, ease: "Sine.easeIn",
+          onStart: () => p.setAlpha(0.95),
+          onUpdate: () => { const a = a0 + st.t * 5, r = r0 * (1 - st.t * 0.6); p.setPosition(gx + Math.cos(a) * r, gy - 4 - st.t * 70 + Math.sin(a) * r * 0.4); p.setAlpha(0.95 * (1 - st.t)) },
+          onComplete: () => p.destroy() });
+      }
+      const ring = H.add.ellipse(gx, gy, 10, 4).setStrokeStyle(2, 0xfff3c4, 0.9).setDepth(gy - 0.5);
+      H.tweens.add({ targets: ring, scaleX: 6, scaleY: 6, alpha: 0, duration: 700, ease: "Quad.easeOut", onComplete: () => ring.destroy() });
+      H.tweens.add({ targets: au, scale: 0.75, alpha: 0.7, duration: 500, yoyo: true, onComplete: () => au.destroy() });
+      H.tweens.add({ targets: g, scaleX: 0.04, scaleY: sc * 1.15, alpha: 0, y: gy - 14, duration: 650, delay: 350, ease: "Back.easeIn", onComplete: () => { g.destroy() } });
+      H.tweens.add({ targets: sh, alpha: 0, duration: 600, delay: 350, onComplete: () => sh.destroy() });
+      H.time.delayedCall(950, () => {
+        const fl = H.add.image(gx, gy - 30, "light").setBlendMode(ADD).setTint(0xffffff).setScale(0.12).setAlpha(1).setDepth(gy + 3);
+        H.tweens.add({ targets: fl, scale: 0.7, alpha: 0, duration: 520, ease: "Quad.easeOut", onComplete: () => fl.destroy() });
+        try { H.game.audioEngine?.sfx?.("portal") } catch (e) {}
+      });
+    });
+  } catch (e) { fallback() }
+}
+
 /* 4) Retorno seguro das Cavernas de Dorf para o Refúgio (salvando ouro, itens e Moedas do Ferreiro) */
 function __dorfReturnToRefuge(S, fell = false) {
   if (!S || S.__dorfExiting) return;
@@ -1663,7 +1713,7 @@ function __dorfReturnToRefuge(S, fell = false) {
             H.tweens.add({ targets: fl, scale: 0.9, alpha: 0, duration: 900, ease: "Quad.easeOut", onComplete: () => fl.destroy() });
             H.rig.container.setAlpha(0.2); H.tweens.add({ targets: H.rig.container, alpha: 1, duration: 700 });
           } catch (e) {}
-          H.time.delayedCall(900, () => { try { H.__say(cx, cy - 92, `${GN}: ${FELL}`, 5200, "#e8f4ff", "female") } catch (e) {} });
+          __dorfGuardianVisit(H, cx, cy, `${GN}: ${FELL}`);
         } else if (n < 80) setTimeout(() => tryHub(n + 1), 150);
       };
       setTimeout(() => tryHub(0), 300);
