@@ -40,15 +40,14 @@ if not API_KEY:
     for keyfile in [os.path.join(ROOT, "scripts", ".api_key.txt"), os.path.join(ROOT, ".env")]:
         if os.path.exists(keyfile):
             try:
-                with open(keyfile, "r", encoding="utf-8") as f:
-                    for line in f:
-                        line = line.strip()
-                        if line.startswith("GEMINI_API_KEY="):
-                            API_KEY = line.split("=", 1)[1].strip().strip('"').strip("'")
+                content = open(keyfile, "r", encoding="utf-8").read().strip()
+                if "GEMINI_API_KEY=" in content:
+                    for line in content.splitlines():
+                        if line.strip().startswith("GEMINI_API_KEY="):
+                            API_KEY = line.strip().split("=", 1)[1].strip().strip('"').strip("'")
                             break
-                        elif line.startswith("AIzaSy"):
-                            API_KEY = line
-                            break
+                elif content:
+                    API_KEY = content.splitlines()[0].strip()
             except Exception:
                 pass
         if API_KEY:
@@ -263,3 +262,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
