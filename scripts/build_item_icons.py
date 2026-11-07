@@ -104,6 +104,17 @@ BASE = ["shaman_sword", "sword", "dagger", "club", "simple_staff", "axe", "mace"
         "helmet", "armor", "boots", "ring", "amulet", "bone_staff"]
 
 
+def shrink(fn, k=.84, dy=0):
+    """desenha com fn e reduz o conjunto em torno do centro (para armas grandes caberem no quadro)"""
+    def g(I):
+        before = len(I.body)
+        fn(I)
+        parts = I.body[before:]
+        del I.body[before:]
+        I.body.append(f'<g transform="translate(64 {64+dy}) scale({k}) translate(-64 -64)">' + "".join(parts) + "</g>")
+    return g
+
+
 def U(fn, glow=None, aura=None, sp=0, seed=7, gr=4):
     I = Icon(seed)
     fn(I)
@@ -149,6 +160,13 @@ UNIQ = {
     "boreal_daggers": lambda: U(lambda I: twin(I, blade_mat="aurora", guard_mat="silver", grip_mat="leather", pom_mat="silver", bkind="straight", gem_g="emerald"), "#5fd6c4"),
     "winter_fangs": lambda: U(lambda I: twin(I, blade_mat="ice", guard_mat="silver", grip_mat="cloth_grey", pom_mat="silver", bkind="curved", gem_g="sapphire", glow="#bff6ff"), "#7af6ff", "#5ad6ff", 3, 42),
     "winter_axe": lambda: U(lambda I: axe(I, "ice", "darkwood", False, "sapphire", "#ffffff", None, "silver"), "#5ad6ff"),
+    # armas do ferreiro (forjadas em Pedra Cobalto)
+    "unique_forge_aegis": lambda: U(lambda I: sword(I, "cobalt", "gold", "cloth_blue", "gold", "wings", "topaz", "diamond", "#ffe9a0", "#ffd36a", None, "broad", 15), "#ffd36a", "#ffcf5a", 4, 101, 5),
+    "unique_forge_eclipse": lambda: U(lambda I: sword(I, "darksteel", "gold", "cloth_black", "cobalt", "curved", "onyx", "onyx", "#0b0d13", "#ffcf5a", None, "jagged", 14), "#ffae1e", "#1a1030", 4, 102, 5),
+    "unique_forge_shadowfangs": lambda: U(lambda I: twin(I, blade_mat="cobalt", guard_mat="darksteel", grip_mat="cloth_black", pom_mat="darksteel", bkind="fang", gem_g="sapphire", glow="#7ad8ff"), "#38bdf8", "#1f8fd0", 3, 103),
+    "unique_forge_starfall": lambda: U(lambda I: bow(I, "cobalt", "#fff0c0", "gold", "cloth_blue", "#ffe9a0", True, "topaz", "#ffd36a"), "#fbbf24", "#ffae1e", 5, 104, 5),
+    "unique_forge_cataclysm": lambda: U(shrink(lambda I: axe(I, "cobalt", "darkwood", True, "ruby", "#ff8a5a", None, "darksteel", spike=True), .78, 6), "#ff5a2a", "#ff3a1a", 3, 105, 5),
+    "unique_forge_abyss_scepter": lambda: U(shrink(lambda I: staff(I, "darksteel", "crystal", "amethyst", "cobalt", "#c690ff", "cobalt"), .84, 6), "#a855f7", "#7a2cff", 4, 106, 5),
     # escudos
     "spiked_shield": lambda: U(lambda I: shield(I, "iron", "iron", None, "iron", "heater", None, spikes=True)),
     "tower_shield": lambda: U(lambda I: shield(I, "steel", "silver", "cross", "silver", "tower", "sapphire"), "#4f8dff"),

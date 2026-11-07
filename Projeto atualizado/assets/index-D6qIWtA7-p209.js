@@ -2279,7 +2279,7 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
     list.slice(0,6).forEach((f,idx)=>{
       const ry=Y+44+idx*37,X=Xt[f.it.id]||{},left=Math.max(0,MAXR-f.used),c=cost(f);
       const box=this.add.graphics();box.fillStyle(0x0b1224,.7).fillRoundedRect(d-200,ry,400,34,4);box.lineStyle(1,left?0x2f56c8:0xb91c1c,.7).strokeRoundedRect(d-200,ry,400,34,4);
-      const ic=this.add.image(d-176,ry+16,this.textures.exists(X.icon)?X.icon:"icon-sword").setScale(1.1);left||ic.setTint(0x777777);
+      const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(f.it.id),ic=hd?this.add.image(d-176,ry+16,"items-hd",f.it.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(X.icon)?X.icon:"icon-sword").setScale(1.1);left||ic.setTint(0x777777);
       const nm=this.add.text(d-154,ry+4,String(X.name||f.it.id).toUpperCase(),{...ti,fontSize:"10px",color:left?"#e2e8f0":"#f87171"});
       const du=this.add.text(d-154,ry+19,left?`${"▮".repeat(left)}${"▯".repeat(MAXR-left)} ${left}/${MAXR} ${L3("runs","runs","runs")}`:L3("QUEBRADA","BROKEN","ROTA"),{...Le,fontSize:"8px",color:left?"#9cc2ff":"#f87171"});
       const parts=[box,ic,nm,du];
@@ -2379,8 +2379,8 @@ __forgeWeaponsShop(){
     const ry=Y+44+idx*37;
     const box=this.add.graphics();
     const z=this.add.zone(d,ry+16,400,34).setInteractive({useHandCursor:!0});
-    const icKey=this.textures.exists(wp.icon)?wp.icon:"icon-sword";
-    const im=this.add.image(d-176,ry+16,icKey).setScale(1.1);
+    const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
+    const im=hd?this.add.image(d-176,ry+16,"items-hd",wp.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(1.1);
     const nm=this.add.text(d-154,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"10px",color:wp.color});
     const stT=this.add.text(d-154,ry+18,wp.stats,{...Le,fontSize:"7px",color:"#e2e8f0"});
     const prT=this.add.text(d+186,ry+(isCamp?10:5),`${wp.price} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(1,0);
@@ -11978,6 +11978,132 @@ function __forgeBrokenGet(slot) { try { const v = JSON.parse(localStorage.getIte
 function __forgeBrokenSet(slot, l) { try { localStorage.setItem("depthgate:forgeBroken:" + slot, JSON.stringify(l || [])) } catch (e) {} }
 function __forgeBrokenAdd(slot, l) { __forgeBrokenSet(slot, __forgeBrokenGet(slot).concat(l || [])) }
 try { if (typeof window !== "undefined") Object.assign(window, { __FORGE_MAX_RUNS, __forgeDurGet, __forgeDurSet, __forgeBrokenGet, __forgeBrokenSet, __forgeBrokenAdd }) } catch (e) {}
+
+/* 0a2) Armas do ferreiro: cada uma tem uma animação própria a cada golpe (por cima do ataque normal) */
+const __FFX = {
+  add(S) { return j.BlendModes.ADD },
+  mote(S, x, y, col, sc, d) { return S.add.image(x, y, "light").setBlendMode(j.BlendModes.ADD).setTint(col).setScale(sc).setDepth(d) },
+  burst(S, x, y, col, n, spd, life, sc, d, up = 0) {
+    for (let k = 0; k < n; k++) {
+      const a = Math.random() * Math.PI * 2, v = spd * (0.4 + Math.random() * 0.6), m = __FFX.mote(S, x, y, col, sc * (0.6 + Math.random() * 0.6), d);
+      S.tweens.add({ targets: m, x: x + Math.cos(a) * v, y: y + Math.sin(a) * v * 0.7 - up, alpha: 0, scale: 0.002, duration: life * (0.7 + Math.random() * 0.5), ease: "Quad.easeOut", onComplete: () => m.destroy() });
+    }
+  },
+  arc(S, x, y, ang, r, span, w, col, dur, d, alpha = 0.95) {
+    const g = S.add.graphics().setDepth(d).setBlendMode(j.BlendModes.ADD).setPosition(x, y);
+    g.lineStyle(w, col, alpha); g.beginPath(); g.arc(0, 0, r, ang - span / 2, ang + span / 2); g.strokePath();
+    S.tweens.add({ targets: g, alpha: 0, scaleX: 1.18, scaleY: 1.18, duration: dur, ease: "Quad.easeOut", onComplete: () => g.destroy() });
+    return g;
+  },
+  comet(S, x, y, ang, dist, dur, col, trail, d, tsc = 0.05) {
+    const h = __FFX.mote(S, x, y, col, tsc * 1.6, d + 1), tx = x + Math.cos(ang) * dist, ty = y + Math.sin(ang) * dist;
+    let acc = 0;
+    S.tweens.add({ targets: h, x: tx, y: ty, duration: dur, ease: "Linear",
+      onUpdate: (tw, t, k, dt_) => { acc += 16; if (acc >= 32) { acc = 0; const m = __FFX.mote(S, h.x + (Math.random() - 0.5) * 6, h.y + (Math.random() - 0.5) * 6, trail, tsc * (0.6 + Math.random() * 0.6), d); S.tweens.add({ targets: m, alpha: 0, scale: 0.002, y: m.y + 6, duration: 420, onComplete: () => m.destroy() }) } },
+      onComplete: () => { __FFX.burst(S, h.x, h.y, col, 8, 26, 380, tsc, d); h.destroy() } });
+  },
+};
+const __FORGE_FX = {
+  // Espada-Baluarte da Aurora: meia-lua dourada da alvorada + escudo hexagonal que cintila em volta do herói
+  unique_forge_aegis(S, x, y, ang, d) {
+    __FFX.arc(S, x, y - 8, ang, 34, 2.3, 7, 0xffcf5a, 300, d);
+    __FFX.arc(S, x, y - 8, ang, 34, 2.0, 2, 0xffffff, 240, d + 1);
+    const g = S.add.graphics().setDepth(d - 2).setBlendMode(j.BlendModes.ADD).setPosition(x, y - 10);
+    g.lineStyle(2, 0xffe9a0, 0.7); g.beginPath();
+    for (let k = 0; k <= 6; k++) { const a = k / 6 * Math.PI * 2 + Math.PI / 6, px = Math.cos(a) * 22, py = Math.sin(a) * 18; k ? g.lineTo(px, py) : g.moveTo(px, py) }
+    g.strokePath(); g.setScale(0.7);
+    S.tweens.add({ targets: g, scaleX: 1.25, scaleY: 1.25, alpha: 0, duration: 420, ease: "Quad.easeOut", onComplete: () => g.destroy() });
+    for (let k = 0; k < 5; k++) { const m = __FFX.mote(S, x + (Math.random() - 0.5) * 30, y - 4, 0xffd36a, 0.025, d); S.tweens.add({ targets: m, y: y - 40 - Math.random() * 20, alpha: 0, duration: 600 + k * 60, onComplete: () => m.destroy() }) }
+  },
+  // Lâmina do Eclipse Negro: corte escuro com borda de coroa solar e um eclipse que se abre no ponto do golpe
+  unique_forge_eclipse(S, x, y, ang, d) {
+    const g = S.add.graphics().setDepth(d).setPosition(x, y - 8);
+    g.lineStyle(9, 0x0b0612, 0.85); g.beginPath(); g.arc(0, 0, 32, ang - 1.1, ang + 1.1); g.strokePath();
+    S.tweens.add({ targets: g, alpha: 0, scaleX: 1.15, scaleY: 1.15, duration: 280, onComplete: () => g.destroy() });
+    __FFX.arc(S, x, y - 8, ang, 37, 2.2, 2, 0xffcf5a, 300, d + 1);
+    const ex = x + Math.cos(ang) * 30, ey = y - 8 + Math.sin(ang) * 30;
+    const disc = S.add.circle(ex, ey, 7, 0x05030a, 1).setDepth(d + 2).setScale(0.3);
+    const cor = __FFX.mote(S, ex, ey, 0xffae1e, 0.06, d + 1);
+    const ring = S.add.circle(ex, ey, 8).setStrokeStyle(2, 0xffe9a0, 1).setDepth(d + 2).setBlendMode(j.BlendModes.ADD).setScale(0.3);
+    S.tweens.add({ targets: [disc, ring], scale: 1.4, duration: 180, ease: "Back.easeOut", yoyo: true, hold: 120, onComplete: () => { disc.destroy(); ring.destroy() } });
+    S.tweens.add({ targets: cor, scale: 0.16, alpha: 0, duration: 520, onComplete: () => cor.destroy() });
+    __FFX.burst(S, ex, ey, 0xffcf5a, 6, 26, 360, 0.02, d + 1);
+  },
+  // Presas do Vácuo Eterno: dois cortes ciano que se cruzam em X e rastros do herói
+  unique_forge_shadowfangs(S, x, y, ang, d) {
+    const cx = x + Math.cos(ang) * 22, cy = y - 8 + Math.sin(ang) * 22;
+    const cut = (rot, delay) => S.time.delayedCall(delay, () => {
+      const g = S.add.graphics().setDepth(d + 1).setBlendMode(j.BlendModes.ADD).setPosition(cx, cy).setRotation(rot);
+      g.lineStyle(4, 0x38bdf8, 1).lineBetween(-20, 0, 20, 0); g.lineStyle(1.5, 0xffffff, 1).lineBetween(-17, 0, 17, 0);
+      g.setScale(0.2, 1);
+      S.tweens.add({ targets: g, scaleX: 1.1, duration: 90, ease: "Quad.easeOut", onComplete: () => S.tweens.add({ targets: g, alpha: 0, duration: 200, onComplete: () => g.destroy() }) });
+    });
+    cut(ang + Math.PI / 4, 0); cut(ang - Math.PI / 4, 80);
+    for (let k = 1; k <= 3; k++) {
+      const m = S.add.graphics().setDepth(d - 1).setBlendMode(j.BlendModes.ADD);
+      const bx = x - Math.cos(ang) * k * 9, by = y - 10 - Math.sin(ang) * k * 9;
+      m.fillStyle(0x1f8fd0, 0.45 / k).fillEllipse(bx, by, 14, 22);
+      S.tweens.add({ targets: m, alpha: 0, duration: 260 + k * 40, onComplete: () => m.destroy() });
+    }
+    S.time.delayedCall(90, () => __FFX.burst(S, cx, cy, 0x7ad8ff, 7, 24, 300, 0.02, d + 1));
+  },
+  // Arco Estelar de Dorf: estrelas no disparo e um cometa dourado que acompanha a flecha
+  unique_forge_starfall(S, x, y, ang, d) {
+    const bx = x + Math.cos(ang) * 12, by = y - 10 + Math.sin(ang) * 12;
+    __FFX.burst(S, bx, by, 0xffe9a0, 8, 20, 320, 0.02, d + 1);
+    __FFX.comet(S, bx, by, ang, 280, 560, 0xffd36a, 0xfff3c4, d + 1, 0.035);
+    const st = S.add.star(bx, by, 4, 2, 7, 0xffffff).setDepth(d + 2).setBlendMode(j.BlendModes.ADD);
+    S.tweens.add({ targets: st, angle: 90, scale: 1.8, alpha: 0, duration: 340, onComplete: () => st.destroy() });
+  },
+  // Machado do Cataclismo: golpe em brasa, chão que racha e onda de choque
+  unique_forge_cataclysm(S, x, y, ang, d) {
+    __FFX.arc(S, x, y - 8, ang, 36, 2.6, 10, 0xff5a2a, 320, d);
+    __FFX.arc(S, x, y - 8, ang, 36, 2.2, 3, 0xffd36a, 260, d + 1);
+    const ix = x + Math.cos(ang) * 34, iy = y + Math.sin(ang) * 24 + 4;
+    const cr = S.add.graphics().setDepth(iy - 1);
+    for (let k = 0; k < 6; k++) {
+      let a = k / 6 * Math.PI * 2 + Math.random() * 0.5, px = ix, py = iy;
+      cr.lineStyle(3, 0x2a0a04, 0.9); cr.beginPath(); cr.moveTo(px, py);
+      const pts = [[px, py]];
+      for (let s2 = 0; s2 < 3; s2++) { a += (Math.random() - 0.5) * 0.8; px += Math.cos(a) * (7 + Math.random() * 6); py += Math.sin(a) * (5 + Math.random() * 4); cr.lineTo(px, py); pts.push([px, py]) }
+      cr.strokePath(); cr.lineStyle(1, 0xff8a3a, 0.9); cr.beginPath(); cr.moveTo(pts[0][0], pts[0][1]); pts.slice(1).forEach(([a1, b1]) => cr.lineTo(a1, b1)); cr.strokePath();
+    }
+    S.tweens.add({ targets: cr, alpha: 0, duration: 900, delay: 300, onComplete: () => cr.destroy() });
+    const ring = S.add.ellipse(ix, iy, 16, 8).setStrokeStyle(3, 0xff7a2a, 0.9).setDepth(iy).setBlendMode(j.BlendModes.ADD);
+    S.tweens.add({ targets: ring, scaleX: 4.5, scaleY: 4.5, alpha: 0, duration: 460, ease: "Quad.easeOut", onComplete: () => ring.destroy() });
+    __FFX.burst(S, ix, iy - 4, 0xff9a3a, 10, 34, 420, 0.022, d + 1, 10);
+    try { S.cameras.main.shake(90, 0.004) } catch (e) {}
+  },
+  // Cetro da Ruína Astral: círculo de runas que gira sob o herói e um cometa violeta com órbitas
+  unique_forge_abyss_scepter(S, x, y, ang, d) {
+    const g = S.add.graphics().setDepth(y - 2).setBlendMode(j.BlendModes.ADD).setPosition(x, y + 2);
+    g.lineStyle(1.5, 0xc690ff, 0.9).strokeEllipse(0, 0, 44, 18); g.lineStyle(1, 0xa855f7, 0.7).strokeEllipse(0, 0, 32, 12);
+    for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; g.fillStyle(0xe8d0ff, 1).fillCircle(Math.cos(a) * 22, Math.sin(a) * 9, 1.6) }
+    g.setScale(0.5);
+    S.tweens.add({ targets: g, scaleX: 1.1, scaleY: 1.1, duration: 220, ease: "Back.easeOut", onComplete: () => S.tweens.add({ targets: g, alpha: 0, duration: 380, onComplete: () => g.destroy() }) });
+    const ox = x + Math.cos(ang) * 14, oy = y - 14 + Math.sin(ang) * 14;
+    __FFX.comet(S, ox, oy, ang, 240, 520, 0xc690ff, 0x7a2cff, d + 1, 0.04);
+    for (let k = 0; k < 2; k++) {
+      const o = __FFX.mote(S, ox, oy, 0xe8d0ff, 0.02, d + 2), st = { t: 0 };
+      S.tweens.add({ targets: st, t: 1, duration: 520, onUpdate: () => { const cx = ox + Math.cos(ang) * 240 * st.t, cy = oy + Math.sin(ang) * 240 * st.t, w = st.t * 18 + k * Math.PI; o.setPosition(cx + Math.cos(w) * 9, cy + Math.sin(w) * 5) }, onComplete: () => o.destroy() });
+    }
+  },
+};
+if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
+  const D0 = dh.prototype.deliverAttack;
+  dh.prototype.deliverAttack = function (i, t, e) {
+    const r = D0.apply(this, arguments);
+    try {
+      const S = this.scene, it = S.inventory?.equipment?.weapon, fx = it && __FORGE_FX[it.id];
+      if (fx && this.player?.active) {
+        const dd = e ?? this.player.facing, L = Math.hypot(dd.x, dd.y) || 1;
+        fx(S, this.player.x, this.player.y, Math.atan2(dd.y / L, dd.x / L), (this.player.depth || this.player.y) + 6);
+      }
+    } catch (err) {}
+    return r;
+  };
+}
+try { if (typeof window !== "undefined") window.__FORGE_FX = __FORGE_FX; } catch (e) {}
 
 /* 0b) Pedra Cobalto: texturas em pixel art, pepitas para juntar e veios para minerar */
 function __cobaltTex(S) {

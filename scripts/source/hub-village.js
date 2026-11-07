@@ -385,7 +385,7 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
     list.slice(0,6).forEach((f,idx)=>{
       const ry=Y+44+idx*37,X=Xt[f.it.id]||{},left=Math.max(0,MAXR-f.used),c=cost(f);
       const box=this.add.graphics();box.fillStyle(0x0b1224,.7).fillRoundedRect(d-200,ry,400,34,4);box.lineStyle(1,left?0x2f56c8:0xb91c1c,.7).strokeRoundedRect(d-200,ry,400,34,4);
-      const ic=this.add.image(d-176,ry+16,this.textures.exists(X.icon)?X.icon:"icon-sword").setScale(1.1);left||ic.setTint(0x777777);
+      const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(f.it.id),ic=hd?this.add.image(d-176,ry+16,"items-hd",f.it.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(X.icon)?X.icon:"icon-sword").setScale(1.1);left||ic.setTint(0x777777);
       const nm=this.add.text(d-154,ry+4,String(X.name||f.it.id).toUpperCase(),{...ti,fontSize:"10px",color:left?"#e2e8f0":"#f87171"});
       const du=this.add.text(d-154,ry+19,left?`${"▮".repeat(left)}${"▯".repeat(MAXR-left)} ${left}/${MAXR} ${L3("runs","runs","runs")}`:L3("QUEBRADA","BROKEN","ROTA"),{...Le,fontSize:"8px",color:left?"#9cc2ff":"#f87171"});
       const parts=[box,ic,nm,du];
@@ -485,8 +485,8 @@ __forgeWeaponsShop(){
     const ry=Y+44+idx*37;
     const box=this.add.graphics();
     const z=this.add.zone(d,ry+16,400,34).setInteractive({useHandCursor:!0});
-    const icKey=this.textures.exists(wp.icon)?wp.icon:"icon-sword";
-    const im=this.add.image(d-176,ry+16,icKey).setScale(1.1);
+    const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
+    const im=hd?this.add.image(d-176,ry+16,"items-hd",wp.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(1.1);
     const nm=this.add.text(d-154,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"10px",color:wp.color});
     const stT=this.add.text(d-154,ry+18,wp.stats,{...Le,fontSize:"7px",color:"#e2e8f0"});
     const prT=this.add.text(d+186,ry+(isCamp?10:5),`${wp.price} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(1,0);

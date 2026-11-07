@@ -35,6 +35,7 @@ MAT = {
     "jade": ("#b8ffd8", "#3fbf7a", "#0f4a2a"),
     "aurora": ("#d6fff4", "#5fd6c4", "#1f5e8a"),
     "toxic": ("#e6ff9a", "#7fcf2a", "#2a4a08"),
+    "cobalt": ("#dbe8ff", "#4f7fe8", "#13235e"),   # Pedra Cobalto das Cavernas Dorf (armas do ferreiro)
 }
 GEM = {
     "ruby": ("#ffd0d0", "#ff3b4e", "#7a0718"),
@@ -47,6 +48,7 @@ GEM = {
     "soul": ("#e6fff0", "#5affb0", "#0a6a40"),
     "void": ("#e8d0ff", "#7a2cff", "#1a0440"),
     "amber": ("#fff0b0", "#ff9f1a", "#7a3a00"),
+    "cobalt": ("#e6efff", "#3d6cf0", "#0e1a52"),
 }
 
 
