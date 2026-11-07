@@ -115,8 +115,10 @@ def main():
                 if not force and not redo and bc.get(cls) and os.path.isfile(os.path.join(out, name)):
                     continue
                 jobs.append((lid, cls, L, text, out, mir, name))
-    # heroínas primeiro (antes falavam com voz masculina), depois os demais
-    jobs.sort(key=lambda j: (j[1] not in FEMALE, j[2] != "pt"))
+    # a fala extra refeita vem antes (a versão antiga lê a instrução em voz alta); depois as heroínas
+    # (antes falavam com voz masculina) e por fim os demais
+    jobs.sort(key=lambda j: (j[3] not in extra_pts and j[3] not in {en for _, en in EXTRA},
+                             j[1] not in FEMALE, j[2] != "pt"))
     print(f"{len(jobs)} áudios para gerar; {removed} versões de falas exclusivas removidas", flush=True)
     save()
 

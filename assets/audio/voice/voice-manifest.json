@@ -2729,8 +2729,7 @@
         },
         "en": {
           "MAGE": 3.76,
-          "SHAMAN": 2.8,
-          "ROGUE": 3.16
+          "SHAMAN": 2.8
         }
       }
     },
@@ -2739,11 +2738,9 @@
       "en": 3.53,
       "byClass": {
         "pt": {
-          "WARRIOR": 2.56,
           "BERSERKER": 2.64,
           "HUNTER": 2.96,
           "NECROMANCER": 2.8,
-          "DRUID": 2.56,
           "ARCHER": 2.84,
           "MAGE": 3.0,
           "SHAMAN": 2.8,
@@ -2913,7 +2910,6 @@
       "en": 3.33,
       "byClass": {
         "pt": {
-          "WARRIOR": 3.52,
           "MAGE": 4.01,
           "SHAMAN": 4.13,
           "ROGUE": 4.17
