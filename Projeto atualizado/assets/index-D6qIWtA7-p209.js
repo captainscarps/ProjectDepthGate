@@ -12456,11 +12456,13 @@ function __buildDorfCaveLevel(runCfg = {}) {
     } else if (nd.kind === "SANCTUARY") {
       sanctuaryNode = nd;
       const bossSpot = nearestFloor(center.col, center.row, 1);
+      // Chefe Guardião do Abismo / Colosso Ancestral livre para caçar na caverna
       caveEnemies.push({
-        type: pick(enemyPools.elite),
+        type: pick(["MB_BASALT_COLOSSUS", "CYCLOPS", "TROLL"]),
         col: bossSpot.col,
         row: bossSpot.row,
-        elite: true
+        elite: true,
+        isCaveBoss: true
       });
       for (let k = 0; k < 3; k++) {
         const ang = (k / 3) * Math.PI * 2;
@@ -12472,7 +12474,7 @@ function __buildDorfCaveLevel(runCfg = {}) {
           elite: false
         });
       }
-      // 1 Arca Ancestral guardada pelo Elite no Santuário se houver apenas 2 alcovas ativas
+      // 1 Arca Ancestral guardada pelo Chefe no Santuário se houver apenas 2 alcovas ativas
       if (activeChestAlcoves.size <= 2) {
         const cSpot = nearestFloor(center.col + 3, center.row - 1, 1);
         decor.push({
@@ -12485,7 +12487,18 @@ function __buildDorfCaveLevel(runCfg = {}) {
         });
       }
     } else {
-      // Grandes clareiras abertas de exploração: patrulhas naturais espalhadas
+      // Grandes clareiras abertas de exploração: patrulhas naturais espalhadas e mini-chefes livres
+      const isLargeGlade = nd.rx >= 10 && nd.id !== "coracao_dorf";
+      if (isLargeGlade && rnd() < 0.45) {
+        const eliteSpot = nearestFloor(center.col + 1, center.row + 1, 1);
+        caveEnemies.push({
+          type: pick(["MB_CRYSTAL_SAGE", "MB_CINDER_STALKER", "TROLL"]),
+          col: eliteSpot.col,
+          row: eliteSpot.row,
+          elite: true,
+          isCaveBoss: true
+        });
+      }
       const count = 2 + (rnd() < 0.65 ? 1 : 0);
       for (let k = 0; k < count; k++) {
         const ang = (k / count) * Math.PI * 2 + between(-0.4, 0.4);
@@ -12873,19 +12886,18 @@ function __dorfBake(B) {
     markUsed(en.col, en.row, 1);
   }
 
-  if (!B.__dorfSolids && S.physics?.add) {
-    B.__dorfSolids = S.physics.add.staticGroup();
-  }
+  // Obter grupo de sólidos do calabouço pré-configurado com colisões no jogador e inimigos
+  const solidGroup = B.solids || (S.physics?.add ? S.physics.add.staticGroup() : null);
 
   const spawnProp25D = (frameKey, wx, wy, solidW = 0, solidH = 0, depthOffset = 0) => {
     if (!texObj.has(frameKey)) return null;
     const im = S.add.image(wx, wy, "dorf-atlas", frameKey)
       .setOrigin(0.5, 1)
       .setDepth(wy + depthOffset);
-    if (solidW > 0 && solidH > 0 && B.__dorfSolids) {
+    if (solidW > 0 && solidH > 0 && solidGroup) {
       const z = S.add.zone(wx, wy - solidH * 0.5, solidW, solidH);
       S.physics.add.existing(z, true);
-      B.__dorfSolids.add(z);
+      solidGroup.add(z);
     }
     return im;
   };
@@ -13033,23 +13045,77 @@ function __dorfBake(B) {
         }
       } catch (_) {}
 
-      if (B.__dorfSolids && S.player) {
-        S.physics.add.collider(S.player, B.__dorfSolids);
-        if (S.enemies) S.physics.add.collider(S.enemies, B.__dorfSolids);
-      }
-
-      // Instanciar criaturas patrulhando naturalmente pela caverna ampla (sem trancar salas)
+      // Instanciar criaturas patrulhando naturalmente pela caverna ampla e chefes que caçam o jogador
       if (!S.__dorfEnemiesSpawned && Array.isArray(B.level.__caveEnemies)) {
         S.__dorfEnemiesSpawned = true;
         for (const en of B.level.__caveEnemies) {
           try {
             const validType = typeof ee !== "undefined" && ee[en.type] ? en.type : "SKELETON_WARRIOR";
-            S.spawnEnemy?.(validType, en.col, en.row, { elite: !!en.elite, eliteRoll: false });
+            const spawned = S.spawnEnemy?.(validType, en.col, en.row, { elite: !!en.elite, eliteRoll: false });
+            if (spawned) {
+              // Garante proporção e colisão física no corpo de cada criatura
+              spawned.setDepth?.(spawned.y);
+              if (en.isCaveBoss) {
+                spawned.__isDorfCaveBoss = true;
+                spawned.maxHp = Math.round((spawned.maxHp || 40) * 1.6);
+                spawned.hp = spawned.maxHp;
+                spawned.damage = Math.round((spawned.damage || 3) * 1.3);
+                // Campo de percepção e caça amplo para percorrer a caverna até achar o herói
+                if (spawned.ai?.cfg) {
+                  spawned.ai.cfg.detectionRange = 520;
+                  spawned.ai.cfg.loseTargetRange = 850;
+                  spawned.ai.cfg.patrol = true;
+                }
+                // Coroa/aura sutil de Chefe da Montanha
+                const auraCol = 0xf59e0b;
+                const aura = S.add.image(spawned.x, spawned.y - 12, "light")
+                  .setScale(0.36)
+                  .setBlendMode(j.BlendModes.ADD)
+                  .setTint(auraCol)
+                  .setAlpha(0.24)
+                  .setDepth(spawned.y - 1);
+                S.tweens.add({ targets: aura, alpha: 0.12, duration: 900, yoyo: true, repeat: -1 });
+                spawned.on("destroy", () => aura?.destroy?.());
+                spawned._dorfAura = aura;
+              }
+            }
           } catch (e) {}
         }
-        if (B.__dorfSolids && S.enemies) {
-          S.physics.add.collider(S.enemies, B.__dorfSolids);
-        }
+      }
+
+      // Sistema de caça contínua dos chefes da caverna
+      if (!S.__dorfHunterTickRegistered) {
+        S.__dorfHunterTickRegistered = true;
+        S.events.on("update", (time, delta) => {
+          if (!S.scene?.isActive() || !S.isDorfCave || !S.player || S.player.dead) return;
+          const px = S.player.x, py = S.player.y;
+          const enemies = S.enemies?.getChildren?.() || [];
+          for (const en of enemies) {
+            if (!en.active || en.dead || !en.__isDorfCaveBoss) continue;
+            if (en._dorfAura?.active) en._dorfAura.setPosition(en.x, en.y - 12);
+            const ai = en.ai;
+            if (!ai) continue;
+            const dist = Math.hypot(px - en.x, py - en.y);
+            // Se o herói está no raio de 520px, engajar perseguição imediatamente
+            if (dist <= 520 && !ai.aggro) {
+              ai.aggro = true;
+              ai.state = "chase";
+              try { S.audioRef?.playAt?.("sfx-alert", en.x, en.y); } catch (_) {}
+            } else if (!ai.aggro) {
+              // Quando o herói está longe, andar ativamente em direção ao quadrante geral do herói (sem travar)
+              ai.patrolTimer = (ai.patrolTimer || 0) - (delta / 1000);
+              if (ai.patrolTimer <= 0) {
+                ai.patrolTimer = 2.4 + Math.random() * 1.8;
+                const angle = Math.atan2(py - en.y, px - en.x) + (Math.random() - 0.5) * 0.9;
+                ai.patrolDir = { x: Math.cos(angle), y: Math.sin(angle) };
+              }
+              if (ai.patrolDir) {
+                ai.state = "patrol";
+                ai.moveDir?.(ai.patrolDir.x, ai.patrolDir.y, en.speed * 0.45, delta / 1000);
+              }
+            }
+          }
+        });
       }
 
       // Atualizar HUD superior direito para exibir EXPLORAÇÃO LIVRE em vez de SALAS: 0/0
@@ -13100,8 +13166,13 @@ function __dorfBake(B) {
         const origDropEnemy = S.lootSystem.dropFromEnemy.bind(S.lootSystem);
         S.lootSystem.dropFromEnemy = function (enemy) {
           if (S.isDorfCave && enemy) {
-            enemy.goldMult = (enemy.goldMult ?? 1) * 0.3;
-            if (enemy.isElite && !enemy.respawned && Math.random() < 0.5) {
+            // Pouco dinheiro gerado na caverna (economia focada em Moedas do Ferreiro)
+            enemy.goldMult = (enemy.goldMult ?? 1) * 0.15;
+            if (enemy.__isDorfCaveBoss) {
+              // Chefes da caverna garantem 2 a 3 Moedas do Ferreiro
+              const bossCoins = Math.random() < 0.45 ? 3 : 2;
+              __addForgeCoins(bossCoins, S, enemy.x, enemy.y);
+            } else if (enemy.isElite && !enemy.respawned && Math.random() < 0.6) {
               __addForgeCoins(1, S, enemy.x, enemy.y);
             }
           }
