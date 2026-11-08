@@ -3020,11 +3020,19 @@
           "MAGE": 4.56,
           "SHAMAN": 4.88,
           "ROGUE": 5.12,
-          "WARRIOR": 5.18
+          "WARRIOR": 5.18,
+          "BERSERKER": 4.79,
+          "HUNTER": 5.04,
+          "NECROMANCER": 6.12,
+          "DRUID": 5.47
         }
       },
       "_enk": {
-        "WARRIOR": 1
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1
       }
     },
     "32d6ac62": {
