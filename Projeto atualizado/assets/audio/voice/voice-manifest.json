@@ -1259,7 +1259,13 @@
     "d0ec5fa7": "d0ec5fa7",
     "af0cc0c2": "d0ec5fa7",
     "8c7eccee": "8c7eccee",
-    "8533293c": "8c7eccee"
+    "8533293c": "8c7eccee",
+    "9104450b": "9104450b",
+    "649f53b0": "9104450b",
+    "0713abdd": "0713abdd",
+    "ffa494b8": "0713abdd",
+    "fd406a00": "fd406a00",
+    "a2efe4fc": "fd406a00"
   },
   "d": {
     "fc33ba0d": {
@@ -4301,7 +4307,91 @@
           "BERSERKER": 4.64,
           "HUNTER": 4.75,
           "NECROMANCER": 6.12,
-          "DRUID": 5.69
+          "DRUID": 5.69,
+          "ARCHER": 4.57,
+          "MAGE": 4.64,
+          "SHAMAN": 4.72,
+          "ROGUE": 5.51
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
+      },
+      "en": 5.0,
+      "_genen": 1
+    },
+    "9104450b": {
+      "byClass": {
+        "en": {
+          "WARRIOR": 5.36,
+          "BERSERKER": 5.26,
+          "HUNTER": 5.36,
+          "NECROMANCER": 6.3,
+          "DRUID": 5.87,
+          "ARCHER": 5.04,
+          "MAGE": 5.15,
+          "SHAMAN": 5.08,
+          "ROGUE": 5.47
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
+      },
+      "en": 5.36,
+      "_genen": 1
+    },
+    "0713abdd": {
+      "byClass": {
+        "en": {
+          "WARRIOR": 4.39,
+          "BERSERKER": 4.03,
+          "HUNTER": 4.21,
+          "NECROMANCER": 5.26,
+          "DRUID": 4.64,
+          "ARCHER": 3.89,
+          "MAGE": 4.28,
+          "SHAMAN": 4.1,
+          "ROGUE": 4.79
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
+      },
+      "en": 4.39,
+      "_genen": 1
+    },
+    "fd406a00": {
+      "byClass": {
+        "en": {
+          "WARRIOR": 6.19,
+          "BERSERKER": 5.9,
+          "HUNTER": 5.8,
+          "NECROMANCER": 7.6,
+          "DRUID": 7.13
         }
       },
       "_enk": {
@@ -4311,7 +4401,7 @@
         "NECROMANCER": 1,
         "DRUID": 1
       },
-      "en": 5.0,
+      "en": 6.19,
       "_genen": 1
     }
   },
