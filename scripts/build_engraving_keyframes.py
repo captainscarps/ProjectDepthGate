@@ -59,6 +59,72 @@ SCENES = {
                     "niches, cracked floor.",
 }
 
+# heróis redesenhados no estilo: primeiro um desenho de personagem (d-<CLASSE>, a partir do retrato pixel do jogo),
+# depois as cenas usam esse desenho como referência (o personagem fica igual em todas)
+HEROES = {
+    "WARRIOR": ("warrior", "Draven, a tall knight from old Britain in full polished SILVER steel plate armor (render the metal as pale "
+                "grey and cream with black hatching, NOT green), a rounded closed great helm whose visor is a grille of VERTICAL bars exactly "
+                "like the reference portrait, a thick snow-white fur collar around the shoulders, brown leather straps and "
+                "a gold buckle, a long sword held point down in front of him. No cape"),
+    "BERSERKER": ("berserker", "Akihiro, a fierce Japanese samurai warrior in very dark navy blue, almost black, lacquered armor (not green) and a navy kabuto helmet, "
+                  "the lower face covered by a red cloth mask, a red sash at the waist. He stands holding ONE katana "
+                  "vertically in front of him with both hands on the long wrapped hilt, the straight-backed curved blade "
+                  "pointing down with its tip resting on the ground. No scabbard, no second sword, only one blade in the image"),
+    "ARCHER": ("archer", "Hayato, a young Japanese samurai archer with long black hair, green and white lacquered armor, a "
+               "kabuto helmet with a golden crescent crest, a tall yumi bow and a quiver"),
+    "HUNTER": ("hunter", "Kael, a rugged hunter from the Yukon with shoulder-length black hair, a wide conical straw hat, a thick "
+               "orange fur collar over a brown leather coat, a recurve bow and a hunting knife"),
+    "DRUID": ("druid", "Tharion, an old Celtic druid from the Bohemian forest with a grey beard, a deep green hooded cloak "
+              "crowned with deer antlers, fur and leather, a gnarled wooden staff"),
+    "NECROMANCER": ("necromancer", "Valthor, a gaunt pale necromancer from the Polish primeval forest with glowing red eyes, a "
+                    "black hooded robe, a gold collar, a staff topped with a dark orb"),
+    "MAGE": ("mage", "Arthelia, a young Egyptian sorceress with dark eyes, a dark navy hooded cloak with gold trim over light "
+             "robes, golden bracelets, holding a small bronze mirror that glows"),
+    "ROGUE": ("rogue", "Seris, a young woman rogue from the Seychelles islands, a purple hood and purple cloth mask over her nose "
+              "and mouth, dark leather armor, twin daggers"),
+    "SHAMAN": ("shaman", "Araí, a young Amazonian indigenous woman from the Rio Negro with a long black ponytail, a red painted "
+               "band across her eyes, a green feather earring, a woven cotton top covering the chest and a woven skirt, painted arms, a carved bow and a maracá rattle"),
+}
+for _c, (_f, _d) in HEROES.items():
+    SCENES["d-" + _c] = ("Character design: full body, standing in a three-quarter view, centered, on a plain flat cream "
+                         "background with no scenery. " + _d + ". Keep the colors and the costume of the reference pixel portrait, "
+                         "but drawn in the engraving style.", [os.path.join(ROOT, "assets", "pixel-art", "heroes-p", _f + "-p-calm.png")])
+
+FINALS = {   # final de cada herói: a volta para casa (falas de __RETH)
+    "WARRIOR": "(silver armor, white fur collar, NO cape) at dawn in a ruined stone chapel, he kneels and lays his long sword on the ancient tomb of his ancestor Aelric, "
+               "morning light falling through a broken window",
+    "BERSERKER": "he walks along a black volcanic road while grey ash falls like snow, the great smoking volcano Sakurajima on "
+                 "the horizon, his red mask lowered around his neck",
+    "ARCHER": "he stands on a high ridge of Sakurajima at sunset with his bow, ash drifting in the wind, looking down the road "
+              "as if waiting for his brother",
+    "HUNTER": "he walks through a snowy northern pine forest at dusk; on a rocky ridge above him a pack of wolves howls at the "
+              "rising moon",
+    "DRUID": "he places his hand on the trunk of a giant ancient oak in the Šumava forest; the roots seem to breathe and new "
+             "leaves unfold, fireflies rising",
+    "NECROMANCER": "he stands in an old forest graveyard at dawn as translucent spirits rise from the graves, bow to him and "
+                   "fade into the morning light",
+    "MAGE": "she stands in a desert temple of Ra-Khem at dusk, surrounded by enormous bronze mirrors turned toward the sky, the "
+            "first stars appearing",
+    "ROGUE": "she stands in a small wooden boat arriving at a tropical island of huge granite boulders and palm trees at dawn, "
+             "her mask pulled down and her hood falling back in the wind",
+    "SHAMAN": "she paddles a canoe through a flooded Amazon forest on a dark river at golden hour, birds returning to the "
+              "trees, the forest alive and healed around her",
+}
+for _c, _s in FINALS.items():
+    SCENES["f-" + _c] = ("The character of the reference design (same face, costume and colors), " + _s + ". Cinematic wide "
+                         "shot, the character clearly visible.", ["d-" + _c])
+
+ALL_DESIGNS = ["d-" + c for c in HEROES]
+SCENES.update({   # abertura do jogo (antes do logo)
+    "intro-floresta": ("Night in an ancient forest. A band of nine adventurers matching the reference character designs walks "
+                       "away from the viewer along a path between colossal twisted trees, seen from behind, lit by moonlight.",
+                       ALL_DESIGNS),
+    "intro-portal": ("Between the roots of giant trees, a huge circular stone gate carved with runes, its center filled with a "
+                     "round swirling vortex of teal and salmon energy, seen straight on, centered.", []),
+    "intro-monstros": ("A dark stone dungeon corridor full of monsters lurking in shadow: goblins, a werewolf, ghouls and a "
+                       "troll, their eyes glowing peach-orange, torches on the walls.", []),
+})
+
 
 def gen(key, prompt, refs):
     parts = [{"inline_data": {"mime_type": "image/jpeg" if r.endswith("jpg") else "image/png",
@@ -90,14 +156,20 @@ def main():
         raise SystemExit("defina GEMINI_API_KEY")
     rd = os.environ.get("STYLE_REFS", "/tmp/dg/style-refs")
     refs = sorted(os.path.join(rd, f) for f in os.listdir(rd) if f.lower().endswith((".jpg", ".png")))
-    heroes = os.path.join(ROOT, "art-src", "video-keyframes", "ref-herois.png")   # retratos lado a lado
     names = [a for a in sys.argv[1:] if not a.startswith("--")] or list(SCENES)
     os.makedirs(OUT, exist_ok=True)
     for n in names:
         f = os.path.join(OUT, n + ".png")
         if os.path.isfile(f) and "--force" not in sys.argv:
             continue
-        open(f, "wb").write(gen(key, SCENES[n], refs + ([heroes] if n.startswith(("c3", "h-", "intro")) else [])))
+        sc = SCENES[n]
+        prompt, extra = (sc if isinstance(sc, tuple) else (sc, ["ref-herois"] if n.startswith("c3") else []))
+        extra = [e if os.path.isabs(e) else os.path.join(OUT, e + ".png") for e in extra]
+        missing = [e for e in extra if not os.path.isfile(e)]
+        if missing:
+            print("  falta a referência", missing, "— gere antes", flush=True)
+            continue
+        open(f, "wb").write(gen(key, prompt, refs + extra))
         print("ok", n, flush=True)
 
 

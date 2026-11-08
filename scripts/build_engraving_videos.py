@@ -319,13 +319,110 @@ def modo_infinito(n):
         yield fade(vignette(grain(a, f), 0.5), f, n, 10, 16)
 
 
+def water(a, f, y0, amp=2.5):
+    """reflexo na água tremendo (faixa de baixo a partir de y0)"""
+    y = int(H * y0)
+    yy, xx = np.mgrid[y:H, 0:W].astype(np.float32)
+    k = (yy - y) / max(1, H - y)
+    sx = xx + np.sin(yy * 0.12 + f * 0.25) * amp * (0.3 + k)
+    sy = yy + np.sin(xx * 0.03 + f * 0.15) * 0.8
+    a[y:] = cv2.remap(a, sx, sy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    return a
+
+
+# final de cada herói: (câmera de/até: zoom, cx, cy), efeitos
+FINAL_FX = {
+    "WARRIOR": dict(cam=((1.18, 0.62, 0.55), (1.04, 0.5, 0.5)), parts=("dust",), glow=True),
+    "BERSERKER": dict(cam=((1.05, 0.5, 0.5), (1.2, 0.45, 0.45)), parts=("ash",), glow=True),
+    "ARCHER": dict(cam=((1.2, 0.35, 0.45), (1.05, 0.5, 0.5)), parts=("ash",), fog=True),
+    "HUNTER": dict(cam=((1.05, 0.45, 0.5), (1.18, 0.62, 0.38)), parts=("snow",)),
+    "DRUID": dict(cam=((1.04, 0.5, 0.5), (1.2, 0.6, 0.5)), parts=("fireflies",), glow=True),
+    "NECROMANCER": dict(cam=((1.2, 0.5, 0.55), (1.04, 0.5, 0.5)), parts=("motes",), glow=True, fog=True),
+    "MAGE": dict(cam=((1.18, 0.45, 0.5), (1.04, 0.5, 0.45)), parts=("stars",), glow=True),
+    "ROGUE": dict(cam=((1.04, 0.5, 0.5), (1.18, 0.62, 0.6)), parts=("motes",), water=0.55),
+    "SHAMAN": dict(cam=((1.05, 0.5, 0.5), (1.2, 0.5, 0.6)), parts=("motes",), water=0.62),
+}
+PARTS = {   # n, cor, vx, vy, tamanho, alfa
+    "dust": (60, PEACH, 0.15, -0.12, 1, 0.6), "ash": (130, np.array([0.55, 0.55, 0.52], np.float32), -0.4, 1.3, 1, 0.75),
+    "snow": (150, CREAM, -0.3, 1.1, 1, 0.85), "fireflies": (60, PEACH, 0.3, -0.5, 2, 0.85),
+    "motes": (50, CREAM, 0.2, -0.3, 1, 0.6), "stars": (30, CREAM, 0.02, 0.0, 1, 0.7),
+}
+
+
+def final_hero(cls):
+    def run(n):
+        img = load("f-" + cls)
+        fx = FINAL_FX[cls]
+        lm = flame_mask(img) if fx.get("glow") else None
+        (z0, x0, y0), (z1, x1, y1) = fx["cam"]
+        for f in range(n):
+            t = ease(f / n)
+            z, cx, cy = z0 + (z1 - z0) * t, x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+            a = cam(img, z, cx, cy)
+            if lm is not None:
+                a = flicker(a, cam(lm, z, cx, cy), f, 0.18, len(cls))
+            if fx.get("water"):
+                a = water(a, f, fx["water"])
+            if fx.get("fog"):
+                a = fog(a, f, 0.55, 0.28, 1.2, seed=len(cls))
+            for pn in fx["parts"]:
+                k, col, vx, vy, sz, al = PARTS[pn]
+                a = particles(a, f, k, 20 + len(cls), col, vx, vy, sz, alpha=al)
+            a = boil(a, f)
+            yield fade(vignette(grain(a, f)), f, n, 14, 18)
+    return run
+
+
+def intro(n):
+    """abertura do jogo: heróis na floresta → portal → monstros → logo"""
+    from PIL import Image
+    fl, po, mo = load("intro-floresta"), load("intro-portal"), load("intro-monstros")
+    mm = flame_mask(mo)
+    eyes = flame_mask(mo)
+    h, w = po.shape[:2]
+    logo = np.asarray(Image.open(os.path.join(ROOT, "assets", "ui", "dark-epic-dungeons-logo.png")).convert("RGBA").resize((960, 480))).astype(np.float32) / 255
+    s1, s2, s3 = int(n * 0.30), int(n * 0.55), int(n * 0.78)
+    for f in range(n):
+        if f < s1:
+            u = f / s1
+            a = cam(fl, 1.0 + 0.16 * ease(u), 0.5, 0.55)
+            a = fog(a, f, 0.55, 0.3, 1.6, seed=21)
+            a = particles(a, f, 50, 22, PEACH, 0.2, -0.2, 1, alpha=0.6)
+        elif f < s2:
+            u = (f - s1) / (s2 - s1)
+            sw = swirl(po, w * 0.5, h * 0.52, w * 0.17, h * 0.3, -3.5 * u)
+            a = cam(sw, 1.0 + 0.35 * ease(u), 0.5, 0.52)
+            a = particles(a, f, 60, 23, CREAM, 0.0, -0.6, 1, alpha=0.7)
+        elif f < s3:
+            u = (f - s2) / (s3 - s2)
+            a = cam(mo, 1.12 - 0.08 * ease(u), 0.5, 0.5)
+            a = flicker(a, cam(mm, 1.12 - 0.08 * ease(u), 0.5, 0.5), f, 0.3, 9)
+        else:
+            u = (f - s3) / (n - s3)
+            a = np.zeros((H, W, 3), np.float32) + np.array([0.05, 0.05, 0.05], np.float32)
+            v = min(1, u * 2.5)
+            x0, y0 = (W - 960) // 2, (H - 480) // 2
+            al = logo[..., 3:4] * v
+            a[y0:y0 + 480, x0:x0 + 960] = a[y0:y0 + 480, x0:x0 + 960] * (1 - al) + logo[..., :3] * al
+        for c in (s1, s2, s3):
+            if abs(f - c) < 5:
+                a = a * (abs(f - c) / 5)
+        a = boil(a, f) if f < s3 else a
+        yield fade(vignette(grain(a, f)), f, n, 8, 1)
+
+
 SCENES = {"campanha_1": campanha_1, "campanha_2": campanha_2, "campanha_3": campanha_3, "campanha_4": campanha_4,
-          "background_menu": background_menu, "modo_infinito": modo_infinito}
+          "background_menu": background_menu, "modo_infinito": modo_infinito, "intro": intro}
+for _c in FINAL_FX:
+    SCENES["final_herois/" + _c] = final_hero(_c)
+AUDIO = {"intro": "intro.m4a", **{"final_herois/" + c: f"final-{c}.m4a" for c in FINAL_FX}}   # som original mantido
+NO_WEBM = {"final_herois/" + c for c in FINAL_FX}
 
 
 def render(name, secs=10):
     n = secs * FPS
-    tmp = f"/tmp/eng-{name}.mp4"
+    tag = name.replace("/", "-")
+    tmp = f"/tmp/eng-{tag}.mp4"
     p = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
                           "-i", "-", "-c:v", "libx264", "-preset", "slow", "-crf", "20", "-pix_fmt", "yuv420p",
                           "-movflags", "+faststart", tmp], stdin=subprocess.PIPE)
@@ -333,14 +430,22 @@ def render(name, secs=10):
         p.stdin.write((np.clip(a, 0, 1) * 255).astype(np.uint8).tobytes())
     p.stdin.close()
     p.wait()
-    webm = f"/tmp/eng-{name}.webm"
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tmp, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "34", "-row-mt", "1",
-                    "-deadline", "good", "-cpu-used", "4", "-an", webm], check=True)
+    au = os.path.join(ROOT, "art-src", "video-audio", AUDIO[name]) if name in AUDIO else None
+    if au and os.path.isfile(au):
+        mux = tmp.replace(".mp4", "-a.mp4")
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tmp, "-i", au, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+                        "-c:a", "aac", "-b:a", "128k", "-shortest", "-movflags", "+faststart", mux], check=True)
+        os.replace(mux, tmp)
+    webm = None
+    if name not in NO_WEBM:
+        webm = f"/tmp/eng-{tag}.webm"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tmp, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "34", "-row-mt", "1",
+                        "-deadline", "good", "-cpu-used", "4"] + (["-c:a", "libopus", "-b:a", "96k"] if au else ["-an"]) + [webm], check=True)
     for d in ([] if "--preview" in sys.argv else OUTS):
         if os.path.isdir(d):
             subprocess.run(["cp", tmp, os.path.join(d, name + ".mp4")], check=True)
-            subprocess.run(["cp", webm, os.path.join(d, name + ".webm")], check=True)
-    print(name, os.path.getsize(tmp) // 1024, "KB mp4,", os.path.getsize(webm) // 1024, "KB webm", flush=True)
+            webm and subprocess.run(["cp", webm, os.path.join(d, name + ".webm")], check=True)
+    print(name, os.path.getsize(tmp) // 1024, "KB mp4", f"{os.path.getsize(webm) // 1024} KB webm" if webm else "", flush=True)
 
 
 if __name__ == "__main__":
