@@ -2,7 +2,7 @@
 
   rafael — o ferreiro do Refúgio, grave e masculina, uma voz só: PT e EN pelo Kokoro (PT pm_alex baixado
            ~2,6 semitons no ffmpeg; EN am_onyx, ~86 Hz). Com o Gemini cada fala saía num timbre diferente.
-  alline — a dona dos gatos, doce: PT Achernar (suave); EN af_heart (calorosa).
+  alline — a dona dos gatos, doce, uma voz só: PT pf_dora (Kokoro, um pouco mais aguda); EN af_heart (calorosa).
 As falas saem do código do jogo (o texto precisa ser idêntico) e ficam em assets/audio/voice/<idioma>/<id>.mp3,
 com o id e o manifesto no mesmo formato das outras vozes de NPC. Falas montadas na hora (com números ou nomes
 de masmorra) ficam de fora.
@@ -41,7 +41,9 @@ NPCS = {
                    "A Alline me contou o que você fez pelos gatos."],
     },
     "alline": {
-        "src": ["quests2.js", "hub-village.js"], "pt": ("Achernar", 1.0), "en": ("af_heart", 0.97, "en-us"),
+        # uma voz só também: PT pelo Kokoro (pf_dora, única mulher pt-BR), levemente mais aguda para soar doce
+        "src": ["quests2.js", "hub-village.js"], "pt": ("pf_dora", 1.04), "pt_engine": "kokoro", "pt_speed": 0.95,
+        "en": ("af_heart", 0.97, "en-us"),
         "starts": ["Ei, você aí! Espera!", "Meus gatos fugiram pelos portais", "Eles vão fugir de você.",
                    "Todos eles! Olha só", "O Ollie não sai do seu pé", "A casa nunca esteve tão cheia", "Cuide bem do Ollie.",
                    "E tem mais: o ferreiro do Refúgio", "Agora que os gatos voltaram, vamos morar",

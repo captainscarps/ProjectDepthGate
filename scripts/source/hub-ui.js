@@ -10,7 +10,7 @@ const sv=T.setVisible.bind(T);T.setVisible=v=>{sv(v);hide()};const bd=T.build.bi
  const bd=this.add.graphics().setDepth(9901);bd.lineStyle(1.5,13216842,.85).strokeRoundedRect(b.x-b.width,b.y,b.width,b.height,5);this.pzBtn=b;
  b.on("pointerdown",(p,x,y,e)=>{e?.stopPropagation?.();const h=this.hub;if(!h?.sys?.isActive?.())return;b.setScale(.94);this.time.delayedCall(90,()=>b.setScale(1));h.__uiTap=!0;h.__pz?h.__pzClose():h.__pzOpen()})}
 this.events.once("shutdown",()=>{const m=this.game.inputManager;m&&(m.touch.axis={x:0,y:0},m.touch.held.clear())})}
-update(){const h=this.hub;if(!h?.sys?.isActive?.()){return}const show=!h.panel&&!h.__busy;/* com painel aberto as áreas de toque dos controles (por cima de tudo) não podem engolir o toque dos botões do painel */if(this.__zShow!==show){this.__zShow=show;for(const o of this.children.list)if(o!==this.pzBtn&&o.input)o.input.enabled=show}if(this.tc.built){for(const b of this.tc.all)for(const p of b.parts)p.setAlpha?.(show?(this.tc.settings.touchOpacity??.6):0)}this.tc.update()}
+update(){const h=this.hub;if(!h?.sys?.isActive?.()){return}const show=!h.panel&&!h.__busy;/* com painel aberto as áreas de toque dos controles (por cima de tudo) não podem engolir o toque dos botões do painel */if(this.__zShow!==show){this.__zShow=show;for(const o of this.children.list)if(o!==this.pzBtn&&o.input)o.input.enabled=show}this.tc.update();/* depois do update (ele mexe na opacidade dos botões): com diálogo ou painel aberto os controles somem */if(this.tc.built){for(const b of this.tc.all)for(const p of b.parts)p.setAlpha?.(show?(this.tc.settings.touchOpacity??.6):0)}}
 touchOn(){return!!this.tc?.visible}}
 
 /* Botões de texto com área de toque ampliada (Gt): quando o texto muda (ex.: "»  Continuar  «" ao selecionar),

@@ -13,6 +13,9 @@
    ligado para sempre e todo diálogo seguinte ficava esperando. Agora uma marca sem caixa viva é
    tratada como sobra e liberada.
 
+4. Os controles de toque (joystick e botões) continuavam na tela durante os diálogos. Agora somem enquanto a
+   caixa de fala está aberta (e o joystick é solto, para o herói não sair andando depois).
+
 Re-executável.
 """
 import os
@@ -36,6 +39,10 @@ REPL = [
     ('if(ui.__dlgOpen){const __w=',
      'if(ui.__dlgOpen&&!ui.__dlgR?.scene)ui.__dlgOpen=!1;/*__DLGSTALE__*/if(ui.__dlgOpen){const __w='),
     ('R.add(dim);let bg;', 'R.add(dim);ui.__dlgR=R;let bg;'),
+    ('update(){if(!this.visible||!this.built)return;__joySync(this.joystick);',
+     'update(){if(!this.visible||!this.built)return;{const dl=!!this.scene.__dlgOpen;if(dl!==!!this.__dlgHid){this.__dlgHid=dl;'
+     'for(const e of this.all)for(const d of e.parts)d.setVisible(!dl);if(dl)try{this.mgr.touch.axis={x:0,y:0};this.mgr.touch.held.clear()}catch(_){}}'
+     'if(dl)return}/*__DLGTOUCH__*/__joySync(this.joystick);'),
 ]
 
 
