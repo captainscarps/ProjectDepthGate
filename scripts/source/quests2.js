@@ -1,24 +1,23 @@
 /* ══ Missões secundárias (parte 2) ══
-   7. Os Gatos da Marta — a taverneira do Coração da Floresta perdeu os gatos pelos portais; cada um se esconde
-      numa masmorra, foge do herói e só se deixa pegar quando cansa. Resgatados, passeiam pelo Coração da
-      Floresta; com todos de volta, a Mel vira companheira e fareja ouro nas salas limpas.
+   7. Os Gatos da Alline — logo na primeira chegada ao Coração da Floresta, quando a Guardiã termina de falar, a
+      Alline (elfa ruiva) vem pedir ajuda: três gatos fugiram pelos portais. Cada um se esconde numa masmorra, foge
+      do herói e só se deixa pegar quando cansa. Pela ordem do resgate: Mel, Carvão e, por último, o Ollie (cinza
+      rajado), que vira o companheiro do herói e fareja ouro nas salas limpas.
    Apoio ao Aprendiz do Ferreiro (a missão mora em dorf-caves.js e hub-village.js): texturas do Brokk no jogo,
    nome traduzido do martelo e limpeza da chave por herói ao excluir / começar jogo novo.
    Estado salvo por slot junto da história (__Q, um jogo novo começa do zero). */
 const __GT_CATS = [
   { id: "mel", n: "Mel", tex: "gato-a" },
-  { id: "lar", n: "Laranjinha", tex: "gato-f" },
   { id: "car", n: "Carvão", tex: "gato-d" },
-  { id: "nuv", n: "Nuvem", tex: "gato-e" },
-  { id: "can", n: "Canela", tex: "gato-b" },
-  { id: "nev", n: "Neve", tex: "gato-c" },
+  { id: "oll", n: "Ollie", tex: "gato-g" },
 ];
-const __GT_TEX = { "gato-a": 100, "gato-b": 92, "gato-c": 100, "gato-d": 100, "gato-e": 100, "gato-f": 92 };
+const __GT_TEX = { "gato-a": 100, "gato-d": 100, "gato-g": 92 };
 function __gtAnims(S) {
   const A = S.anims, mk = (k, tex, a, n, fr, rep = -1) => { if (!A.exists(k) && S.textures.exists(tex)) A.create({ key: k, frames: A.generateFrameNumbers(tex, { start: a, end: a + n - 1 }), frameRate: fr, repeat: rep }) };
   for (const t in __GT_TEX) { mk(t + "-idle", t, 0, 7, 6); mk(t + "-walk", t, 11, 11, 13); mk(t + "-run", t, 22, 10, 17); mk(t + "-hiss", t, 33, 4, 7, 0) }
   mk("aprendiz-idle", "aprendiz", 50, 6, 6); mk("aprendiz-scared", "aprendiz", 0, 6, 6); mk("aprendiz-walk", "aprendiz", 10, 10, 12); mk("aprendiz-run", "aprendiz", 20, 10, 15);
   mk("aprendiz-hurt", "aprendiz", 30, 3, 10, 0); mk("aprendiz-dead", "aprendiz", 40, 4, 7, 0); mk("aprendiz-talk", "aprendiz", 50, 6, 8);
+  mk("alline-idle", "alline", 0, 7, 6); mk("alline-idle2", "alline", 12, 7, 6); mk("alline-walk", "alline", 24, 12, 12); mk("alline-talk", "alline", 36, 8, 8); mk("alline-special", "alline", 48, 7, 8, 0);
 }
 /* segue o herói pelo caminho que ele fez (migalhas), então não atravessa parede */
 function __qFollow(S, spr, o = {}) {
@@ -49,64 +48,92 @@ const __GT = {
   st(S) { return __Q.get(S, "gt") },
   list(S) { return __Q.get(S, "gtL", []) || [] },
   found(S) { return __Q.get(S, "gtF", []) || [] },
-  cat(id) { return __GT_CATS.find((c) => c.id === id) || __GT_CATS[0] },
-  M(t, e = "talk") { return { who: "peasant-2", expr: e, name: "MARTA", text: t } },
+  cat(k) { return __GT_CATS[Math.max(0, Math.min(__GT_CATS.length - 1, k | 0))] },   // pela ordem do resgate: o último é o Ollie
+  M(t, e = "talk") { return { who: "alline", expr: e, name: "ALLINE", text: t } },
   H(t, e = "talk") { return { who: "hero", expr: e, text: t } },
   banner(S, t, c = "#ffd27a") { S.game.events.emit("ui:banner", t, c) },
 };
-/* ─── Marta e os gatos resgatados no Coração da Floresta ─── */
-function __gtHub(S) {
-  if (__Q.n(S) < 1 && !__GT.st(S)) return;
+/* ─── Alline e os gatos resgatados no Coração da Floresta ─── */
+function __gtHub(S, arrive) {
+  if (!__GT.st(S) && !__stFlag(S, "gHub0")) return;
+  if (S.__gtNpc) { arrive && S.__gtNpc.arrive(); return }
   const L3 = __GT.L3, [mx, my] = __Q.hubPos(S, -40, 150);
   const talk = () => {
     const s = __GT.st(S), L = __GT.list(S), F = __GT.found(S);
     if (!s) {
       __dlg(S, [
-        __GT.M(L3("Ai, herói, que bom te ver! Você viu meus gatos? Fugiram pelos portais correndo atrás dos ratos das Profundezas.", "Oh, hero, thank goodness! Have you seen my cats? They ran through the portals chasing the rats of the Depths.", "¡Ay, héroe, qué bueno verte! ¿Viste a mis gatos? Huyeron por los portales persiguiendo a las ratas de las Profundidades."), "sadness"),
-        __GT.M(L3("Cada um se meteu numa terra diferente… e gato assustado não vem quando a gente chama.", "Each one slipped into a different land… and a frightened cat won't come when you call.", "Cada uno se metió en una tierra distinta… y un gato asustado no viene cuando lo llamas."), "talk"),
+        __GT.M(L3("Ei, você aí! Espera! Você é o viajante de quem a Guardiã tanto fala, não é?", "Hey, you there! Wait! You're the traveler the Guardian keeps talking about, right?", "¡Eh, tú! ¡Espera! Eres el viajero del que tanto habla la Guardiana, ¿verdad?"), "special"),
+        __GT.M(L3("Meus gatos fugiram pelos portais correndo atrás dos ratos das Profundezas. São três, e cada um se meteu numa terra diferente.", "My cats ran through the portals chasing the rats of the Depths. There are three, and each one slipped into a different land.", "Mis gatos huyeron por los portales persiguiendo a las ratas de las Profundidades. Son tres, y cada uno se metió en una tierra distinta."), "sadness"),
         __GT.H(L3("Vou trazer todos de volta. Prometo.", "I'll bring them all back. I promise.", "Los traeré a todos de vuelta. Lo prometo."), "talk"),
         __GT.M(L3("Eles vão fugir de você. Deixe que cansem, chegue perto e pegue no colo.", "They'll run from you. Let them tire out, get close and scoop them up.", "Van a huir de ti. Deja que se cansen, acércate y tómalos en brazos."), "smile"),
       ], () => {
         const free = __HUBD.filter((id) => !(typeof __isPortalDone === "function" && __isPortalDone(S, id)));
         const pool = (free.length ? free : __HUBD.slice()).sort(() => Math.random() - 0.5);
         const n = Math.max(1, Math.min(__GT_CATS.length, pool.length));
-        const map = {}; pool.slice(0, n).forEach((lv, k) => { map[lv] = __GT_CATS[k].id });
-        __Q.set(S, "gt", 1); __Q.set(S, "gtL", Object.keys(map)); __Q.set(S, "gtM", map); __Q.set(S, "gtF", []);
+        __Q.set(S, "gt", 1); __Q.set(S, "gtL", pool.slice(0, n)); __Q.set(S, "gtF", []);
         S.requestSave?.(10);
-        __GT.banner(S, L3(`NOVA MISSÃO: OS GATOS DA MARTA (0/${n})`, `NEW QUEST: MARTA'S CATS (0/${n})`, `NUEVA MISIÓN: LOS GATOS DE MARTA (0/${n})`));
+        __GT.banner(S, L3(`NOVA MISSÃO: OS GATOS DA ALLINE (0/${n})`, `NEW QUEST: ALLINE'S CATS (0/${n})`, `NUEVA MISIÓN: LOS GATOS DE ALLINE (0/${n})`));
       });
       return;
     }
     if (s === 1 && F.length >= L.length) {
       __dlg(S, [
         __GT.M(L3("Todos eles! Olha só, a Mel até voltou mais gordinha.", "All of them! Look, Mel even came back a little chubbier.", "¡Todos! Mira, Mel hasta volvió más gordita."), "smile"),
-        __GT.M(L3("A Mel gostou de você. Leve ela junto: nariz de gato acha ouro onde ninguém procura.", "Mel likes you. Take her along: a cat's nose finds gold where nobody looks.", "A Mel le caes bien. Llévala contigo: la nariz de un gato encuentra oro donde nadie busca."), "special"),
-        __GT.H(L3("Vamos, Mel. Temos selos para fechar.", "Come on, Mel. We have seals to close.", "Vamos, Mel. Tenemos sellos que cerrar."), "smile"),
+        __GT.M(L3("O Ollie não sai do seu pé… acho que ele te escolheu. Leve ele junto: nariz de gato acha ouro onde ninguém procura.", "Ollie won't leave your side… I think he chose you. Take him along: a cat's nose finds gold where nobody looks.", "Ollie no se separa de ti… creo que te eligió. Llévalo contigo: la nariz de un gato encuentra oro donde nadie busca."), "talk"),
+        __GT.H(L3("Vamos, Ollie. Temos selos para fechar.", "Come on, Ollie. We have seals to close.", "Vamos, Ollie. Tenemos sellos que cerrar."), "smile"),
       ], () => {
         __Q.set(S, "gt", 2); __Q.frag(40); S.stats?.addGold?.(120); S.requestSave?.(10);
-        __GT.banner(S, L3("+120 OURO · +40 CRISTAIS DO REFÚGIO · A MEL AGORA TE ACOMPANHA", "+120 GOLD · +40 REFUGE CRYSTALS · MEL NOW FOLLOWS YOU", "+120 ORO · +40 CRISTALES DEL REFUGIO · MEL AHORA TE ACOMPAÑA"));
+        __GT.banner(S, L3("+120 OURO · +40 CRISTAIS DO REFÚGIO · O OLLIE AGORA TE ACOMPANHA", "+120 GOLD · +40 REFUGE CRYSTALS · OLLIE NOW FOLLOWS YOU", "+120 ORO · +40 CRISTALES DEL REFUGIO · OLLIE AHORA TE ACOMPAÑA"));
+        S.__gtCats?.oll?.destroy?.();
         S.time.delayedCall(300, () => S.scene.isActive() && __gtPet(S));
       });
       return;
     }
     if (s === 1) {
-      const M = __Q.get(S, "gtM", {}) || {}, miss = L.filter((lv) => !F.includes(lv));
-      const where = miss.map((lv) => (typeof St === "function" ? St(`lvl.${lv}`, ki?.[lv]?.name ?? lv) : lv)).join(", ");
-      __dlg(S, [__GT.M(L3(`Já voltaram ${F.length} de ${L.length}. Ainda faltam: ${miss.map((lv) => __GT.cat(M[lv]).n).join(", ")}.`, `${F.length} of ${L.length} are back. Still missing: ${miss.map((lv) => __GT.cat(M[lv]).n).join(", ")}.`, `Ya volvieron ${F.length} de ${L.length}. Aún faltan: ${miss.map((lv) => __GT.cat(M[lv]).n).join(", ")}.`), F.length ? "smile" : "sadness"),
-        __GT.M(L3(`Sinto que estão em: ${where}.`, `I feel they're in: ${where}.`, `Siento que están en: ${where}.`), "calm")]);
+      const miss = L.filter((lv) => !F.includes(lv)), where = miss.map((lv) => (typeof St === "function" ? St(`lvl.${lv}`, ki?.[lv]?.name ?? lv) : lv)).join(", ");
+      __dlg(S, [__GT.M(L3(`Já voltaram ${F.length} de ${L.length}. Sinto que os outros estão em: ${where}.`, `${F.length} of ${L.length} are back. I feel the others are in: ${where}.`, `Ya volvieron ${F.length} de ${L.length}. Siento que los otros están en: ${where}.`), F.length ? "smile" : "sadness")]);
       return;
     }
-    const lines = [L3("A casa nunca esteve tão cheia de pelo. E de felicidade.", "The house has never been this full of fur. Or of happiness.", "La casa nunca estuvo tan llena de pelo. Ni de felicidad."), L3("Cuide bem da Mel. Ela gosta de peixe e de ouro, nessa ordem.", "Take good care of Mel. She likes fish and gold, in that order.", "Cuida bien a Mel. Le gustan el pescado y el oro, en ese orden.")];
+    const lines = [L3("A casa nunca esteve tão cheia de pelo. E de felicidade.", "The house has never been this full of fur. Or of happiness.", "La casa nunca estuvo tan llena de pelo. Ni de felicidad."), L3("Cuide bem do Ollie. Ele gosta de peixe e de ouro, nessa ordem.", "Take good care of Ollie. He likes fish and gold, in that order.", "Cuida bien a Ollie. Le gustan el pescado y el oro, en ese orden.")];
     __dlg(S, [__GT.M(lines[(Math.random() * lines.length) | 0], "smile")]);
   };
-  const npc = __qNpc(S, "peasant-2", mx, my, { scale: .62, label: L3("Falar com Marta", "Talk to Marta", "Hablar con Marta"), onTalk: talk });
+  const npc = __qNpc(S, "alline", mx, my, { scale: .62, label: L3("Falar com a Alline", "Talk to Alline", "Hablar con Alline"), onTalk: talk });
   if (!npc) return;
-  // gatos já resgatados passeiam em volta dela (a Mel vai com o herói depois da missão)
-  const M = __Q.get(S, "gtM", {}) || {};
+  S.__gtNpc = npc;
+  S.events.once("shutdown", () => { S.__gtNpc = null; S.__gtCats = null });
+  // logo depois da fala da Guardiã: ela vem correndo até o herói e puxa conversa
+  npc.arrive = () => {
+    if (__GT.st(S) || npc.__walking) return;
+    const s = npc.spr, P = S.player; if (!P) return;
+    npc.__walking = !0; s.__lock = 1; S.anims.exists("alline-walk") && s.play("alline-walk");
+    // longe demais: ela entra pela lateral da tela, perto o bastante para ser vista chegando
+    if (Math.hypot(P.x - s.x, P.y - s.y) > 240) {
+      const wall = (x, y) => !!S.dungeon?.isWallAtWorld?.(x, y);
+      for (const [ox, oy] of [[190, 20], [-190, 20], [150, 90], [-150, 90], [0, 140], [120, -80], [-120, -80]]) {
+        const nx = P.x + ox, ny = P.y + oy;
+        if (!wall(nx, ny) && (!S.dungeon?.hasLineOfSight || S.dungeon.hasLineOfSight(nx, ny, P.x, P.y))) { s.setPosition(nx, ny); npc.sh.setPosition(nx, ny); break }
+      }
+      Math.hypot(P.x - s.x, P.y - s.y) > 240 && (s.setPosition(P.x + 150, P.y + 10), npc.sh.setPosition(P.x + 150, P.y + 10));
+    }
+    const U = (_t, ms) => {
+      if (!s.active || !S.player) return;
+      const dx = S.player.x + (S.player.x > s.x ? -46 : 46) - s.x, dy = S.player.y + 4 - s.y, d = Math.hypot(dx, dy), st2 = 110 * ms / 1000;
+      if (d > 6 && npc.__t < 5000) { s.x += dx / d * Math.min(d, st2); s.y += dy / d * Math.min(d, st2); s.setFlipX(dx < 0).setDepth(s.y); npc.sh.setPosition(s.x, s.y).setDepth(s.y - 1); npc.zone?.setPosition(s.x, s.y - 6); npc.__t += ms; return }
+      S.events.off("update", U); npc.__walking = !1; s.__lock = 0;
+      if (Math.hypot(S.player.x - s.x, S.player.y - s.y) > 120) { s.setPosition(S.player.x + 46, S.player.y + 4); npc.sh.setPosition(s.x, s.y); npc.zone?.setPosition(s.x, s.y - 6) }
+      s.setFlipX(S.player.x < s.x);
+      if (!S.uiOpen) talk(); else S.time.delayedCall(600, () => S.scene.isActive() && !__GT.st(S) && talk());
+    };
+    npc.__t = 0; S.events.on("update", U); S.events.once("shutdown", () => S.events.off("update", U));
+  };
+  arrive && npc.arrive();
+  // gatos já resgatados passeiam em volta dela (o Ollie vai com o herói depois da missão)
+  S.__gtCats = {};
   __GT.found(S).forEach((lv, k) => {
-    const c = __GT.cat(M[lv]); if (__GT.st(S) === 2 && c.id === "mel") return;
+    const c = __GT.cat(k); if (__GT.st(S) === 2 && c.id === "oll") return;
     const hx = mx + Math.cos(k * 1.9) * (40 + k * 7), hy = my + 14 + Math.sin(k * 1.9) * 18;
     const s = S.add.sprite(hx, hy, c.tex, 0).setOrigin(.5, 1).setScale(.5).setDepth(hy).play(c.tex + "-idle");
+    S.__gtCats[c.id] = s;
     s.anims.setProgress(Math.random());
     let t = 1 + Math.random() * 3, tgt = null;
     const U = (_t, ms) => {
@@ -120,9 +147,9 @@ function __gtHub(S) {
 /* ─── gato escondido numa masmorra: foge, cansa, e é pego ─── */
 function __gtLevel(S) {
   if (__GT.st(S) !== 1) return;
-  const id = S.levelId, M = __Q.get(S, "gtM", {}) || {};
-  if (!M[id] || __GT.found(S).includes(id)) return;
-  const L3 = __GT.L3, c = __GT.cat(M[id]), D = S.dungeon, lv = D?.level; if (!lv?.rooms?.length) return;
+  const id = S.levelId;
+  if (!__GT.list(S).includes(id) || __GT.found(S).includes(id)) return;
+  const L3 = __GT.L3, c = __GT.cat(__GT.found(S).length), D = S.dungeon, lv = D?.level; if (!lv?.rooms?.length) return;
   const sp = lv.playerSpawn, spx = (sp?.col ?? 0) * dt, spy = (sp?.row ?? 0) * dt;
   const rooms = lv.rooms.filter((r) => r.rect && !r.hasBoss && !r.boss && !r.hub).map((r) => ({ r, d: Math.hypot((r.rect.x + r.rect.w / 2) * dt - spx, (r.rect.y + r.rect.h / 2) * dt - spy) })).sort((a, b) => a.d - b.d);
   if (!rooms.length) return;
@@ -135,7 +162,7 @@ function __gtLevel(S) {
   const sh = S.add.ellipse(x, y, 22, 6, 0, .28).setDepth(y - 1);
   const mark = S.add.text(x, y - 30, "?", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "12px", color: "#ffd27a", stroke: "#000", strokeThickness: 3 }).setOrigin(.5, 1).setDepth(9001);
   S.tweens.add({ targets: mark, y: y - 34, duration: 600, yoyo: !0, repeat: -1 });
-  S.time.delayedCall(1800, () => S.scene.isActive() && __GT.banner(S, L3(`${c.n.toUpperCase()}, UM DOS GATOS DA MARTA, ESTÁ ESCONDIDO AQUI`, `${c.n.toUpperCase()}, ONE OF MARTA'S CATS, IS HIDING HERE`, `${c.n.toUpperCase()}, UNO DE LOS GATOS DE MARTA, SE ESCONDE AQUÍ`)));
+  S.time.delayedCall(1800, () => S.scene.isActive() && __GT.banner(S, L3(`${c.n.toUpperCase()}, UM DOS GATOS DA ALLINE, ESTÁ ESCONDIDO AQUI`, `${c.n.toUpperCase()}, ONE OF ALLINE'S CATS, IS HIDING HERE`, `${c.n.toUpperCase()}, UNO DE LOS GATOS DE ALLINE, SE ESCONDE AQUÍ`)));
   let state = "idle", stamina = 2.2, rest = 0, caught = !1, dir = [1, 0];
   const z = S.add.zone(x, y - 6, 4, 4);
   z.interactLabel = L3(`Pegar ${c.n}`, `Pick up ${c.n}`, `Atrapar a ${c.n}`);
@@ -148,7 +175,7 @@ function __gtLevel(S) {
     mark.destroy(); s.play(c.tex + "-idle");
     const F = __GT.found(S).concat(id); __Q.set(S, "gtF", F); S.requestSave?.(10);
     S.game.audioEngine?.sfx?.("sfx-secret-reveal");
-    __dlg(S, [__GT.H(L3(`Peguei você, ${c.n}! A Marta está te esperando.`, `Got you, ${c.n}! Marta is waiting for you.`, `¡Te tengo, ${c.n}! Marta te está esperando.`), "smile")], () => {
+    __dlg(S, [__GT.H(L3(`Peguei você, ${c.n}! A Alline está te esperando.`, `Got you, ${c.n}! Alline is waiting for you.`, `¡Te tengo, ${c.n}! Alline te está esperando.`), "smile")], () => {
       __FFX?.burst?.(S, s.x, s.y - 10, 0xffe9a0, 12, 26, 520, 0.03, s.depth + 2, 8);
       S.tweens.add({ targets: [s, sh], alpha: 0, y: "-=10", duration: 700, onComplete: () => { s.destroy(); sh.destroy(); z.destroy() } });
       const L = __GT.list(S);
@@ -178,11 +205,11 @@ function __gtLevel(S) {
   S.events.on("update", U);
   S.events.once("shutdown", () => { S.events.off("update", U); const i = D.objects.indexOf(z); i >= 0 && D.objects.splice(i, 1) });
 }
-/* ─── Mel, a gata companheira: segue o herói e fareja ouro nas salas limpas ─── */
+/* ─── Ollie, o gato companheiro (cinza rajado): segue o herói e fareja ouro nas salas limpas ─── */
 function __gtPet(S) {
   if (__GT.st(S) !== 2 || S.__gtPet || !S.player || S.isDorfCave) return;
   __gtAnims(S);
-  const L3 = __GT.L3, P = S.player, s = S.add.sprite(P.x - 26, P.y + 6, "gato-a", 0).setOrigin(.5, 1).setScale(.5).setDepth(P.y).play("gato-a-idle");
+  const L3 = __GT.L3, P = S.player, s = S.add.sprite(P.x - 26, P.y + 6, "gato-g", 0).setOrigin(.5, 1).setScale(.5).setDepth(P.y).play("gato-g-idle");
   const sh = S.add.ellipse(s.x, s.y, 22, 6, 0, .28).setDepth(P.y - 1);
   S.__gtPet = s;
   const fol = __qFollow(S, s, { gap: 34, walk: 95, run: 175 });
@@ -191,9 +218,9 @@ function __gtPet(S) {
     if (!s.active || !S.player) return;
     if (sniff) {
       const dx = sniff.x - s.x, dy = sniff.y - s.y, d = Math.hypot(dx, dy), st2 = 120 * ms / 1000;
-      if (d > st2 && sniff.t > 0) { s.x += dx / d * st2; s.y += dy / d * st2; s.setFlipX(dx < 0); s.anims.currentAnim?.key !== "gato-a-walk" && s.play("gato-a-walk") }
+      if (d > st2 && sniff.t > 0) { s.x += dx / d * st2; s.y += dy / d * st2; s.setFlipX(dx < 0); s.anims.currentAnim?.key !== "gato-g-walk" && s.play("gato-g-walk") }
       else if (!sniff.done) {
-        sniff.done = !0; s.play("gato-a-idle");
+        sniff.done = !0; s.play("gato-g-idle");
         S.time.delayedCall(700, () => {
           if (!s.active) return;
           const g = sniff.g; S.stats?.addGold?.(g); S.game.audioEngine?.sfx?.("sfx-item-pickup");
@@ -204,7 +231,7 @@ function __gtPet(S) {
       }
       sniff && (sniff.t -= ms);
     } else {
-      const sp = fol(ms); const want = sp > 130 ? "gato-a-run" : sp > 0 ? "gato-a-walk" : "gato-a-idle";
+      const sp = fol(ms); const want = sp > 130 ? "gato-g-run" : sp > 0 ? "gato-g-walk" : "gato-g-idle";
       s.anims.currentAnim?.key !== want && s.play(want);
     }
     s.setDepth(s.y); sh.setPosition(s.x, s.y).setDepth(s.y - 1);
@@ -222,13 +249,13 @@ function __gtPet(S) {
 }
 /* ─── ganchos ─── */
 {
-  __QLIST.push({ id: "gatos", title: "Os Gatos da Marta", st: (S) => {
+  __QLIST.push({ id: "gatos", title: "Os Gatos da Alline", st: (S) => {
     const s = __GT.st(S); if (!s) return null;
-    if (s === 2) return ["done", __GT.L3("Todos os gatos voltaram para casa. A Mel agora te acompanha.", "All the cats are home. Mel now travels with you.", "Todos los gatos volvieron a casa. Mel ahora te acompaña.")];
-    const L = __GT.list(S), F = __GT.found(S), M = __Q.get(S, "gtM", {}) || {};
-    if (F.length >= L.length) return ["on", __GT.L3("Todos resgatados! Volte à Marta no Coração da Floresta.", "All rescued! Go back to Marta in the Heart of the Forest.", "¡Todos rescatados! Vuelve con Marta al Corazón del Bosque.")];
-    const miss = L.filter((lv) => !F.includes(lv)).map((lv) => `${__GT.cat(M[lv]).n} (${typeof St === "function" ? St(`lvl.${lv}`, ki?.[lv]?.name ?? lv) : lv})`).join(", ");
-    return ["on", __GT.L3(`Gatos: ${F.length}/${L.length} — faltam ${miss}.`, `Cats: ${F.length}/${L.length} — missing ${miss}.`, `Gatos: ${F.length}/${L.length} — faltan ${miss}.`)];
+    if (s === 2) return ["done", __GT.L3("Todos os gatos voltaram para casa. O Ollie agora te acompanha.", "All the cats are home. Ollie now travels with you.", "Todos los gatos volvieron a casa. Ollie ahora te acompaña.")];
+    const L = __GT.list(S), F = __GT.found(S);
+    if (F.length >= L.length) return ["on", __GT.L3("Todos resgatados! Volte à Alline no Coração da Floresta.", "All rescued! Go back to Alline in the Heart of the Forest.", "¡Todos rescatados! Vuelve con Alline al Corazón del Bosque.")];
+    const miss = L.filter((lv) => !F.includes(lv)).map((lv) => (typeof St === "function" ? St(`lvl.${lv}`, ki?.[lv]?.name ?? lv) : lv)).join(", ");
+    return ["on", __GT.L3(`Gatos: ${F.length}/${L.length} — procure em: ${miss}.`, `Cats: ${F.length}/${L.length} — search in: ${miss}.`, `Gatos: ${F.length}/${L.length} — busca en: ${miss}.`)];
   } });
   __QLIST.push({ id: "aprendiz", title: "O Aprendiz do Ferreiro", st: (S) => {
     const a = window.__apzGet?.(S) || {}, L3 = __GT.L3;
@@ -237,8 +264,8 @@ function __gtPet(S) {
       : ["on", L3("Encontre o Brokk nas Cavernas Dorf e leve-o vivo até um portal branco.", "Find Brokk in the Dorf Caves and bring him alive to a white portal.", "Encuentra a Brokk en las Cavernas Dorf y llévalo con vida a un portal blanco.")];
   } });
   try {
-    Object.assign(__TR.en, { "Os Gatos da Marta": "Marta's Cats", "O Aprendiz do Ferreiro": "The Blacksmith's Apprentice", "Martelo Rúnico de Brokk": "Brokk's Runic Hammer" });
-    __TR.es && Object.assign(__TR.es, { "Os Gatos da Marta": "Los Gatos de Marta", "O Aprendiz do Ferreiro": "El Aprendiz del Herrero", "Martelo Rúnico de Brokk": "Martillo Rúnico de Brokk" });
+    Object.assign(__TR.en, { "Os Gatos da Alline": "Alline's Cats", "O Aprendiz do Ferreiro": "The Blacksmith's Apprentice", "Martelo Rúnico de Brokk": "Brokk's Runic Hammer" });
+    __TR.es && Object.assign(__TR.es, { "Os Gatos da Alline": "Los Gatos de Alline", "O Aprendiz do Ferreiro": "El Aprendiz del Herrero", "Martelo Rúnico de Brokk": "Martillo Rúnico de Brokk" });
   } catch (e) {}
   const P0 = bo.prototype.preload;
   bo.prototype.preload = function () {
@@ -247,10 +274,22 @@ function __gtPet(S) {
       const L = this.load, op = L.path, D = "assets/pixel-art/npc/"; L.setPath("");
       for (const t in __GT_TEX) this.textures.exists(t) || L.spritesheet(t, D + t + ".png", { frameWidth: __GT_TEX[t], frameHeight: 50 });
       this.textures.exists("aprendiz") || L.spritesheet("aprendiz", D + "aprendiz.png", { frameWidth: 92, frameHeight: 66 });
+      this.textures.exists("alline") || L.spritesheet("alline", D + "alline.png", { frameWidth: 46, frameHeight: 72 });
+      for (const ex of ["talk", "calm", "smile", "sadness", "aggression", "special"]) this.textures.exists(`alline-p-${ex}`) || L.image(`alline-p-${ex}`, `${D}alline-p-${ex}.png`);
       for (const ex of ["talk", "calm", "smile", "sadness", "aggression", "special"]) this.textures.exists(`aprendiz-p-${ex}`) || L.image(`aprendiz-p-${ex}`, `${D}aprendiz-p-${ex}.png`);
       L.setPath(op);
     } catch (e) {}
     return r;
+  };
+  const GS = __gSay;
+  __gSay = function (S, list, done) {
+    try {
+      if (list === __GHUB0 && __Q.camp(S) && !__GT.st(S)) {
+        const d0 = done;
+        return GS.call(this, S, list, () => { d0?.(); S.time.delayedCall(700, () => S.scene.isActive() && __gtHub(S, !0)) });
+      }
+    } catch (e) {}
+    return GS.apply(this, arguments);
   };
   const HS = __hubSetup;
   __hubSetup = function (S) {
@@ -272,4 +311,4 @@ function __gtPet(S) {
   const CR = __cReset;
   __cReset = function (g, sl) { apzDel(String(sl)); return CR.apply(this, arguments) };
 }
-window.__dgQ2 = { GT: __GT, cats: __GT_CATS, hub: __gtHub, level: __gtLevel, pet: __gtPet, follow: __qFollow };
+window.__dgQ2 = { GT: __GT, cats: __GT_CATS, hub: __gtHub, level: __gtLevel, pet: __gtPet, follow: __qFollow, hubIntro: (S) => __gSay(S, __GHUB0) };
