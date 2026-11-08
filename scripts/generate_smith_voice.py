@@ -1,0 +1,112 @@
+"""Voz do Rafael, o ferreiro do Refúgio: grave e masculina.
+
+PT: Gemini TTS (voz Algenib, rouca) baixada ~2 semitons no ffmpeg (asetrate), o que também engrossa o timbre.
+EN: Kokoro (modelo aberto, roda local) com a voz am_onyx, a mais grave do modelo (~86 Hz) — sem Gemini.
+As falas saem de scripts/source/hub-village.js (o texto precisa ser idêntico ao do jogo) e ficam em
+assets/audio/voice/<idioma>/<id>.mp3 com o id e o manifesto no mesmo formato das outras vozes de NPC.
+
+Uso (a chave nunca é gravada em arquivo; os arquivos do Kokoro ficam fora do repositório):
+    GEMINI_API_KEY=... KOKORO_DIR=/caminho/com/kokoro.onnx+voices.bin python3 scripts/generate_smith_voice.py [--only pt|en] [--reuse-pt]
+    --reuse-pt reaproveita os PT gerados nas últimas 6 h (a cota diária do Gemini pode acabar no meio)
+    kokoro.onnx / voices.bin: github.com/thewh1teagle/kokoro-onnx/releases (model-files-v1.0); pip install kokoro-onnx soundfile
+"""
+import importlib.util
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import time
+
+sys.stdout.reconfigure(encoding="utf-8")
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+spec = importlib.util.spec_from_file_location("npcv", os.path.join(ROOT, "scripts", "generate_all_npc_voices_gemini.py"))
+V = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(V)
+
+PT_VOICE, PT_RATE = "Algenib", 0.88       # 0.88 ≈ 2,2 semitons abaixo
+EN_VOICE, EN_SPEED = "am_onyx", 0.92
+# começo de cada fala do Rafael em hub-village.js
+STARTS = [
+    "Ah, um cliente! Chegue mais perto.", "Aço bom pede fogo paciente.", "Traga fragmentos e eu deixo",
+    "Só forjo com Pedra Cobalto.", "Sem Pedra Cobalto, sem forja.",
+    "O Brokk… não volta mais.", "Hoje a forja fica fria.", "Antes de você comprar qualquer coisa",
+    "Meu aprendiz, o Brokk,", "Se encontrar ele lá embaixo", "Brokk! Você trouxe ele vivo", "Forjamos juntos o Martelo",
+]
+
+
+def lines():
+    s = open(os.path.join(ROOT, "scripts", "source", "hub-village.js"), encoding="utf-8").read()
+    out = []
+    for k in STARTS:
+        i = s.index(k)
+        a = s.rfind('L3("', 0, i)
+        m = re.match(r'L3\("((?:[^"\\]|\\.)*)","((?:[^"\\]|\\.)*)"', s[a:])
+        un = lambda t: t.replace("\\'", "'").replace('\\"', '"')
+        out.append((un(m.group(1)), un(m.group(2))))
+    return out
+
+
+def to_mp3(src, dst, rate=1.0):
+    af = f"aresample=24000,asetrate=24000*{rate},aresample=24000,atempo={1 / rate:.4f}," if rate != 1.0 else ""
+    subprocess.run(["ffmpeg", "-v", "quiet", "-y", "-i", src, "-af", af + "loudnorm=I=-16:TP=-1.5", "-ar", "24000", "-ac", "1", "-b:a", "96k", dst], check=True)
+
+
+def dur(path):
+    r = subprocess.run(["ffprobe", "-v", "quiet", "-show_entries", "format=duration", "-of", "csv=p=0", path], capture_output=True, text=True)
+    return round(float(r.stdout.strip()), 2)
+
+
+def main():
+    only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else None
+    man = json.load(open(V.MANIFEST_PATH, encoding="utf-8"))
+    key = os.environ.get("GEMINI_API_KEY", "").strip()
+    kok = None
+    if only != "pt":
+        from kokoro_onnx import Kokoro
+        import soundfile as sf
+        kd = os.environ.get("KOKORO_DIR", "/tmp/dg/kk")
+        kok = Kokoro(os.path.join(kd, "kokoro.onnx"), os.path.join(kd, "voices.bin"))
+    if only != "en" and not key:
+        raise SystemExit("defina GEMINI_API_KEY (ou use --only en)")
+    tmp = tempfile.mkdtemp()
+    for pt, en in lines():
+        lid = man["k"].get(V.fnv(pt)) or V.fnv(pt)
+        d = man["d"].setdefault(lid, {})
+        man["k"][V.fnv(pt)] = lid
+        man["k"][V.fnv(en)] = lid
+        out_pt = os.path.join(V.OUT_PT, lid + ".mp3")
+        fresh = os.path.isfile(out_pt) and os.path.getmtime(out_pt) > time.time() - 6 * 3600
+        if only != "en" and "--reuse-pt" in sys.argv and fresh:
+            d["pt"] = dur(out_pt)   # já gerada com a voz nova numa rodada anterior (a cota do Gemini acabou no meio)
+            subprocess.run(["cp", out_pt, os.path.join(V.MIRROR_PT, lid + ".mp3")], check=True)
+        elif only != "en":
+            for tries in range(4):
+                try:
+                    mp3, _ = V.generate_gemini(key, pt, None, PT_VOICE); break
+                except RuntimeError as e:
+                    if "429" in str(e) and tries == 3 and "--reuse-pt" in sys.argv:
+                        print("  sem cota do Gemini: fala fica sem PT por enquanto", flush=True); mp3 = None; break
+                    if "429" not in str(e) or tries == 3: raise
+                    print("  limite por minuto, esperando 65 s…", flush=True); time.sleep(65)
+            if mp3:
+                raw = os.path.join(tmp, "pt.mp3"); open(raw, "wb").write(mp3)
+                out = os.path.join(V.OUT_PT, lid + ".mp3"); to_mp3(raw, out, PT_RATE)
+                d["pt"] = dur(out)
+                subprocess.run(["cp", out, os.path.join(V.MIRROR_PT, lid + ".mp3")], check=True)
+        if only != "pt":
+            s, sr = kok.create(en, voice=EN_VOICE, speed=EN_SPEED, lang="en-us")
+            raw = os.path.join(tmp, "en.wav"); sf.write(raw, s, sr)
+            out = os.path.join(V.OUT_EN, lid + ".mp3"); to_mp3(raw, out)
+            d["en"] = dur(out)
+            subprocess.run(["cp", out, os.path.join(V.MIRROR_EN, lid + ".mp3")], check=True)
+        d.pop("byClass", None)
+        print(f"{lid}  PT {d.get('pt')}s  EN {d.get('en')}s  {pt[:50]}", flush=True)
+        txt = json.dumps(man, indent=2, ensure_ascii=False)
+        for f in (V.MANIFEST_PATH, V.MIRROR_MANIFEST):
+            open(f, "w", encoding="utf-8").write(txt)
+
+
+if __name__ == "__main__":
+    main()
