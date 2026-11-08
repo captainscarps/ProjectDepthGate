@@ -3,11 +3,13 @@
   DWARF_PACK:   "Dwarf 2D Pixel Art Sprite"   -> aprendiz (Dwarf_2, anão de capuz e picareta)
   ELF_PACK:     "NPC Elf 2D Pixel Art Character" -> alline (Elf_3, a elfa ruiva dos gatos)
   ALLINE_FACES: folha 3x2 com os 5 rostos de fala da Alline (512 px cada; recorte do fundo por GrabCut)
+  RAFAEL_FACES: folha com os 5 rostos de fala do Rafael, o ferreiro (3 em cima, 2 embaixo centralizados)
 Gera em assets/pixel-art/npc/ (todas as linhas com o mesmo recorte, para o pé não "pular"):
   gato-a.png               linhas: parado 7, andando 11, pulo 10, especial 4 (Mel, siamesa)
   gato-d.png / gato-g.png  mesmas linhas, outras pelagens por troca de paleta: Carvão (preto) e Ollie (cinza rajado)
   alline.png               linhas: parada 7, parada2 7, andando 12, falando 8, especial 7
   alline-p-<expressão>.png retratos 128x128
+  ferreiro.png             o ferreiro do Refúgio (peasant-1) com cabelo e barba pretos; ferreiro-p-<expressão>.png
   aprendiz.png             linhas: parado 6, andando 10, correndo 10, dano 3, morte 4, parado2 6
   aprendiz-p-<expressão>.png retratos 128x128 (rosto ampliado, recorte sem franja)
 Uso: ANIMALS_PACK=... DWARF_PACK=... python3 scripts/build_quest_npcs2.py
@@ -23,6 +25,7 @@ AP = os.environ.get("ANIMALS_PACK", "/tmp/dg/packs/d0453830-craftpix-net-222276-
 DP = os.environ.get("DWARF_PACK", "/tmp/dg/packs/74afc1dd-craftpix-net-462764-dwarf-2d-pixel-art-sprite-pack")
 EP = os.environ.get("ELF_PACK", "/tmp/dg/packs/elfnpc")
 FACES = os.environ.get("ALLINE_FACES", "/tmp/dg/alline-faces.png")
+RFACES = os.environ.get("RAFAEL_FACES", "/tmp/dg/ferreiro-faces.png")
 OUTS = [os.path.join(ROOT, "assets", "pixel-art", "npc"), os.path.join(ROOT, "Projeto atualizado", "assets", "pixel-art", "npc")]
 
 
@@ -124,28 +127,41 @@ def main():
     save("alline", im)
     meta["alline"] = [fw, fh, cols]
     if os.path.isfile(FACES):
-        faces = alline_faces(FACES)
+        faces = cut_faces(FACES, [(0, 0), (512, 0), (1024, 0), (0, 512), (512, 512)], leaves=True)
         for ex, k in (("talk", 0), ("calm", 0), ("smile", 1), ("aggression", 2), ("special", 3), ("sadness", 4)):
             save(f"alline-p-{ex}", faces[k])
+    # Rafael, o ferreiro: o mesmo sprite do Refúgio (peasant-1) com cabelo e barba pretos, e os rostos dele
+    p1 = np.array(Image.open(os.path.join(OUTS[0], "peasant-1.png")).convert("RGBA"))
+    o = p1.copy()
+    for src, dst in {(221, 206, 191): (78, 70, 74), (189, 164, 153): (42, 37, 41)}.items():
+        mk = (p1[..., 0] == src[0]) & (p1[..., 1] == src[1]) & (p1[..., 2] == src[2]) & (p1[..., 3] > 0)
+        o[mk, 0], o[mk, 1], o[mk, 2] = dst
+    save("ferreiro", Image.fromarray(o))
+    if os.path.isfile(RFACES):
+        faces = cut_faces(RFACES, [(0, 0), (512, 0), (1024, 0), (256, 512), (768, 512)])
+        for ex, k in (("talk", 0), ("calm", 0), ("smile", 1), ("aggression", 2), ("special", 3), ("sadness", 4)):
+            save(f"ferreiro-p-{ex}", faces[k])
     print(json.dumps(meta))
 
 
-def alline_faces(path):
-    """recorta o fundo desfocado de cada rosto (GrabCut com a folha de louro marcada como figura)"""
+def cut_faces(path, cells, leaves=False):
+    """recorta o fundo desfocado de cada rosto (GrabCut; na Alline a folha de louro é marcada como figura)"""
     import cv2
     src = cv2.imread(path)
     out = []
-    for k in range(5):
-        cx, cy = (k % 3) * 512, (k // 3) * 512
+    for k, (cx, cy) in enumerate(cells):
         cell = src[cy:cy + 512, cx:cx + 512].copy()
         hsv = cv2.cvtColor(cell, cv2.COLOR_BGR2HSV)
         mask = np.full(cell.shape[:2], cv2.GC_PR_BGD, np.uint8)
         cv2.rectangle(mask, (40, 25), (480, 511), cv2.GC_PR_FGD, -1)
         cv2.ellipse(mask, (250, 260), (90, 120), 0, 0, 360, cv2.GC_FGD, -1)
         green = (hsv[..., 0] > 28) & (hsv[..., 0] < 60) & (hsv[..., 1] > 90) & (hsv[..., 2] > 60)
+        if not leaves:
+            green[:] = False
+            mask[503:, :] = cv2.GC_BGD  # brilho do fundo abaixo da linha dos ombros
         mask[green] = cv2.GC_FGD
         mask[:8, :] = cv2.GC_BGD; mask[:, :8] = cv2.GC_BGD; mask[:, -8:] = cv2.GC_BGD
-        if k == 3:
+        if leaves and k == 3:
             mask[120:220, 30:105] = cv2.GC_BGD  # traços de susto desenhados fora do cabelo
         bgd = np.zeros((1, 65), np.float64); fgd = np.zeros((1, 65), np.float64)
         cv2.grabCut(cell, mask, None, bgd, fgd, 10, cv2.GC_INIT_WITH_MASK)
@@ -157,6 +173,10 @@ def alline_faces(path):
         for i in range(1, n):
             if i != big and st[i, cv2.CC_STAT_AREA] > 400 and green[lab == i].mean() > 0.3:
                 keep[lab == i] = 1
+        if not leaves:
+            # óculos: a armação sai do rosto por cima do fundo; fecha a área da cabeça para não cortar o aro
+            cl = cv2.morphologyEx(keep, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (45, 45)))
+            keep[90:380] = cl[90:380]
         inv = 1 - keep
         n2, lab2, st2, _ = cv2.connectedComponentsWithStats(inv, 4)
         for i in range(1, n2):

@@ -292,7 +292,7 @@ function __apzCave(S, B) {
     if (a.follow || a.dead || typeof __dlg !== "function") return;
     __dlg(S, [
       D(L3("Ei! Aqui! Pelas barbas do meu avô… achei que ninguém ia descer atrás de mim.", "Hey! Over here! By my grandfather's beard… I thought nobody would come down for me.", "¡Eh! ¡Aquí! Por las barbas de mi abuelo… creí que nadie bajaría a buscarme."), "sadness"),
-      H(L3("O ferreiro me mandou te buscar. Consegue andar?", "The blacksmith sent me to get you. Can you walk?", "El herrero me envió a buscarte. ¿Puedes caminar?")),
+      H(L3("O Rafael, o ferreiro, me mandou te buscar. Consegue andar?", "Rafael, the blacksmith, sent me to get you. Can you walk?", "Rafael, el herrero, me envió a buscarte. ¿Puedes caminar?")),
       D(L3("Consigo. Mas aquele monstro não me deixa sair do salão. Fico atrás de você até um portal branco.", "I can. But that monster won't let me leave the hall. I'll stay behind you until a white portal.", "Puedo. Pero ese monstruo no me deja salir del salón. Me quedo detrás de ti hasta un portal blanco."), "talk"),
     ], () => {
       a.follow = !0;
