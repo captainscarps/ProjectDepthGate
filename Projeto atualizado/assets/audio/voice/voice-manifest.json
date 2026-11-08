@@ -2429,7 +2429,9 @@
           "SHAMAN": 3.24,
           "ROGUE": 3.24
         },
-        "pt": {}
+        "pt": {
+          "WARRIOR": 2.83
+        }
       },
       "_enk": {
         "WARRIOR": 1,
