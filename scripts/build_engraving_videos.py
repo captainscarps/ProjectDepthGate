@@ -414,8 +414,8 @@ def intro(n):
 # história antes da escolha dos heróis: uma cena por slide, em laço perfeito (a narração decide quanto tempo cada uma fica)
 HIST = {   # swirl=(cx, cy, rx, ry) em fração da imagem; parts; fog; glow (brilhos que pulsam)
     1: dict(parts=("stars", "motes"), fog=0.55),
-    2: dict(swirl=(0.385, 0.40, 0.17, 0.33), parts=("motes",), fog=0.7),
-    3: dict(swirl=(0.5, 0.33, 0.30, 0.42), parts=("motes",)),
+    2: dict(parts=("motes",), fog=0.7, glow=0.2),   # sem giro: distorcia as figuras e a sala
+    3: dict(parts=("motes",), glow=0.22),
     4: dict(parts=("embers",), glow=0.35),
     5: dict(parts=("motes",), fog=0.5, glow=0.25),
     6: dict(parts=("fireflies",), glow=0.3, fog=0.75),

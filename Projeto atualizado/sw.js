@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v5.98.0-historia-video";
+const CACHE = "ded-web-v5.98.1-historia-sem-giro";
 /* Imagens, sons e dados ficam num cache que NÃO é apagado a cada versão. Ao ativar uma versão nova,
    o asset-versions.json (gerado por scripts/build_asset_versions.py antes de publicar) é comparado com o
    anterior e só os arquivos que mudaram são apagados (e baixados de novo quando o jogo pedir).
