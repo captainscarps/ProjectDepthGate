@@ -2430,7 +2430,15 @@
           "ROGUE": 3.24
         },
         "pt": {
-          "WARRIOR": 2.83
+          "WARRIOR": 2.83,
+          "BERSERKER": 2.42,
+          "HUNTER": 2.3,
+          "NECROMANCER": 2.86,
+          "DRUID": 2.76,
+          "ARCHER": 2.52,
+          "MAGE": 2.5,
+          "SHAMAN": 3.12,
+          "ROGUE": 2.69
         }
       },
       "_enk": {
@@ -2459,6 +2467,11 @@
           "MAGE": 3.82,
           "SHAMAN": 3.92,
           "ROGUE": 4.18
+        },
+        "pt": {
+          "WARRIOR": 4.18,
+          "BERSERKER": 4.42,
+          "HUNTER": 4.73
         }
       },
       "_enk": {
