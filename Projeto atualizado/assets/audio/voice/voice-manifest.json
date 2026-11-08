@@ -1231,7 +1231,35 @@
     "24d96ab1": "24d96ab1",
     "dbc68769": "24d96ab1",
     "a71668d7": "a71668d7",
-    "784a2180": "a71668d7"
+    "784a2180": "a71668d7",
+    "01375905": "01375905",
+    "b6d85731": "01375905",
+    "c22bd218": "c22bd218",
+    "c50f2ce8": "c22bd218",
+    "d8e4c70c": "d8e4c70c",
+    "2874d568": "d8e4c70c",
+    "7e3401f4": "7e3401f4",
+    "832b6643": "7e3401f4",
+    "eae8d46c": "eae8d46c",
+    "f65a579c": "eae8d46c",
+    "58c95173": "58c95173",
+    "71c624a0": "58c95173",
+    "52d10875": "52d10875",
+    "f1634e95": "52d10875",
+    "2fd6f304": "2fd6f304",
+    "55a0573d": "2fd6f304",
+    "42936f9c": "42936f9c",
+    "c8040286": "42936f9c",
+    "cd5718b9": "cd5718b9",
+    "5cba30fe": "cd5718b9",
+    "54ea2ace": "54ea2ace",
+    "df091597": "54ea2ace",
+    "09094337": "09094337",
+    "cd45fd56": "09094337",
+    "d0ec5fa7": "d0ec5fa7",
+    "af0cc0c2": "d0ec5fa7",
+    "8c7eccee": "8c7eccee",
+    "8533293c": "8c7eccee"
   },
   "d": {
     "fc33ba0d": {
@@ -4026,7 +4054,10 @@
           "HUNTER": 4.46,
           "NECROMANCER": 5.58,
           "DRUID": 5.44,
-          "ARCHER": 4.25
+          "ARCHER": 4.25,
+          "MAGE": 4.14,
+          "SHAMAN": 4.36,
+          "ROGUE": 4.64
         }
       },
       "_enk": {
@@ -4035,9 +4066,246 @@
         "HUNTER": 1,
         "NECROMANCER": 1,
         "DRUID": 1,
-        "ARCHER": 1
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
       },
       "en": 4.61,
+      "_genen": 1
+    },
+    "01375905": {
+      "byClass": {
+        "en": {
+          "WARRIOR": 7.96
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1
+      },
+      "en": 7.96,
+      "_genen": 1
+    },
+    "c22bd218": {
+      "byClass": {
+        "en": {
+          "BERSERKER": 7.34
+        }
+      },
+      "_enk": {
+        "BERSERKER": 1
+      },
+      "en": 7.34,
+      "_genen": 1
+    },
+    "d8e4c70c": {
+      "byClass": {
+        "en": {
+          "ARCHER": 6.08
+        }
+      },
+      "_enk": {
+        "ARCHER": 1
+      },
+      "en": 6.08,
+      "_genen": 1
+    },
+    "7e3401f4": {
+      "byClass": {
+        "en": {
+          "HUNTER": 4.64
+        }
+      },
+      "_enk": {
+        "HUNTER": 1
+      },
+      "en": 4.64,
+      "_genen": 1
+    },
+    "eae8d46c": {
+      "byClass": {
+        "en": {
+          "DRUID": 5.69
+        }
+      },
+      "_enk": {
+        "DRUID": 1
+      },
+      "en": 5.69,
+      "_genen": 1
+    },
+    "58c95173": {
+      "byClass": {
+        "en": {
+          "NECROMANCER": 4.61
+        }
+      },
+      "_enk": {
+        "NECROMANCER": 1
+      },
+      "en": 4.61,
+      "_genen": 1
+    },
+    "52d10875": {
+      "byClass": {
+        "en": {
+          "MAGE": 4.5
+        }
+      },
+      "_enk": {
+        "MAGE": 1
+      },
+      "en": 4.5,
+      "_genen": 1
+    },
+    "2fd6f304": {
+      "byClass": {
+        "en": {
+          "ROGUE": 5.65
+        }
+      },
+      "_enk": {
+        "ROGUE": 1
+      },
+      "en": 5.65,
+      "_genen": 1
+    },
+    "42936f9c": {
+      "byClass": {
+        "en": {
+          "SHAMAN": 3.38
+        }
+      },
+      "_enk": {
+        "SHAMAN": 1
+      },
+      "en": 3.38,
+      "_genen": 1
+    },
+    "cd5718b9": {
+      "byClass": {
+        "en": {
+          "WARRIOR": 6.01,
+          "BERSERKER": 5.54,
+          "HUNTER": 5.62,
+          "NECROMANCER": 6.77,
+          "DRUID": 6.37,
+          "ARCHER": 5.22,
+          "MAGE": 5.4,
+          "SHAMAN": 5.29,
+          "ROGUE": 6.19
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
+      },
+      "en": 6.01,
+      "_genen": 1
+    },
+    "54ea2ace": {
+      "byClass": {
+        "en": {
+          "WARRIOR": 6.41,
+          "BERSERKER": 6.01,
+          "HUNTER": 6.44,
+          "NECROMANCER": 7.42,
+          "DRUID": 6.73,
+          "ARCHER": 5.69,
+          "MAGE": 6.16,
+          "SHAMAN": 5.94,
+          "ROGUE": 6.77
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
+      },
+      "en": 6.41,
+      "_genen": 1
+    },
+    "09094337": {
+      "byClass": {
+        "en": {
+          "WARRIOR": 5.11,
+          "BERSERKER": 4.61,
+          "HUNTER": 5.0,
+          "NECROMANCER": 5.98,
+          "DRUID": 5.26,
+          "ARCHER": 4.61,
+          "MAGE": 5.0,
+          "SHAMAN": 4.57,
+          "ROGUE": 5.44
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
+      },
+      "en": 5.11,
+      "_genen": 1
+    },
+    "d0ec5fa7": {
+      "byClass": {
+        "en": {
+          "WARRIOR": 8.35,
+          "BERSERKER": 7.34,
+          "HUNTER": 8.1,
+          "NECROMANCER": 10.08,
+          "DRUID": 9.4,
+          "ARCHER": 7.24,
+          "MAGE": 7.38,
+          "SHAMAN": 7.56,
+          "ROGUE": 8.71
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
+      },
+      "en": 8.35,
+      "_genen": 1
+    },
+    "8c7eccee": {
+      "byClass": {
+        "en": {
+          "WARRIOR": 5.0,
+          "BERSERKER": 4.64
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1
+      },
+      "en": 5.0,
       "_genen": 1
     }
   },
