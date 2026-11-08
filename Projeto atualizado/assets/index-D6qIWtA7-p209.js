@@ -17760,7 +17760,7 @@ const __bkFromHSL = (H, S, L) => {
 };
 function __bkFill(c, a) {
   const [H, S, L] = __bkHSL(c);
-  if (L < .3 && S >= .4) return [__bkFromHSL(H, Math.min(.55, S), .72), a * .8];   // destaque escuro colorido → tinta clara da mesma cor
+  if (L < .3 && L >= .1 && S >= .4 && (__bkGold(H, S) || H < 28 || (H > 80 && H < 170))) return [__bkFromHSL(H, Math.min(__bkGold(H, S) || H < 28 ? .5 : .22, S), .72), a * .8];   // destaque escuro colorido → tinta clara da mesma cor
   if (L < .16) return [0xc3a06c, a * .42];                 // fundo/escaninho escuro → papel mais escuro
   if (L < .42 && S < .4) return [0xae8a5a, a * .55];
   if (__bkGold(H, S)) return [0xb8862f, a];                // destaque dourado → ouro velho
@@ -17784,7 +17784,7 @@ function __bkText(css) {
   const c = __bkCssToInt(css);
   if (c == null) return css;
   const [H, S, L] = __bkHSL(c);
-  if (S < .25) return L > .62 ? "#3b2416" : L > .38 ? "#6b4a2e" : "#4a3020";
+  if (S < .25 || L > .78) return L > .62 ? "#3b2416" : L > .38 ? "#6b4a2e" : "#4a3020";   // claro/creme → tinta
   if (__bkGold(H, S)) return L > .45 ? "#8b1d16" : "#7a4a10";
   return __bkHex(__bkDark(c, L > .5 ? .55 : .8));
 }
@@ -17864,7 +17864,7 @@ function __bkTrack(S, root) {
 /* __winSkin: o livro no lugar do painel escuro */
 __winSkin = function (S, root, x, y, w, h, idx = 1) {
   if (!__bkOk(S)) return !1;
-  const single = w < 500 || h > w * 1.05, pad = single ? 6 : 8;   // duas páginas só nas janelas feitas em duas colunas
+  const single = w < 560 || h > w * 1.05, pad = single ? 6 : 8;   // duas páginas só nas janelas feitas em duas colunas
   const key = __bkTex(S, w + pad * 2, h + pad * 2, single);
   const img = S.add.image(x - pad, y - pad, key).setOrigin(0);
   img.__noPaper = 1;
@@ -18121,7 +18121,7 @@ function __bkClose(S, root, btn) {
     const U = this.U;
     if (!__bkOk(U) || !this.cards) return;
     for (const c of this.cards) {
-      const p = U.add.nineslice(0, 0, "bk-panel_paper_ornate", undefined, c.__w, 240, 9, 9, 9, 9);
+      const p = U.add.image(0, 0, __bkTex(U, c.__w, 240, !0));
       p.__noPaper = 1;
       c.addAt(p, 0);
       __bkPaperize(U, c, c);
@@ -18155,4 +18155,42 @@ function __bkScene(S, x, y, w, h, single) {
     __bkScene(this, px, py, pw, ph, !1);
   };
 }
+
+/* configurações: uma página grande de papel no lugar da tela escura (a lista atravessa a tela toda) */
+{
+  const b0 = Vn.prototype.build;
+  Vn.prototype.build = function () {
+    b0.apply(this, arguments);
+    const S = this.scene, R = this.root;
+    if (!__bkOk(S) || !R) return;
+    const P = R.list[1];
+    P?.clear?.();
+    this.__hdr?.setVisible(!1);
+    const x = 8, y = 2, w = _ - 16, h = st - 4;
+    const img = S.add.image(x, y, __bkTex(S, w, h, !0)).setOrigin(0);
+    img.__noPaper = 1;
+    R.addAt(img, 1);
+    R.__bk = { x, y, w, h, single: !0, img };
+    __bkTrack(S, R);
+  };
+}
+/* Hall da Fama (arquivo à parte, assets/hall-of-fame-ui.js): carrega depois do jogo, então o ajuste espera por ele */
+(function hof() {
+  const H = window.HallOfFameUI;
+  if (!H) { setTimeout(hof, 400); return; }
+  if (H.prototype.__bk) return;
+  H.prototype.__bk = 1;
+  const b0 = H.prototype.build;
+  H.prototype.build = function () {
+    const was = this.built;
+    b0.apply(this, arguments);
+    if (was || !__bkOk(this.ui)) return;
+    const S = this.ui, R = this.root, x = 24, y = 10, w = 592, h = 340;
+    const img = S.add.image(x, y, __bkTex(S, w, h, !0)).setOrigin(0);
+    img.__noPaper = 1;
+    R.addAt(img, 1);
+    R.__bk = { x, y, w, h, single: !0, img };
+    __bkTrack(S, R);
+  };
+})();
 /*__BOOKUI__*/
