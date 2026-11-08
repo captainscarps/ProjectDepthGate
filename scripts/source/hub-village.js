@@ -453,11 +453,12 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
   this.__fnAuto(o,cB);
 }
 
-__forgeWeaponsShop(fromSmith){
+__forgeWeaponsShop(fromSmith,mode){
   if(this.panel||this.__busy)return;
+  const arm=mode==="arm"&&!!window.__FARM;
   if(!fromSmith&&window.__apzGet?.(this)?.mourn){this.__apzSmith?.();return}
   const L3=__L3,d=_/2,Y=12,HH=336;
-  try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Só forjo com Pedra Cobalto. Essas armas são feitas dela, por isso são tão raras. E ela só existe nas Cavernas Dorf; o portal branco fica logo ali no canto.","I only forge with Cobalt Stone. These weapons are made of it, that's why they're so rare. And it's only found in the Dorf Caves; the white portal is right there in the corner.","Solo forjo con Piedra Cobalto. Estas armas están hechas de ella, por eso son tan raras. Y solo existe en las Cavernas Dorf; el portal blanco está ahí en la esquina."),6200,"#bcd4ff","male")}catch(_){}
+  if(mode==null)try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Só forjo com Pedra Cobalto. Essas armas são feitas dela, por isso são tão raras. E ela só existe nas Cavernas Dorf; o portal branco fica logo ali no canto.","I only forge with Cobalt Stone. These weapons are made of it, that's why they're so rare. And it's only found in the Dorf Caves; the white portal is right there in the corner.","Solo forjo con Piedra Cobalto. Estas armas están hechas de ella, por eso son tan raras. Y solo existe en las Cavernas Dorf; el portal blanco está ahí en la esquina."),6200,"#bcd4ff","male")}catch(_){}
   const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
   const bg=this.add.rectangle(d,st/2,_,st,328450,.82).setInteractive();
   const n=this.add.graphics();
@@ -511,18 +512,29 @@ __forgeWeaponsShop(fromSmith){
     {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:180,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"}
   ];
   if(window.__apzGet?.(this)?.s===3)weaponsList.push({id:"unique_forge_brokk",name:L3("Martelo Rúnico de Brokk","Brokk's Runic Hammer","Martillo Rúnico de Brokk"),price:150,icon:"icon-axe",stats:"+20 DANO · +6 DEFESA · +2 VIDA · +10% CRÍTICO",color:"#60a5fa"});
-  const RS=weaponsList.length>6?32:37,RH=weaponsList.length>6?29:34;
+  // armaduras da forja: mudam o visual do herói (scripts/source/forge-armor.js)
+  const armorsList=Object.entries(window.__FARM||{}).map(([id,a])=>({id,name:L3(...a.name),price:a.price,icon:Xt[id]?.icon||"icon-armor",tint:a.trim,stats:L3(a.st[0],a.st[1],a.st[1]),color:"#"+a.trim.toString(16).padStart(6,"0")}));
+  const list=arm?armorsList:weaponsList;
+  const RS=list.length>6?30:34,RH=list.length>6?28:31;
+  // abas: ARMAS | ARMADURAS
+  if(window.__FARM){
+    const tab=(lbl,on,x,m)=>{const t=this.add.text(x,Y+50,on?`▸ ${lbl} ◂`:lbl,{...ti,fontSize:on?"11px":"10px",color:on?"#ffd24a":"#d8cdb4",...(on?{}:{backgroundColor:"#1a120b",padding:{x:10,y:3}})}).setOrigin(.5).setInteractive({useHandCursor:!0});
+      on||t.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeWeaponsShop(fromSmith,m)});o.add(t);return t};
+    tab(L3("⚔ ARMAS","⚔ WEAPONS","⚔ ARMAS"),!arm,d-70,"wpn");tab(L3("🛡 ARMADURAS","🛡 ARMOR","🛡 ARMADURAS"),arm,d+70,"arm");
+  }
+  const R0=window.__FARM?Y+62:Y+44;
 
   const goldText=this.add.text(d,Y+276,`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${curCoins} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(.5);
   const msgText=this.add.text(d,Y+292,"",{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(.5);
   o.add([goldText,msgText]);
 
-  weaponsList.forEach((wp,idx)=>{
-    const ry=Y+44+idx*RS;
+  list.forEach((wp,idx)=>{
+    const ry=R0+idx*RS;
     const box=this.add.graphics();
     const z=this.add.zone(d,ry+RH/2,400,RH).setInteractive({useHandCursor:!0});
     const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
     const im=hd?this.add.image(d-176,ry+16,"items-hd",wp.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(1.1);
+    wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&im.setTint(wp.tint);
     const nm=this.add.text(d-154,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"10px",color:wp.color});
     const stT=this.add.text(d-154,ry+18,wp.stats,{...Le,fontSize:"7px",color:"#e2e8f0"});
     const prT=this.add.text(d+186,ry+(isCamp?10:5),`${this.__alPrice(wp.price)} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(1,0);
@@ -586,7 +598,7 @@ __forgeWeaponsShop(fromSmith){
     const rpBtn=this.add.text(d,Y+HH-16,L3("CONSERTAR ARMAS","REPAIR WEAPONS","REPARAR ARMAS"),{...ti,fontSize:"10px",color:"#9cc2ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
     rpBtn.on("pointerover",()=>rpBtn.setColor("#ffffff"));
     rpBtn.on("pointerout",()=>rpBtn.setColor("#9cc2ff"));
-    rpBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeRepairPanel(slot,weaponsList,getCoins,setCoins);});
+    rpBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeRepairPanel(slot,[...weaponsList,...armorsList],getCoins,setCoins);});
     o.add(rpBtn);
   }
   const swBtn=this.add.text(isCamp?d-100:d-140,Y+HH-16,L3("⚙ MELHORIAS DA FORJA","⚙ FORGE UPGRADES","⚙ MEJORAS DE FORJA"),{...ti,fontSize:"10px",color:"#8fd8ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
