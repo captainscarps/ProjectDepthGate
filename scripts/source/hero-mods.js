@@ -66,13 +66,13 @@ function __hmodTex(scene, srcKey, cls) {
 const __CAPE = {
   warrior: { n: 9, seg: 3.3, w0: 3, w1: 6.4, style: "royal" },                       // capa de cavaleiro com barra dourada
   berserker: { n: 8, seg: 3.3, w0: 3.4, w1: 6.6, style: "tatter" },                  // manto de guerra rasgado
-  archer: { n: 11, seg: 3, w0: 1.3, w1: 1.8, style: "scarf", tails: 2 },             // fitas longas da faixa
+  archer: { n: 8, seg: 3, w0: 1.3, w1: 1.8, style: "scarf", tails: 2 },             // fitas longas da faixa
   hunter: { n: 5, seg: 3.2, w0: 4.4, w1: 6.2, style: "fur", fur: 0xe8d6b0 },         // manto de pele curto
   druid: { n: 9, seg: 3.3, w0: 3, w1: 6.8, style: "leaf" },                          // manto de folhas
-  necromancer: { n: 10, seg: 3.4, w0: 3, w1: 7, style: "tatter", glow: 0x9a7cff },  // mortalha esfarrapada
-  mage: { n: 10, seg: 3.4, w0: 3, w1: 6.8, style: "royal" },                         // capa longa com barra
+  necromancer: { n: 10, seg: 3.3, w0: 3, w1: 6.2, style: "tatter", glow: 0x9a7cff },  // mortalha esfarrapada
+  mage: { n: 10, seg: 3.3, w0: 3, w1: 6, style: "royal" },                         // capa longa com barra
   rogue: { n: 8, seg: 3, w0: 1.6, w1: 2.2, style: "scarf", tails: 1 },              // cachecol esvoaçante
-  shaman: { n: 7, seg: 3.2, w0: 3.4, w1: 6.4, style: "feather", feathers: [0xc8281e, 0x2e8c46, 0xf0c83c, 0x1e6eb4] },  // manto de penas
+  shaman: { n: 6, seg: 3.2, w0: 3.4, w1: 6, style: "feather", base: 0x7a4a26, feathers: [0xc8281e, 0x2e8c46, 0xf0c83c, 0x1e6eb4] },  // manto de penas
 };
 function __capeCols(eq) {
   const t = eq?.armor?.tint ?? 0x8b1d16, F = __FARM?.[eq?.armor?.id];
@@ -85,8 +85,9 @@ function __capeUpdate(V, dt) {
   const C = V.container, m = V.mk2, cls = V.classDef?.id?.toLowerCase(), D = __CAPE[cls];
   const on = V.__hmodCape && D && m && C.visible && !V.deadPose;
   if (!on) { V.__cape?.g.setVisible(!1); return; }
-  const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, F = info?.frames?.[fi];
+  const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, F = info?.frames?.[fi] ?? V.__capeLastF;
   if (!F) { V.__cape?.g.setVisible(!1); return; }
+  V.__capeLastF = F;      // quadro sem cabeça achada (de costas, atrás do escudo): a capa fica na última nuca
   const par = C.parentContainer, sx = C.scaleX, sy = C.scaleY, u = Math.abs(sx) * Math.abs(m.scaleX) / .69;
   const ax = C.x + (m.x + (F.neck[0] - 2 - 64) * m.scaleX) * sx, ay = C.y + (m.y + (F.neck[1] - 64) * m.scaleY) * sy;
   let K = V.__cape;
@@ -106,9 +107,9 @@ function __capeUpdate(V, dt) {
     const ox = -face * t * 1.5 * u, oy = t * 1.2 * u, light = D.style === "scarf" ? .6 : 1;
     P[0].x = ax + ox; P[0].y = ay + oy; P[0].px = P[0].x; P[0].py = P[0].y;
     for (let i = 1; i < P.length; i++) {
-      const q = P[i], vx = (q.x - q.px) * .9, vy = (q.y - q.py) * .9;
+      const q = P[i], vx = (q.x - q.px) * .82, vy = (q.y - q.py) * .82;
       q.px = q.x; q.py = q.y;
-      const wind = (-face * (.05 + .22 * run) / light + Math.sin(K.t * (3 + t) + i * (1 + t * .5)) * .03 * (1 + run) / light) * u * k;
+      const wind = (-face * (.04 + .12 * run) / light + Math.sin(K.t * (3 + t) + i * (1 + t * .5)) * .03 * (1 + run) / light) * u * k;
       q.x += vx + wind; q.y += vy + (.16 - .08 * run) * light * u * k;
     }
     for (let it = 0; it < 5; it++) {
@@ -119,11 +120,17 @@ function __capeUpdate(V, dt) {
       // atrás do corpo, e não sobe acima dos ombros
       for (let i = 1; i < P.length; i++) { const q = P[i], lim = ax + face * 1.5 * u; if (face > 0 ? q.x > lim : q.x < lim) q.x = lim; if (q.y < ay - 2 * u) q.y = ay - 2 * u; }
     }
-    // segue o líder: a capa nunca estica
+    // segue o líder: a capa nunca estica, e cada pedaço pende para baixo (nada de bandeira na horizontal;
+    // o tecido pesado pende mais que a fita), sem nunca dobrar para a frente do corpo
+    const minDown = (D.style === "scarf" ? .3 : .55) * seg;
     for (let i = 1; i < P.length; i++) {
-      const a = P[i - 1], q = P[i], dx = q.x - a.x, dy = q.y - a.y, d = Math.hypot(dx, dy) || 1;
-      if (d > seg) { const nx = a.x + dx / d * seg, ny = a.y + dy / d * seg; q.px += nx - q.x; q.py += ny - q.y; q.x = nx; q.y = ny; }
-      if (q.y < ay - 2 * u) { q.py += ay - 2 * u - q.y; q.y = ay - 2 * u; }
+      const a = P[i - 1], q = P[i];
+      let dx = q.x - a.x, dy = q.y - a.y, d = Math.hypot(dx, dy) || 1;
+      if (d > seg) { dx = dx / d * seg; dy = dy / d * seg; }
+      if (dy < minDown) { dy = minDown; dx = (Math.sign(dx) || -face) * Math.sqrt(Math.max(0, seg * seg - dy * dy)) * Math.min(1, Math.abs(dx) / seg * 1.2); }
+      if (face > 0 ? dx > .6 * u : dx < -.6 * u) dx = face * .6 * u;
+      const nx = a.x + dx, ny = a.y + dy;
+      q.px += nx - q.x; q.py += ny - q.y; q.x = nx; q.y = ny;
     }
     __capeDraw(g, P, D, cols, u, t);
   });
@@ -149,12 +156,23 @@ function __capeDraw(g, P, D, cols, u, tail) {
   }
   const all = [...L, ...bottom, ...[...R].reverse()];
   g.fillStyle(cols.line, 1); poly(all.map(([x, y]) => [x + (x > P[0].x ? 1 : -1), y + 1])); g.fillPath();
-  if (D.style === "feather") {              // faixas de penas coloridas
-    for (let i = 0; i < e; i++) {
-      g.fillStyle(D.feathers[i % D.feathers.length], 1);
-      poly([L[i], L[i + 1], R[i + 1], R[i]]); g.fillPath();
+  if (D.style === "feather") {              // manto de penas: base de palha trançada e fileiras de penas coloridas
+    g.fillStyle(D.base, 1); poly(all); g.fillPath();
+    for (let i = 2; i <= e; i += 2) {
+      const c = D.feathers[(i / 2) % D.feathers.length];
+      for (let q = 0; q < 3; q++) {           // três penas por fileira, em leque, apontando para baixo
+        const f0 = q / 3, f1 = (q + 1) / 3, j = Math.max(0, i - 2);
+        const a0 = [L[j][0] + (R[j][0] - L[j][0]) * f0, L[j][1] + (R[j][1] - L[j][1]) * f0];
+        const a1 = [L[j][0] + (R[j][0] - L[j][0]) * f1, L[j][1] + (R[j][1] - L[j][1]) * f1];
+        const tp = [L[i][0] + (R[i][0] - L[i][0]) * (f0 + f1) / 2, L[i][1] + (R[i][1] - L[i][1]) * (f0 + f1) / 2];
+        g.fillStyle(c, 1); poly([a0, a1, tp]); g.fillPath();
+      }
     }
-    g.fillStyle(D.feathers[(e) % D.feathers.length], 1); poly([L[e], ...bottom, R[e]]); g.fillPath();
+    for (let q = 0; q < bottom.length; q += 2) {   // pontas das penas de baixo
+      g.fillStyle(D.feathers[q / 2 % D.feathers.length], 1);
+      const p0 = q ? bottom[q - 1] : L[e], p1 = bottom[q + 1] ?? R[e];
+      poly([p0, bottom[q], p1]); g.fillPath();
+    }
   } else {
     g.fillStyle(D.style === "fur" ? __bkDark(cols.main, .9) : cols.main, 1); poly(all); g.fillPath();
     const M = L.map(([x, y], i) => [Math.round((x + P[i].x) / 2), Math.round((y + P[i].y) / 2)]);
