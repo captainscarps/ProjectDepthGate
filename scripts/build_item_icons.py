@@ -167,6 +167,7 @@ UNIQ = {
     "unique_forge_starfall": lambda: U(lambda I: bow(I, "cobalt", "#fff0c0", "gold", "cloth_blue", "#ffe9a0", True, "topaz", "#ffd36a"), "#fbbf24", "#ffae1e", 5, 104, 5),
     "unique_forge_cataclysm": lambda: U(shrink(lambda I: axe(I, "cobalt", "darkwood", True, "ruby", "#ff8a5a", None, "darksteel", spike=True), .78, 6), "#ff5a2a", "#ff3a1a", 3, 105, 5),
     "unique_forge_abyss_scepter": lambda: U(shrink(lambda I: staff(I, "darksteel", "crystal", "amethyst", "cobalt", "#c690ff", "cobalt"), .84, 6), "#a855f7", "#7a2cff", 4, 106, 5),
+    "unique_forge_brokk": lambda: U(shrink(lambda I: blunt(I, "hammer", "cobalt", "darkwood", "sapphire", "#7ad8ff", "gold"), .86, 4), "#60a5fa", "#3b82f6", 4, 107, 5),
     # escudos
     "spiked_shield": lambda: U(lambda I: shield(I, "iron", "iron", None, "iron", "heater", None, spikes=True)),
     "tower_shield": lambda: U(lambda I: shield(I, "steel", "silver", "cross", "silver", "tower", "sapphire"), "#4f8dff"),

@@ -1898,7 +1898,7 @@ touchOn(){return!!this.tc?.visible}}
    vendedor, santuário, mural, bonecos de treino, fogueira, portal e saída.
    Os painéis de melhoria (vendedor / ferreiro / santuário) são os mesmos do Refúgio antigo.     */
 constructor(){super("Hub")}
-preload(){const V="assets/pixel-art/hub/village/";this.textures.exists("peasant-1")||this.load.spritesheet("peasant-1","assets/pixel-art/npc/peasant-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("peasant-3")||this.load.spritesheet("peasant-3","assets/pixel-art/npc/peasant-3.png",{frameWidth:128,frameHeight:128});this.textures.exists("elf-1")||this.load.spritesheet("elf-1","assets/pixel-art/npc/elf-1.png",{frameWidth:128,frameHeight:128});this.load.setPath("assets/pixel-art/hub/"),this.load.image("hub-stall","stall.png"),this.load.image("hub-shrine","shrine.png"),this.load.image("hub-campfire","campfire.png"),this.load.image("hub-banner","banner.png"),this.textures.exists("hub-portal")||this.load.spritesheet("hub-portal","hub-portal2.png",{frameWidth:56,frameHeight:65}),this.load.setPath("");
+preload(){const V="assets/pixel-art/hub/village/";this.textures.exists("peasant-1")||this.load.spritesheet("peasant-1","assets/pixel-art/npc/peasant-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("peasant-3")||this.load.spritesheet("peasant-3","assets/pixel-art/npc/peasant-3.png",{frameWidth:128,frameHeight:128});this.textures.exists("elf-1")||this.load.spritesheet("elf-1","assets/pixel-art/npc/elf-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("aprendiz")||this.load.spritesheet("aprendiz","assets/pixel-art/npc/aprendiz.png",{frameWidth:92,frameHeight:66});this.load.setPath("assets/pixel-art/hub/"),this.load.image("hub-stall","stall.png"),this.load.image("hub-shrine","shrine.png"),this.load.image("hub-campfire","campfire.png"),this.load.image("hub-banner","banner.png"),this.textures.exists("hub-portal")||this.load.spritesheet("hub-portal","hub-portal2.png",{frameWidth:56,frameHeight:65}),this.load.setPath("");
 const L=(k,f,w,h)=>this.textures.exists(k)||this.load.spritesheet(k,V+f,{frameWidth:w,frameHeight:h});
 this.textures.exists("vh-ground")||this.load.image("vh-ground",V+"ground.png");this.textures.exists("vh-table")||this.load.image("vh-table",V+"house-table.png");this.textures.exists("vh-cart")||this.load.image("vh-cart",V+"house-cart.png");
 this.textures.exists("vh-props")||this.load.atlas("vh-props",V+"props.png",V+"props.json");this.cache.json.exists("vh-map")||this.load.json("vh-map",V+"village.json");
@@ -1911,10 +1911,10 @@ const D=["d","l","r","u"];D.forEach((d,i)=>{mk("vh-sw-"+d,"vh-smith-walk",i*6,i*
 mk("vh-sf","vh-smith-forge",0,5,8,-1);mk("vh-sfi","vh-smith-fidle",0,5,6,-1);mk("vh-st","vh-smith-take",0,2,8,0);mk("vh-sl","vh-smith-leave",0,2,8,0);
 mk("vh-ht","vh-hunter-tans",0,5,6,-1);this.textures.exists("vh-herb-boil")&&mk("vh-herb-a","vh-herb-boil",0,11,7,-1);this.textures.exists("vh-herb-caul")&&mk("vh-herb-c","vh-herb-caul",0,11,7,-1);mk("vh-htk","vh-hunter-take",0,4,7,0);mk("vh-hlv","vh-hunter-leave",0,4,7,0);
 this.textures.exists("peasant-1")&&(mk("peasant-1-idle","peasant-1",0,11,6),mk("peasant-1-talk","peasant-1",48,58,7));this.textures.exists("peasant-3")&&(mk("peasant-3-idle","peasant-3",0,6,6),mk("peasant-3-talk","peasant-3",32,40,7));this.textures.exists("elf-1")&&(mk("elf-1-idle","elf-1",0,5,6),mk("elf-1-talk","elf-1",48,54,7));this.textures.exists("dorf-brazier")&&mk("dorf-brazier-a","dorf-brazier",0,5,8,-1);A.exists("hub-portal-a")||A.create({key:"hub-portal-a",frames:A.generateFrameNumbers("hub-portal",{start:0,end:13}),frameRate:10,repeat:-1})}
-create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
+create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}try{typeof __gtAnims==="function"&&__gtAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
 const __F=this.game.registry.get("hub:fromForest");this.game.registry.remove("hub:fromForest");this.fromForest=!!__F;this.retSlot=__F?.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main;cam.setZoom(Pt*1.5);const z=cam.zoom;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);this.__us=Pt/z;cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
 const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];this.title=null;this.shade=null;this.hud=null;this.smith=null;this.hunter=null;this.herb=null;this.panel=null;this.panelRows=null;this.__pz=null;this.__hs=null;this.__bub=null;this.dummies=[];
-this.__busy=!1;this.__uiTap=!1;this.__caveWarned=!1;
+this.__busy=!1;this.__uiTap=!1;this.__caveWarned=!1;this.__apzTalking=!1;this.__apzMournSeen=!1;this.apzB=null;
 /* chão, casa, props */
 this.add.image(0,0,"vh-ground").setOrigin(0).setDepth(-50);const H=M.house;
 this.house=this.add.sprite(H.x,H.y,"vh-house",0).setOrigin(0).setDepth(H.base);this.house.play("vh-house-c");this.doorOpen=!1;
@@ -2138,11 +2138,16 @@ __enterDorfCave(){
 /* ── ferreiro: permanece na bigorna trabalhando e conversando como peasant-1 permanente ── */
 __smith(){const I=this.M.interior,A=I.smith.anvil;const s=this.smith={x:A[0],y:A[1]-20,state:"forge",t:3,talk:0,walking:!1};
 s.f=this.add.sprite(A[0],A[1]+2,"peasant-1",0).setOrigin(.5,1).setScale(.65).setDepth(A[1]).play("peasant-1-idle");
-s.f.on("animationrepeat",()=>{if(this.area==="in"){this.__sparks(A[0]+4,A[1]-22,6);window.__advancedAudio?.playMetalClang?.("E5")}})}
+s.f.on("animationrepeat",()=>{if(this.area==="in"){this.__sparks(A[0]+4,A[1]-22,6);window.__advancedAudio?.playMetalClang?.("E5")}});this.__apzBrokk()}
+/* ── Brokk, o aprendiz resgatado nas Cavernas Dorf, trabalha ao lado da fornalha ── */
+__apzBrokk(){const st=window.__apzGet?.(this);if(!st||st.s!==3||!this.textures.exists("aprendiz"))return;const F=this.M.interior.spots.forge,x=F[0]+30,y=F[1]+20;const b=this.apzB={x,y,s:this.add.sprite(x,y,"aprendiz",50).setOrigin(.5,1).setScale(.62).setDepth(y).setFlipX(!0)};this.anims.exists("aprendiz-idle")&&b.s.play("aprendiz-idle");const L3=__L3,lines=[L3("Ainda sonho com aquele salão. Obrigado por descer até lá.","I still dream about that hall. Thank you for coming down.","Aún sueño con ese salón. Gracias por bajar hasta allí."),L3("As runas do martelo fui eu que gravei. O mestre só esquentou o ferro!","I carved the runes on the hammer. The master just heated the iron!","Las runas del martillo las grabé yo. ¡El maestro solo calentó el hierro!"),L3("Achei um veio azul tão puro lá embaixo… mas desta vez fico na forja.","I found such a pure blue vein down there… but this time I'm staying at the forge.","Encontré una veta azul tan pura allá abajo… pero esta vez me quedo en la forja.")];this.inters.push({area:"in",id:"brokk",x,y:y-6,r:26,label:"BROKK",desc:L3("Conversar","Chat","Conversar"),act:()=>{this.__apzN=((this.__apzN??-1)+1)%lines.length;this.anims.exists("aprendiz-talk")&&b.s.play("aprendiz-talk",!0);this.__say(x,y-40,lines[this.__apzN],3000,"#bcd4ff","male");this.time.delayedCall(3000,()=>b.s.active&&this.anims.exists("aprendiz-idle")&&b.s.play("aprendiz-idle",!0))}})}
+/* ── O Aprendiz do Ferreiro: pedido, agradecimento e luto (estado por herói em dorf-caves.js) ── */
+__apzSmith(){const g=window.__apzGet,st=g?g(this):null;if(!st)return!1;if(this.__apzTalking)return!0;const s=this.smith,L3=__L3;const seq=(lines,then)=>{this.__apzTalking=!0;s.talk=1e9;s.f.play("peasant-1-talk",!0);let t=0;lines.forEach(ln=>{const d=Math.max(2800,ln.length*58);this.time.delayedCall(t,()=>this.__say(s.x,s.y-38,ln,d-200,"#ffd9a0","old"));t+=d});this.time.delayedCall(t,()=>{this.__apzTalking=!1;s.talk=.01;then?.()})};const shop=()=>{this.__forgeWeaponsShop(!0);this.__resumeSmith=!0};if(st.mourn){if(!this.__apzMournSeen){this.__apzMournSeen=!0;this.events.once("shutdown",()=>{const c=window.__apzGet(this);c.mourn=0;window.__apzSet(this,c)})}seq([L3("O Brokk… não volta mais. Eu nunca devia ter deixado ele descer sozinho.","Brokk… isn't coming back. I should never have let him go down alone.","Brokk… no va a volver. Nunca debí dejarlo bajar solo."),L3("Hoje a forja fica fria. Volte outro dia.","The forge stays cold today. Come back another day.","Hoy la forja se queda fría. Vuelve otro día.")]);return!0}if(!st.s){window.__apzSet(this,{...st,s:1});seq([L3("Antes de você comprar qualquer coisa… preciso de um favor.","Before you buy anything… I need a favor.","Antes de que compres nada… necesito un favor."),L3("Meu aprendiz, o Brokk, desceu às Cavernas Dorf atrás de um veio puro de cobalto e não voltou.","My apprentice, Brokk, went down into the Dorf Caves after a pure cobalt vein and never came back.","Mi aprendiz, Brokk, bajó a las Cavernas Dorf tras una veta pura de cobalto y no volvió."),L3("Se encontrar ele lá embaixo, traga de volta por um portal branco. Eu pago bem.","If you find him down there, bring him back through a white portal. I pay well.","Si lo encuentras allá abajo, tráelo de vuelta por un portal blanco. Pago bien.")],()=>{this.__apzBanner(L3("NOVA MISSÃO: O APRENDIZ DO FERREIRO","NEW QUEST: THE BLACKSMITH'S APPRENTICE","NUEVA MISIÓN: EL APRENDIZ DEL HERRERO"));shop()});return!0}if(st.s===3&&st.thanks){window.__apzSet(this,{...st,thanks:0});seq([L3("Brokk! Você trouxe ele vivo… obrigado, de verdade.","Brokk! You brought him back alive… thank you, truly.","¡Brokk! Lo trajiste con vida… gracias, de verdad."),L3("Forjamos juntos o Martelo Rúnico de Brokk; está na armaria. E daqui pra frente, conserto pela metade do preço.","Together we forged Brokk's Runic Hammer; it's in the armory. And from now on, repairs are half price.","Juntos forjamos el Martillo Rúnico de Brokk; está en la armería. Y de ahora en adelante, reparo a mitad de precio.")],shop);return!0}return!1}
+__apzBanner(msg){try{const cam=this.cameras.main,t=this.add.text(cam.width/2,90,msg,{fontFamily:"'Cinzel', Georgia, serif",fontSize:"12px",fontStyle:"bold",color:"#ffd27a",stroke:"#000",strokeThickness:4}).setOrigin(.5).setScrollFactor(0).setDepth(99999);this.tweens.add({targets:t,alpha:0,y:70,delay:3400,duration:900,onComplete:()=>t.destroy()})}catch(e){}}
 __smithTick(dt){const s=this.smith;if(!s)return;const P=this.M.interior.smith;
 if(s.talk>0){s.talk-=dt;if(s.talk<=0&&!this.panel){s.f.play("peasant-1-idle",!0)}return}
 s.x=P.anvil[0];s.y=P.anvil[1]-20}
-__smithTalk(){const s=this.smith,L3=__L3;s.talk=1e9;s.f.play("peasant-1-talk",!0);
+__smithTalk(){if(this.__apzSmith?.())return;const s=this.smith,L3=__L3;s.talk=1e9;s.f.play("peasant-1-talk",!0);
 this.__say(s.x,s.y-38,[L3("Aço bom pede fogo paciente. Em que posso ajudar?","Good steel needs patient fire. How can I help?","El buen acero pide fuego paciente. ¿En qué te ayudo?"),L3("Traga fragmentos e eu deixo sua lâmina digna do Abismo.","Bring fragments and I'll make your blade worthy of the Abyss.","Trae fragmentos y haré tu hoja digna del Abismo.")][Math.floor(Math.random()*2)],1800,"#ffd9a0","old");this.time.delayedCall(350,()=>{this.__forgeWeaponsShop();this.__resumeSmith=!0})}
 /* ── curtidor: trabalha no varal, larga a faca, descansa e volta ── */
 __hunter(){const p=this.M.spots.hunter;const h=this.hunter={s:this.add.sprite(p[0],p[1]+2,"vh-hunter-tans",0).setOrigin(.5,1).setDepth(p[1]).play("vh-ht"),state:"tans",t:6+Math.random()*4,talk:0}}
@@ -2287,7 +2292,7 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
     (window.__forgeBrokenGet?.(slot)||[]).forEach(it=>add(it,"broken"));
     return out;
   };
-  const cost=f=>Math.ceil(price(f.it.id)*0.15*f.used);
+  const cost=f=>Math.ceil(price(f.it.id)*0.15*f.used*(window.__apzGet?.(this)?.s===3?.5:1));
   const render=()=>{
     rows.forEach(r=>r.destroy());rows=[];
     const cur=getCoins();coinT.setText(`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${cur} ◆`);
@@ -2333,8 +2338,9 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
   this.__fnAuto(o,cB);
 }
 
-__forgeWeaponsShop(){
+__forgeWeaponsShop(fromSmith){
   if(this.panel||this.__busy)return;
+  if(!fromSmith&&window.__apzGet?.(this)?.mourn){this.__apzSmith?.();return}
   const L3=__L3,d=_/2,Y=12,HH=336;
   try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Só forjo com Pedra Cobalto. Essas armas são feitas dela, por isso são tão raras. E ela só existe nas Cavernas Dorf; o portal branco fica logo ali no canto.","I only forge with Cobalt Stone. These weapons are made of it, that's why they're so rare. And it's only found in the Dorf Caves; the white portal is right there in the corner.","Solo forjo con Piedra Cobalto. Estas armas están hechas de ella, por eso son tan raras. Y solo existe en las Cavernas Dorf; el portal blanco está ahí en la esquina."),6200,"#bcd4ff","male")}catch(_){}
   const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
@@ -2389,15 +2395,17 @@ __forgeWeaponsShop(){
     {id:"unique_forge_cataclysm",name:L3("Machado do Cataclismo","Cataclysm Axe","Hacha del Cataclismo"),price:170,icon:"icon-axe",stats:"+24 DANO · +4 DEFESA · +15% CRÍTICO",color:"#f87171"},
     {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:180,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"}
   ];
+  if(window.__apzGet?.(this)?.s===3)weaponsList.push({id:"unique_forge_brokk",name:L3("Martelo Rúnico de Brokk","Brokk's Runic Hammer","Martillo Rúnico de Brokk"),price:150,icon:"icon-axe",stats:"+20 DANO · +6 DEFESA · +2 VIDA · +10% CRÍTICO",color:"#60a5fa"});
+  const RS=weaponsList.length>6?32:37,RH=weaponsList.length>6?29:34;
 
   const goldText=this.add.text(d,Y+276,`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${curCoins} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(.5);
   const msgText=this.add.text(d,Y+292,"",{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(.5);
   o.add([goldText,msgText]);
 
   weaponsList.forEach((wp,idx)=>{
-    const ry=Y+44+idx*37;
+    const ry=Y+44+idx*RS;
     const box=this.add.graphics();
-    const z=this.add.zone(d,ry+16,400,34).setInteractive({useHandCursor:!0});
+    const z=this.add.zone(d,ry+RH/2,400,RH).setInteractive({useHandCursor:!0});
     const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
     const im=hd?this.add.image(d-176,ry+16,"items-hd",wp.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(1.1);
     const nm=this.add.text(d-154,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"10px",color:wp.color});
@@ -2410,9 +2418,9 @@ __forgeWeaponsShop(){
     const drawRow=(hover)=>{
       box.clear();
       box.fillStyle(hover?0x3d2818:0x1a120b,hover?0.92:0.65);
-      box.fillRoundedRect(d-200,ry,400,34,4);
+      box.fillRoundedRect(d-200,ry,400,RH,4);
       box.lineStyle(1,hover?0xffd24a:0x5a4832,hover?1:0.5);
-      box.strokeRoundedRect(d-200,ry,400,34,4);
+      box.strokeRoundedRect(d-200,ry,400,RH,4);
     };
     drawRow(!1);
 
@@ -12113,6 +12121,115 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
 }
 try { if (typeof window !== "undefined") window.__FORGE_FX = __FORGE_FX; } catch (e) {}
 
+/* 0a2b) O Aprendiz do Ferreiro: o Brokk desceu atrás de um veio puro e se perdeu nas cavernas.
+   Estado por herói em depthgate:apz:<herói> = { s: 0 nada | 1 pedido | 3 resgatado | 4 perdido, thanks, mourn }.
+   O ferreiro pede (hub-village.js); na caverna o Brokk aparece num salão distante guardado por um chefe; quem
+   sai por um portal branco com ele vivo ganha o Martelo Rúnico de Brokk na armaria e conserto pela metade.
+   Se ele cair, o ferreiro fica de luto e a forja fecha na visita seguinte. */
+function __apzKey(S) { return "depthgate:apz:" + __heroTag(S?.game?.registry, 1, S) }
+function __apzGet(S) { try { return JSON.parse(localStorage.getItem(__apzKey(S)) || "{}") || {} } catch (e) { return {} } }
+function __apzSet(S, o) { try { localStorage.setItem(__apzKey(S), JSON.stringify(o || {})) } catch (e) {} return o }
+if (typeof Xt !== "undefined" && !Xt.unique_forge_brokk) Xt.unique_forge_brokk = { name: "Martelo Rúnico de Brokk", type: "weapon", slot: "weapon", icon: "icon-axe", weaponClass: "heavy", minRarity: "UNIQUE", stats: { damage: 20, defense: 6, critChance: 10, maxHpAdd: 2 }, attackSpeed: .8, value: 360, uniqueForge: !0, breaksOnDeath: !0, desc: "Forjado a quatro mãos pelo ferreiro e pelo Brokk, com runas anãs das Cavernas Dorf. Quebra-se se morrer na run." };
+// Martelo Rúnico de Brokk: o golpe desce como uma marreta, runas azuis giram no chão e uma onda de choque se abre
+__FORGE_FX.unique_forge_brokk = function (S, x, y, ang, d) {
+  const ix = x + Math.cos(ang) * 30, iy = y + Math.sin(ang) * 22 + 4;
+  __FFX.arc(S, x, y - 8, ang, 32, 2.0, 8, 0x3b82f6, 300, d);
+  __FFX.arc(S, x, y - 8, ang, 32, 1.6, 2, 0xdbe8ff, 240, d + 1);
+  const g = S.add.graphics().setDepth(iy - 1).setBlendMode(j.BlendModes.ADD).setPosition(ix, iy);
+  g.lineStyle(1.5, 0x7ad8ff, 0.9).strokeEllipse(0, 0, 40, 16);
+  for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2, rx = Math.cos(a) * 20, ry = Math.sin(a) * 8; g.lineStyle(1.5, 0xdbe8ff, 1).lineBetween(rx - 3, ry - 3, rx + 3, ry + 3).lineBetween(rx + 3, ry - 3, rx - 3, ry + 3) }
+  g.setScale(0.4);
+  S.tweens.add({ targets: g, scaleX: 1.2, scaleY: 1.2, angle: 40, duration: 260, ease: "Back.easeOut", onComplete: () => S.tweens.add({ targets: g, alpha: 0, duration: 360, onComplete: () => g.destroy() }) });
+  const ring = S.add.ellipse(ix, iy, 14, 7).setStrokeStyle(3, 0x60a5fa, 0.95).setDepth(iy).setBlendMode(j.BlendModes.ADD);
+  S.tweens.add({ targets: ring, scaleX: 5, scaleY: 5, alpha: 0, duration: 480, ease: "Quad.easeOut", onComplete: () => ring.destroy() });
+  __FFX.burst(S, ix, iy - 4, 0x9cc2ff, 10, 30, 420, 0.022, d + 1, 8);
+  try { S.cameras.main.shake(80, 0.003) } catch (e) {}
+};
+function __apzCave(S, B) {
+  const st = __apzGet(S);
+  if (st.s !== 1 || S.__apz || !S.textures.exists("aprendiz")) return;
+  typeof __gtAnims === "function" && __gtAnims(S);
+  const L3 = typeof __L3 === "function" ? __L3 : (pt) => pt, T = dt || 32, G = B.level.__organicGrid;
+  const free = (c, r) => G?.[r]?.[c] === 0;
+  const sp = B.level.playerSpawn || S.dungeon?.level?.playerSpawn || { col: 0, row: 0 }, ports = S.__dorfPortals || [];
+  const nodes = (B.level.__nodes || []).filter((n) => n.kind !== "START" && free(Math.round(n.cx), Math.round(n.cy)));
+  const dS = (n) => Math.hypot(n.cx - sp.col, n.cy - sp.row);
+  const cand = nodes.filter((n) => ports.every((p) => Math.hypot(n.cx * T - p.x, n.cy * T - p.y) > 7 * T)).sort((a, b) => dS(a) - dS(b));
+  const nd = cand[Math.floor(cand.length * 0.7)] || nodes.sort((a, b) => dS(b) - dS(a))[0]; if (!nd) return;
+  const bc = Math.round(nd.cx), br = Math.round(nd.cy), x = bc * T + T / 2, y = br * T + T / 2;
+  const s = S.add.sprite(x, y, "aprendiz", 0).setOrigin(.5, 1).setScale(.55).setDepth(y);
+  S.anims.exists("aprendiz-scared") && s.play("aprendiz-scared");
+  const sh = S.add.ellipse(x, y, 22, 6, 0, .3).setDepth(y - 1);
+  const bar = S.add.graphics().setDepth(9001);
+  const a = S.__apz = { spr: s, hp: 10, max: 10, follow: !1, dead: !1 };
+  // o chefe que não deixa o Brokk sair do salão
+  S.time.delayedCall(400, () => {
+    if (!S.scene.isActive()) return;
+    let at = null;
+    for (let rad = 3; rad <= 6 && !at; rad++) for (let k = 0; k < 16 && !at; k++) { const c = bc + Math.round(Math.cos(k / 16 * Math.PI * 2) * rad), r = br + Math.round(Math.sin(k / 16 * Math.PI * 2) * rad); if (free(c, r)) at = [c, r] }
+    if (!at) return;
+    try {
+      const type = ["TROLL", "CYCLOPS", "MB_BASALT_COLOSSUS"][(Math.random() * 3) | 0];
+      const en = S.spawnEnemy?.(typeof ee !== "undefined" && ee[type] ? type : "TROLL", at[0], at[1], { elite: !0, eliteRoll: !1 });
+      if (en) { S.__dorfMakeBoss?.(en); en.__apzGuard = !0 }
+    } catch (e) {}
+  });
+  const D = (t, e = "talk") => ({ who: "aprendiz", expr: e, name: "BROKK", text: t });
+  const H = (t, e = "talk") => ({ who: "hero", expr: e, text: t });
+  const z = S.add.zone(x, y - 6, 4, 4);
+  z.interactLabel = L3("Falar com o Brokk", "Talk to Brokk", "Hablar con Brokk");
+  z.interact = () => {
+    if (a.follow || a.dead || typeof __dlg !== "function") return;
+    __dlg(S, [
+      D(L3("Ei! Aqui! Pelas barbas do meu avô… achei que ninguém ia descer atrás de mim.", "Hey! Over here! By my grandfather's beard… I thought nobody would come down for me.", "¡Eh! ¡Aquí! Por las barbas de mi abuelo… creí que nadie bajaría a buscarme."), "sadness"),
+      H(L3("O ferreiro me mandou te buscar. Consegue andar?", "The blacksmith sent me to get you. Can you walk?", "El herrero me envió a buscarte. ¿Puedes caminar?")),
+      D(L3("Consigo. Mas aquele monstro não me deixa sair do salão. Fico atrás de você até um portal branco.", "I can. But that monster won't let me leave the hall. I'll stay behind you until a white portal.", "Puedo. Pero ese monstruo no me deja salir del salón. Me quedo detrás de ti hasta un portal blanco."), "talk"),
+    ], () => {
+      a.follow = !0;
+      const i = S.dungeon.objects.indexOf(z); i >= 0 && S.dungeon.objects.splice(i, 1);
+      S.game.events.emit("ui:banner", L3("ESCOLTA: LEVE O BROKK VIVO ATÉ UM PORTAL BRANCO", "ESCORT: BRING BROKK ALIVE TO A WHITE PORTAL", "ESCOLTA: LLEVA A BROKK CON VIDA HASTA UN PORTAL BLANCO"), "#9cc2ff");
+    });
+  };
+  S.dungeon.objects.push(z);
+  const fol = typeof __qFollow === "function" ? __qFollow(S, s, { gap: 34, walk: 92, run: 165, far: 520 }) : null;
+  let hurtCd = 0, hurtT = 0;
+  const U = (_t, ms) => {
+    if (!s.active || !S.player) return;
+    bar.clear();
+    if (a.dead) return;
+    if (!a.follow) { s.setFlipX(S.player.x < s.x); return }
+    const spd = fol ? fol(ms) : 0;
+    hurtT -= ms;
+    if (hurtT <= 0) { const want = spd > 120 ? "aprendiz-run" : spd > 0 ? "aprendiz-walk" : "aprendiz-idle"; S.anims.exists(want) && s.anims.currentAnim?.key !== want && s.play(want) }
+    s.setDepth(s.y); sh.setPosition(s.x, s.y).setDepth(s.y - 1);
+    hurtCd -= ms;
+    if (hurtCd <= 0) for (const e of S.enemies?.getChildren?.() ?? []) {
+      if (!e.active || e.dead || Math.hypot(e.x - s.x, e.y - s.y) > 26) continue;
+      a.hp -= e.__isDorfCaveBoss ? 2 : 1; hurtCd = 850; hurtT = 300;
+      S.anims.exists("aprendiz-hurt") && s.play("aprendiz-hurt", !0); s.setTint(0xff7070); S.time.delayedCall(160, () => s.active && s.clearTint());
+      S.effects?.floatText?.(s.x, s.y - 34, `-${e.__isDorfCaveBoss ? 2 : 1}`, "#ff8080", 9);
+      break;
+    }
+    bar.fillStyle(0x000000, .6).fillRect(s.x - 14, s.y - 46, 28, 4); bar.fillStyle(0x7fb2ff, 1).fillRect(s.x - 13, s.y - 45, 26 * Math.max(0, a.hp) / a.max, 2);
+    if (a.hp <= 0) {
+      a.dead = !0; a.follow = !1; bar.clear();
+      __apzSet(S, { ...__apzGet(S), s: 4, mourn: 1, thanks: 0 });
+      S.anims.exists("aprendiz-dead") && s.play("aprendiz-dead");
+      S.tweens.add({ targets: [s, sh], alpha: 0, duration: 1600, delay: 900, onComplete: () => { s.destroy(); sh.destroy() } });
+      S.game.events.emit("ui:banner", L3("O BROKK CAIU…", "BROKK HAS FALLEN…", "BROKK HA CAÍDO…"), "#e05a4a");
+    }
+  };
+  S.events.on("update", U);
+  S.events.once("shutdown", () => { S.events.off("update", U); bar.destroy(); const i = S.dungeon?.objects?.indexOf(z) ?? -1; i >= 0 && S.dungeon.objects.splice(i, 1); S.__apz = null });
+}
+// saindo por um portal branco com o Brokk vivo e perto: resgatado
+function __apzOnExit(S, fell) {
+  const a = S?.__apz; if (!a || !a.follow || a.dead || a.hp <= 0 || fell) return;
+  const P = S.player; if (P && Math.hypot(a.spr.x - P.x, a.spr.y - P.y) > 320) return;
+  __apzSet(S, { ...__apzGet(S), s: 3, thanks: 1, mourn: 0 });
+}
+try { if (typeof window !== "undefined") Object.assign(window, { __apzGet, __apzSet }) } catch (e) {}
+
 /* 0a3) Caverna é só exploração: não existe XP de nível lá (nem o texto "+N XP" nem a escolha de habilidade) */
 if (typeof Eh !== "undefined" && Eh.prototype?.addXp) {
   const AX = Eh.prototype.addXp;
@@ -13648,6 +13765,7 @@ function __dorfBake(B) {
         };
       }
       __cobaltVeins(S, B);
+      try { __apzCave(S, B) } catch (e) { console.warn("[apz]", e) }
     };
     S.time?.delayedCall(120, runPostInit);
     setTimeout(runPostInit, 160);
@@ -13732,6 +13850,7 @@ function __dorfGuardianVisit(H, cx, cy, line) {
 /* 4) Retorno seguro das Cavernas de Dorf para o Refúgio (salvando ouro, itens e Moedas do Ferreiro) */
 function __dorfReturnToRefuge(S, fell = false) {
   if (!S || S.__dorfExiting) return;
+  try { __apzOnExit(S, fell) } catch (e) {}
   S.__dorfExiting = true;
 
   // Pedra Cobalto da run: quem sai por um portal leva tudo; quem cai deixa metade na caverna
@@ -17065,6 +17184,283 @@ function __qContract(S) {
   Sd.prototype.create = function () { const r = C0.apply(this, arguments); if (!wired) { wired = !0; this.game.events.on("enemy:died", onKill) } return r };
 }
 window.__dgQ = { Q: __Q, diary: (S) => __qDiary(S), list: __QLIST, paje: __qPajeHub, bispo: __qBispoHub, merc: __qMercHub, ghost: __qKidGhost, kid: __qKidLevel, irm: __qIrmStart, templo: __qTemplo, pjLevel: __qPajeLevel, contract: __qContract, mercGuard: __qMercGuard };
+/*__QUESTS2__*/
+/* ══ Missões secundárias (parte 2) ══
+   7. Os Gatos da Marta — a taverneira do Coração da Floresta perdeu os gatos pelos portais; cada um se esconde
+      numa masmorra, foge do herói e só se deixa pegar quando cansa. Resgatados, passeiam pelo Coração da
+      Floresta; com todos de volta, a Mel vira companheira e fareja ouro nas salas limpas.
+   Apoio ao Aprendiz do Ferreiro (a missão mora em dorf-caves.js e hub-village.js): texturas do Brokk no jogo,
+   nome traduzido do martelo e limpeza da chave por herói ao excluir / começar jogo novo.
+   Estado salvo por slot junto da história (__Q, um jogo novo começa do zero). */
+const __GT_CATS = [
+  { id: "mel", n: "Mel", tex: "gato-a" },
+  { id: "lar", n: "Laranjinha", tex: "gato-f" },
+  { id: "car", n: "Carvão", tex: "gato-d" },
+  { id: "nuv", n: "Nuvem", tex: "gato-e" },
+  { id: "can", n: "Canela", tex: "gato-b" },
+  { id: "nev", n: "Neve", tex: "gato-c" },
+];
+const __GT_TEX = { "gato-a": 100, "gato-b": 92, "gato-c": 100, "gato-d": 100, "gato-e": 100, "gato-f": 92 };
+function __gtAnims(S) {
+  const A = S.anims, mk = (k, tex, a, n, fr, rep = -1) => { if (!A.exists(k) && S.textures.exists(tex)) A.create({ key: k, frames: A.generateFrameNumbers(tex, { start: a, end: a + n - 1 }), frameRate: fr, repeat: rep }) };
+  for (const t in __GT_TEX) { mk(t + "-idle", t, 0, 7, 6); mk(t + "-walk", t, 11, 11, 13); mk(t + "-run", t, 22, 10, 17); mk(t + "-hiss", t, 33, 4, 7, 0) }
+  mk("aprendiz-idle", "aprendiz", 50, 6, 6); mk("aprendiz-scared", "aprendiz", 0, 6, 6); mk("aprendiz-walk", "aprendiz", 10, 10, 12); mk("aprendiz-run", "aprendiz", 20, 10, 15);
+  mk("aprendiz-hurt", "aprendiz", 30, 3, 10, 0); mk("aprendiz-dead", "aprendiz", 40, 4, 7, 0); mk("aprendiz-talk", "aprendiz", 50, 6, 8);
+}
+/* segue o herói pelo caminho que ele fez (migalhas), então não atravessa parede */
+function __qFollow(S, spr, o = {}) {
+  const crumbs = [], gap = o.gap ?? 30, far = o.far ?? 420;
+  let acc = 0;
+  return (ms, play) => {
+    const P = S.player; if (!P || !spr.active) return 0;
+    acc += ms;
+    const last = crumbs[crumbs.length - 1];
+    if (acc > 90 && (!last || Math.hypot(P.x - last[0], P.y - last[1]) > 10)) { acc = 0; crumbs.push([P.x, P.y]); crumbs.length > 90 && crumbs.shift() }
+    const dP = Math.hypot(P.x - spr.x, P.y - spr.y);
+    if (dP > far) { const b = crumbs[Math.max(0, crumbs.length - 4)] || [P.x, P.y]; spr.setPosition(b[0], b[1] + 6); crumbs.length = 0; return 0 }
+    if (dP < gap) { crumbs.length = 0; return 0 }
+    // alvo: a migalha mais antiga ainda à frente; com caminho livre, vai direto ao herói
+    const los = S.dungeon?.hasLineOfSight ? S.dungeon.hasLineOfSight(spr.x, spr.y, P.x, P.y) : true;
+    let tx = P.x, ty = P.y;
+    if (!los && crumbs.length) { while (crumbs.length > 1 && Math.hypot(crumbs[0][0] - spr.x, crumbs[0][1] - spr.y) < 8) crumbs.shift(); [tx, ty] = crumbs[0] }
+    else if (los) crumbs.length = 0;
+    const dx = tx - spr.x, dy = ty - spr.y, d = Math.hypot(dx, dy) || 1, sp = dP > 110 ? (o.run ?? 170) : (o.walk ?? 100);
+    const st = Math.min(d, sp * ms / 1000);
+    spr.x += dx / d * st; spr.y += dy / d * st;
+    Math.abs(dx) > 1 && spr.setFlipX(dx < 0);
+    return sp;
+  };
+}
+const __GT = {
+  L3(pt, en, es) { return typeof __L3 === "function" ? __L3(pt, en, es) : pt },
+  st(S) { return __Q.get(S, "gt") },
+  list(S) { return __Q.get(S, "gtL", []) || [] },
+  found(S) { return __Q.get(S, "gtF", []) || [] },
+  cat(id) { return __GT_CATS.find((c) => c.id === id) || __GT_CATS[0] },
+  M(t, e = "talk") { return { who: "peasant-2", expr: e, name: "MARTA", text: t } },
+  H(t, e = "talk") { return { who: "hero", expr: e, text: t } },
+  banner(S, t, c = "#ffd27a") { S.game.events.emit("ui:banner", t, c) },
+};
+/* ─── Marta e os gatos resgatados no Coração da Floresta ─── */
+function __gtHub(S) {
+  if (__Q.n(S) < 1 && !__GT.st(S)) return;
+  const L3 = __GT.L3, [mx, my] = __Q.hubPos(S, -40, 150);
+  const talk = () => {
+    const s = __GT.st(S), L = __GT.list(S), F = __GT.found(S);
+    if (!s) {
+      __dlg(S, [
+        __GT.M(L3("Ai, herói, que bom te ver! Você viu meus gatos? Fugiram pelos portais correndo atrás dos ratos das Profundezas.", "Oh, hero, thank goodness! Have you seen my cats? They ran through the portals chasing the rats of the Depths.", "¡Ay, héroe, qué bueno verte! ¿Viste a mis gatos? Huyeron por los portales persiguiendo a las ratas de las Profundidades."), "sadness"),
+        __GT.M(L3("Cada um se meteu numa terra diferente… e gato assustado não vem quando a gente chama.", "Each one slipped into a different land… and a frightened cat won't come when you call.", "Cada uno se metió en una tierra distinta… y un gato asustado no viene cuando lo llamas."), "talk"),
+        __GT.H(L3("Vou trazer todos de volta. Prometo.", "I'll bring them all back. I promise.", "Los traeré a todos de vuelta. Lo prometo."), "talk"),
+        __GT.M(L3("Eles vão fugir de você. Deixe que cansem, chegue perto e pegue no colo.", "They'll run from you. Let them tire out, get close and scoop them up.", "Van a huir de ti. Deja que se cansen, acércate y tómalos en brazos."), "smile"),
+      ], () => {
+        const free = __HUBD.filter((id) => !(typeof __isPortalDone === "function" && __isPortalDone(S, id)));
+        const pool = (free.length ? free : __HUBD.slice()).sort(() => Math.random() - 0.5);
+        const n = Math.max(1, Math.min(__GT_CATS.length, pool.length));
+        const map = {}; pool.slice(0, n).forEach((lv, k) => { map[lv] = __GT_CATS[k].id });
+        __Q.set(S, "gt", 1); __Q.set(S, "gtL", Object.keys(map)); __Q.set(S, "gtM", map); __Q.set(S, "gtF", []);
+        S.requestSave?.(10);
+        __GT.banner(S, L3(`NOVA MISSÃO: OS GATOS DA MARTA (0/${n})`, `NEW QUEST: MARTA'S CATS (0/${n})`, `NUEVA MISIÓN: LOS GATOS DE MARTA (0/${n})`));
+      });
+      return;
+    }
+    if (s === 1 && F.length >= L.length) {
+      __dlg(S, [
+        __GT.M(L3("Todos eles! Olha só, a Mel até voltou mais gordinha.", "All of them! Look, Mel even came back a little chubbier.", "¡Todos! Mira, Mel hasta volvió más gordita."), "smile"),
+        __GT.M(L3("A Mel gostou de você. Leve ela junto: nariz de gato acha ouro onde ninguém procura.", "Mel likes you. Take her along: a cat's nose finds gold where nobody looks.", "A Mel le caes bien. Llévala contigo: la nariz de un gato encuentra oro donde nadie busca."), "special"),
+        __GT.H(L3("Vamos, Mel. Temos selos para fechar.", "Come on, Mel. We have seals to close.", "Vamos, Mel. Tenemos sellos que cerrar."), "smile"),
+      ], () => {
+        __Q.set(S, "gt", 2); __Q.frag(40); S.stats?.addGold?.(120); S.requestSave?.(10);
+        __GT.banner(S, L3("+120 OURO · +40 CRISTAIS DO REFÚGIO · A MEL AGORA TE ACOMPANHA", "+120 GOLD · +40 REFUGE CRYSTALS · MEL NOW FOLLOWS YOU", "+120 ORO · +40 CRISTALES DEL REFUGIO · MEL AHORA TE ACOMPAÑA"));
+        S.time.delayedCall(300, () => S.scene.isActive() && __gtPet(S));
+      });
+      return;
+    }
+    if (s === 1) {
+      const M = __Q.get(S, "gtM", {}) || {}, miss = L.filter((lv) => !F.includes(lv));
+      const where = miss.map((lv) => (typeof St === "function" ? St(`lvl.${lv}`, ki?.[lv]?.name ?? lv) : lv)).join(", ");
+      __dlg(S, [__GT.M(L3(`Já voltaram ${F.length} de ${L.length}. Ainda faltam: ${miss.map((lv) => __GT.cat(M[lv]).n).join(", ")}.`, `${F.length} of ${L.length} are back. Still missing: ${miss.map((lv) => __GT.cat(M[lv]).n).join(", ")}.`, `Ya volvieron ${F.length} de ${L.length}. Aún faltan: ${miss.map((lv) => __GT.cat(M[lv]).n).join(", ")}.`), F.length ? "smile" : "sadness"),
+        __GT.M(L3(`Sinto que estão em: ${where}.`, `I feel they're in: ${where}.`, `Siento que están en: ${where}.`), "calm")]);
+      return;
+    }
+    const lines = [L3("A casa nunca esteve tão cheia de pelo. E de felicidade.", "The house has never been this full of fur. Or of happiness.", "La casa nunca estuvo tan llena de pelo. Ni de felicidad."), L3("Cuide bem da Mel. Ela gosta de peixe e de ouro, nessa ordem.", "Take good care of Mel. She likes fish and gold, in that order.", "Cuida bien a Mel. Le gustan el pescado y el oro, en ese orden.")];
+    __dlg(S, [__GT.M(lines[(Math.random() * lines.length) | 0], "smile")]);
+  };
+  const npc = __qNpc(S, "peasant-2", mx, my, { scale: .62, label: L3("Falar com Marta", "Talk to Marta", "Hablar con Marta"), onTalk: talk });
+  if (!npc) return;
+  // gatos já resgatados passeiam em volta dela (a Mel vai com o herói depois da missão)
+  const M = __Q.get(S, "gtM", {}) || {};
+  __GT.found(S).forEach((lv, k) => {
+    const c = __GT.cat(M[lv]); if (__GT.st(S) === 2 && c.id === "mel") return;
+    const hx = mx + Math.cos(k * 1.9) * (40 + k * 7), hy = my + 14 + Math.sin(k * 1.9) * 18;
+    const s = S.add.sprite(hx, hy, c.tex, 0).setOrigin(.5, 1).setScale(.5).setDepth(hy).play(c.tex + "-idle");
+    s.anims.setProgress(Math.random());
+    let t = 1 + Math.random() * 3, tgt = null;
+    const U = (_t, ms) => {
+      if (!s.active) return; t -= ms / 1000;
+      if (tgt) { const dx = tgt[0] - s.x, dy = tgt[1] - s.y, d = Math.hypot(dx, dy), st2 = 34 * ms / 1000; if (d <= st2) { tgt = null; t = 2 + Math.random() * 4; s.play(c.tex + "-idle") } else { s.x += dx / d * st2; s.y += dy / d * st2; s.setFlipX(dx < 0).setDepth(s.y) } }
+      else if (t <= 0) { tgt = [mx + (Math.random() - 0.5) * 120, my + 6 + Math.random() * 40]; s.play(c.tex + "-walk") }
+    };
+    S.events.on("update", U); S.events.once("shutdown", () => S.events.off("update", U));
+  });
+}
+/* ─── gato escondido numa masmorra: foge, cansa, e é pego ─── */
+function __gtLevel(S) {
+  if (__GT.st(S) !== 1) return;
+  const id = S.levelId, M = __Q.get(S, "gtM", {}) || {};
+  if (!M[id] || __GT.found(S).includes(id)) return;
+  const L3 = __GT.L3, c = __GT.cat(M[id]), D = S.dungeon, lv = D?.level; if (!lv?.rooms?.length) return;
+  const sp = lv.playerSpawn, spx = (sp?.col ?? 0) * dt, spy = (sp?.row ?? 0) * dt;
+  const rooms = lv.rooms.filter((r) => r.rect && !r.hasBoss && !r.boss && !r.hub).map((r) => ({ r, d: Math.hypot((r.rect.x + r.rect.w / 2) * dt - spx, (r.rect.y + r.rect.h / 2) * dt - spy) })).sort((a, b) => a.d - b.d);
+  if (!rooms.length) return;
+  const R = rooms[Math.min(rooms.length - 1, Math.floor(rooms.length * 0.6))].r.rect;
+  const wall = (x, y) => !!D.isWallAtWorld?.(x, y);
+  let x = (R.x + R.w / 2) * dt, y = (R.y + R.h / 2) * dt;
+  for (let k = 0; k < 40 && wall(x, y); k++) { x = (R.x + 1 + Math.random() * (R.w - 2)) * dt; y = (R.y + 1 + Math.random() * (R.h - 2)) * dt }
+  __gtAnims(S);
+  const s = S.add.sprite(x, y, c.tex, 0).setOrigin(.5, 1).setScale(.5).setDepth(y).play(c.tex + "-idle");
+  const sh = S.add.ellipse(x, y, 22, 6, 0, .28).setDepth(y - 1);
+  const mark = S.add.text(x, y - 30, "?", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "12px", color: "#ffd27a", stroke: "#000", strokeThickness: 3 }).setOrigin(.5, 1).setDepth(9001);
+  S.tweens.add({ targets: mark, y: y - 34, duration: 600, yoyo: !0, repeat: -1 });
+  S.time.delayedCall(1800, () => S.scene.isActive() && __GT.banner(S, L3(`${c.n.toUpperCase()}, UM DOS GATOS DA MARTA, ESTÁ ESCONDIDO AQUI`, `${c.n.toUpperCase()}, ONE OF MARTA'S CATS, IS HIDING HERE`, `${c.n.toUpperCase()}, UNO DE LOS GATOS DE MARTA, SE ESCONDE AQUÍ`)));
+  let state = "idle", stamina = 2.2, rest = 0, caught = !1, dir = [1, 0];
+  const z = S.add.zone(x, y - 6, 4, 4);
+  z.interactLabel = L3(`Pegar ${c.n}`, `Pick up ${c.n}`, `Atrapar a ${c.n}`);
+  z.interact = () => {
+    if (caught) return;
+    const P = S.player; if (!P || Math.hypot(P.x - s.x, P.y - s.y) > 46) return;
+    if (state === "flee" && stamina > 0.5) { s.play(c.tex + "-hiss"); S.effects?.floatText?.(s.x, s.y - 28, L3("Fsss!", "Hiss!", "¡Fsss!"), "#ffd27a", 9); return }
+    caught = !0; state = "caught";
+    const i = D.objects.indexOf(z); i >= 0 && D.objects.splice(i, 1);
+    mark.destroy(); s.play(c.tex + "-idle");
+    const F = __GT.found(S).concat(id); __Q.set(S, "gtF", F); S.requestSave?.(10);
+    S.game.audioEngine?.sfx?.("sfx-secret-reveal");
+    __dlg(S, [__GT.H(L3(`Peguei você, ${c.n}! A Marta está te esperando.`, `Got you, ${c.n}! Marta is waiting for you.`, `¡Te tengo, ${c.n}! Marta te está esperando.`), "smile")], () => {
+      __FFX?.burst?.(S, s.x, s.y - 10, 0xffe9a0, 12, 26, 520, 0.03, s.depth + 2, 8);
+      S.tweens.add({ targets: [s, sh], alpha: 0, y: "-=10", duration: 700, onComplete: () => { s.destroy(); sh.destroy(); z.destroy() } });
+      const L = __GT.list(S);
+      __GT.banner(S, L3(`GATO RESGATADO: ${c.n.toUpperCase()} (${F.length}/${L.length})`, `CAT RESCUED: ${c.n.toUpperCase()} (${F.length}/${L.length})`, `GATO RESCATADO: ${c.n.toUpperCase()} (${F.length}/${L.length})`), "#8fcf8a");
+    });
+  };
+  D.objects.push(z);
+  const U = (_t, ms) => {
+    if (!s.active || caught || !S.player) return;
+    const P = S.player, dts = ms / 1000, dx = s.x - P.x, dy = s.y - P.y, d = Math.hypot(dx, dy) || 1;
+    if (state === "idle") { if (d < 120) { state = "flee"; stamina = 1.6 + Math.random() * 0.9 } }
+    else if (state === "flee") {
+      stamina -= dts;
+      // corre para longe do herói; se der de cara com a parede, desvia
+      const want = [dx / d, dy / d]; dir = [dir[0] * 0.7 + want[0] * 0.3, dir[1] * 0.7 + want[1] * 0.3];
+      const L = Math.hypot(dir[0], dir[1]) || 1, vx = dir[0] / L, vy = dir[1] / L, sp2 = 140 * dts;
+      let moved = !1;
+      for (const a of [0, .6, -.6, 1.2, -1.2, 1.8, -1.8]) {
+        const cs = Math.cos(a), sn = Math.sin(a), ux = vx * cs - vy * sn, uy = vx * sn + vy * cs, nx = s.x + ux * sp2, ny = s.y + uy * sp2;
+        if (!wall(nx, ny) && !wall(nx + ux * 12, ny + uy * 8)) { s.x = nx; s.y = ny; dir = [ux, uy]; moved = !0; s.setFlipX(ux < 0); break }
+      }
+      s.anims.currentAnim?.key !== c.tex + "-run" && s.play(c.tex + "-run");
+      if (!moved || stamina <= 0 || d > 260) { state = "rest"; rest = 2 + Math.random() * 1.2; s.play(c.tex + "-hiss"); s.once("animationcomplete", () => s.active && state === "rest" && s.play(c.tex + "-idle")) }
+    } else if (state === "rest") { rest -= dts; if (rest <= 0) state = d < 70 ? "flee" : "idle", stamina = 1.4 + Math.random() * 0.8 }
+    s.setDepth(s.y); sh.setPosition(s.x, s.y).setDepth(s.y - 1); mark.active && mark.setX(s.x); z.setPosition(s.x, s.y - 6);
+  };
+  S.events.on("update", U);
+  S.events.once("shutdown", () => { S.events.off("update", U); const i = D.objects.indexOf(z); i >= 0 && D.objects.splice(i, 1) });
+}
+/* ─── Mel, a gata companheira: segue o herói e fareja ouro nas salas limpas ─── */
+function __gtPet(S) {
+  if (__GT.st(S) !== 2 || S.__gtPet || !S.player || S.isDorfCave) return;
+  __gtAnims(S);
+  const L3 = __GT.L3, P = S.player, s = S.add.sprite(P.x - 26, P.y + 6, "gato-a", 0).setOrigin(.5, 1).setScale(.5).setDepth(P.y).play("gato-a-idle");
+  const sh = S.add.ellipse(s.x, s.y, 22, 6, 0, .28).setDepth(P.y - 1);
+  S.__gtPet = s;
+  const fol = __qFollow(S, s, { gap: 34, walk: 95, run: 175 });
+  let sniff = null;
+  const U = (_t, ms) => {
+    if (!s.active || !S.player) return;
+    if (sniff) {
+      const dx = sniff.x - s.x, dy = sniff.y - s.y, d = Math.hypot(dx, dy), st2 = 120 * ms / 1000;
+      if (d > st2 && sniff.t > 0) { s.x += dx / d * st2; s.y += dy / d * st2; s.setFlipX(dx < 0); s.anims.currentAnim?.key !== "gato-a-walk" && s.play("gato-a-walk") }
+      else if (!sniff.done) {
+        sniff.done = !0; s.play("gato-a-idle");
+        S.time.delayedCall(700, () => {
+          if (!s.active) return;
+          const g = sniff.g; S.stats?.addGold?.(g); S.game.audioEngine?.sfx?.("sfx-item-pickup");
+          S.effects?.floatText?.(s.x, s.y - 26, `+${g} ${L3("ouro", "gold", "oro")}`, "#ffd24a", 10);
+          __FFX?.burst?.(S, s.x, s.y - 6, 0xffd24a, 8, 20, 420, 0.02, s.depth + 2, 6);
+          sniff = null;
+        });
+      }
+      sniff && (sniff.t -= ms);
+    } else {
+      const sp = fol(ms); const want = sp > 130 ? "gato-a-run" : sp > 0 ? "gato-a-walk" : "gato-a-idle";
+      s.anims.currentAnim?.key !== want && s.play(want);
+    }
+    s.setDepth(s.y); sh.setPosition(s.x, s.y).setDepth(s.y - 1);
+  };
+  const onClear = () => {
+    if (!s.active || sniff || Math.random() > 0.4) return;
+    const a = Math.random() * Math.PI * 2, tx = S.player.x + Math.cos(a) * 50, ty = S.player.y + Math.sin(a) * 34;
+    if (S.dungeon?.isWallAtWorld?.(tx, ty)) return;
+    sniff = { x: tx, y: ty, t: 2500, g: 8 + __Q.n(S) * 4 + ((Math.random() * 8) | 0) };
+    S.effects?.floatText?.(s.x, s.y - 26, L3("*fareja*", "*sniff*", "*olfatea*"), "#e8d090", 8);
+  };
+  S.game.events.on("room:cleared", onClear); S.__gtSniff = onClear;
+  S.events.on("update", U);
+  S.events.once("shutdown", () => { S.events.off("update", U); S.game.events.off("room:cleared", onClear); S.__gtPet = null });
+}
+/* ─── ganchos ─── */
+{
+  __QLIST.push({ id: "gatos", title: "Os Gatos da Marta", st: (S) => {
+    const s = __GT.st(S); if (!s) return null;
+    if (s === 2) return ["done", __GT.L3("Todos os gatos voltaram para casa. A Mel agora te acompanha.", "All the cats are home. Mel now travels with you.", "Todos los gatos volvieron a casa. Mel ahora te acompaña.")];
+    const L = __GT.list(S), F = __GT.found(S), M = __Q.get(S, "gtM", {}) || {};
+    if (F.length >= L.length) return ["on", __GT.L3("Todos resgatados! Volte à Marta no Coração da Floresta.", "All rescued! Go back to Marta in the Heart of the Forest.", "¡Todos rescatados! Vuelve con Marta al Corazón del Bosque.")];
+    const miss = L.filter((lv) => !F.includes(lv)).map((lv) => `${__GT.cat(M[lv]).n} (${typeof St === "function" ? St(`lvl.${lv}`, ki?.[lv]?.name ?? lv) : lv})`).join(", ");
+    return ["on", __GT.L3(`Gatos: ${F.length}/${L.length} — faltam ${miss}.`, `Cats: ${F.length}/${L.length} — missing ${miss}.`, `Gatos: ${F.length}/${L.length} — faltan ${miss}.`)];
+  } });
+  __QLIST.push({ id: "aprendiz", title: "O Aprendiz do Ferreiro", st: (S) => {
+    const a = window.__apzGet?.(S) || {}, L3 = __GT.L3;
+    return !a.s ? null : a.s === 3 ? ["done", L3("O Brokk voltou para a forja. O Martelo Rúnico está na armaria.", "Brokk is back at the forge. The Runic Hammer is in the armory.", "Brokk volvió a la forja. El Martillo Rúnico está en la armería.")]
+      : a.s === 4 ? ["done", L3("O Brokk não sobreviveu às cavernas…", "Brokk did not survive the caves…", "Brokk no sobrevivió a las cavernas…")]
+      : ["on", L3("Encontre o Brokk nas Cavernas Dorf e leve-o vivo até um portal branco.", "Find Brokk in the Dorf Caves and bring him alive to a white portal.", "Encuentra a Brokk en las Cavernas Dorf y llévalo con vida a un portal blanco.")];
+  } });
+  try {
+    Object.assign(__TR.en, { "Os Gatos da Marta": "Marta's Cats", "O Aprendiz do Ferreiro": "The Blacksmith's Apprentice", "Martelo Rúnico de Brokk": "Brokk's Runic Hammer" });
+    __TR.es && Object.assign(__TR.es, { "Os Gatos da Marta": "Los Gatos de Marta", "O Aprendiz do Ferreiro": "El Aprendiz del Herrero", "Martelo Rúnico de Brokk": "Martillo Rúnico de Brokk" });
+  } catch (e) {}
+  const P0 = bo.prototype.preload;
+  bo.prototype.preload = function () {
+    const r = P0.apply(this, arguments);
+    try {
+      const L = this.load, op = L.path, D = "assets/pixel-art/npc/"; L.setPath("");
+      for (const t in __GT_TEX) this.textures.exists(t) || L.spritesheet(t, D + t + ".png", { frameWidth: __GT_TEX[t], frameHeight: 50 });
+      this.textures.exists("aprendiz") || L.spritesheet("aprendiz", D + "aprendiz.png", { frameWidth: 92, frameHeight: 66 });
+      for (const ex of ["talk", "calm", "smile", "sadness", "aggression", "special"]) this.textures.exists(`aprendiz-p-${ex}`) || L.image(`aprendiz-p-${ex}`, `${D}aprendiz-p-${ex}.png`);
+      L.setPath(op);
+    } catch (e) {}
+    return r;
+  };
+  const HS = __hubSetup;
+  __hubSetup = function (S) {
+    const r = HS.apply(this, arguments);
+    try {
+      __gtAnims(S);
+      if (!__Q.camp(S) || S.isDorfCave) return r;
+      const id = S.levelId;
+      if (__HUBD.includes(id)) __gtLevel(S);
+      S.time.delayedCall(700, () => S.scene.isActive() && __gtPet(S));
+      if (id === "forest") S.time.delayedCall(520, () => { if (S.scene.isActive() && S.__hubPortals) __gtHub(S) });
+    } catch (e) { console.warn("[quests2]", e) }
+    return r;
+  };
+  // missão do aprendiz (chave por herói): some ao excluir o herói ou começar campanha nova no slot
+  const apzDel = (tag) => { try { localStorage.removeItem("depthgate:apz:" + tag) } catch (e) {} };
+  const K0 = Kr;
+  Kr = function (c = 1, i = "campaign") { apzDel((i === "endless" ? "e" : "") + c); return K0.apply(this, arguments) };
+  const CR = __cReset;
+  __cReset = function (g, sl) { apzDel(String(sl)); return CR.apply(this, arguments) };
+}
+window.__dgQ2 = { GT: __GT, cats: __GT_CATS, hub: __gtHub, level: __gtLevel, pet: __gtPet, follow: __qFollow };
+/*__QUESTS2__*/
 
 /*__ENDLESSTREES__*//*__VWA__*/
 /* ── Dublagem tocada pelo Web Audio (o mesmo áudio do jogo, já liberado pelo primeiro toque) ──

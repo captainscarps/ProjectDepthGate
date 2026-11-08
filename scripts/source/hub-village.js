@@ -4,7 +4,7 @@
    vendedor, santuário, mural, bonecos de treino, fogueira, portal e saída.
    Os painéis de melhoria (vendedor / ferreiro / santuário) são os mesmos do Refúgio antigo.     */
 constructor(){super("Hub")}
-preload(){const V="assets/pixel-art/hub/village/";this.textures.exists("peasant-1")||this.load.spritesheet("peasant-1","assets/pixel-art/npc/peasant-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("peasant-3")||this.load.spritesheet("peasant-3","assets/pixel-art/npc/peasant-3.png",{frameWidth:128,frameHeight:128});this.textures.exists("elf-1")||this.load.spritesheet("elf-1","assets/pixel-art/npc/elf-1.png",{frameWidth:128,frameHeight:128});this.load.setPath("assets/pixel-art/hub/"),this.load.image("hub-stall","stall.png"),this.load.image("hub-shrine","shrine.png"),this.load.image("hub-campfire","campfire.png"),this.load.image("hub-banner","banner.png"),this.textures.exists("hub-portal")||this.load.spritesheet("hub-portal","hub-portal2.png",{frameWidth:56,frameHeight:65}),this.load.setPath("");
+preload(){const V="assets/pixel-art/hub/village/";this.textures.exists("peasant-1")||this.load.spritesheet("peasant-1","assets/pixel-art/npc/peasant-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("peasant-3")||this.load.spritesheet("peasant-3","assets/pixel-art/npc/peasant-3.png",{frameWidth:128,frameHeight:128});this.textures.exists("elf-1")||this.load.spritesheet("elf-1","assets/pixel-art/npc/elf-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("aprendiz")||this.load.spritesheet("aprendiz","assets/pixel-art/npc/aprendiz.png",{frameWidth:92,frameHeight:66});this.load.setPath("assets/pixel-art/hub/"),this.load.image("hub-stall","stall.png"),this.load.image("hub-shrine","shrine.png"),this.load.image("hub-campfire","campfire.png"),this.load.image("hub-banner","banner.png"),this.textures.exists("hub-portal")||this.load.spritesheet("hub-portal","hub-portal2.png",{frameWidth:56,frameHeight:65}),this.load.setPath("");
 const L=(k,f,w,h)=>this.textures.exists(k)||this.load.spritesheet(k,V+f,{frameWidth:w,frameHeight:h});
 this.textures.exists("vh-ground")||this.load.image("vh-ground",V+"ground.png");this.textures.exists("vh-table")||this.load.image("vh-table",V+"house-table.png");this.textures.exists("vh-cart")||this.load.image("vh-cart",V+"house-cart.png");
 this.textures.exists("vh-props")||this.load.atlas("vh-props",V+"props.png",V+"props.json");this.cache.json.exists("vh-map")||this.load.json("vh-map",V+"village.json");
@@ -17,10 +17,10 @@ const D=["d","l","r","u"];D.forEach((d,i)=>{mk("vh-sw-"+d,"vh-smith-walk",i*6,i*
 mk("vh-sf","vh-smith-forge",0,5,8,-1);mk("vh-sfi","vh-smith-fidle",0,5,6,-1);mk("vh-st","vh-smith-take",0,2,8,0);mk("vh-sl","vh-smith-leave",0,2,8,0);
 mk("vh-ht","vh-hunter-tans",0,5,6,-1);this.textures.exists("vh-herb-boil")&&mk("vh-herb-a","vh-herb-boil",0,11,7,-1);this.textures.exists("vh-herb-caul")&&mk("vh-herb-c","vh-herb-caul",0,11,7,-1);mk("vh-htk","vh-hunter-take",0,4,7,0);mk("vh-hlv","vh-hunter-leave",0,4,7,0);
 this.textures.exists("peasant-1")&&(mk("peasant-1-idle","peasant-1",0,11,6),mk("peasant-1-talk","peasant-1",48,58,7));this.textures.exists("peasant-3")&&(mk("peasant-3-idle","peasant-3",0,6,6),mk("peasant-3-talk","peasant-3",32,40,7));this.textures.exists("elf-1")&&(mk("elf-1-idle","elf-1",0,5,6),mk("elf-1-talk","elf-1",48,54,7));this.textures.exists("dorf-brazier")&&mk("dorf-brazier-a","dorf-brazier",0,5,8,-1);A.exists("hub-portal-a")||A.create({key:"hub-portal-a",frames:A.generateFrameNumbers("hub-portal",{start:0,end:13}),frameRate:10,repeat:-1})}
-create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
+create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}try{typeof __gtAnims==="function"&&__gtAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
 const __F=this.game.registry.get("hub:fromForest");this.game.registry.remove("hub:fromForest");this.fromForest=!!__F;this.retSlot=__F?.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main;cam.setZoom(Pt*1.5);const z=cam.zoom;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);this.__us=Pt/z;cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
 const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];this.title=null;this.shade=null;this.hud=null;this.smith=null;this.hunter=null;this.herb=null;this.panel=null;this.panelRows=null;this.__pz=null;this.__hs=null;this.__bub=null;this.dummies=[];
-this.__busy=!1;this.__uiTap=!1;this.__caveWarned=!1;
+this.__busy=!1;this.__uiTap=!1;this.__caveWarned=!1;this.__apzTalking=!1;this.__apzMournSeen=!1;this.apzB=null;
 /* chão, casa, props */
 this.add.image(0,0,"vh-ground").setOrigin(0).setDepth(-50);const H=M.house;
 this.house=this.add.sprite(H.x,H.y,"vh-house",0).setOrigin(0).setDepth(H.base);this.house.play("vh-house-c");this.doorOpen=!1;
@@ -244,11 +244,16 @@ __enterDorfCave(){
 /* ── ferreiro: permanece na bigorna trabalhando e conversando como peasant-1 permanente ── */
 __smith(){const I=this.M.interior,A=I.smith.anvil;const s=this.smith={x:A[0],y:A[1]-20,state:"forge",t:3,talk:0,walking:!1};
 s.f=this.add.sprite(A[0],A[1]+2,"peasant-1",0).setOrigin(.5,1).setScale(.65).setDepth(A[1]).play("peasant-1-idle");
-s.f.on("animationrepeat",()=>{if(this.area==="in"){this.__sparks(A[0]+4,A[1]-22,6);window.__advancedAudio?.playMetalClang?.("E5")}})}
+s.f.on("animationrepeat",()=>{if(this.area==="in"){this.__sparks(A[0]+4,A[1]-22,6);window.__advancedAudio?.playMetalClang?.("E5")}});this.__apzBrokk()}
+/* ── Brokk, o aprendiz resgatado nas Cavernas Dorf, trabalha ao lado da fornalha ── */
+__apzBrokk(){const st=window.__apzGet?.(this);if(!st||st.s!==3||!this.textures.exists("aprendiz"))return;const F=this.M.interior.spots.forge,x=F[0]+30,y=F[1]+20;const b=this.apzB={x,y,s:this.add.sprite(x,y,"aprendiz",50).setOrigin(.5,1).setScale(.62).setDepth(y).setFlipX(!0)};this.anims.exists("aprendiz-idle")&&b.s.play("aprendiz-idle");const L3=__L3,lines=[L3("Ainda sonho com aquele salão. Obrigado por descer até lá.","I still dream about that hall. Thank you for coming down.","Aún sueño con ese salón. Gracias por bajar hasta allí."),L3("As runas do martelo fui eu que gravei. O mestre só esquentou o ferro!","I carved the runes on the hammer. The master just heated the iron!","Las runas del martillo las grabé yo. ¡El maestro solo calentó el hierro!"),L3("Achei um veio azul tão puro lá embaixo… mas desta vez fico na forja.","I found such a pure blue vein down there… but this time I'm staying at the forge.","Encontré una veta azul tan pura allá abajo… pero esta vez me quedo en la forja.")];this.inters.push({area:"in",id:"brokk",x,y:y-6,r:26,label:"BROKK",desc:L3("Conversar","Chat","Conversar"),act:()=>{this.__apzN=((this.__apzN??-1)+1)%lines.length;this.anims.exists("aprendiz-talk")&&b.s.play("aprendiz-talk",!0);this.__say(x,y-40,lines[this.__apzN],3000,"#bcd4ff","male");this.time.delayedCall(3000,()=>b.s.active&&this.anims.exists("aprendiz-idle")&&b.s.play("aprendiz-idle",!0))}})}
+/* ── O Aprendiz do Ferreiro: pedido, agradecimento e luto (estado por herói em dorf-caves.js) ── */
+__apzSmith(){const g=window.__apzGet,st=g?g(this):null;if(!st)return!1;if(this.__apzTalking)return!0;const s=this.smith,L3=__L3;const seq=(lines,then)=>{this.__apzTalking=!0;s.talk=1e9;s.f.play("peasant-1-talk",!0);let t=0;lines.forEach(ln=>{const d=Math.max(2800,ln.length*58);this.time.delayedCall(t,()=>this.__say(s.x,s.y-38,ln,d-200,"#ffd9a0","old"));t+=d});this.time.delayedCall(t,()=>{this.__apzTalking=!1;s.talk=.01;then?.()})};const shop=()=>{this.__forgeWeaponsShop(!0);this.__resumeSmith=!0};if(st.mourn){if(!this.__apzMournSeen){this.__apzMournSeen=!0;this.events.once("shutdown",()=>{const c=window.__apzGet(this);c.mourn=0;window.__apzSet(this,c)})}seq([L3("O Brokk… não volta mais. Eu nunca devia ter deixado ele descer sozinho.","Brokk… isn't coming back. I should never have let him go down alone.","Brokk… no va a volver. Nunca debí dejarlo bajar solo."),L3("Hoje a forja fica fria. Volte outro dia.","The forge stays cold today. Come back another day.","Hoy la forja se queda fría. Vuelve otro día.")]);return!0}if(!st.s){window.__apzSet(this,{...st,s:1});seq([L3("Antes de você comprar qualquer coisa… preciso de um favor.","Before you buy anything… I need a favor.","Antes de que compres nada… necesito un favor."),L3("Meu aprendiz, o Brokk, desceu às Cavernas Dorf atrás de um veio puro de cobalto e não voltou.","My apprentice, Brokk, went down into the Dorf Caves after a pure cobalt vein and never came back.","Mi aprendiz, Brokk, bajó a las Cavernas Dorf tras una veta pura de cobalto y no volvió."),L3("Se encontrar ele lá embaixo, traga de volta por um portal branco. Eu pago bem.","If you find him down there, bring him back through a white portal. I pay well.","Si lo encuentras allá abajo, tráelo de vuelta por un portal blanco. Pago bien.")],()=>{this.__apzBanner(L3("NOVA MISSÃO: O APRENDIZ DO FERREIRO","NEW QUEST: THE BLACKSMITH'S APPRENTICE","NUEVA MISIÓN: EL APRENDIZ DEL HERRERO"));shop()});return!0}if(st.s===3&&st.thanks){window.__apzSet(this,{...st,thanks:0});seq([L3("Brokk! Você trouxe ele vivo… obrigado, de verdade.","Brokk! You brought him back alive… thank you, truly.","¡Brokk! Lo trajiste con vida… gracias, de verdad."),L3("Forjamos juntos o Martelo Rúnico de Brokk; está na armaria. E daqui pra frente, conserto pela metade do preço.","Together we forged Brokk's Runic Hammer; it's in the armory. And from now on, repairs are half price.","Juntos forjamos el Martillo Rúnico de Brokk; está en la armería. Y de ahora en adelante, reparo a mitad de precio.")],shop);return!0}return!1}
+__apzBanner(msg){try{const cam=this.cameras.main,t=this.add.text(cam.width/2,90,msg,{fontFamily:"'Cinzel', Georgia, serif",fontSize:"12px",fontStyle:"bold",color:"#ffd27a",stroke:"#000",strokeThickness:4}).setOrigin(.5).setScrollFactor(0).setDepth(99999);this.tweens.add({targets:t,alpha:0,y:70,delay:3400,duration:900,onComplete:()=>t.destroy()})}catch(e){}}
 __smithTick(dt){const s=this.smith;if(!s)return;const P=this.M.interior.smith;
 if(s.talk>0){s.talk-=dt;if(s.talk<=0&&!this.panel){s.f.play("peasant-1-idle",!0)}return}
 s.x=P.anvil[0];s.y=P.anvil[1]-20}
-__smithTalk(){const s=this.smith,L3=__L3;s.talk=1e9;s.f.play("peasant-1-talk",!0);
+__smithTalk(){if(this.__apzSmith?.())return;const s=this.smith,L3=__L3;s.talk=1e9;s.f.play("peasant-1-talk",!0);
 this.__say(s.x,s.y-38,[L3("Aço bom pede fogo paciente. Em que posso ajudar?","Good steel needs patient fire. How can I help?","El buen acero pide fuego paciente. ¿En qué te ayudo?"),L3("Traga fragmentos e eu deixo sua lâmina digna do Abismo.","Bring fragments and I'll make your blade worthy of the Abyss.","Trae fragmentos y haré tu hoja digna del Abismo.")][Math.floor(Math.random()*2)],1800,"#ffd9a0","old");this.time.delayedCall(350,()=>{this.__forgeWeaponsShop();this.__resumeSmith=!0})}
 /* ── curtidor: trabalha no varal, larga a faca, descansa e volta ── */
 __hunter(){const p=this.M.spots.hunter;const h=this.hunter={s:this.add.sprite(p[0],p[1]+2,"vh-hunter-tans",0).setOrigin(.5,1).setDepth(p[1]).play("vh-ht"),state:"tans",t:6+Math.random()*4,talk:0}}
@@ -393,7 +398,7 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
     (window.__forgeBrokenGet?.(slot)||[]).forEach(it=>add(it,"broken"));
     return out;
   };
-  const cost=f=>Math.ceil(price(f.it.id)*0.15*f.used);
+  const cost=f=>Math.ceil(price(f.it.id)*0.15*f.used*(window.__apzGet?.(this)?.s===3?.5:1));
   const render=()=>{
     rows.forEach(r=>r.destroy());rows=[];
     const cur=getCoins();coinT.setText(`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${cur} ◆`);
@@ -439,8 +444,9 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
   this.__fnAuto(o,cB);
 }
 
-__forgeWeaponsShop(){
+__forgeWeaponsShop(fromSmith){
   if(this.panel||this.__busy)return;
+  if(!fromSmith&&window.__apzGet?.(this)?.mourn){this.__apzSmith?.();return}
   const L3=__L3,d=_/2,Y=12,HH=336;
   try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Só forjo com Pedra Cobalto. Essas armas são feitas dela, por isso são tão raras. E ela só existe nas Cavernas Dorf; o portal branco fica logo ali no canto.","I only forge with Cobalt Stone. These weapons are made of it, that's why they're so rare. And it's only found in the Dorf Caves; the white portal is right there in the corner.","Solo forjo con Piedra Cobalto. Estas armas están hechas de ella, por eso son tan raras. Y solo existe en las Cavernas Dorf; el portal blanco está ahí en la esquina."),6200,"#bcd4ff","male")}catch(_){}
   const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
@@ -495,15 +501,17 @@ __forgeWeaponsShop(){
     {id:"unique_forge_cataclysm",name:L3("Machado do Cataclismo","Cataclysm Axe","Hacha del Cataclismo"),price:170,icon:"icon-axe",stats:"+24 DANO · +4 DEFESA · +15% CRÍTICO",color:"#f87171"},
     {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:180,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"}
   ];
+  if(window.__apzGet?.(this)?.s===3)weaponsList.push({id:"unique_forge_brokk",name:L3("Martelo Rúnico de Brokk","Brokk's Runic Hammer","Martillo Rúnico de Brokk"),price:150,icon:"icon-axe",stats:"+20 DANO · +6 DEFESA · +2 VIDA · +10% CRÍTICO",color:"#60a5fa"});
+  const RS=weaponsList.length>6?32:37,RH=weaponsList.length>6?29:34;
 
   const goldText=this.add.text(d,Y+276,`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${curCoins} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(.5);
   const msgText=this.add.text(d,Y+292,"",{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(.5);
   o.add([goldText,msgText]);
 
   weaponsList.forEach((wp,idx)=>{
-    const ry=Y+44+idx*37;
+    const ry=Y+44+idx*RS;
     const box=this.add.graphics();
-    const z=this.add.zone(d,ry+16,400,34).setInteractive({useHandCursor:!0});
+    const z=this.add.zone(d,ry+RH/2,400,RH).setInteractive({useHandCursor:!0});
     const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
     const im=hd?this.add.image(d-176,ry+16,"items-hd",wp.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(1.1);
     const nm=this.add.text(d-154,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"10px",color:wp.color});
@@ -516,9 +524,9 @@ __forgeWeaponsShop(){
     const drawRow=(hover)=>{
       box.clear();
       box.fillStyle(hover?0x3d2818:0x1a120b,hover?0.92:0.65);
-      box.fillRoundedRect(d-200,ry,400,34,4);
+      box.fillRoundedRect(d-200,ry,400,RH,4);
       box.lineStyle(1,hover?0xffd24a:0x5a4832,hover?1:0.5);
-      box.strokeRoundedRect(d-200,ry,400,34,4);
+      box.strokeRoundedRect(d-200,ry,400,RH,4);
     };
     drawRow(!1);
 

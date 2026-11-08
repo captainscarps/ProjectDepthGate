@@ -231,6 +231,115 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
 }
 try { if (typeof window !== "undefined") window.__FORGE_FX = __FORGE_FX; } catch (e) {}
 
+/* 0a2b) O Aprendiz do Ferreiro: o Brokk desceu atrás de um veio puro e se perdeu nas cavernas.
+   Estado por herói em depthgate:apz:<herói> = { s: 0 nada | 1 pedido | 3 resgatado | 4 perdido, thanks, mourn }.
+   O ferreiro pede (hub-village.js); na caverna o Brokk aparece num salão distante guardado por um chefe; quem
+   sai por um portal branco com ele vivo ganha o Martelo Rúnico de Brokk na armaria e conserto pela metade.
+   Se ele cair, o ferreiro fica de luto e a forja fecha na visita seguinte. */
+function __apzKey(S) { return "depthgate:apz:" + __heroTag(S?.game?.registry, 1, S) }
+function __apzGet(S) { try { return JSON.parse(localStorage.getItem(__apzKey(S)) || "{}") || {} } catch (e) { return {} } }
+function __apzSet(S, o) { try { localStorage.setItem(__apzKey(S), JSON.stringify(o || {})) } catch (e) {} return o }
+if (typeof Xt !== "undefined" && !Xt.unique_forge_brokk) Xt.unique_forge_brokk = { name: "Martelo Rúnico de Brokk", type: "weapon", slot: "weapon", icon: "icon-axe", weaponClass: "heavy", minRarity: "UNIQUE", stats: { damage: 20, defense: 6, critChance: 10, maxHpAdd: 2 }, attackSpeed: .8, value: 360, uniqueForge: !0, breaksOnDeath: !0, desc: "Forjado a quatro mãos pelo ferreiro e pelo Brokk, com runas anãs das Cavernas Dorf. Quebra-se se morrer na run." };
+// Martelo Rúnico de Brokk: o golpe desce como uma marreta, runas azuis giram no chão e uma onda de choque se abre
+__FORGE_FX.unique_forge_brokk = function (S, x, y, ang, d) {
+  const ix = x + Math.cos(ang) * 30, iy = y + Math.sin(ang) * 22 + 4;
+  __FFX.arc(S, x, y - 8, ang, 32, 2.0, 8, 0x3b82f6, 300, d);
+  __FFX.arc(S, x, y - 8, ang, 32, 1.6, 2, 0xdbe8ff, 240, d + 1);
+  const g = S.add.graphics().setDepth(iy - 1).setBlendMode(j.BlendModes.ADD).setPosition(ix, iy);
+  g.lineStyle(1.5, 0x7ad8ff, 0.9).strokeEllipse(0, 0, 40, 16);
+  for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2, rx = Math.cos(a) * 20, ry = Math.sin(a) * 8; g.lineStyle(1.5, 0xdbe8ff, 1).lineBetween(rx - 3, ry - 3, rx + 3, ry + 3).lineBetween(rx + 3, ry - 3, rx - 3, ry + 3) }
+  g.setScale(0.4);
+  S.tweens.add({ targets: g, scaleX: 1.2, scaleY: 1.2, angle: 40, duration: 260, ease: "Back.easeOut", onComplete: () => S.tweens.add({ targets: g, alpha: 0, duration: 360, onComplete: () => g.destroy() }) });
+  const ring = S.add.ellipse(ix, iy, 14, 7).setStrokeStyle(3, 0x60a5fa, 0.95).setDepth(iy).setBlendMode(j.BlendModes.ADD);
+  S.tweens.add({ targets: ring, scaleX: 5, scaleY: 5, alpha: 0, duration: 480, ease: "Quad.easeOut", onComplete: () => ring.destroy() });
+  __FFX.burst(S, ix, iy - 4, 0x9cc2ff, 10, 30, 420, 0.022, d + 1, 8);
+  try { S.cameras.main.shake(80, 0.003) } catch (e) {}
+};
+function __apzCave(S, B) {
+  const st = __apzGet(S);
+  if (st.s !== 1 || S.__apz || !S.textures.exists("aprendiz")) return;
+  typeof __gtAnims === "function" && __gtAnims(S);
+  const L3 = typeof __L3 === "function" ? __L3 : (pt) => pt, T = dt || 32, G = B.level.__organicGrid;
+  const free = (c, r) => G?.[r]?.[c] === 0;
+  const sp = B.level.playerSpawn || S.dungeon?.level?.playerSpawn || { col: 0, row: 0 }, ports = S.__dorfPortals || [];
+  const nodes = (B.level.__nodes || []).filter((n) => n.kind !== "START" && free(Math.round(n.cx), Math.round(n.cy)));
+  const dS = (n) => Math.hypot(n.cx - sp.col, n.cy - sp.row);
+  const cand = nodes.filter((n) => ports.every((p) => Math.hypot(n.cx * T - p.x, n.cy * T - p.y) > 7 * T)).sort((a, b) => dS(a) - dS(b));
+  const nd = cand[Math.floor(cand.length * 0.7)] || nodes.sort((a, b) => dS(b) - dS(a))[0]; if (!nd) return;
+  const bc = Math.round(nd.cx), br = Math.round(nd.cy), x = bc * T + T / 2, y = br * T + T / 2;
+  const s = S.add.sprite(x, y, "aprendiz", 0).setOrigin(.5, 1).setScale(.55).setDepth(y);
+  S.anims.exists("aprendiz-scared") && s.play("aprendiz-scared");
+  const sh = S.add.ellipse(x, y, 22, 6, 0, .3).setDepth(y - 1);
+  const bar = S.add.graphics().setDepth(9001);
+  const a = S.__apz = { spr: s, hp: 10, max: 10, follow: !1, dead: !1 };
+  // o chefe que não deixa o Brokk sair do salão
+  S.time.delayedCall(400, () => {
+    if (!S.scene.isActive()) return;
+    let at = null;
+    for (let rad = 3; rad <= 6 && !at; rad++) for (let k = 0; k < 16 && !at; k++) { const c = bc + Math.round(Math.cos(k / 16 * Math.PI * 2) * rad), r = br + Math.round(Math.sin(k / 16 * Math.PI * 2) * rad); if (free(c, r)) at = [c, r] }
+    if (!at) return;
+    try {
+      const type = ["TROLL", "CYCLOPS", "MB_BASALT_COLOSSUS"][(Math.random() * 3) | 0];
+      const en = S.spawnEnemy?.(typeof ee !== "undefined" && ee[type] ? type : "TROLL", at[0], at[1], { elite: !0, eliteRoll: !1 });
+      if (en) { S.__dorfMakeBoss?.(en); en.__apzGuard = !0 }
+    } catch (e) {}
+  });
+  const D = (t, e = "talk") => ({ who: "aprendiz", expr: e, name: "BROKK", text: t });
+  const H = (t, e = "talk") => ({ who: "hero", expr: e, text: t });
+  const z = S.add.zone(x, y - 6, 4, 4);
+  z.interactLabel = L3("Falar com o Brokk", "Talk to Brokk", "Hablar con Brokk");
+  z.interact = () => {
+    if (a.follow || a.dead || typeof __dlg !== "function") return;
+    __dlg(S, [
+      D(L3("Ei! Aqui! Pelas barbas do meu avô… achei que ninguém ia descer atrás de mim.", "Hey! Over here! By my grandfather's beard… I thought nobody would come down for me.", "¡Eh! ¡Aquí! Por las barbas de mi abuelo… creí que nadie bajaría a buscarme."), "sadness"),
+      H(L3("O ferreiro me mandou te buscar. Consegue andar?", "The blacksmith sent me to get you. Can you walk?", "El herrero me envió a buscarte. ¿Puedes caminar?")),
+      D(L3("Consigo. Mas aquele monstro não me deixa sair do salão. Fico atrás de você até um portal branco.", "I can. But that monster won't let me leave the hall. I'll stay behind you until a white portal.", "Puedo. Pero ese monstruo no me deja salir del salón. Me quedo detrás de ti hasta un portal blanco."), "talk"),
+    ], () => {
+      a.follow = !0;
+      const i = S.dungeon.objects.indexOf(z); i >= 0 && S.dungeon.objects.splice(i, 1);
+      S.game.events.emit("ui:banner", L3("ESCOLTA: LEVE O BROKK VIVO ATÉ UM PORTAL BRANCO", "ESCORT: BRING BROKK ALIVE TO A WHITE PORTAL", "ESCOLTA: LLEVA A BROKK CON VIDA HASTA UN PORTAL BLANCO"), "#9cc2ff");
+    });
+  };
+  S.dungeon.objects.push(z);
+  const fol = typeof __qFollow === "function" ? __qFollow(S, s, { gap: 34, walk: 92, run: 165, far: 520 }) : null;
+  let hurtCd = 0, hurtT = 0;
+  const U = (_t, ms) => {
+    if (!s.active || !S.player) return;
+    bar.clear();
+    if (a.dead) return;
+    if (!a.follow) { s.setFlipX(S.player.x < s.x); return }
+    const spd = fol ? fol(ms) : 0;
+    hurtT -= ms;
+    if (hurtT <= 0) { const want = spd > 120 ? "aprendiz-run" : spd > 0 ? "aprendiz-walk" : "aprendiz-idle"; S.anims.exists(want) && s.anims.currentAnim?.key !== want && s.play(want) }
+    s.setDepth(s.y); sh.setPosition(s.x, s.y).setDepth(s.y - 1);
+    hurtCd -= ms;
+    if (hurtCd <= 0) for (const e of S.enemies?.getChildren?.() ?? []) {
+      if (!e.active || e.dead || Math.hypot(e.x - s.x, e.y - s.y) > 26) continue;
+      a.hp -= e.__isDorfCaveBoss ? 2 : 1; hurtCd = 850; hurtT = 300;
+      S.anims.exists("aprendiz-hurt") && s.play("aprendiz-hurt", !0); s.setTint(0xff7070); S.time.delayedCall(160, () => s.active && s.clearTint());
+      S.effects?.floatText?.(s.x, s.y - 34, `-${e.__isDorfCaveBoss ? 2 : 1}`, "#ff8080", 9);
+      break;
+    }
+    bar.fillStyle(0x000000, .6).fillRect(s.x - 14, s.y - 46, 28, 4); bar.fillStyle(0x7fb2ff, 1).fillRect(s.x - 13, s.y - 45, 26 * Math.max(0, a.hp) / a.max, 2);
+    if (a.hp <= 0) {
+      a.dead = !0; a.follow = !1; bar.clear();
+      __apzSet(S, { ...__apzGet(S), s: 4, mourn: 1, thanks: 0 });
+      S.anims.exists("aprendiz-dead") && s.play("aprendiz-dead");
+      S.tweens.add({ targets: [s, sh], alpha: 0, duration: 1600, delay: 900, onComplete: () => { s.destroy(); sh.destroy() } });
+      S.game.events.emit("ui:banner", L3("O BROKK CAIU…", "BROKK HAS FALLEN…", "BROKK HA CAÍDO…"), "#e05a4a");
+    }
+  };
+  S.events.on("update", U);
+  S.events.once("shutdown", () => { S.events.off("update", U); bar.destroy(); const i = S.dungeon?.objects?.indexOf(z) ?? -1; i >= 0 && S.dungeon.objects.splice(i, 1); S.__apz = null });
+}
+// saindo por um portal branco com o Brokk vivo e perto: resgatado
+function __apzOnExit(S, fell) {
+  const a = S?.__apz; if (!a || !a.follow || a.dead || a.hp <= 0 || fell) return;
+  const P = S.player; if (P && Math.hypot(a.spr.x - P.x, a.spr.y - P.y) > 320) return;
+  __apzSet(S, { ...__apzGet(S), s: 3, thanks: 1, mourn: 0 });
+}
+try { if (typeof window !== "undefined") Object.assign(window, { __apzGet, __apzSet }) } catch (e) {}
+
 /* 0a3) Caverna é só exploração: não existe XP de nível lá (nem o texto "+N XP" nem a escolha de habilidade) */
 if (typeof Eh !== "undefined" && Eh.prototype?.addXp) {
   const AX = Eh.prototype.addXp;
@@ -1766,6 +1875,7 @@ function __dorfBake(B) {
         };
       }
       __cobaltVeins(S, B);
+      try { __apzCave(S, B) } catch (e) { console.warn("[apz]", e) }
     };
     S.time?.delayedCall(120, runPostInit);
     setTimeout(runPostInit, 160);
@@ -1850,6 +1960,7 @@ function __dorfGuardianVisit(H, cx, cy, line) {
 /* 4) Retorno seguro das Cavernas de Dorf para o Refúgio (salvando ouro, itens e Moedas do Ferreiro) */
 function __dorfReturnToRefuge(S, fell = false) {
   if (!S || S.__dorfExiting) return;
+  try { __apzOnExit(S, fell) } catch (e) {}
   S.__dorfExiting = true;
 
   // Pedra Cobalto da run: quem sai por um portal leva tudo; quem cai deixa metade na caverna
