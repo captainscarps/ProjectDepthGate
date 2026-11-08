@@ -2619,19 +2619,19 @@
       "en": 12.88
     },
     "1329c0b5": {
-      "pt": 19.04,
+      "pt": 6.05,
       "en": 18.4,
       "byClass": {
         "pt": {
-          "WARRIOR": 19.04,
-          "ARCHER": 6.6,
-          "MAGE": 19.32,
-          "ROGUE": 20.64,
-          "NECROMANCER": 18.92,
-          "SHAMAN": 17.16,
-          "BERSERKER": 18.44,
-          "HUNTER": 19.88,
-          "DRUID": 20.32
+          "WARRIOR": 6.05,
+          "ARCHER": 4.69,
+          "MAGE": 5.21,
+          "ROGUE": 5.69,
+          "NECROMANCER": 4.89,
+          "SHAMAN": 4.97,
+          "BERSERKER": 5.41,
+          "HUNTER": 5.65,
+          "DRUID": 5.85
         },
         "en": {
           "WARRIOR": 18.4,
@@ -2790,7 +2790,9 @@
           "ARCHER": 2.84,
           "MAGE": 3.0,
           "SHAMAN": 2.8,
-          "ROGUE": 2.96
+          "ROGUE": 2.96,
+          "WARRIOR": 2.61,
+          "DRUID": 2.57
         },
         "en": {
           "MAGE": 3.28,
@@ -2920,7 +2922,9 @@
           "NECROMANCER": 3.8,
           "SHAMAN": 4.49,
           "MAGE": 5.05,
-          "ROGUE": 4.97
+          "ROGUE": 4.97,
+          "DRUID": 3.61,
+          "ARCHER": 3.53
         },
         "en": {}
       }
@@ -2933,7 +2937,12 @@
           "WARRIOR": 1.96,
           "MAGE": 2.45,
           "SHAMAN": 3.17,
-          "ROGUE": 2.53
+          "ROGUE": 2.53,
+          "BERSERKER": 2.45,
+          "HUNTER": 2.65,
+          "NECROMANCER": 2.17,
+          "DRUID": 2.37,
+          "ARCHER": 2.53
         },
         "en": {}
       }
@@ -2946,7 +2955,10 @@
           "WARRIOR": 3.24,
           "MAGE": 5.21,
           "SHAMAN": 4.49,
-          "ROGUE": 3.73
+          "ROGUE": 3.73,
+          "BERSERKER": 3.49,
+          "HUNTER": 3.49,
+          "NECROMANCER": 3.73
         },
         "en": {}
       }
@@ -2970,7 +2982,8 @@
         "pt": {
           "WARRIOR": 3.48,
           "SHAMAN": 4.05,
-          "ROGUE": 4.17
+          "ROGUE": 4.17,
+          "MAGE": 4.05
         },
         "en": {}
       }
@@ -3034,7 +3047,8 @@
         "pt": {
           "WARRIOR": 3.84,
           "MAGE": 5.13,
-          "SHAMAN": 4.53
+          "SHAMAN": 4.53,
+          "ROGUE": 4.77
         },
         "en": {}
       }
@@ -3046,7 +3060,8 @@
         "pt": {
           "WARRIOR": 5.24,
           "MAGE": 5.77,
-          "ROGUE": 6.05
+          "ROGUE": 6.05,
+          "SHAMAN": 4.81
         },
         "en": {}
       }
@@ -3096,7 +3111,9 @@
       "byClass": {
         "pt": {
           "WARRIOR": 3.56,
-          "SHAMAN": 3.73
+          "SHAMAN": 3.73,
+          "MAGE": 3.33,
+          "ROGUE": 3.56
         },
         "en": {}
       }
@@ -3153,7 +3170,9 @@
       "pt": 7.56,
       "en": 7.84,
       "byClass": {
-        "pt": {},
+        "pt": {
+          "SHAMAN": 4.49
+        },
         "en": {}
       }
     },
@@ -3162,7 +3181,9 @@
       "en": 3.32,
       "byClass": {
         "pt": {
-          "WARRIOR": 1.36
+          "WARRIOR": 1.36,
+          "MAGE": 1.64,
+          "ROGUE": 1.37
         },
         "en": {}
       }
@@ -3171,7 +3192,9 @@
       "pt": 4.56,
       "en": 5.28,
       "byClass": {
-        "pt": {},
+        "pt": {
+          "SHAMAN": 1.33
+        },
         "en": {}
       }
     },
@@ -3180,7 +3203,10 @@
       "en": 7.12,
       "byClass": {
         "pt": {
-          "WARRIOR": 3.92
+          "WARRIOR": 3.92,
+          "SHAMAN": 4.65,
+          "MAGE": 3.97,
+          "ROGUE": 3.89
         },
         "en": {}
       }
@@ -3190,7 +3216,10 @@
       "en": 5.92,
       "byClass": {
         "pt": {
-          "WARRIOR": 2.68
+          "WARRIOR": 2.68,
+          "MAGE": 3.33,
+          "SHAMAN": 3.01,
+          "ROGUE": 2.97
         },
         "en": {}
       }
@@ -3200,7 +3229,10 @@
       "en": 5.8,
       "byClass": {
         "pt": {
-          "WARRIOR": 3.32
+          "WARRIOR": 3.32,
+          "MAGE": 3.93,
+          "SHAMAN": 3.25,
+          "ROGUE": 3.24
         },
         "en": {}
       }
@@ -3210,7 +3242,10 @@
       "en": 10.0,
       "byClass": {
         "pt": {
-          "WARRIOR": 6.8
+          "WARRIOR": 6.8,
+          "MAGE": 7.53,
+          "ROGUE": 7.65,
+          "SHAMAN": 7.36
         },
         "en": {}
       }
@@ -3220,7 +3255,10 @@
       "en": 4.6,
       "byClass": {
         "pt": {
-          "WARRIOR": 1.72
+          "WARRIOR": 1.72,
+          "MAGE": 1.81,
+          "SHAMAN": 1.65,
+          "ROGUE": 1.53
         },
         "en": {}
       }
@@ -3230,7 +3268,10 @@
       "en": 7.12,
       "byClass": {
         "pt": {
-          "WARRIOR": 2.88
+          "WARRIOR": 2.88,
+          "MAGE": 2.73,
+          "SHAMAN": 3.13,
+          "ROGUE": 3.37
         },
         "en": {}
       }
@@ -3240,7 +3281,10 @@
       "en": 7.24,
       "byClass": {
         "pt": {
-          "WARRIOR": 3.92
+          "WARRIOR": 3.92,
+          "MAGE": 4.21,
+          "SHAMAN": 4.49,
+          "ROGUE": 4.49
         },
         "en": {}
       }
@@ -3250,7 +3294,10 @@
       "en": 6.92,
       "byClass": {
         "pt": {
-          "WARRIOR": 4.04
+          "WARRIOR": 4.04,
+          "MAGE": 4.57,
+          "SHAMAN": 4.61,
+          "ROGUE": 4.77
         },
         "en": {}
       }
@@ -3260,7 +3307,10 @@
       "en": 7.36,
       "byClass": {
         "pt": {
-          "WARRIOR": 5.04
+          "WARRIOR": 5.04,
+          "SHAMAN": 4.17,
+          "MAGE": 3.81,
+          "ROGUE": 3.76
         },
         "en": {}
       }
@@ -3270,7 +3320,10 @@
       "en": 8.48,
       "byClass": {
         "pt": {
-          "WARRIOR": 4.12
+          "WARRIOR": 4.12,
+          "MAGE": 4.56,
+          "SHAMAN": 4.28,
+          "ROGUE": 3.96
         },
         "en": {}
       }

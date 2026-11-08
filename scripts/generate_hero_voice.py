@@ -13,7 +13,7 @@ Sem instrução de direção: com ela o Gemini às vezes lê a instrução em vo
 Uso (a chave nunca é gravada em arquivo):
     GEMINI_API_KEY=... python3 scripts/generate_hero_voice.py all            # PT de todos (+ EN das heroínas)
     GEMINI_API_KEY=... python3 scripts/generate_hero_voice.py MAGE --en      # inglês também para os homens
-    --force regrava o que já existe · --workers N (padrão 4) · --model <modelo TTS>
+    --force regrava o que já existe · --workers N (padrão 4) · --model <modelo TTS> · --pt-only (só português)
     A cota diária é por modelo (Tier 1: 100/dia no flash); gemini-2.5-pro-preview-tts tem cota própria.
 """
 import concurrent.futures as cf
@@ -94,7 +94,7 @@ def main():
             continue
         for cls in classes:
             for L, text in (("pt", pt), ("en", en)):
-                if L == "en" and not (en_all or cls in FEMALE or pt in extra_pts):
+                if L == "en" and ("--pt-only" in argv or not (en_all or cls in FEMALE or pt in extra_pts)):
                     continue
                 out = V.OUT_PT if L == "pt" else V.OUT_EN
                 mir = V.MIRROR_PT if L == "pt" else V.MIRROR_EN
