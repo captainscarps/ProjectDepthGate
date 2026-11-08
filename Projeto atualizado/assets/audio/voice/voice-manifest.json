@@ -1989,20 +1989,24 @@
       "en": 4.43
     },
     "26cb4b1a": {
-      "pt": 5.91,
-      "en": 5.6
+      "pt": 6.0,
+      "en": 5.6,
+      "gpt": 1
     },
     "0e5129f2": {
-      "pt": 2.88,
-      "en": 2.61
+      "pt": 3.53,
+      "en": 2.61,
+      "gpt": 1
     },
     "51035584": {
       "pt": 5.04,
-      "en": 5.06
+      "en": 5.06,
+      "gpt": 1
     },
     "14aacd83": {
-      "pt": 5.83,
-      "en": 5.22
+      "pt": 5.78,
+      "en": 5.22,
+      "gpt": 1
     },
     "cd2d06f4": {
       "pt": 3.44,
@@ -4017,11 +4021,21 @@
     "a71668d7": {
       "byClass": {
         "en": {
-          "WARRIOR": 4.61
+          "WARRIOR": 4.61,
+          "BERSERKER": 4.25,
+          "HUNTER": 4.46,
+          "NECROMANCER": 5.58,
+          "DRUID": 5.44,
+          "ARCHER": 4.25
         }
       },
       "_enk": {
-        "WARRIOR": 1
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1
       },
       "en": 4.61,
       "_genen": 1
