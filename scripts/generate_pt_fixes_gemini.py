@@ -58,7 +58,7 @@ def gem(key, text, voice, target, tmp):
                 mp3, _ = V.generate_gemini(key, say, None, voice)
                 break
             except RuntimeError as e:
-                if "400" in str(e) and tries < 4:   # o modelo Pro às vezes tenta responder em texto: pede só a leitura
+                if "429" not in str(e) and tries < 4:   # o modelo Pro às vezes responde em texto ou sem áudio: pede só a leitura
                     say = f'Leia em voz alta: "{text}"'
                     time.sleep(3)
                     continue

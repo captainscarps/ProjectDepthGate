@@ -1759,8 +1759,14 @@
       "en": 7.89
     },
     "21b2102b": {
-      "pt": 7.6,
-      "en": 4.04
+      "pt": 6.34,
+      "en": 4.04,
+      "byClass": {
+        "pt": {
+          "SHAMAN": 6.34
+        }
+      },
+      "gpt": 1
     },
     "12a22025": {
       "pt": 7.68,
@@ -2431,7 +2437,13 @@
         },
         "pt": {
           "WARRIOR": 3.02,
-          "BERSERKER": 2.71
+          "BERSERKER": 2.71,
+          "HUNTER": 3.14,
+          "NECROMANCER": 3.02,
+          "DRUID": 2.52,
+          "ARCHER": 2.74,
+          "MAGE": 2.69,
+          "SHAMAN": 2.59
         }
       },
       "_enk": {
