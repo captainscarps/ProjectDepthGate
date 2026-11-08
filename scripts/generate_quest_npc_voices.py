@@ -8,7 +8,7 @@ com o id e o manifesto no mesmo formato das outras vozes de NPC. Falas montadas 
 de masmorra) ficam de fora.
 
 Uso (a chave nunca é gravada em arquivo; os arquivos do Kokoro ficam fora do repositório):
-    GEMINI_API_KEY=... KOKORO_DIR=/caminho/com/kokoro.onnx+voices.bin python3 scripts/generate_quest_npc_voices.py rafael|alline [--only pt|en] [--reuse-pt] [--model <modelo TTS>]
+    GEMINI_API_KEY=... KOKORO_DIR=/caminho/com/kokoro.onnx+voices.bin python3 scripts/generate_quest_npc_voices.py rafael|alline [--only pt|en] [--reuse-pt] [--model <modelo TTS>] [--match "começo da fala"]
     --retune só leva as falas PT já gravadas ao tom alvo (sem gastar cota do Gemini)
     --reuse-pt reaproveita os PT gerados nas últimas 6 h (a cota diária do Gemini pode acabar no meio)
     kokoro.onnx / voices.bin: github.com/thewh1teagle/kokoro-onnx/releases (model-files-v1.0); pip install kokoro-onnx soundfile
@@ -91,7 +91,7 @@ def dur(path):
 
 def main():
     global NPC
-    skip = {sys.argv[sys.argv.index("--model") + 1]} if "--model" in sys.argv else set()
+    skip = {sys.argv[sys.argv.index(f) + 1] for f in ("--model", "--match") if f in sys.argv}
     names = [a for a in sys.argv[1:] if not a.startswith("--") and a not in ("pt", "en") and a not in skip]
     if not names or names[0] not in NPCS:
         raise SystemExit(f"uso: generate_quest_npc_voices.py {'|'.join(NPCS)} [--only pt|en] [--reuse-pt]")
@@ -128,7 +128,10 @@ def main():
         for f in (V.MANIFEST_PATH, V.MIRROR_MANIFEST):
             open(f, "w", encoding="utf-8").write(txt)
         return
+    match = sys.argv[sys.argv.index("--match") + 1] if "--match" in sys.argv else None
     for pt, en in lines():
+        if match and not pt.startswith(match):
+            continue
         lid = man["k"].get(V.fnv(pt)) or V.fnv(pt)
         d = man["d"].setdefault(lid, {})
         man["k"][V.fnv(pt)] = lid
