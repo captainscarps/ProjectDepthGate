@@ -2408,11 +2408,59 @@
     },
     "f10882a4": {
       "pt": 2.84,
-      "en": 2.84
+      "en": 2.84,
+      "byClass": {
+        "en": {
+          "WARRIOR": 3.2,
+          "BERSERKER": 3.13,
+          "HUNTER": 3.24,
+          "NECROMANCER": 4.03,
+          "DRUID": 3.92,
+          "ARCHER": 3.02,
+          "MAGE": 2.88,
+          "SHAMAN": 3.24,
+          "ROGUE": 3.24
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
+      }
     },
     "75e14e2a": {
       "pt": 4.12,
-      "en": 4.68
+      "en": 4.68,
+      "byClass": {
+        "en": {
+          "WARRIOR": 4.1,
+          "BERSERKER": 3.85,
+          "HUNTER": 4.0,
+          "NECROMANCER": 5.11,
+          "DRUID": 4.72,
+          "ARCHER": 4.1,
+          "MAGE": 3.82,
+          "SHAMAN": 3.92,
+          "ROGUE": 4.18
+        }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
+      }
     },
     "abe517bf": {
       "pt": 3.6,
@@ -2774,9 +2822,27 @@
           "ROGUE": 3.04
         },
         "en": {
-          "MAGE": 3.76,
-          "SHAMAN": 2.8
+          "MAGE": 2.52,
+          "SHAMAN": 2.63,
+          "WARRIOR": 2.77,
+          "BERSERKER": 2.56,
+          "HUNTER": 2.59,
+          "NECROMANCER": 3.35,
+          "DRUID": 3.2,
+          "ARCHER": 2.48,
+          "ROGUE": 2.88
         }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
       }
     },
     "5de361e5": {
@@ -2795,10 +2861,27 @@
           "DRUID": 2.57
         },
         "en": {
-          "MAGE": 3.28,
-          "SHAMAN": 3.16,
-          "ROGUE": 3.2
+          "MAGE": 2.41,
+          "SHAMAN": 2.41,
+          "ROGUE": 2.74,
+          "WARRIOR": 2.66,
+          "BERSERKER": 2.38,
+          "HUNTER": 2.45,
+          "NECROMANCER": 3.35,
+          "DRUID": 3.28,
+          "ARCHER": 2.41
         }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
       }
     },
     "1c0b8f01": {
@@ -2819,8 +2902,14 @@
         "en": {
           "MAGE": 5.92,
           "SHAMAN": 5.32,
-          "ROGUE": 5.0
+          "ROGUE": 5.0,
+          "WARRIOR": 5.58,
+          "BERSERKER": 5.0
         }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1
       }
     },
     "8707e6fc": {

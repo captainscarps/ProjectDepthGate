@@ -233,8 +233,8 @@ mono(key,t){const S=this;if(!t||S.heroDone.has("m:"+key))return!1;S.heroDone.add
 hsay(key,t){const S=this;if(S.ret||S.fin7||!t||S.heroDone.has(key))return;S.heroDone.add(key);S.queue.push({h:t,t:S.time.now});S.speaking||S.nextLine()}
 nextLine(){const S=this,tok=++S.lineTok;S.typer?.remove();if(!S.queue.length){S.speaking=!1;S.skipBtn?.setVisible(!1);S.tweens.add({targets:S.nar,alpha:0,duration:600});return}let it=S.queue.shift();while(it!==void 0&&!S.lineOk(it))it=S.queue.shift();if(it===void 0){S.speaking=!1;S.skipBtn?.setVisible(!1);S.tweens.add({targets:S.nar,alpha:0,duration:600});return}
  S.speaking=!0;S.skipBtn?.setVisible(!0);S.curItem=it;it&&typeof it==="object"&&it.h&&(it=it.h);
- if(typeof it==="string"){const fadeMs=S.nar.alpha>.05?300:0;S.tweens.add({targets:S.nar,alpha:0,duration:Math.max(1,fadeMs-40)});const vd=(window.__dubDur?.(it)||0)*1e3,d=Math.max(2600,it.length*48,vd+500);
-  S.time.delayedCall(fadeMs,()=>{if(tok!==S.lineTok)return;S.heroSay(it,d);let fin=!1;const nx=()=>{if(fin||tok!==S.lineTok||!S.sys.isActive())return;fin=!0;S.nextLine()};
+ if(typeof it==="string"){window.__currentSpeaker=String(S.classId||"WARRIOR").toUpperCase();const fadeMs=S.nar.alpha>.05?300:0;S.tweens.add({targets:S.nar,alpha:0,duration:Math.max(1,fadeMs-40)});const vd=(window.__dubDur?.(it)||0)*1e3,d=Math.max(2600,it.length*48,vd+500);
+  S.time.delayedCall(fadeMs,()=>{if(tok!==S.lineTok)return;S.heroSay(it,d);window.__currentSpeaker=String(S.classId||"WARRIOR").toUpperCase();/*__ARCSPK__*/let fin=!1;const nx=()=>{if(fin||tok!==S.lineTok||!S.sys.isActive())return;fin=!0;S.nextLine()};
    try{vd&&window.__dub?.(it,ok=>ok&&S.time.delayedCall(450,nx))}catch(e){}S.time.delayedCall(d+700,nx)});return}
  const i=it,isM=typeof it==="object",t=isM?it.mono:__arcLines()[i],ex=isM?"talk":__ARC_EXPR[i]||"talk";
  S.por.setVisible(!isM);S.porH?.setVisible(isM);S.narName.setText(isM?S.heroName:(typeof __GN!=="undefined"?__GN:"A GUARDIÃ"));
@@ -243,7 +243,7 @@ nextLine(){const S=this,tok=++S.lineTok;S.typer?.remove();if(!S.queue.length){S.
  let fin=!1;const done=ok=>{if(fin||tok!==S.lineTok)return;fin=!0;const hl=isM?null:__arcHero(i);hl&&!S.heroDone.has("g"+i)&&(S.heroDone.add("g"+i),S.queue.unshift(hl));i===0&&!S.lineDone.has(15)&&(S.lineDone.add(15),S.queue.splice(hl?1:0,0,15));
   if(i===15){window.__hasGuardianMagic=!0;try{localStorage.setItem("depthgate:guardian_magic","1")}catch(e){}try{S.chime?.()}catch(e){}const B=S.boat;if(B&&S.add){const gl=S.w(S.add.image(B.x,B.y-12,"light").setScale(0.1).setBlendMode(j.BlendModes.ADD).setTint(0x7df9ff).setAlpha(0.85).setDepth(4500));S.tweens.add({targets:gl,scale:1.1,alpha:0,duration:1400,ease:"Quad.easeOut",onComplete:()=>gl.destroy()})}}
   S.time.delayedCall(ok?900:Math.max(3e3,t.length*60),()=>tok===S.lineTok&&S.sys.isActive()&&S.nextLine())};
- try{window.__dub?window.__dub(t,done):done(!1)}catch(e){done(!1)}
+ try{window.__currentSpeaker=isM?String(S.classId||"WARRIOR").toUpperCase():null;window.__dub?window.__dub(t,done):done(!1)}catch(e){done(!1)}
  /* trava de segurança: se a voz não terminar (áudio ainda bloqueado pelo aparelho, rede lenta), a fala termina sozinha no tempo dela */
  S.time.delayedCall(Math.max((window.__dubDur?.(t)||0)*1e3+2500,t.length*65+2500),()=>{if(!fin&&tok===S.lineTok){try{window.__dubStop?.()}catch(e){}done(!0)}});
  /* o texto acompanha a voz (começa quando ela começa e termina junto) */
