@@ -1,6 +1,7 @@
 """
 Telas no estilo "C · limpo e moderno" (escolha de herói, dificuldade, painéis genéricos, livros…).
 Código em scripts/source/ui-screens.js. Re-executável. Rodar antes de patch_item_icons.py.
+ATENÇÃO: o bloco vai para o FIM do bundle; num bundle já montado isso muda a ordem dos wrappers — para uma troca pequena, editar o trecho no bundle direto.
 """
 import os
 

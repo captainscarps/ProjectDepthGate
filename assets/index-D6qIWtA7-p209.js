@@ -10348,7 +10348,7 @@ function __tipWide(C,parts,lim){const N=C.tipName,S=C.tipStats,T=C.cmpTitle,X=C.
  const ny=Math.max(54,Math.min(want,(lim??244)+8-(bot-top))),dy=ny-top;if(dy){for(const o of parts)o.y+=dy;top+=dy;bot+=dy}
  g.clear().fillStyle(0x161a22,.985).fillRoundedRect(nx,top,W,bot-top,6).lineStyle(1.5,0xffffff,.18).strokeRoundedRect(nx+.5,top+.5,W-1,bot-top-1,6).lineStyle(1,0xffffff,.08).lineBetween(nx+W1-8,S.y,nx+W1-8,bot-10);return!0}
 {const T1=__invTip;__invTip=function(C){const parts=[C.tipName,C.tipMeta,C.tipLock,C.tipStats,C.tipDesc,C.tipSet,C.cmpTitle,C.cmpText].filter(Boolean);let r;
- try{const lim=Math.min(244,(C.actionBtn?.y??256)-(C.actionBtn?.displayHeight??20)*(C.actionBtn?.originY??.5)-4),bot=()=>Math.max(...parts.filter(o=>o.visible&&o.text).map(o=>o.y+o.height));
+ try{const lim=C.__tipLim??Math.min(244,(C.actionBtn?.y??256)-(C.actionBtn?.displayHeight??20)*(C.actionBtn?.originY??.5)-4),bot=()=>Math.max(...parts.filter(o=>o.visible&&o.text).map(o=>o.y+o.height));
   for(let k=0;k<=3;k++){const f=1-.08*k;for(const o of parts){o.__fs0??=parseFloat(o.style.fontSize)||9;o.__ls0??=o.style.lineSpacing||0;o.setFontSize((Math.round(o.__fs0*f*10)/10)+"px");o.setLineSpacing(Math.max(0,o.__ls0-k))}
    r=T1.apply(this,arguments);if(!parts.some(o=>o.visible)||bot()<=lim)break;if(__tipWide(C,parts,lim)&&bot()<=lim)break}}catch(e){r=r??T1.apply(this,arguments)}return r}}
 /* troca de cores de um Graphics antigo para a paleta nova (e cantos arredondados nos quadros) */
@@ -17831,8 +17831,8 @@ function __bkRecolorBuf(S, o) {
 }
 (function () {
   const GP = j.GameObjects.Graphics.prototype, f0 = GP.fillStyle, l0 = GP.lineStyle, g0 = GP.fillGradientStyle;
-  GP.fillStyle = function (c, a = 1) { if (this.__paper) { const m = __bkFill(c, a); return f0.call(this, m[0], m[1]); } return f0.call(this, c, a); };
-  GP.lineStyle = function (w, c, a = 1) { if (this.__paper) { const m = __bkLine(c, a); return l0.call(this, w, m[0], m[1]); } return l0.call(this, w, c, a); };
+  GP.fillStyle = function (c, a = 1) { if (this.__paper && !this.__bkRaw) { const m = __bkFill(c, a); return f0.call(this, m[0], m[1]); } return f0.call(this, c, a); };
+  GP.lineStyle = function (w, c, a = 1) { if (this.__paper && !this.__bkRaw) { const m = __bkLine(c, a); return l0.call(this, w, m[0], m[1]); } return l0.call(this, w, c, a); };
   GP.fillGradientStyle = function (a, b, c, d, al, ...r) {
     if (this.__paper) { const F = x => __bkFill(x, 1)[0]; return g0.call(this, F(a), F(b), F(c), F(d), al, ...r); }
     return g0.call(this, a, b, c, d, al, ...r);
@@ -17967,6 +17967,75 @@ function __bkFlip(S, root, fwd) {
     }
   };
 })();
+/* ficha do item no livro: um cartão de pergaminho opaco na página do lado oposto ao que foi tocado — item do
+   inventário (página da direita) abre a ficha na página da esquerda, item vestido (esquerda) abre na da direita.
+   Assim a ficha nunca cobre a grade nem os espaços que a pessoa está percorrendo, e dá para ler tudo. */
+{
+  const T2 = __invTip;
+  __invTip = function (C) {
+    const B = C.root?.__bk;
+    if (!B || B.single) return T2.apply(this, arguments);
+    const half = B.w / 2, botLim = B.y + B.h - 18, top = C.selected?.source === "equip" && C.invTitle ? Math.round(C.invTitle.y + C.invTitle.height + 2) : B.y + 40;
+    C.__tipLim = botLim;               // a página toda é da ficha: só passa para duas colunas se não couber mesmo
+    const r = T2.apply(this, arguments);
+    try {
+      const g = C.__tipG, parts = [C.tipName, C.tipMeta, C.tipLock, C.tipStats, C.tipDesc, C.tipSet, C.cmpTitle, C.cmpText].filter(o => o && o.visible && o.text);
+      if (!g || !parts.length || !C.selectedItem()) return r;
+      const onLeft = C.selected?.source !== "equip";
+      const px0 = onLeft ? B.x + 18 : B.x + half + 14, px1 = onLeft ? B.x + half - 14 : B.x + B.w - 18;
+      let x0 = Math.min(...parts.map(o => o.x)), x1 = Math.max(...parts.map(o => o.x + o.width)), y0 = Math.min(...parts.map(o => o.y)), y1 = Math.max(...parts.map(o => o.y + o.height));
+      const w = Math.min(px1 - px0, Math.max(200, x1 - x0 + 24)), h = y1 - y0 + 18;
+      const bx = Math.round(px0 + (px1 - px0 - w) / 2), by = Math.round(Math.max(top, Math.min(top + 6, botLim - h)));
+      const dx = bx + 12 - x0, dy = by + 9 - y0;
+      for (const o of parts) o.setPosition(Math.round(o.x + dx), Math.round(o.y + dy));
+      g.__bkRaw = 1;
+      g.clear()
+        .fillStyle(0x3b2416, .22).fillRoundedRect(bx + 3, by + 4, w, h, 5)
+        .fillStyle(0xf6e9c8, 1).fillRoundedRect(bx, by, w, h, 5)
+        .lineStyle(2, 0x6e4a2a, 1).strokeRoundedRect(bx + 1, by + 1, w - 2, h - 2, 5)
+        .lineStyle(1, 0xb8862f, .7).strokeRoundedRect(bx + 4, by + 4, w - 8, h - 8, 3);
+      g.__bkRaw = 0;
+      C.root.bringToTop(g);
+      for (const o of parts) C.root.bringToTop(o);
+      for (const b of [C.actionBtn, C.dropBtn, C.forgeBtn, C.closeBtn, C.closeBtn?.__bkX]) b && C.root.bringToTop(b);
+    } catch (e) {}
+    return r;
+  };
+}
+/* setas no inventário: os espaços vestidos ficam em duas colunas (elmo, armadura, botas, acessório 2 | arma, escudo,
+   acessório 1) e a grade fica à direita delas — as setas andam pelo que se vê, não pela ordem antiga dos espaços */
+{
+  const COLS = [["helmet", "armor", "boots", "accessory2"], ["weapon", "offhand", "accessory1"]];
+  const hk0 = Cd.prototype.handleKey;
+  Cd.prototype.handleKey = function (k) {
+    try {
+      const arrows = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+      const v = arrows[k];
+      if (!v || !this.open || !this.__sk || (this.__logicalTab ?? this.__tab ?? 0) !== 0 || typeof __EQPOS === "undefined") return hk0.apply(this, arguments);
+      const inv = this.gs().inventory, per = 5, rows = Math.ceil(inv.capacity / per), f = this.focus ?? (this.focus = this.firstFocus());
+      if (f.area === "inv") {
+        const c = f.index % per, r = Math.floor(f.index / per);
+        if (!(v[0] < 0 && c === 0)) return hk0.apply(this, arguments);
+        const col = COLS[1];
+        this.focus = { area: "equip", index: se.indexOf(col[Math.min(r, col.length - 1)]) };
+        this.refresh();
+        return !0;
+      }
+      const name = se[f.index], ci = COLS[0].includes(name) ? 0 : 1, ri = Math.max(0, COLS[ci].indexOf(name));
+      if (v[1]) {
+        const col = COLS[ci];
+        this.focus = { area: "equip", index: se.indexOf(col[(ri + v[1] + col.length) % col.length]) };
+      } else if (v[0] > 0 && ci === 1) {
+        this.focus = { area: "inv", index: Math.min(ri, rows - 1) * per };
+      } else if (v[0] > 0 || (v[0] < 0 && ci === 1)) {
+        const col = COLS[1 - ci];
+        this.focus = { area: "equip", index: se.indexOf(col[Math.min(ri, col.length - 1)]) };
+      }
+      this.refresh();
+      return !0;
+    } catch (e) { return hk0.apply(this, arguments); }
+  };
+}
 /* abas: a ativa ganha a fita vermelha do kit; as outras ficam como tinta */
 function __bkTabs(C) {
   const S = C.ui, T = C.__tabT;

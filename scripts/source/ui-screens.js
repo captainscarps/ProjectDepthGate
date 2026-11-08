@@ -66,7 +66,7 @@ function __tipWide(C,parts,lim){const N=C.tipName,S=C.tipStats,T=C.cmpTitle,X=C.
  const ny=Math.max(54,Math.min(want,(lim??244)+8-(bot-top))),dy=ny-top;if(dy){for(const o of parts)o.y+=dy;top+=dy;bot+=dy}
  g.clear().fillStyle(0x161a22,.985).fillRoundedRect(nx,top,W,bot-top,6).lineStyle(1.5,0xffffff,.18).strokeRoundedRect(nx+.5,top+.5,W-1,bot-top-1,6).lineStyle(1,0xffffff,.08).lineBetween(nx+W1-8,S.y,nx+W1-8,bot-10);return!0}
 {const T1=__invTip;__invTip=function(C){const parts=[C.tipName,C.tipMeta,C.tipLock,C.tipStats,C.tipDesc,C.tipSet,C.cmpTitle,C.cmpText].filter(Boolean);let r;
- try{const lim=Math.min(244,(C.actionBtn?.y??256)-(C.actionBtn?.displayHeight??20)*(C.actionBtn?.originY??.5)-4),bot=()=>Math.max(...parts.filter(o=>o.visible&&o.text).map(o=>o.y+o.height));
+ try{const lim=C.__tipLim??Math.min(244,(C.actionBtn?.y??256)-(C.actionBtn?.displayHeight??20)*(C.actionBtn?.originY??.5)-4),bot=()=>Math.max(...parts.filter(o=>o.visible&&o.text).map(o=>o.y+o.height));
   for(let k=0;k<=3;k++){const f=1-.08*k;for(const o of parts){o.__fs0??=parseFloat(o.style.fontSize)||9;o.__ls0??=o.style.lineSpacing||0;o.setFontSize((Math.round(o.__fs0*f*10)/10)+"px");o.setLineSpacing(Math.max(0,o.__ls0-k))}
    r=T1.apply(this,arguments);if(!parts.some(o=>o.visible)||bot()<=lim)break;if(__tipWide(C,parts,lim)&&bot()<=lim)break}}catch(e){r=r??T1.apply(this,arguments)}return r}}
 /* troca de cores de um Graphics antigo para a paleta nova (e cantos arredondados nos quadros) */
