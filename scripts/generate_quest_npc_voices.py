@@ -1,12 +1,14 @@
-"""Voz do Rafael, o ferreiro do Refúgio: grave e masculina.
+"""Vozes dos NPCs das missões novas: PT pelo Gemini TTS, EN pelo Kokoro (modelo aberto, roda local, sem Gemini).
 
-PT: Gemini TTS (voz Algenib, rouca) baixada ~2 semitons no ffmpeg (asetrate), o que também engrossa o timbre.
-EN: Kokoro (modelo aberto, roda local) com a voz am_onyx, a mais grave do modelo (~86 Hz) — sem Gemini.
-As falas saem de scripts/source/hub-village.js (o texto precisa ser idêntico ao do jogo) e ficam em
-assets/audio/voice/<idioma>/<id>.mp3 com o id e o manifesto no mesmo formato das outras vozes de NPC.
+  rafael — o ferreiro do Refúgio, grave e masculina: PT Algenib (rouca) baixada ~2 semitons no ffmpeg
+           (asetrate, que também engrossa o timbre); EN am_onyx, a mais grave do Kokoro (~86 Hz).
+  alline — a dona dos gatos, doce: PT Achernar (suave); EN af_heart (calorosa).
+As falas saem do código do jogo (o texto precisa ser idêntico) e ficam em assets/audio/voice/<idioma>/<id>.mp3,
+com o id e o manifesto no mesmo formato das outras vozes de NPC. Falas montadas na hora (com números ou nomes
+de masmorra) ficam de fora.
 
 Uso (a chave nunca é gravada em arquivo; os arquivos do Kokoro ficam fora do repositório):
-    GEMINI_API_KEY=... KOKORO_DIR=/caminho/com/kokoro.onnx+voices.bin python3 scripts/generate_smith_voice.py [--only pt|en] [--reuse-pt]
+    GEMINI_API_KEY=... KOKORO_DIR=/caminho/com/kokoro.onnx+voices.bin python3 scripts/generate_quest_npc_voices.py rafael|alline [--only pt|en] [--reuse-pt]
     --reuse-pt reaproveita os PT gerados nas últimas 6 h (a cota diária do Gemini pode acabar no meio)
     kokoro.onnx / voices.bin: github.com/thewh1teagle/kokoro-onnx/releases (model-files-v1.0); pip install kokoro-onnx soundfile
 """
@@ -25,24 +27,30 @@ spec = importlib.util.spec_from_file_location("npcv", os.path.join(ROOT, "script
 V = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(V)
 
-PT_VOICE, PT_RATE = "Algenib", 0.88       # 0.88 ≈ 2,2 semitons abaixo
-EN_VOICE, EN_SPEED = "am_onyx", 0.92
-# começo de cada fala do Rafael em hub-village.js
-STARTS = [
-    "Ah, um cliente! Chegue mais perto.", "Aço bom pede fogo paciente.", "Traga fragmentos e eu deixo",
-    "Só forjo com Pedra Cobalto.", "Sem Pedra Cobalto, sem forja.",
-    "O Brokk… não volta mais.", "Hoje a forja fica fria.", "Antes de você comprar qualquer coisa",
-    "Meu aprendiz, o Brokk,", "Se encontrar ele lá embaixo", "Brokk! Você trouxe ele vivo", "Forjamos juntos o Martelo",
-]
+NPCS = {
+    "rafael": {
+        "src": "hub-village.js", "pt": ("Algenib", 0.88), "en": ("am_onyx", 0.92, "en-us"),   # 0.88 ≈ 2,2 semitons abaixo
+        "starts": ["Ah, um cliente! Chegue mais perto.", "Aço bom pede fogo paciente.", "Traga fragmentos e eu deixo",
+                   "Só forjo com Pedra Cobalto.", "Sem Pedra Cobalto, sem forja.",
+                   "O Brokk… não volta mais.", "Hoje a forja fica fria.", "Antes de você comprar qualquer coisa",
+                   "Meu aprendiz, o Brokk,", "Se encontrar ele lá embaixo", "Brokk! Você trouxe ele vivo", "Forjamos juntos o Martelo"],
+    },
+    "alline": {
+        "src": "quests2.js", "pt": ("Achernar", 1.0), "en": ("af_heart", 0.97, "en-us"),
+        "starts": ["Ei, você aí! Espera!", "Meus gatos fugiram pelos portais", "Eles vão fugir de você.",
+                   "Todos eles! Olha só", "O Ollie não sai do seu pé", "A casa nunca esteve tão cheia", "Cuide bem do Ollie."],
+    },
+}
+NPC = None
 
 
 def lines():
-    s = open(os.path.join(ROOT, "scripts", "source", "hub-village.js"), encoding="utf-8").read()
+    s = open(os.path.join(ROOT, "scripts", "source", NPC["src"]), encoding="utf-8").read()
     out = []
-    for k in STARTS:
+    for k in NPC["starts"]:
         i = s.index(k)
         a = s.rfind('L3("', 0, i)
-        m = re.match(r'L3\("((?:[^"\\]|\\.)*)","((?:[^"\\]|\\.)*)"', s[a:])
+        m = re.match(r'L3\("((?:[^"\\]|\\.)*)",\s*"((?:[^"\\]|\\.)*)"', s[a:])
         un = lambda t: t.replace("\\'", "'").replace('\\"', '"')
         out.append((un(m.group(1)), un(m.group(2))))
     return out
@@ -59,6 +67,13 @@ def dur(path):
 
 
 def main():
+    global NPC
+    names = [a for a in sys.argv[1:] if not a.startswith("--") and a not in ("pt", "en")]
+    if not names or names[0] not in NPCS:
+        raise SystemExit(f"uso: generate_quest_npc_voices.py {'|'.join(NPCS)} [--only pt|en] [--reuse-pt]")
+    NPC = NPCS[names[0]]
+    PT_VOICE, PT_RATE = NPC["pt"]
+    EN_VOICE, EN_SPEED, EN_LANG = NPC["en"]
     only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else None
     man = json.load(open(V.MANIFEST_PATH, encoding="utf-8"))
     key = os.environ.get("GEMINI_API_KEY", "").strip()
@@ -96,7 +111,7 @@ def main():
                 d["pt"] = dur(out)
                 subprocess.run(["cp", out, os.path.join(V.MIRROR_PT, lid + ".mp3")], check=True)
         if only != "pt":
-            s, sr = kok.create(en, voice=EN_VOICE, speed=EN_SPEED, lang="en-us")
+            s, sr = kok.create(en, voice=EN_VOICE, speed=EN_SPEED, lang=EN_LANG)
             raw = os.path.join(tmp, "en.wav"); sf.write(raw, s, sr)
             out = os.path.join(V.OUT_EN, lid + ".mp3"); to_mp3(raw, out)
             d["en"] = dur(out)
