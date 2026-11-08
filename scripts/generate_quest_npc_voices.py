@@ -1,7 +1,7 @@
 """Vozes dos NPCs das missões novas: PT pelo Gemini TTS, EN pelo Kokoro (modelo aberto, roda local, sem Gemini).
 
-  rafael — o ferreiro do Refúgio, grave e masculina: PT Algenib (rouca); cada fala é medida e levada ao mesmo
-           tom (~112 Hz) no ffmpeg (asetrate), e falas sussurradas são refeitas; EN am_onyx (Kokoro, ~86 Hz).
+  rafael — o ferreiro do Refúgio, grave e masculina, uma voz só: PT e EN pelo Kokoro (PT pm_alex baixado
+           ~2,6 semitons no ffmpeg; EN am_onyx, ~86 Hz). Com o Gemini cada fala saía num timbre diferente.
   alline — a dona dos gatos, doce: PT Achernar (suave); EN af_heart (calorosa).
 As falas saem do código do jogo (o texto precisa ser idêntico) e ficam em assets/audio/voice/<idioma>/<id>.mp3,
 com o id e o manifesto no mesmo formato das outras vozes de NPC. Falas montadas na hora (com números ou nomes
@@ -30,8 +30,10 @@ spec.loader.exec_module(V)
 
 NPCS = {
     "rafael": {
-        "src": "hub-village.js", "pt": ("Algenib", 0.88), "en": ("am_onyx", 0.92, "en-us"),
-        "pt_hz": 112,   # cada fala é levada a esse tom (o Gemini varia muito de uma fala para outra)
+        # PT também pelo Kokoro: o Gemini muda de timbre de uma fala para outra e parecia várias vozes num
+        # personagem só. pm_alex (único homem pt-BR do Kokoro) baixado 0.86 (~2,6 semitons) fica grave e igual em todas.
+        "src": "hub-village.js", "pt": ("pm_alex", 0.86), "pt_engine": "kokoro", "pt_speed": 0.92,
+        "en": ("am_onyx", 0.92, "en-us"),
         "starts": ["Ah, um cliente! Chegue mais perto.", "Aço bom pede fogo paciente.", "Traga fragmentos e eu deixo",
                    "Só forjo com Pedra Cobalto.", "Sem Pedra Cobalto, sem forja.",
                    "O Brokk… não volta mais.", "Hoje a forja fica fria.", "Antes de você comprar qualquer coisa",
@@ -100,12 +102,12 @@ def main():
     man = json.load(open(V.MANIFEST_PATH, encoding="utf-8"))
     key = os.environ.get("GEMINI_API_KEY", "").strip()
     kok = None
-    if only != "pt" and "--retune" not in sys.argv:
+    if (only != "pt" or NPC.get("pt_engine") == "kokoro") and "--retune" not in sys.argv:
         from kokoro_onnx import Kokoro
         import soundfile as sf
         kd = os.environ.get("KOKORO_DIR", "/tmp/dg/kk")
         kok = Kokoro(os.path.join(kd, "kokoro.onnx"), os.path.join(kd, "voices.bin"))
-    if only != "en" and not key and "--retune" not in sys.argv:
+    if only != "en" and not key and "--retune" not in sys.argv and NPC.get("pt_engine") != "kokoro":
         raise SystemExit("defina GEMINI_API_KEY (ou use --only en)")
     tmp = tempfile.mkdtemp()
     if "--retune" in sys.argv:
@@ -134,6 +136,12 @@ def main():
         if only != "en" and "--reuse-pt" in sys.argv and fresh:
             d["pt"] = dur(out_pt)   # já gerada com a voz nova numa rodada anterior (a cota do Gemini acabou no meio)
             subprocess.run(["cp", out_pt, os.path.join(V.MIRROR_PT, lid + ".mp3")], check=True)
+        elif only != "en" and NPC.get("pt_engine") == "kokoro":
+            s_, sr_ = kok.create(pt, voice=PT_VOICE, speed=NPC.get("pt_speed", 1.0), lang="pt-br")
+            raw = os.path.join(tmp, "ptk.wav"); sf.write(raw, s_, sr_)
+            out = os.path.join(V.OUT_PT, lid + ".mp3"); to_mp3(raw, out, PT_RATE)
+            d["pt"] = dur(out)
+            subprocess.run(["cp", out, os.path.join(V.MIRROR_PT, lid + ".mp3")], check=True)
         elif only != "en":
             raw, rate = os.path.join(tmp, "pt.mp3"), PT_RATE
             for take in range(3):   # com tom alvo: refaz a fala que vier sussurrada ou fora do tom
