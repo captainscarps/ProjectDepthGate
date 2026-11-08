@@ -4298,12 +4298,18 @@
       "byClass": {
         "en": {
           "WARRIOR": 5.0,
-          "BERSERKER": 4.64
+          "BERSERKER": 4.64,
+          "HUNTER": 4.75,
+          "NECROMANCER": 6.12,
+          "DRUID": 5.69
         }
       },
       "_enk": {
         "WARRIOR": 1,
-        "BERSERKER": 1
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1
       },
       "en": 5.0,
       "_genen": 1
