@@ -54,8 +54,10 @@ const __GT = {
   banner(S, t, c = "#ffd27a") { S.game.events.emit("ui:banner", t, c) },
 };
 /* ─── Alline e os gatos resgatados no Coração da Floresta ─── */
+function __gtDiscKey(S) { return "depthgate:alDesc:" + (window.__heroTag ? window.__heroTag(S.game.registry, 1, S) : (S.game.registry.get("save:slot") ?? 1)) }
 function __gtHub(S, arrive) {
   if (!__GT.st(S) && !__stFlag(S, "gHub0")) return;
+  if (__GT.st(S) === 2) return;   // depois do resgate ela mora no Refúgio, na forja do Rafael
   if (S.__gtNpc) { arrive && S.__gtNpc.arrive(); return }
   const L3 = __GT.L3, [mx, my] = __Q.hubPos(S, -40, 150);
   const talk = () => {
@@ -81,17 +83,28 @@ function __gtHub(S, arrive) {
         __GT.M(L3("Todos eles! Olha só, a Mel até voltou mais gordinha.", "All of them! Look, Mel even came back a little chubbier.", "¡Todos! Mira, Mel hasta volvió más gordita."), "smile"),
         __GT.M(L3("O Ollie não sai do seu pé… acho que ele te escolheu. Leve ele junto: nariz de gato acha ouro onde ninguém procura.", "Ollie won't leave your side… I think he chose you. Take him along: a cat's nose finds gold where nobody looks.", "Ollie no se separa de ti… creo que te eligió. Llévalo contigo: la nariz de un gato encuentra oro donde nadie busca."), "talk"),
         __GT.H(L3("Vamos, Ollie. Temos selos para fechar.", "Come on, Ollie. We have seals to close.", "Vamos, Ollie. Tenemos sellos que cerrar."), "smile"),
+        __GT.M(L3("E tem mais: o ferreiro do Refúgio, o Rafael, é o meu marido. Vou pedir pra ele te dar um desconto na próxima compra.", "And there's more: the Refuge blacksmith, Rafael, is my husband. I'll ask him to give you a discount on your next purchase.", "Y hay más: el herrero del Refugio, Rafael, es mi marido. Le pediré que te haga un descuento en tu próxima compra."), "smile"),
+        __GT.M(L3("Agora que os gatos voltaram, vamos morar com ele no Refúgio. Passa lá na forja pra nos ver!", "Now that the cats are back, we're moving in with him at the Refuge. Drop by the forge to see us!", "Ahora que los gatos volvieron, nos mudamos con él al Refugio. ¡Pasa por la forja a vernos!"), "talk"),
       ], () => {
         __Q.set(S, "gt", 2); __Q.frag(40); S.stats?.addGold?.(120); S.requestSave?.(10);
-        __GT.banner(S, L3("+120 OURO · +40 CRISTAIS DO REFÚGIO · O OLLIE AGORA TE ACOMPANHA", "+120 GOLD · +40 REFUGE CRYSTALS · OLLIE NOW FOLLOWS YOU", "+120 ORO · +40 CRISTALES DEL REFUGIO · OLLIE AHORA TE ACOMPAÑA"));
+        try { localStorage.setItem(__gtDiscKey(S), "1") } catch (e) {}
+        // a Alline e os gatos vão para o Refúgio
+        const n = S.__gtNpc;
+        if (n) { n.spr.__lock = 1; S.anims.exists("alline-walk") && n.spr.play("alline-walk"); n.spr.setFlipX(!1); n.zone && (n.zone.interactLabel = null); S.tweens.add({ targets: [n.spr, n.sh], x: "+=90", alpha: 0, duration: 1800, delay: 400, onComplete: () => n.destroy() }) }
         S.__gtCats?.oll?.destroy?.();
+        for (const [k, c] of Object.entries(S.__gtCats || {})) k !== "oll" && c?.active && S.tweens.add({ targets: c, x: "+=110", alpha: 0, duration: 1600, delay: 300, onStart: () => c.play(c.texture.key + "-run"), onComplete: () => c.destroy() });
+        __GT.banner(S, L3("+120 OURO · +40 CRISTAIS DO REFÚGIO · O OLLIE AGORA TE ACOMPANHA", "+120 GOLD · +40 REFUGE CRYSTALS · OLLIE NOW FOLLOWS YOU", "+120 ORO · +40 CRISTALES DEL REFUGIO · OLLIE AHORA TE ACOMPAÑA"));
         S.time.delayedCall(300, () => S.scene.isActive() && __gtPet(S));
       });
       return;
     }
     if (s === 1) {
-      const miss = L.filter((lv) => !F.includes(lv)), where = miss.map((lv) => (typeof St === "function" ? St(`lvl.${lv}`, ki?.[lv]?.name ?? lv) : lv)).join(", ");
-      __dlg(S, [__GT.M(L3(`Já voltaram ${F.length} de ${L.length}. Sinto que os outros estão em: ${where}.`, `${F.length} of ${L.length} are back. I feel the others are in: ${where}.`, `Ya volvieron ${F.length} de ${L.length}. Siento que los otros están en: ${where}.`), F.length ? "smile" : "sadness")]);
+      const P = [
+        [L3("Nenhum voltou ainda… O diário mostra em quais terras eles estão.", "None of them are back yet… The journal shows which lands they're in.", "Ninguno ha vuelto todavía… El diario muestra en qué tierras están."), "sadness"],
+        [L3("A Mel já está em casa! Ainda faltam dois. Veja no diário onde procurar.", "Mel is already home! Two more to go. Check the journal for where to look.", "¡Mel ya está en casa! Faltan dos. Mira en el diario dónde buscar."), "smile"],
+        [L3("Só falta um! Veja no diário onde ele se escondeu.", "Just one left! Check the journal for where he's hiding.", "¡Solo falta uno! Mira en el diario dónde se escondió."), "special"],
+      ][Math.min(2, F.length)];
+      __dlg(S, [__GT.M(P[0], P[1])]);
       return;
     }
     const lines = [L3("A casa nunca esteve tão cheia de pelo. E de felicidade.", "The house has never been this full of fur. Or of happiness.", "La casa nunca estuvo tan llena de pelo. Ni de felicidad."), L3("Cuide bem do Ollie. Ele gosta de peixe e de ouro, nessa ordem.", "Take good care of Ollie. He likes fish and gold, in that order.", "Cuida bien a Ollie. Le gustan el pescado y el oro, en ese orden.")];
@@ -305,10 +318,13 @@ function __gtPet(S) {
     return r;
   };
   // missão do aprendiz (chave por herói): some ao excluir o herói ou começar campanha nova no slot
-  const apzDel = (tag) => { try { localStorage.removeItem("depthgate:apz:" + tag) } catch (e) {} };
+  const apzDel = (tag) => { try { localStorage.removeItem("depthgate:apz:" + tag); localStorage.removeItem("depthgate:alDesc:" + tag) } catch (e) {} };
   const K0 = Kr;
   Kr = function (c = 1, i = "campaign") { apzDel((i === "endless" ? "e" : "") + c); return K0.apply(this, arguments) };
   const CR = __cReset;
   __cReset = function (g, sl) { apzDel(String(sl)); return CR.apply(this, arguments) };
 }
+// o Refúgio (outra cena) lê o estado da missão pelo save da história
+window.__gtDone = (scene) => { try { const tag = window.__heroTag ? window.__heroTag(scene.game.registry, 1, scene) : 1; return (JSON.parse(localStorage.getItem("depthgate:story:" + tag) || "{}").q_gt | 0) === 2 } catch (e) { return !1 } };
+window.__gtDiscKey = __gtDiscKey;
 window.__dgQ2 = { GT: __GT, cats: __GT_CATS, hub: __gtHub, level: __gtLevel, pet: __gtPet, follow: __qFollow, hubIntro: (S) => __gSay(S, __GHUB0) };

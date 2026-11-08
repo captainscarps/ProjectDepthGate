@@ -1898,7 +1898,7 @@ touchOn(){return!!this.tc?.visible}}
    vendedor, santuário, mural, bonecos de treino, fogueira, portal e saída.
    Os painéis de melhoria (vendedor / ferreiro / santuário) são os mesmos do Refúgio antigo.     */
 constructor(){super("Hub")}
-preload(){const V="assets/pixel-art/hub/village/";this.textures.exists("peasant-1")||this.load.spritesheet("peasant-1","assets/pixel-art/npc/peasant-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("peasant-3")||this.load.spritesheet("peasant-3","assets/pixel-art/npc/peasant-3.png",{frameWidth:128,frameHeight:128});this.textures.exists("elf-1")||this.load.spritesheet("elf-1","assets/pixel-art/npc/elf-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("aprendiz")||this.load.spritesheet("aprendiz","assets/pixel-art/npc/aprendiz.png",{frameWidth:92,frameHeight:66});this.textures.exists("ferreiro")||this.load.spritesheet("ferreiro","assets/pixel-art/npc/ferreiro.png",{frameWidth:128,frameHeight:128});for(const ex of["talk","calm","smile","sadness","aggression","special"])this.textures.exists("ferreiro-p-"+ex)||this.load.image("ferreiro-p-"+ex,"assets/pixel-art/npc/ferreiro-p-"+ex+".png");this.load.setPath("assets/pixel-art/hub/"),this.load.image("hub-stall","stall.png"),this.load.image("hub-shrine","shrine.png"),this.load.image("hub-campfire","campfire.png"),this.load.image("hub-banner","banner.png"),this.textures.exists("hub-portal")||this.load.spritesheet("hub-portal","hub-portal2.png",{frameWidth:56,frameHeight:65}),this.load.setPath("");
+preload(){const V="assets/pixel-art/hub/village/";this.textures.exists("peasant-1")||this.load.spritesheet("peasant-1","assets/pixel-art/npc/peasant-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("peasant-3")||this.load.spritesheet("peasant-3","assets/pixel-art/npc/peasant-3.png",{frameWidth:128,frameHeight:128});this.textures.exists("elf-1")||this.load.spritesheet("elf-1","assets/pixel-art/npc/elf-1.png",{frameWidth:128,frameHeight:128});this.textures.exists("aprendiz")||this.load.spritesheet("aprendiz","assets/pixel-art/npc/aprendiz.png",{frameWidth:92,frameHeight:66});this.textures.exists("alline")||this.load.spritesheet("alline","assets/pixel-art/npc/alline.png",{frameWidth:46,frameHeight:72});for(const ex of["talk","calm","smile","sadness","aggression","special"])this.textures.exists("alline-p-"+ex)||this.load.image("alline-p-"+ex,"assets/pixel-art/npc/alline-p-"+ex+".png");for(const[k,w]of[["gato-a",100],["gato-d",100]])this.textures.exists(k)||this.load.spritesheet(k,"assets/pixel-art/npc/"+k+".png",{frameWidth:w,frameHeight:50});this.textures.exists("ferreiro")||this.load.spritesheet("ferreiro","assets/pixel-art/npc/ferreiro.png",{frameWidth:128,frameHeight:128});for(const ex of["talk","calm","smile","sadness","aggression","special"])this.textures.exists("ferreiro-p-"+ex)||this.load.image("ferreiro-p-"+ex,"assets/pixel-art/npc/ferreiro-p-"+ex+".png");this.load.setPath("assets/pixel-art/hub/"),this.load.image("hub-stall","stall.png"),this.load.image("hub-shrine","shrine.png"),this.load.image("hub-campfire","campfire.png"),this.load.image("hub-banner","banner.png"),this.textures.exists("hub-portal")||this.load.spritesheet("hub-portal","hub-portal2.png",{frameWidth:56,frameHeight:65}),this.load.setPath("");
 const L=(k,f,w,h)=>this.textures.exists(k)||this.load.spritesheet(k,V+f,{frameWidth:w,frameHeight:h});
 this.textures.exists("vh-ground")||this.load.image("vh-ground",V+"ground.png");this.textures.exists("vh-table")||this.load.image("vh-table",V+"house-table.png");this.textures.exists("vh-cart")||this.load.image("vh-cart",V+"house-cart.png");
 this.textures.exists("vh-props")||this.load.atlas("vh-props",V+"props.png",V+"props.json");this.cache.json.exists("vh-map")||this.load.json("vh-map",V+"village.json");
@@ -1914,7 +1914,7 @@ this.textures.exists("peasant-1")&&(mk("peasant-1-idle","peasant-1",0,11,6),mk("
 create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}try{typeof __gtAnims==="function"&&__gtAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
 const __F=this.game.registry.get("hub:fromForest");this.game.registry.remove("hub:fromForest");this.fromForest=!!__F;this.retSlot=__F?.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main;cam.setZoom(Pt*1.5);const z=cam.zoom;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);this.__us=Pt/z;cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
 const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];this.title=null;this.shade=null;this.hud=null;this.smith=null;this.hunter=null;this.herb=null;this.panel=null;this.panelRows=null;this.__pz=null;this.__hs=null;this.__bub=null;this.dummies=[];
-this.__busy=!1;this.__uiTap=!1;this.__caveWarned=!1;this.__apzTalking=!1;this.__apzMournSeen=!1;this.apzB=null;this.__hubDlgO=null;
+this.__busy=!1;this.__uiTap=!1;this.__caveWarned=!1;this.__alDiscTold=!1;this.alline=null;this.alCats=[];this.__apzTalking=!1;this.__apzMournSeen=!1;this.apzB=null;this.__hubDlgO=null;
 /* chão, casa, props */
 this.add.image(0,0,"vh-ground").setOrigin(0).setDepth(-50);const H=M.house;
 this.house=this.add.sprite(H.x,H.y,"vh-house",0).setOrigin(0).setDepth(H.base);this.house.play("vh-house-c");this.doorOpen=!1;
@@ -1940,7 +1940,7 @@ this.__glow(H.x+112,H.y+104,.3,16742954,.22,620);this.__glow(H.x+56,H.y+92,.18,1
 const I=M.interior;this.add.sprite(I.x,I.y,"vh-int",0).setOrigin(0).setDepth(-40).play("vh-int-a");this.add.sprite(I.x,I.y,"vh-intf",0).setOrigin(0).setDepth(I.y+I.h+60).play("vh-intf-a");
 this.__glow(I.x+176,I.y+104,1,16742954,.35,520,I.y+I.h+61);
 /* NPCs */
-this.__smith();this.__hunter();this.__girl();this.__dog();this.__herbInit();this.__heroesInit();this.__caveExplorerInit();
+this.__smith();this.__hunter();this.__girl();this.__dog();this.__allineInit();this.__herbInit();this.__heroesInit();this.__caveExplorerInit();
 /* bonecos de treino */
 this.dummies=[];for(const k of["dummy1","dummy2","dummy3"]){const p=S[k];const im=this.children.list.find(o=>o.texture?.key==="vh-props"&&o.frame?.name==="dummy"&&Math.abs(o.x-p[0])<2&&Math.abs(o.y-p[1])<2);im&&(im.setOrigin(.5,1),this.dummies.push(im))}
 /* entardecer */
@@ -2148,9 +2148,16 @@ __smithTick(dt){const s=this.smith;if(!s)return;const P=this.M.interior.smith;
 if(s.talk>0){s.talk-=dt;if(s.talk<=0&&!this.panel){s.f.play("ferreiro-idle",!0)}return}
 s.x=P.anvil[0];s.y=P.anvil[1]-20}
 __smithTalk(){if(this.__apzSmith?.())return;if(this.__hubDlgO)return;const s=this.smith,L3=__L3;s.talk=1e9;s.f.play("ferreiro-talk",!0);
+if(this.__alDisc()&&!this.__alDiscTold){this.__alDiscTold=!0;this.__hubDlg([{e:"smile",t:L3("A Alline me contou o que você fez pelos gatos. A próxima peça da armaria sai com trinta por cento de desconto.","Alline told me what you did for the cats. Your next piece from the armory comes with thirty percent off.","Alline me contó lo que hiciste por los gatos. Tu próxima pieza de la armería tiene treinta por ciento de descuento.")}],()=>{this.__forgeWeaponsShop();this.__resumeSmith=!0});return}
 this.__hubDlg([{e:Math.random()<.5?"smile":"talk",t:[L3("Aço bom pede fogo paciente. Em que posso ajudar?","Good steel needs patient fire. How can I help?","El buen acero pide fuego paciente. ¿En qué te ayudo?"),L3("Traga fragmentos e eu deixo sua lâmina digna do Abismo.","Bring fragments and I'll make your blade worthy of the Abyss.","Trae fragmentos y haré tu hoja digna del Abismo.")][Math.floor(Math.random()*2)]}],()=>{this.__forgeWeaponsShop();this.__resumeSmith=!0})}
 /* ── caixa de fala com retrato (Rafael, o ferreiro): avança com clique, Enter/Espaço/E/Z ou A do controle ── */
-__hubDlg(lines,done){if(this.__hubDlgO){this.__hubDlgO.destroy();this.__hubDlgO=null}const L=(lines||[]).filter(l=>l&&l.t);if(!L.length){done?.();return}this.__busy=!0;const d=_/2,px=16,py=st-92,pw=_-32,ph=82,F="Georgia, 'Times New Roman', serif";const o=this.__hubDlgO=this.add.container(this.__ox,this.__oy).setDepth(9805).setScrollFactor(0).setScale(this.__us);const dim=this.add.rectangle(d,st/2,_*1.3,st*1.3,0,.25).setInteractive();o.add(dim);let bg;this.textures.exists("ui2-win")?(bg=this.add.image(px-4,py-4,"ui2-win").setOrigin(0).setDisplaySize(pw+8,ph+8)):(bg=this.add.graphics(),bg.fillStyle(1315091,.95).fillRoundedRect(px,py,pw,ph,8),bg.lineStyle(1,9053216,.9).strokeRoundedRect(px,py,pw,ph,8));o.add(bg);const gl=this.add.image(px+52,py-6,"light").setBlendMode(j.BlendModes.ADD).setScale(.55).setAlpha(.3).setTint(16766336);const por=this.add.image(px+8,py+ph-2,"__DEFAULT").setOrigin(0,1).setScale(.78);const nm=this.add.text(px+118,py+10,"RAFAEL",{fontFamily:F,fontStyle:"bold",fontSize:"12px",color:"#f2d9a0",stroke:"#120a08",strokeThickness:3});const tx=this.add.text(px+118,py+28,"",{fontFamily:F,fontSize:"11px",color:"#ece2cc",lineSpacing:3,wordWrap:{width:pw-134},stroke:"#0a0806",strokeThickness:2});const hint=this.add.text(px+pw-10,py+ph-8,"▼",{fontFamily:F,fontSize:"10px",color:"#c9a24a"}).setOrigin(1,1);o.add([gl,por,nm,tx,hint]);this.tweens.add({targets:hint,alpha:.25,duration:500,yoyo:!0,repeat:-1});let i=-1,full="",shown=0,ev=null,closed=!1,pv=!0;const show=()=>{i++;if(i>=L.length){end();return}const ln=L[i],k="ferreiro-p-"+(ln.e||"talk");this.textures.exists(k)?por.setTexture(k).setVisible(!0):por.setVisible(!1);full=ln.t;shown=0;tx.setText("");try{window.__dubHas?.(full)&&window.__dub?.(full)}catch(_){}ev?.remove?.();ev=this.time.addEvent({delay:16,loop:!0,callback:()=>{shown=Math.min(full.length,shown+2);tx.setText(full.slice(0,shown));shown>=full.length&&(ev.remove(),ev=null)}})};const next=()=>{if(closed)return;if(ev){ev.remove();ev=null;tx.setText(full);return}show()};const end=()=>{if(closed)return;closed=!0;try{window.__dubStop?.()}catch(_){}ev?.remove?.();this.input.off("pointerdown",tap);this.input.keyboard?.off("keydown",kh);this.events.off("update",pad);o.destroy();this.__hubDlgO=null;this.time.delayedCall(160,()=>{this.__busy=!1;done?.()})};const kh=e=>{["Enter"," ","e","E","z","Z"].includes(e.key)&&next()};const pad=()=>{let g=null;try{g=Array.from(navigator.getGamepads?.()??[]).find(q=>q&&q.connected)}catch(_){}const a=!!(g&&(g.buttons[0]?.pressed||g.buttons[1]?.pressed));a&&!pv&&next();pv=a};const tap=()=>next();this.input.on("pointerdown",tap);this.input.keyboard?.on("keydown",kh);this.events.on("update",pad);this.events.once("shutdown",()=>{closed=!0;this.input.off("pointerdown",tap);this.input.keyboard?.off("keydown",kh);this.events.off("update",pad);this.__hubDlgO=null});show()}
+__hubDlg(lines,done){if(this.__hubDlgO){this.__hubDlgO.destroy();this.__hubDlgO=null}const L=(lines||[]).filter(l=>l&&l.t);if(!L.length){done?.();return}this.__busy=!0;const d=_/2,px=16,py=st-92,pw=_-32,ph=82,F="Georgia, 'Times New Roman', serif";const o=this.__hubDlgO=this.add.container(this.__ox,this.__oy).setDepth(9805).setScrollFactor(0).setScale(this.__us);const dim=this.add.rectangle(d,st/2,_*1.3,st*1.3,0,.25).setInteractive();o.add(dim);let bg;this.textures.exists("ui2-win")?(bg=this.add.image(px-4,py-4,"ui2-win").setOrigin(0).setDisplaySize(pw+8,ph+8)):(bg=this.add.graphics(),bg.fillStyle(1315091,.95).fillRoundedRect(px,py,pw,ph,8),bg.lineStyle(1,9053216,.9).strokeRoundedRect(px,py,pw,ph,8));o.add(bg);const gl=this.add.image(px+52,py-6,"light").setBlendMode(j.BlendModes.ADD).setScale(.55).setAlpha(.3).setTint(16766336);const por=this.add.image(px+8,py+ph-2,"__DEFAULT").setOrigin(0,1).setScale(.78);const nm=this.add.text(px+118,py+10,"",{fontFamily:F,fontStyle:"bold",fontSize:"12px",color:"#f2d9a0",stroke:"#120a08",strokeThickness:3});const tx=this.add.text(px+118,py+28,"",{fontFamily:F,fontSize:"11px",color:"#ece2cc",lineSpacing:3,wordWrap:{width:pw-134},stroke:"#0a0806",strokeThickness:2});const hint=this.add.text(px+pw-10,py+ph-8,"▼",{fontFamily:F,fontSize:"10px",color:"#c9a24a"}).setOrigin(1,1);o.add([gl,por,nm,tx,hint]);this.tweens.add({targets:hint,alpha:.25,duration:500,yoyo:!0,repeat:-1});let i=-1,full="",shown=0,ev=null,closed=!1,pv=!0;const SP={rafael:["RAFAEL","ferreiro"],alline:["ALLINE","alline"]};const show=()=>{i++;if(i>=L.length){end();return}const ln=L[i],sp=SP[ln.who||"rafael"]||SP.rafael,k=sp[1]+"-p-"+(ln.e||"talk");nm.setText(sp[0]);this.textures.exists(k)?por.setTexture(k).setVisible(!0):por.setVisible(!1);full=ln.t;shown=0;tx.setText("");try{window.__dubHas?.(full)&&window.__dub?.(full)}catch(_){}ev?.remove?.();ev=this.time.addEvent({delay:16,loop:!0,callback:()=>{shown=Math.min(full.length,shown+2);tx.setText(full.slice(0,shown));shown>=full.length&&(ev.remove(),ev=null)}})};const next=()=>{if(closed)return;if(ev){ev.remove();ev=null;tx.setText(full);return}show()};const end=()=>{if(closed)return;closed=!0;try{window.__dubStop?.()}catch(_){}ev?.remove?.();this.input.off("pointerdown",tap);this.input.keyboard?.off("keydown",kh);this.events.off("update",pad);o.destroy();this.__hubDlgO=null;this.time.delayedCall(160,()=>{this.__busy=!1;done?.()})};const kh=e=>{["Enter"," ","e","E","z","Z"].includes(e.key)&&next()};const pad=()=>{let g=null;try{g=Array.from(navigator.getGamepads?.()??[]).find(q=>q&&q.connected)}catch(_){}const a=!!(g&&(g.buttons[0]?.pressed||g.buttons[1]?.pressed));a&&!pv&&next();pv=a};const tap=()=>next();this.input.on("pointerdown",tap);this.input.keyboard?.on("keydown",kh);this.events.on("update",pad);this.events.once("shutdown",()=>{closed=!0;this.input.off("pointerdown",tap);this.input.keyboard?.off("keydown",kh);this.events.off("update",pad);this.__hubDlgO=null});show()}
+/* ── Alline (dos gatos) e os gatos dela: depois da missão moram no Refúgio — ela dentro da forja, eles pela vila ── */
+__alDisc(){try{return!!window.__gtDiscKey&&localStorage.getItem(window.__gtDiscKey(this))==="1"}catch(_){return!1}}
+__alPrice(p){return this.__alDisc()?Math.round(p*.7):p}
+__allineInit(){this.alCats=[];if(!window.__gtDone?.(this))return;const L3=__L3;if(this.textures.exists("alline")){const x=1286,y=204,a=this.add.sprite(x,y,"alline",0).setOrigin(.5,1).setScale(.62).setDepth(y);this.anims.exists("alline-idle")&&a.play("alline-idle");this.alline={s:a,x,y};const lines=[["Os gatos adoraram o Refúgio. O Carvão já dorme em cima da bigorna quando ela esfria.","The cats love the Refuge. Carvão already sleeps on the anvil once it cools down.","A los gatos les encanta el Refugio. Carvão ya duerme sobre el yunque cuando se enfría.","smile"],["O Rafael finge que é durão, mas é ele quem dá peixe escondido pros gatos.","Rafael pretends to be tough, but he's the one sneaking fish to the cats.","Rafael finge ser duro, pero es él quien les da pescado a escondidas a los gatos.","special"],["Cuida bem do Ollie lá fora. E volta inteiro, viu?","Take good care of Ollie out there. And come back in one piece, okay?","Cuida bien a Ollie allá afuera. Y vuelve entero, ¿sí?","talk"]];this.inters.push({area:"in",id:"alline",x,y:y-8,r:36,label:"ALLINE",desc:L3("Conversar","Chat","Conversar"),act:()=>{if(this.__hubDlgO)return;this.__alN=((this.__alN??-1)+1)%lines.length;const l=lines[this.__alN];a.setFlipX(this.playerX<x);this.anims.exists("alline-talk")&&a.play("alline-talk",!0);this.__hubDlg([{who:"alline",e:l[3],t:L3(l[0],l[1],l[2])}],()=>a.active&&this.anims.exists("alline-idle")&&a.play("alline-idle",!0))}})}for(const[tex,nm,hx,hy]of[["gato-a","MEL",480,470],["gato-d","CARVÃO",566,436]]){if(!this.textures.exists(tex))continue;const c={s:this.add.sprite(hx,hy,tex,0).setOrigin(.5,1).setScale(.36).setDepth(hy),x:hx,y:hy,hx,hy,t:1+Math.random()*3,tgt:null,tex};c.s.play(tex+"-idle");this.alCats.push(c);this.inters.push({area:"out",id:"cat-"+tex,x:0,y:0,r:22,dyn:()=>c,label:nm,desc:L3("Fazer carinho","Pet","Acariciar"),act:()=>{c.tgt=null;c.t=3;c.s.play(tex+"-idle",!0);this.__say(c.x,c.y-22,L3("Miau!","Meow!","¡Miau!"),1400,"#ffd27a");this.game.audioEngine?.sfx?.("sfx-dog-happy")}})}}
+__allineTick(dt){for(const c of this.alCats||[]){c.t-=dt;if(c.tgt){const dx=c.tgt[0]-c.x,dy=c.tgt[1]-c.y,l=Math.hypot(dx,dy),sp=40*dt;if(l<=sp||c.t<-10){c.tgt=null;c.t=2+Math.random()*5;c.s.play(c.tex+"-idle",!0)}else{const nx=c.x+dx/l*sp,ny=c.y+dy/l*sp;if(this.__solidOut(nx,ny)){c.tgt=null;c.t=1.5;c.s.play(c.tex+"-idle",!0)}else{c.x=nx;c.y=ny;c.s.setFlipX(dx<0);c.s.anims.currentAnim?.key!==c.tex+"-walk"&&c.s.play(c.tex+"-walk",!0)}}}else if(c.t<=0){const a=Math.random()*Math.PI*2,r=30+Math.random()*90;c.tgt=[c.hx+Math.cos(a)*r,c.hy+Math.sin(a)*r*.6];c.t=0}c.s.setPosition(c.x,c.y).setDepth(c.y)}
+if(this.alline&&this.__hubDlgO==null&&this.area==="in")this.alline.s.setFlipX(this.playerX<this.alline.x)}
 /* ── curtidor: trabalha no varal, larga a faca, descansa e volta ── */
 __hunter(){const p=this.M.spots.hunter;const h=this.hunter={s:this.add.sprite(p[0],p[1]+2,"vh-hunter-tans",0).setOrigin(.5,1).setDepth(p[1]).play("vh-ht"),state:"tans",t:6+Math.random()*4,talk:0}}
 __hunterTick(dt){const h=this.hunter;if(!h)return;if(h.talk>0){if(h.state==="tans"&&!h.paused){h.paused=!0;h.s.anims.pause()}h.talk-=dt;h.talk<=0&&(h.paused=!1,h.s.anims.resume());return}h.t-=dt;if(h.t>0)return;
@@ -2158,7 +2165,7 @@ if(h.state==="tans"){h.state="leave";h.s.play("vh-hlv");h.s.once("animationcompl
 __girl(){const g=this.M.house.girl;this.add.sprite(g[0],g[1],"vh-girl",0).setOrigin(.5,1).setDepth(this.M.house.table[2]-1).play("vh-girl-a")}
 /* ── cão: passeia pela praça, senta, olha o herói ── */
 __dog(){const P=this.M.dog,p=P[0];this.dog={s:this.add.sprite(p[0],p[1],"vh-dog",24).setOrigin(.5,.85).setDepth(p[1]).play("vh-di-d"),x:p[0],y:p[1],state:"sit",t:2,tgt:null}}
-__dogTick(dt){const d=this.dog;if(!d)return;d.t-=dt;const near=this.area==="out"&&Math.hypot(this.playerX-d.x,this.playerY-d.y)<70;
+__dogTick(dt){this.__allineTick?.(dt);const d=this.dog;if(!d)return;d.t-=dt;const near=this.area==="out"&&Math.hypot(this.playerX-d.x,this.playerY-d.y)<70;
 if(d.state==="sit"){if(near){const f=Math.abs(this.playerX-d.x)>Math.abs(this.playerY-d.y)?this.playerX<d.x?"l":"r":this.playerY<d.y?"u":"d";d.s.anims.currentAnim?.key!=="vh-di-"+f&&d.s.play("vh-di-"+f,!0)}if(d.t<=0){const P=this.M.dog;d.tgt=Math.random()<.25&&this.area==="out"?[this.playerX+j.Math.Between(-30,30),this.playerY+j.Math.Between(10,26)]:P[Math.floor(Math.random()*P.length)];d.state="walk"}}
 else{const dx=d.tgt[0]-d.x,dy=d.tgt[1]-d.y,l=Math.hypot(dx,dy),sp=46*dt;if(l<=sp||d.t<-12){d.state="sit";d.t=2.5+Math.random()*4;const f=Math.abs(dx)>Math.abs(dy)?dx<0?"l":"r":dy<0?"u":"d";d.s.play("vh-di-"+f,!0)}else{const nx=d.x+dx/l*sp,ny=d.y+dy/l*sp;if(this.__solidOut(nx,ny)){d.state="sit";d.t=1.5}else{d.x=nx;d.y=ny;const f=Math.abs(dx)>Math.abs(dy)?dx<0?"l":"r":dy<0?"u":"d";d.s.anims.currentAnim?.key!=="vh-dw-"+f&&d.s.play("vh-dw-"+f,!0)}}}d.s.setPosition(d.x,d.y).setDepth(d.y)}
 __solidOut(x,y){const M=this.M,g=M.g,r=M.coll[Math.floor(y/g)];return!r||r[Math.floor(x/g)]!=="0"}
@@ -2412,7 +2419,7 @@ __forgeWeaponsShop(fromSmith){
     const im=hd?this.add.image(d-176,ry+16,"items-hd",wp.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(1.1);
     const nm=this.add.text(d-154,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"10px",color:wp.color});
     const stT=this.add.text(d-154,ry+18,wp.stats,{...Le,fontSize:"7px",color:"#e2e8f0"});
-    const prT=this.add.text(d+186,ry+(isCamp?10:5),`${wp.price} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(1,0);
+    const prT=this.add.text(d+186,ry+(isCamp?10:5),`${this.__alPrice(wp.price)} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(1,0);
     const durT=this.add.text(d+186,ry+20,"",{...Le,fontSize:"7px",color:"#9cc2ff"}).setOrigin(1,0);
     const paintDur=()=>{const own=ownedForge().filter(f=>f.it.id===wp.id);if(!own.length){durT.setText("");return}const f=own.sort((a,b)=>a.used-b.used)[0],left=Math.max(0,MAXR-f.used);durT.setText(left?`${L3("TEM","OWNED","TIENES")} · ${"▮".repeat(left)}${"▯".repeat(MAXR-left)} ${left}/${MAXR}`:L3("QUEBRADA · CONSERTE","BROKEN · REPAIR","ROTA · REPARA")).setColor(left?"#9cc2ff":"#f87171")};
     paintDur();
@@ -2430,13 +2437,13 @@ __forgeWeaponsShop(fromSmith){
     z.on("pointerout",()=>drawRow(!1));
     z.on("pointerdown",()=>{
       curCoins=getCoins();
-      if(curCoins<wp.price){
+      const wpPrice=this.__alPrice(wp.price);if(curCoins<wpPrice){
         msgText.setText(L3("Pedra Cobalto insuficiente! Minere nas Cavernas Dorf (portal branco à direita).","Not enough Cobalt Stone! Mine it in the Dorf Caves (white portal on the right).","¡Piedra Cobalto insuficiente! Mina en las Cavernas Dorf.")).setColor("#f87171");
         if(!o.__toldNoCobalt){o.__toldNoCobalt=!0;try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Sem Pedra Cobalto, sem forja. Desça às Cavernas Dorf e minere os veios azuis.","No Cobalt Stone, no forging. Go down to the Dorf Caves and mine the blue veins.","Sin Piedra Cobalto, no hay forja. Baja a las Cavernas Dorf y mina las vetas azules."),4600,"#bcd4ff","male")}catch(_){}}
         this.game.audioEngine?.sfx?.("sfx-door-locked");
         return;
       }
-      curCoins=setCoins(curCoins-wp.price);
+      curCoins=setCoins(curCoins-wpPrice);if(wpPrice!==wp.price){try{localStorage.removeItem(window.__gtDiscKey(this))}catch(_){}o.__prTs?.forEach(([t,w])=>t.active&&t.setText(`${w.price} ◆`).setColor("#7fb2ff"))}
       if(isCamp){
         const c=__cData(this);
         if(c&&c.d){
@@ -2465,6 +2472,7 @@ __forgeWeaponsShop(fromSmith){
       if(I?.spots?.rack)this.__sparks(I.spots.rack[0],I.spots.rack[1]-14,12);
     });
 
+    (o.__prTs=o.__prTs||[]).push([prT,wp]);this.__alDisc()&&prT.setColor("#4ade80");
     o.add([box,im,nm,stT,prT,durT,z]);
   });
 
@@ -17243,8 +17251,10 @@ const __GT = {
   banner(S, t, c = "#ffd27a") { S.game.events.emit("ui:banner", t, c) },
 };
 /* ─── Alline e os gatos resgatados no Coração da Floresta ─── */
+function __gtDiscKey(S) { return "depthgate:alDesc:" + (window.__heroTag ? window.__heroTag(S.game.registry, 1, S) : (S.game.registry.get("save:slot") ?? 1)) }
 function __gtHub(S, arrive) {
   if (!__GT.st(S) && !__stFlag(S, "gHub0")) return;
+  if (__GT.st(S) === 2) return;   // depois do resgate ela mora no Refúgio, na forja do Rafael
   if (S.__gtNpc) { arrive && S.__gtNpc.arrive(); return }
   const L3 = __GT.L3, [mx, my] = __Q.hubPos(S, -40, 150);
   const talk = () => {
@@ -17270,17 +17280,28 @@ function __gtHub(S, arrive) {
         __GT.M(L3("Todos eles! Olha só, a Mel até voltou mais gordinha.", "All of them! Look, Mel even came back a little chubbier.", "¡Todos! Mira, Mel hasta volvió más gordita."), "smile"),
         __GT.M(L3("O Ollie não sai do seu pé… acho que ele te escolheu. Leve ele junto: nariz de gato acha ouro onde ninguém procura.", "Ollie won't leave your side… I think he chose you. Take him along: a cat's nose finds gold where nobody looks.", "Ollie no se separa de ti… creo que te eligió. Llévalo contigo: la nariz de un gato encuentra oro donde nadie busca."), "talk"),
         __GT.H(L3("Vamos, Ollie. Temos selos para fechar.", "Come on, Ollie. We have seals to close.", "Vamos, Ollie. Tenemos sellos que cerrar."), "smile"),
+        __GT.M(L3("E tem mais: o ferreiro do Refúgio, o Rafael, é o meu marido. Vou pedir pra ele te dar um desconto na próxima compra.", "And there's more: the Refuge blacksmith, Rafael, is my husband. I'll ask him to give you a discount on your next purchase.", "Y hay más: el herrero del Refugio, Rafael, es mi marido. Le pediré que te haga un descuento en tu próxima compra."), "smile"),
+        __GT.M(L3("Agora que os gatos voltaram, vamos morar com ele no Refúgio. Passa lá na forja pra nos ver!", "Now that the cats are back, we're moving in with him at the Refuge. Drop by the forge to see us!", "Ahora que los gatos volvieron, nos mudamos con él al Refugio. ¡Pasa por la forja a vernos!"), "talk"),
       ], () => {
         __Q.set(S, "gt", 2); __Q.frag(40); S.stats?.addGold?.(120); S.requestSave?.(10);
-        __GT.banner(S, L3("+120 OURO · +40 CRISTAIS DO REFÚGIO · O OLLIE AGORA TE ACOMPANHA", "+120 GOLD · +40 REFUGE CRYSTALS · OLLIE NOW FOLLOWS YOU", "+120 ORO · +40 CRISTALES DEL REFUGIO · OLLIE AHORA TE ACOMPAÑA"));
+        try { localStorage.setItem(__gtDiscKey(S), "1") } catch (e) {}
+        // a Alline e os gatos vão para o Refúgio
+        const n = S.__gtNpc;
+        if (n) { n.spr.__lock = 1; S.anims.exists("alline-walk") && n.spr.play("alline-walk"); n.spr.setFlipX(!1); n.zone && (n.zone.interactLabel = null); S.tweens.add({ targets: [n.spr, n.sh], x: "+=90", alpha: 0, duration: 1800, delay: 400, onComplete: () => n.destroy() }) }
         S.__gtCats?.oll?.destroy?.();
+        for (const [k, c] of Object.entries(S.__gtCats || {})) k !== "oll" && c?.active && S.tweens.add({ targets: c, x: "+=110", alpha: 0, duration: 1600, delay: 300, onStart: () => c.play(c.texture.key + "-run"), onComplete: () => c.destroy() });
+        __GT.banner(S, L3("+120 OURO · +40 CRISTAIS DO REFÚGIO · O OLLIE AGORA TE ACOMPANHA", "+120 GOLD · +40 REFUGE CRYSTALS · OLLIE NOW FOLLOWS YOU", "+120 ORO · +40 CRISTALES DEL REFUGIO · OLLIE AHORA TE ACOMPAÑA"));
         S.time.delayedCall(300, () => S.scene.isActive() && __gtPet(S));
       });
       return;
     }
     if (s === 1) {
-      const miss = L.filter((lv) => !F.includes(lv)), where = miss.map((lv) => (typeof St === "function" ? St(`lvl.${lv}`, ki?.[lv]?.name ?? lv) : lv)).join(", ");
-      __dlg(S, [__GT.M(L3(`Já voltaram ${F.length} de ${L.length}. Sinto que os outros estão em: ${where}.`, `${F.length} of ${L.length} are back. I feel the others are in: ${where}.`, `Ya volvieron ${F.length} de ${L.length}. Siento que los otros están en: ${where}.`), F.length ? "smile" : "sadness")]);
+      const P = [
+        [L3("Nenhum voltou ainda… O diário mostra em quais terras eles estão.", "None of them are back yet… The journal shows which lands they're in.", "Ninguno ha vuelto todavía… El diario muestra en qué tierras están."), "sadness"],
+        [L3("A Mel já está em casa! Ainda faltam dois. Veja no diário onde procurar.", "Mel is already home! Two more to go. Check the journal for where to look.", "¡Mel ya está en casa! Faltan dos. Mira en el diario dónde buscar."), "smile"],
+        [L3("Só falta um! Veja no diário onde ele se escondeu.", "Just one left! Check the journal for where he's hiding.", "¡Solo falta uno! Mira en el diario dónde se escondió."), "special"],
+      ][Math.min(2, F.length)];
+      __dlg(S, [__GT.M(P[0], P[1])]);
       return;
     }
     const lines = [L3("A casa nunca esteve tão cheia de pelo. E de felicidade.", "The house has never been this full of fur. Or of happiness.", "La casa nunca estuvo tan llena de pelo. Ni de felicidad."), L3("Cuide bem do Ollie. Ele gosta de peixe e de ouro, nessa ordem.", "Take good care of Ollie. He likes fish and gold, in that order.", "Cuida bien a Ollie. Le gustan el pescado y el oro, en ese orden.")];
@@ -17494,12 +17515,15 @@ function __gtPet(S) {
     return r;
   };
   // missão do aprendiz (chave por herói): some ao excluir o herói ou começar campanha nova no slot
-  const apzDel = (tag) => { try { localStorage.removeItem("depthgate:apz:" + tag) } catch (e) {} };
+  const apzDel = (tag) => { try { localStorage.removeItem("depthgate:apz:" + tag); localStorage.removeItem("depthgate:alDesc:" + tag) } catch (e) {} };
   const K0 = Kr;
   Kr = function (c = 1, i = "campaign") { apzDel((i === "endless" ? "e" : "") + c); return K0.apply(this, arguments) };
   const CR = __cReset;
   __cReset = function (g, sl) { apzDel(String(sl)); return CR.apply(this, arguments) };
 }
+// o Refúgio (outra cena) lê o estado da missão pelo save da história
+window.__gtDone = (scene) => { try { const tag = window.__heroTag ? window.__heroTag(scene.game.registry, 1, scene) : 1; return (JSON.parse(localStorage.getItem("depthgate:story:" + tag) || "{}").q_gt | 0) === 2 } catch (e) { return !1 } };
+window.__gtDiscKey = __gtDiscKey;
 window.__dgQ2 = { GT: __GT, cats: __GT_CATS, hub: __gtHub, level: __gtLevel, pet: __gtPet, follow: __qFollow, hubIntro: (S) => __gSay(S, __GHUB0) };
 /*__QUESTS2__*/
 

@@ -8,7 +8,7 @@ com o id e o manifesto no mesmo formato das outras vozes de NPC. Falas montadas 
 de masmorra) ficam de fora.
 
 Uso (a chave nunca é gravada em arquivo; os arquivos do Kokoro ficam fora do repositório):
-    GEMINI_API_KEY=... KOKORO_DIR=/caminho/com/kokoro.onnx+voices.bin python3 scripts/generate_quest_npc_voices.py rafael|alline [--only pt|en] [--reuse-pt]
+    GEMINI_API_KEY=... KOKORO_DIR=/caminho/com/kokoro.onnx+voices.bin python3 scripts/generate_quest_npc_voices.py rafael|alline [--only pt|en] [--reuse-pt] [--model <modelo TTS>]
     --retune só leva as falas PT já gravadas ao tom alvo (sem gastar cota do Gemini)
     --reuse-pt reaproveita os PT gerados nas últimas 6 h (a cota diária do Gemini pode acabar no meio)
     kokoro.onnx / voices.bin: github.com/thewh1teagle/kokoro-onnx/releases (model-files-v1.0); pip install kokoro-onnx soundfile
@@ -35,24 +35,29 @@ NPCS = {
         "starts": ["Ah, um cliente! Chegue mais perto.", "Aço bom pede fogo paciente.", "Traga fragmentos e eu deixo",
                    "Só forjo com Pedra Cobalto.", "Sem Pedra Cobalto, sem forja.",
                    "O Brokk… não volta mais.", "Hoje a forja fica fria.", "Antes de você comprar qualquer coisa",
-                   "Meu aprendiz, o Brokk,", "Se encontrar ele lá embaixo", "Brokk! Você trouxe ele vivo", "Forjamos juntos o Martelo"],
+                   "Meu aprendiz, o Brokk,", "Se encontrar ele lá embaixo", "Brokk! Você trouxe ele vivo", "Forjamos juntos o Martelo",
+                   "A Alline me contou o que você fez pelos gatos."],
     },
     "alline": {
-        "src": "quests2.js", "pt": ("Achernar", 1.0), "en": ("af_heart", 0.97, "en-us"),
+        "src": ["quests2.js", "hub-village.js"], "pt": ("Achernar", 1.0), "en": ("af_heart", 0.97, "en-us"),
         "starts": ["Ei, você aí! Espera!", "Meus gatos fugiram pelos portais", "Eles vão fugir de você.",
-                   "Todos eles! Olha só", "O Ollie não sai do seu pé", "A casa nunca esteve tão cheia", "Cuide bem do Ollie."],
+                   "Todos eles! Olha só", "O Ollie não sai do seu pé", "A casa nunca esteve tão cheia", "Cuide bem do Ollie.",
+                   "E tem mais: o ferreiro do Refúgio", "Agora que os gatos voltaram, vamos morar",
+                   "Nenhum voltou ainda…", "A Mel já está em casa!", "Só falta um! Veja no diário",
+                   "Os gatos adoraram o Refúgio.", "O Rafael finge que é durão", "Cuida bem do Ollie lá fora."],
     },
 }
 NPC = None
 
 
 def lines():
-    s = open(os.path.join(ROOT, "scripts", "source", NPC["src"]), encoding="utf-8").read()
+    srcs = NPC["src"] if isinstance(NPC["src"], list) else [NPC["src"]]
+    s = "\n".join(open(os.path.join(ROOT, "scripts", "source", f), encoding="utf-8").read() for f in srcs)
     out = []
     for k in NPC["starts"]:
         i = s.index(k)
-        a = s.rfind('L3("', 0, i)
-        m = re.match(r'L3\("((?:[^"\\]|\\.)*)",\s*"((?:[^"\\]|\\.)*)"', s[a:])
+        a = s.rfind('"', 0, i + 1)   # aspas que abrem o texto PT (L3("pt","en",…) ou ["pt","en",…])
+        m = re.match(r'"((?:[^"\\]|\\.)*)",\s*"((?:[^"\\]|\\.)*)"', s[a:])
         un = lambda t: t.replace("\\'", "'").replace('\\"', '"')
         out.append((un(m.group(1)), un(m.group(2))))
     return out
@@ -82,10 +87,13 @@ def dur(path):
 
 def main():
     global NPC
-    names = [a for a in sys.argv[1:] if not a.startswith("--") and a not in ("pt", "en")]
+    skip = {sys.argv[sys.argv.index("--model") + 1]} if "--model" in sys.argv else set()
+    names = [a for a in sys.argv[1:] if not a.startswith("--") and a not in ("pt", "en") and a not in skip]
     if not names or names[0] not in NPCS:
         raise SystemExit(f"uso: generate_quest_npc_voices.py {'|'.join(NPCS)} [--only pt|en] [--reuse-pt]")
     NPC = NPCS[names[0]]
+    if "--model" in sys.argv:
+        V.MODELS_QUEUE = [sys.argv[sys.argv.index("--model") + 1]]
     PT_VOICE, PT_RATE = NPC["pt"]
     EN_VOICE, EN_SPEED, EN_LANG = NPC["en"]
     only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else None
