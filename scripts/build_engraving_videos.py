@@ -198,6 +198,7 @@ def campanha_2(n):
     ys, xs = np.where(alpha > 0.5)
     dr, alpha = dr[ys.min():ys.max(), xs.min():xs.max()], alpha[ys.min():ys.max(), xs.min():xs.max()]
     dark = np.clip(dr * 0.35, 0, 1)                            # silhueta quase preta, com um pouco do hachurado
+    dark, alpha = dark[:, ::-1].copy(), alpha[:, ::-1].copy()  # a imagem olha para a direita; ele voa para a esquerda
     cut = int(n * 0.47)
     for f in range(n):
         t = f / n
