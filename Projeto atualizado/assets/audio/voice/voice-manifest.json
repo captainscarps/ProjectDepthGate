@@ -2430,7 +2430,8 @@
           "ROGUE": 3.24
         },
         "pt": {
-          "WARRIOR": 3.02
+          "WARRIOR": 3.02,
+          "BERSERKER": 2.71
         }
       },
       "_enk": {

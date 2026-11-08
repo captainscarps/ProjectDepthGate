@@ -7,7 +7,7 @@
                vozes que nenhum outro personagem usa), com o mesmo efeito de fantasma da dublagem.
 
 Uso (a chave nunca é gravada em arquivo):
-    GEMINI_API_KEY=... NODE_PATH=<acorn> python3 scripts/generate_pt_fixes_gemini.py exclusivas|ecos [--force]
+    GEMINI_API_KEY=... NODE_PATH=<acorn> python3 scripts/generate_pt_fixes_gemini.py exclusivas|ecos [--force] [--model <modelo TTS>]
 Re-executável: pula o que já foi refeito (marca "gpt" no manifesto).
 """
 import importlib.util
@@ -52,11 +52,16 @@ def gem(key, text, voice, target, tmp):
     raw = os.path.join(tmp, "g.mp3")
     rate = 1.0
     for take in range(4):
+        say = text
         for tries in range(5):
             try:
-                mp3, _ = V.generate_gemini(key, text, None, voice)
+                mp3, _ = V.generate_gemini(key, say, None, voice)
                 break
             except RuntimeError as e:
+                if "400" in str(e) and tries < 4:   # o modelo Pro às vezes tenta responder em texto: pede só a leitura
+                    say = f'Leia em voz alta: "{text}"'
+                    time.sleep(3)
+                    continue
                 if "429" not in str(e) or tries == 4:
                     raise
                 print("  limite por minuto, esperando 65 s…", flush=True)
@@ -64,6 +69,8 @@ def gem(key, text, voice, target, tmp):
         open(raw, "wb").write(mp3)
         hz, voiced = Q.f0(raw)
         ok = hz > 0 and voiced > 0.35 and 0.85 <= target / hz <= 1.15
+        if say != text and Q.dur(raw) > len(text) / 10 + 1.0:   # leu a instrução junto: refaz
+            ok = False
         print(f"    tirada {take + 1}: {hz:.0f} Hz (alvo {target}), {voiced:.0%} com voz{'' if ok else ' — refazendo'}", flush=True)
         if ok or take == 3:
             rate = min(1.15, max(0.8, target / hz)) if hz else 1.0
@@ -77,6 +84,8 @@ def main():
     if not mode:
         raise SystemExit(__doc__)
     force = "--force" in argv
+    if "--model" in argv:
+        V.MODELS_QUEUE = [argv[argv.index("--model") + 1]]
     key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not key:
         raise SystemExit("defina GEMINI_API_KEY")

@@ -93,11 +93,16 @@ def gemini_pt(key, text, cls, target, tmp):
     raw = os.path.join(tmp, "pt.mp3")
     rate, mp3 = 1.0, None
     for take in range(4):
+        say = text
         for tries in range(5):
             try:
-                mp3, _ = V.generate_gemini(key, text, None, HV.VOICES[cls])
+                mp3, _ = V.generate_gemini(key, say, None, HV.VOICES[cls])
                 break
             except RuntimeError as e:
+                if "400" in str(e) and tries < 4:   # o modelo Pro às vezes tenta responder em texto: pede só a leitura
+                    say = f'Leia em voz alta: "{text}"'
+                    time.sleep(3)
+                    continue
                 if "429" not in str(e) or tries == 4:
                     raise
                 print("  limite por minuto, esperando 65 s…", flush=True)
@@ -106,6 +111,8 @@ def gemini_pt(key, text, cls, target, tmp):
         hz, voiced = Q.f0(raw)
         hi = 1.12 if cls in HV.FEMALE else 1.15
         ok = hz > 0 and voiced > 0.35 and 0.85 <= target / hz <= hi
+        if say != text and Q.dur(raw) > len(text) / 10 + 1.0:   # leu a instrução junto: refaz
+            ok = False
         print(f"    tirada {take + 1}: {hz:.0f} Hz (alvo {target}), {voiced:.0%} com voz{'' if ok else ' — refazendo'}", flush=True)
         if ok or take == 3:
             rate = min(1.15, max(0.8, target / hz)) if hz else 1.0
