@@ -2900,16 +2900,27 @@
           "ROGUE": 5.12
         },
         "en": {
-          "MAGE": 5.92,
-          "SHAMAN": 5.32,
-          "ROGUE": 5.0,
+          "MAGE": 4.97,
+          "SHAMAN": 5.18,
+          "ROGUE": 5.62,
           "WARRIOR": 5.58,
-          "BERSERKER": 5.0
+          "BERSERKER": 5.0,
+          "HUNTER": 5.47,
+          "NECROMANCER": 6.66,
+          "DRUID": 5.94,
+          "ARCHER": 5.29
         }
       },
       "_enk": {
         "WARRIOR": 1,
-        "BERSERKER": 1
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
       }
     },
     "8707e6fc": {
@@ -2928,10 +2939,27 @@
           "ROGUE": 3.6
         },
         "en": {
-          "MAGE": 3.36,
-          "SHAMAN": 3.48,
-          "ROGUE": 4.2
+          "MAGE": 3.1,
+          "SHAMAN": 3.38,
+          "ROGUE": 3.71,
+          "WARRIOR": 3.49,
+          "BERSERKER": 3.38,
+          "HUNTER": 3.71,
+          "NECROMANCER": 4.25,
+          "DRUID": 3.71,
+          "ARCHER": 3.06
         }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
       }
     },
     "ecc53c38": {
@@ -2950,10 +2978,27 @@
           "ROGUE": 6.48
         },
         "en": {
-          "MAGE": 6.48,
-          "SHAMAN": 6.16,
-          "ROGUE": 7.04
+          "MAGE": 5.15,
+          "SHAMAN": 5.36,
+          "ROGUE": 6.26,
+          "WARRIOR": 5.8,
+          "BERSERKER": 5.18,
+          "HUNTER": 5.33,
+          "NECROMANCER": 7.16,
+          "DRUID": 6.88,
+          "ARCHER": 4.93
         }
+      },
+      "_enk": {
+        "WARRIOR": 1,
+        "BERSERKER": 1,
+        "HUNTER": 1,
+        "NECROMANCER": 1,
+        "DRUID": 1,
+        "ARCHER": 1,
+        "MAGE": 1,
+        "SHAMAN": 1,
+        "ROGUE": 1
       }
     },
     "48fb5d34": {
@@ -2974,8 +3019,12 @@
         "en": {
           "MAGE": 4.56,
           "SHAMAN": 4.88,
-          "ROGUE": 5.12
+          "ROGUE": 5.12,
+          "WARRIOR": 5.18
         }
+      },
+      "_enk": {
+        "WARRIOR": 1
       }
     },
     "32d6ac62": {
