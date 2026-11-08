@@ -9,7 +9,7 @@ todos os heróis, ou nenhum. Aqui cada herói ganha a sua versão (byClass no ma
 As falas saem de scripts/source/arctic-prologue.js (o texto precisa ser idêntico ao do jogo).
 
 Uso (a chave nunca é gravada em arquivo):
-    GEMINI_API_KEY=... python3 scripts/generate_prologue_hero_voices.py [--only pt|en] [--force] [--model <modelo TTS>]
+    GEMINI_API_KEY=... python3 scripts/generate_prologue_hero_voices.py [--only pt|en] [--force] [--model <modelo TTS>] [--sem-volta]
     KOKORO_Q8=<pasta> (padrão /tmp/dg/kq8): o modelo q8 e as vozes são baixados do npm na primeira vez.
 Re-executável: só gera o que falta (--force refaz tudo).
 """
@@ -63,7 +63,8 @@ def lines():
         out += [(unq(p), unq(e), CLASSES) for p, e in re.findall(STR + r",\s*" + STR, part)]
     out += [(unq(p), unq(e), CLASSES) for p, e in re.findall(r'hsay\("\w+",__L3\(' + STR + "," + STR, src)]
     out += [(unq(p), unq(e), [c]) for c, p, e in re.findall(r"(\w+):\[" + STR + "," + STR, seg("const __RETH=", "/* o mapa visto"))]
-    out += [(unq(p), unq(e), CLASSES) for p, e in re.findall(STR + r",\s*" + STR, seg("const __RET=", "const __RETH="))]
+    if "--sem-volta" not in sys.argv:   # monólogos da viagem de volta (fim do jogo): muitas falas, gastam cota
+        out += [(unq(p), unq(e), CLASSES) for p, e in re.findall(STR + r",\s*" + STR, seg("const __RET=", "const __RETH="))]
     seen, res = set(), []
     for r in out:
         if r[0] not in seen:
