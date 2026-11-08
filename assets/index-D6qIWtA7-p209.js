@@ -4054,6 +4054,36 @@ function __playLivingStory(options = {}) {
   ];
 
   // Carregamento de Imagens
+  /*__LSVID__*/const __lsV = SLIDES.map((_, i) => {
+    try {
+      const v = document.createElement("video");
+      v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = i < 2 ? "auto" : "metadata";
+      v.src = "assets/video/historia_" + (i + 1) + (v.canPlayType('video/webm; codecs="vp9"') ? ".webm" : ".mp4");
+      return v;
+    } catch (e) { return null; }
+  });
+  let __lsCur = -1, __lsPrev = null, __lsT0 = 0;
+  const __lsCover = (v, w, h, a) => {
+    const vw = v.videoWidth || 1280, vh = v.videoHeight || 720, k = Math.max(w / vw, h / vh);
+    ctx.globalAlpha = a; ctx.drawImage(v, (w - vw * k) / 2, (h - vh * k) / 2, vw * k, vh * k); ctx.globalAlpha = 1;
+  };
+  const __lsDraw = (w, h) => {
+    const v = __lsV[curSlide];
+    if (!v) return false;
+    if (__lsCur !== curSlide) {
+      __lsPrev = __lsCur >= 0 ? __lsV[__lsCur] : null; __lsCur = curSlide; __lsT0 = performance.now();
+      try { v.currentTime = 0; } catch (e) {}
+      const p = v.play(); p && p.catch && p.catch(() => {});
+      const nx = __lsV[curSlide + 1]; if (nx && nx.preload !== "auto") { nx.preload = "auto"; try { nx.load(); } catch (e) {} }
+    }
+    if (v.readyState < 2) return false;
+    const k = Math.min(1, (performance.now() - __lsT0) / 900);
+    if (__lsPrev && __lsPrev.readyState >= 2 && k < 1) __lsCover(__lsPrev, w, h, 1);
+    else if (__lsPrev && k >= 1) { try { __lsPrev.pause(); } catch (e) {} __lsPrev = null; }
+    __lsCover(v, w, h, __lsPrev ? k : 1);
+    return true;
+  };
+  const __lsStop = () => __lsV.forEach(v => { try { v && (v.pause(), v.removeAttribute("src"), v.load()); } catch (e) {} });/*__LSVID__*/
   const loadedImages = {};
   let imagesReady = 0;
   const uniqueSrcs = [...new Set(SLIDES.map(s => s.imgSrc))];
@@ -4141,6 +4171,7 @@ function __playLivingStory(options = {}) {
     ctx.fillRect(0, 0, w, h);
 
     const s = SLIDES[curSlide];
+    if (__lsDraw(w, h)) return;/*__LSVID2__*/
     const img = loadedImages[s.imgSrc];
     if (img && img.complete) {
       const duration = 14;
@@ -4237,7 +4268,7 @@ function __playLivingStory(options = {}) {
 
   function finish() {
     if (isClosing) return;
-    /*__DUB__*/isClosing = true; window.__dubStop?.();/*§aXNDbG9zaW5nID0gdHJ1ZTs=*//*__DUB__*/
+    /*__DUB__*/isClosing = true; window.__dubStop?.();__lsStop();/*__LSVID3__*//*§aXNDbG9zaW5nID0gdHJ1ZTs=*//*__DUB__*/
     if (animId) cancelAnimationFrame(animId);
     window.removeEventListener("resize", resizeCanvas);
     /*__PADAUD__*/window.removeEventListener("keydown", onKeyDown); window.__padUI=Math.max(0,(window.__padUI||0)-1);/*§d2luZG93LnJlbW92ZUV2ZW50TGlzdGVuZXIoImtleWRvd24iLCBvbktleURvd24pOw==*//*__PADAUD__*/

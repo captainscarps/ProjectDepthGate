@@ -411,8 +411,49 @@ def intro(n):
         yield fade(vignette(grain(a, f)), f, n, 8, 1)
 
 
+# história antes da escolha dos heróis: uma cena por slide, em laço perfeito (a narração decide quanto tempo cada uma fica)
+HIST = {   # swirl=(cx, cy, rx, ry) em fração da imagem; parts; fog; glow (brilhos que pulsam)
+    1: dict(parts=("stars", "motes"), fog=0.55),
+    2: dict(swirl=(0.385, 0.40, 0.17, 0.33), parts=("motes",), fog=0.7),
+    3: dict(swirl=(0.5, 0.33, 0.30, 0.42), parts=("motes",)),
+    4: dict(parts=("embers",), glow=0.35),
+    5: dict(parts=("motes",), fog=0.5, glow=0.25),
+    6: dict(parts=("fireflies",), glow=0.3, fog=0.75),
+}
+PARTS["embers"] = (90, PEACH, 0.08, -0.9, 1, 0.85)
+
+
+def hist(i):
+    def run(n):
+        img = load(f"hist-{i}")
+        fx = HIST[i]
+        h, w = img.shape[:2]
+        lm = None
+        if fx.get("glow"):
+            g = img.mean(2)
+            lm = cv2.GaussianBlur((g > 0.7).astype(np.float32), (0, 0), 10)
+        for f in range(n):
+            ph = 2 * math.pi * f / n            # uma volta inteira: o último quadro emenda no primeiro
+            src = swirl(img, *(fx["swirl"][0] * w, fx["swirl"][1] * h, fx["swirl"][2] * w, fx["swirl"][3] * h), -ph) \
+                if fx.get("swirl") else img
+            z, cx, cy = 1.07 + 0.03 * math.sin(ph), 0.5 + 0.015 * math.cos(ph), 0.5 + 0.012 * math.sin(ph)
+            a = cam(src, z, cx, cy)
+            if lm is not None:
+                a = np.clip(a + cam(lm, z, cx, cy)[..., None] * (0.5 + 0.5 * math.sin(ph * 3)) * fx["glow"] * PEACH, 0, 1)
+            if fx.get("fog") is not None:
+                a = fog(a, f, fx["fog"], 0.25, 0, seed=30 + i, period=n)
+            for pn in fx["parts"]:
+                k, col, vx, vy, sz, al = PARTS[pn]
+                a = particles(a, f, k, 40 + i, col, vx * 0.6, vy * 0.6, sz, period=n, alpha=al)
+            a = boil(a, f)
+            yield vignette(grain(a, f % 48))
+    return run
+
+
 SCENES = {"campanha_1": campanha_1, "campanha_2": campanha_2, "campanha_3": campanha_3, "campanha_4": campanha_4,
           "background_menu": background_menu, "modo_infinito": modo_infinito, "intro": intro}
+for _i in HIST:
+    SCENES[f"historia_{_i}"] = hist(_i)
 for _c in FINAL_FX:
     SCENES["final_herois/" + _c] = final_hero(_c)
 AUDIO = {"intro": "intro.m4a", **{"final_herois/" + c: f"final-{c}.m4a" for c in FINAL_FX}}   # som original mantido
@@ -424,7 +465,7 @@ def render(name, secs=10):
     tag = name.replace("/", "-")
     tmp = f"/tmp/eng-{tag}.mp4"
     p = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
-                          "-i", "-", "-c:v", "libx264", "-preset", "slow", "-crf", "20", "-pix_fmt", "yuv420p",
+                          "-i", "-", "-c:v", "libx264", "-preset", "slow", "-crf", "27" if name.startswith("historia_") else "20", "-pix_fmt", "yuv420p",
                           "-movflags", "+faststart", tmp], stdin=subprocess.PIPE)
     for a in SCENES[name](n):
         p.stdin.write((np.clip(a, 0, 1) * 255).astype(np.uint8).tobytes())
@@ -439,7 +480,7 @@ def render(name, secs=10):
     webm = None
     if name not in NO_WEBM:
         webm = f"/tmp/eng-{tag}.webm"
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tmp, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "34", "-row-mt", "1",
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tmp, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "40" if name.startswith("historia_") else "34", "-row-mt", "1",
                         "-deadline", "good", "-cpu-used", "4"] + (["-c:a", "libopus", "-b:a", "96k"] if au else ["-an"]) + [webm], check=True)
     for d in ([] if "--preview" in sys.argv else OUTS):
         if os.path.isdir(d):

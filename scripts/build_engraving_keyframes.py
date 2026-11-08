@@ -122,6 +122,28 @@ SCENES.update({   # abertura do jogo (antes do logo)
                        "troll, their eyes glowing peach-orange, torches on the walls.", []),
 })
 
+STORY = os.path.join(ROOT, "assets", "pixel-art", "story")
+SCENES.update({   # história antes da escolha dos heróis (__playLivingStory): uma cena animada por slide
+    "hist-1": ("Ancient ruins on a misty mountainside at dusk: crumbling towers and a great circular stone portal carved with "
+               "runes standing at the top of worn stairs, dormant, its center dark and starry, vines over everything.", []),
+    "hist-2": ("Inside the same great circular rune portal, now awake and swirling with teal and salmon energy: a line of "
+               "hooded robed figures, the Ancients, walk into it and disappear, seen from behind, leaving behind sealed stone "
+               "tombs in the foreground.", []),
+    "hist-3": ("A vast gothic throne hall of the castle of Valdrak at night. A king with a golden crown and a long red cape, seen "
+               "from behind, stands on a red carpet facing a swirling vortex in the far wall from which a single gigantic "
+               "monstrous eye stares at him. The king's crown and cape match the reference portrait.",
+               [os.path.join(STORY, "rei-p-calm.png")]),
+    "hist-4": ("A huge round stone seal carved with runes set in the floor of a dark crypt, cracking apart: a jagged fissure "
+               "through its center, broken fragments lifting into the air, light and darkness bursting out of the crack.", []),
+    "hist-5": ("A misty valley at twilight with several glowing rifts torn in the air like doorways of light, each one in a "
+               "different color of the palette; from each rift a lone small silhouetted traveler steps out, seen from far "
+               "away, no faces visible.", []),
+    "hist-6": ("A sacred clearing in an ancient forest with several round rune portals among giant roots. On a mossy stone "
+               "altar stands the Guardian: an elf woman with long brown hair, a golden laurel crown and a high-collared white "
+               "robe, exactly like the reference portrait, holding up a small torch. She looks toward the viewer, calm.",
+               [os.path.join(STORY, "guardia-p-calm.png")]),
+})
+
 
 def gen(key, prompt, refs):
     parts = [{"inline_data": {"mime_type": "image/jpeg" if r.endswith("jpg") else "image/png",
