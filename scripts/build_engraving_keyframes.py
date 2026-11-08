@@ -37,13 +37,10 @@ SCENES = {
     "c2-dragao": "A single huge winged dragon in pure solid black silhouette, wings fully spread, seen from below while gliding "
                  "to the left, isolated and centered on a plain flat cream background. Only the black shape, nothing else.",
     # campanha 3: heróis de eras diferentes atravessando a ponte (referência extra: retratos dos heróis)
-    "c3-ponte": "Wide side view of an old mossy stone arch bridge over a misty gorge in a forest. Nine travelers walk across it "
-                "in a single line from left to right, small in the frame, matching the character portraits given: a knight in "
-                "full plate with white fur collar, a samurai in navy armor with red face mask, a young samurai archer in green "
-                "and white armor with crested helmet, a hunter in a conical straw hat with orange fur collar, an old druid in a "
-                "green antlered hood, a pale necromancer in a black hood, a woman in a dark navy hood, a woman in a purple hood "
-                "and face mask, an Amazonian woman with a black ponytail and red face paint. Above them the sky is cracked like "
-                "broken glass, with fragments of other skies showing through the cracks.",
+    "c3-ponte": ("Wide view of an old mossy stone arch bridge over a deep misty gorge in an ancient forest, completely empty, "
+                 "no people. Above it the sky is cracked like broken glass, and through the cracks fragments of other worlds "
+                 "and other ages show: a desert sun, a snowy night with aurora, a volcano erupting, a starry sky. Shards of sky "
+                 "float in the air above the bridge.", []),
     # campanha 4: onde a luz ainda toca o chão
     "c4-entrada": "Seen from above and behind, a square stone stairwell opening in the forest floor, its steps going DOWN into "
                   "the ground and disappearing into pitch black darkness at the bottom. Roots and ferns frame the opening, the "
