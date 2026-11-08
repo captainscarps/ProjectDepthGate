@@ -1,8 +1,8 @@
 """Vozes dos NPCs das missões novas: PT pelo Gemini TTS, EN pelo Kokoro (modelo aberto, roda local, sem Gemini).
 
-  rafael — o ferreiro do Refúgio, grave e masculina, uma voz só: PT e EN pelo Kokoro (PT pm_alex baixado
-           ~2,6 semitons no ffmpeg; EN am_onyx, ~86 Hz). Com o Gemini cada fala saía num timbre diferente.
-  alline — a dona dos gatos, doce, uma voz só: PT pf_dora (Kokoro, um pouco mais aguda); EN af_heart (calorosa).
+  rafael — o ferreiro do Refúgio, grave: PT Gemini Algieba levada a ~112 Hz em toda fala; EN am_onyx (Kokoro, ~86 Hz).
+  alline — a dona dos gatos, doce: PT Gemini Achernar levada a ~235 Hz em toda fala; EN af_heart (Kokoro).
+  (o Kokoro também fala pt-BR — "pt_engine": "kokoro" com pm_alex/pf_dora — se o Gemini não estiver disponível)
 As falas saem do código do jogo (o texto precisa ser idêntico) e ficam em assets/audio/voice/<idioma>/<id>.mp3,
 com o id e o manifesto no mesmo formato das outras vozes de NPC. Falas montadas na hora (com números ou nomes
 de masmorra) ficam de fora.
@@ -30,9 +30,9 @@ spec.loader.exec_module(V)
 
 NPCS = {
     "rafael": {
-        # PT também pelo Kokoro: o Gemini muda de timbre de uma fala para outra e parecia várias vozes num
-        # personagem só. pm_alex (único homem pt-BR do Kokoro) baixado 0.86 (~2,6 semitons) fica grave e igual em todas.
-        "src": "hub-village.js", "pt": ("pm_alex", 0.86), "pt_engine": "kokoro", "pt_speed": 0.92,
+        # PT pelo Gemini como os heróis: Algieba (suave e grave). O Gemini varia o tom de uma fala para outra, então cada
+        # fala é medida e levada a ~112 Hz; a que vier sussurrada ou longe demais do tom é refeita.
+        "src": "hub-village.js", "pt": ("Algieba", 1.0), "pt_hz": 112, "pt_ok": (0.83, 1.12),
         "en": ("am_onyx", 0.92, "en-us"),
         "starts": ["Ah, um cliente! Chegue mais perto.", "Aço bom pede fogo paciente.", "Traga fragmentos e eu deixo",
                    "Só forjo com Pedra Cobalto.", "Sem Pedra Cobalto, sem forja.",
@@ -41,8 +41,8 @@ NPCS = {
                    "A Alline me contou o que você fez pelos gatos."],
     },
     "alline": {
-        # uma voz só também: PT pelo Kokoro (pf_dora, única mulher pt-BR), levemente mais aguda para soar doce
-        "src": ["quests2.js", "hub-village.js"], "pt": ("pf_dora", 1.04), "pt_engine": "kokoro", "pt_speed": 0.95,
+        # PT pelo Gemini: Achernar (suave), levada ao mesmo tom (~235 Hz) em todas as falas
+        "src": ["quests2.js", "hub-village.js"], "pt": ("Achernar", 1.0), "pt_hz": 235, "pt_ok": (0.85, 1.15),
         "en": ("af_heart", 0.97, "en-us"),
         "starts": ["Ei, você aí! Espera!", "Meus gatos fugiram pelos portais", "Eles vão fugir de você.",
                    "Todos eles! Olha só", "O Ollie não sai do seu pé", "A casa nunca esteve tão cheia", "Cuide bem do Ollie.",
@@ -146,7 +146,7 @@ def main():
             subprocess.run(["cp", out, os.path.join(V.MIRROR_PT, lid + ".mp3")], check=True)
         elif only != "en":
             raw, rate = os.path.join(tmp, "pt.mp3"), PT_RATE
-            for take in range(3):   # com tom alvo: refaz a fala que vier sussurrada ou fora do tom
+            for take in range(4):   # com tom alvo: refaz a fala que vier sussurrada ou fora do tom
                 mp3 = None
                 for tries in range(4):
                     try:
@@ -160,9 +160,10 @@ def main():
                     break
                 open(raw, "wb").write(mp3)
                 hz, voiced = f0(raw)
-                ok = hz > 0 and voiced > 0.35 and 0.72 <= NPC["pt_hz"] / hz <= 1.12
+                lo, hi = NPC.get("pt_ok", (0.72, 1.12))
+                ok = hz > 0 and voiced > 0.35 and lo <= NPC["pt_hz"] / hz <= hi
                 print(f"  tirada {take + 1}: {hz:.0f} Hz, {voiced:.0%} com voz{'' if ok else ' — refazendo'}", flush=True)
-                if ok or take == 2:
+                if ok or take == 3:
                     rate = min(1.12, max(0.72, NPC["pt_hz"] / hz)) if hz else PT_RATE
                     break
             if mp3:
