@@ -42,8 +42,10 @@ NPCS = {
                    "A Alline me contou o que você fez pelos gatos."],
     },
     "alline": {
-        # PT pelo Gemini: Achernar (suave), levada ao mesmo tom (~235 Hz) em todas as falas
-        "src": ["quests2.js", "hub-village.js"], "pt": ("Achernar", 1.0), "pt_hz": 235, "pt_ok": (0.85, 1.15),
+        # PT pelo Gemini: Achernar (suave). Uma voz só: todas as falas do mesmo modelo, e cada tirada já tem que vir perto
+        # do tom natural dela (~222 Hz) — mudar o tom em mais de ~6% muda o timbre e soa como outra pessoa
+        "src": ["quests2.js", "hub-village.js"], "pt": ("Achernar", 1.0), "pt_hz": 222, "pt_ok": (0.95, 1.06),
+        "takes": 7, "max_shift": .06,
         "en": ("af_heart", 0.97, "en-us"),
         "starts": ["Ei, você aí! Espera!", "Meus gatos fugiram pelos portais", "Eles vão fugir de você.",
                    "Todos eles! Olha só", "O Ollie não sai do seu pé", "A casa nunca esteve tão cheia", "Cuide bem do Ollie.",
@@ -53,7 +55,7 @@ NPCS = {
     },
     "durgan": {
         # o carcereiro anão: velho e grave. PT Gemini Algenib (voz rouca) levada a ~100 Hz; EN bm_george (Kokoro, britânico, mais lento)
-        "src": "quests3.js", "pt": ("Algenib", 1.0), "pt_hz": 100, "pt_ok": (0.8, 1.15),
+        "src": "quests3.js", "pt": ("Algenib", 1.0), "pt_hz": 100, "pt_ok": (0.92, 1.08), "takes": 6, "max_shift": .08,
         "en": ("bm_george", 0.9, "en-gb"), "en_rate": 0.74,   # ~146 Hz do George levados a ~108 Hz: voz de anão velho
         "starts": ["Alto lá! Não dê nem mais um passo", "Sou Durgan, o último carcereiro", "Ele nunca foi o monstro.",
                    "Três fechaduras rúnicas prendem", "Sem a fúria da prisão, ele vai lutar", "As correntes afrouxaram. Vá.",
@@ -160,7 +162,8 @@ def main():
             subprocess.run(["cp", out, os.path.join(V.MIRROR_PT, lid + ".mp3")], check=True)
         elif only != "en":
             raw, rate = os.path.join(tmp, "pt.mp3"), PT_RATE
-            for take in range(4):   # com tom alvo: refaz a fala que vier sussurrada ou fora do tom
+            nt = NPC.get("takes", 4)
+            for take in range(nt):   # com tom alvo: refaz a fala que vier sussurrada ou fora do tom
                 mp3 = None
                 for tries in range(4):
                     try:
@@ -177,8 +180,9 @@ def main():
                 lo, hi = NPC.get("pt_ok", (0.72, 1.12))
                 ok = hz > 0 and voiced > 0.35 and lo <= NPC["pt_hz"] / hz <= hi
                 print(f"  tirada {take + 1}: {hz:.0f} Hz, {voiced:.0%} com voz{'' if ok else ' — refazendo'}", flush=True)
-                if ok or take == 3:
-                    rate = min(1.12, max(0.72, NPC["pt_hz"] / hz)) if hz else PT_RATE
+                if ok or take == nt - 1:
+                    ms = NPC.get("max_shift")
+                    rate = (min(1 + ms, max(1 - ms, NPC["pt_hz"] / hz)) if ms else min(1.12, max(0.72, NPC["pt_hz"] / hz))) if hz else PT_RATE
                     break
             if mp3:
                 if not NPC.get("pt_hz"):

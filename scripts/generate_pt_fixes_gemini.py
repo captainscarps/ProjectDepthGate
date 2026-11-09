@@ -51,7 +51,7 @@ def gem(key, text, voice, target, tmp):
     """Gemini com o tom levado ao alvo; refaz fala sussurrada ou fora do tom (como em gemini_pt)"""
     raw = os.path.join(tmp, "g.mp3")
     rate = 1.0
-    for take in range(4):
+    for take in range(6):   # tom já perto do natural: mudar mais que ~8% muda o timbre (soa como outra voz)
         say = text
         for tries in range(5):
             try:
@@ -68,12 +68,12 @@ def gem(key, text, voice, target, tmp):
                 time.sleep(65)
         open(raw, "wb").write(mp3)
         hz, voiced = Q.f0(raw)
-        ok = hz > 0 and voiced > 0.35 and 0.85 <= target / hz <= 1.15
+        ok = hz > 0 and voiced > 0.35 and 0.92 <= target / hz <= 1.08
         if say != text and Q.dur(raw) > len(text) / 10 + 1.0:   # leu a instrução junto: refaz
             ok = False
         print(f"    tirada {take + 1}: {hz:.0f} Hz (alvo {target}), {voiced:.0%} com voz{'' if ok else ' — refazendo'}", flush=True)
-        if ok or take == 3:
-            rate = min(1.15, max(0.8, target / hz)) if hz else 1.0
+        if ok or take == 5:
+            rate = min(1.08, max(0.92, target / hz)) if hz else 1.0
             break
     return raw, rate if abs(rate - 1) > 0.03 else 1.0
 
