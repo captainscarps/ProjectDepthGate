@@ -34,3 +34,49 @@
     return r;
   };
 }
+/* ═══ Botões DIÁRIO e HABILIDADES fora do HUD ═══
+   Os dois agora têm aba própria no livro (abre pelo INVENTÁRIO, ou L / ◀ e a tecla de habilidades). O aviso "!" de
+   pontos de habilidade para gastar passa para a pílula do INVENTÁRIO e para a aba HABILIDADES do livro. */
+{
+  __qDiaryBtn = function () {};
+  const B0 = No.prototype.buildSkillsButton;
+  No.prototype.buildSkillsButton = function () {
+    const r = B0.apply(this, arguments);
+    try {
+      for (const o of [this.skillsBtn, this.skillsAlert]) if (o && !o.__gone) {
+        o.__gone = 1; o.disableInteractive?.(); o.setVisible(!1); o.setPosition(-9999, -9999);
+        o.setVisible = function () { return this };
+      }
+    } catch (e) {}
+    return r;
+  };
+  const SA = No.prototype.setSkillsAlert;
+  No.prototype.setSkillsAlert = function (on) {
+    const r = SA.apply(this, arguments);
+    try { window.__skAlert = !!on; __skMark(this.scene) } catch (e) {}
+    return r;
+  };
+  window.__skMark = function (U) {
+    try {
+      const on = !!window.__skAlert, T = U?.touchControls, t = T?.selectBtn?.text;
+      if (t) {
+        if (!T.__skBang) T.__skBang = U.add.text(0, 0, "!", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "12px", color: "#ffd24a", stroke: "#1a120c", strokeThickness: 3 }).setOrigin(.5).setDepth(402);
+        T.__skBang.setPosition(t.x + t.displayWidth / 2 + 2, t.y - t.displayHeight / 2 - 1).setVisible(on && t.visible);
+        if (on && !T.__skTw) T.__skTw = U.tweens.add({ targets: T.__skBang, scale: 1.25, duration: 520, yoyo: !0, repeat: -1 });
+      }
+      const C = U?.inventoryUI, tab = C?.__tabT?.find((x) => /HABILIDADES|SKILLS/.test(x.text));
+      if (tab) {
+        if (!C.__skBang) { C.__skBang = U.add.text(0, 0, "!", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "12px", color: "#d23a2a" }).setOrigin(.5); C.root?.add(C.__skBang) }
+        C.__skBang.setPosition(tab.x + tab.width + 6, tab.y - 6).setVisible(on && tab.visible);
+        C.root?.bringToTop(C.__skBang);
+      }
+    } catch (e) {}
+  };
+  // a pílula muda de lugar e o livro reorganiza as abas: o "!" vai junto
+  const A10 = Hd.prototype.applyLayout;
+  Hd.prototype.applyLayout = function () { const r = A10.apply(this, arguments); try { __skMark(this.scene) } catch (e) {} return r };
+  const V10 = Hd.prototype.setVisible;
+  Hd.prototype.setVisible = function () { const r = V10.apply(this, arguments); try { __skMark(this.scene) } catch (e) {} return r };
+  const S10 = Cd.prototype.show;
+  Cd.prototype.show = function () { const r = S10.apply(this, arguments); try { __skMark(this.ui) } catch (e) {} return r };
+}
