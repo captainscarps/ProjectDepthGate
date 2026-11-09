@@ -45,7 +45,7 @@ NPCS = {
         # PT pelo Gemini: Achernar (suave). Uma voz só: todas as falas do mesmo modelo, e cada tirada já tem que vir perto
         # do tom natural dela (~222 Hz) — mudar o tom em mais de ~6% muda o timbre e soa como outra pessoa
         "src": ["quests2.js", "hub-village.js"], "pt": ("Achernar", 1.0), "pt_hz": 222, "pt_ok": (0.95, 1.06),
-        "takes": 7, "max_shift": .06,
+        "takes": 10, "max_shift": .06,
         "en": ("af_heart", 0.97, "en-us"),
         "starts": ["Ei, você aí! Espera!", "Meus gatos fugiram pelos portais", "Eles vão fugir de você.",
                    "Todos eles! Olha só", "O Ollie não sai do seu pé", "A casa nunca esteve tão cheia", "Cuide bem do Ollie.",
