@@ -462,9 +462,9 @@ __forgeWeaponsShop(fromSmith,mode){
   const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
   const bg=this.add.rectangle(d,st/2,_,st,328450,.82).setInteractive();
   const n=this.add.graphics();
-  Dt(n,d-210,Y,420,HH);
+  Dt(n,d-300,Y,600,HH);
   o.add([bg,n]);
-  __winSkin(this,o,d-210,Y,420,HH,1)&&n.clear();
+  __winSkin(this,o,d-300,Y,600,HH,1)&&n.clear();
 
   const isCamp=this.fromForest;
   let slot=isCamp?this.retSlot:(this.game.registry.get("save:slot")??1);
@@ -500,8 +500,9 @@ __forgeWeaponsShop(fromSmith,mode){
   };
   let curCoins=getCoins();
 
-  o.add(this.add.text(d,Y+16,L3("FORJA ANCESTRAL · ARMARIA LENDÁRIA","ANCIENT FORGE · LEGENDARY ARMORY","FORJA ANCESTRAL · ARMERÍA LEGENDARIA"),{...ti,fontSize:"12px",color:"#ffd24a"}).setOrigin(.5));
-  o.add(this.add.text(d,Y+30,(isCamp?L3("Forjadas em Pedra Cobalto, que só existe nas Cavernas Dorf · Quebram se morrer na run!","Forged from Cobalt Stone, found only in the Dorf Caves · Break if you die in a run!","Forjadas en Piedra Cobalto de las Cavernas Dorf · ¡Se rompen si mueres!"):L3("Forjadas em Pedra Cobalto · Resistem à morte, mas duram 3 runs · Conserte aqui","Forged from Cobalt Stone · Survive death but last 3 runs · Repair them here","Forjadas en Piedra Cobalto · Resisten la muerte pero duran 3 runs · Repáralas aquí")),{...Le,fontSize:"8px",fontStyle:"italic",color:"#f87171"}).setOrigin(.5));
+  const LX=d-300+14,LW=272,LC=d-150,RX=d+14,RW=272,RC=d+150;   // livro: lista na página da esquerda, a peça escolhida na da direita
+  o.add(this.add.text(LC,Y+16,L3("FORJA ANCESTRAL","ANCIENT FORGE","FORJA ANCESTRAL"),{...ti,fontSize:"12px",color:"#ffd24a"}).setOrigin(.5));
+  o.add(this.add.text(d,Y+30,(isCamp?L3("Forjadas em Pedra Cobalto, que só existe nas Cavernas Dorf · Quebram se morrer na run!","Forged from Cobalt Stone, found only in the Dorf Caves · Break if you die in a run!","Forjadas en Piedra Cobalto de las Cavernas Dorf · ¡Se rompen si mueres!"):L3("Forjadas em Pedra Cobalto · Resistem à morte, mas duram 3 runs · Conserte aqui","Forged from Cobalt Stone · Survive death but last 3 runs · Repair them here","Forjadas en Piedra Cobalto · Resisten la muerte pero duran 3 runs · Repáralas aquí")),{...Le,fontSize:"7px",fontStyle:"italic",color:"#f87171",align:"center",wordWrap:{width:LW}}).setOrigin(.5,0).setPosition(LC,Y+25));
 
   const weaponsList=[
     {id:"unique_forge_aegis",name:L3("Espada-Baluarte da Aurora","Aurora Bastion Edge","Espada Baluarte de la Aurora"),price:120,icon:"icon-dragon-sword",stats:"+15 DANO · +8 DEFESA · +4 VIDA · +18% BLOQUEIO",color:"#34d399"},
@@ -515,45 +516,59 @@ __forgeWeaponsShop(fromSmith,mode){
   // armaduras da forja: mudam o visual do herói (scripts/source/forge-armor.js)
   const armorsList=Object.entries(window.__FARM||{}).map(([id,a])=>({id,name:L3(...a.name),price:a.price,icon:Xt[id]?.icon||"icon-armor",tint:a.trim,stats:L3(a.st[0],a.st[1],a.st[1]),color:"#"+a.trim.toString(16).padStart(6,"0")}));
   const list=arm?armorsList:weaponsList;
-  const RS=list.length>6?30:34,RH=list.length>6?28:31;
-  // abas: ARMAS | ARMADURAS
+  const RH=list.length>6?27:30,RS=RH+2;
+  // abas: ARMAS | ARMADURAS (toque, ou foco + A no controle)
   if(window.__FARM){
-    const tab=(lbl,on,x,m)=>{const t=this.add.text(x,Y+50,on?`▸ ${lbl} ◂`:lbl,{...ti,fontSize:on?"11px":"10px",color:on?"#ffd24a":"#d8cdb4",...(on?{}:{backgroundColor:"#1a120b",padding:{x:10,y:3}})}).setOrigin(.5).setInteractive({useHandCursor:!0});
-      on||t.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeWeaponsShop(fromSmith,m)});o.add(t);return t};
-    tab(L3("⚔ ARMAS","⚔ WEAPONS","⚔ ARMAS"),!arm,d-70,"wpn");tab(L3("🛡 ARMADURAS","🛡 ARMOR","🛡 ARMADURAS"),arm,d+70,"arm");
+    const tab=(lbl,on,x,m)=>{const t=this.add.text(x,Y+56,on?`▸ ${lbl} ◂`:lbl,{...ti,fontSize:on?"11px":"10px",color:on?"#ffd24a":"#d8cdb4",...(on?{}:{backgroundColor:"#1a120b",padding:{x:8,y:3}})}).setOrigin(.5).setInteractive({useHandCursor:!0});
+      on?(t.__fnSkip=1):t.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeWeaponsShop(fromSmith,m)});o.add(t);return t};
+    tab(L3("⚔ ARMAS","⚔ WEAPONS","⚔ ARMAS"),!arm,LC-66,"wpn");tab(L3("🛡 ARMADURAS","🛡 ARMOR","🛡 ARMADURAS"),arm,LC+66,"arm");
   }
-  const R0=window.__FARM?Y+62:Y+44;
+  const R0=window.__FARM?Y+70:Y+52;
+  const goldText=this.add.text(LC,Y+HH-38,`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${curCoins} ◆`,{...ti,fontSize:"10px",color:"#7fb2ff"}).setOrigin(.5);
+  o.add(goldText);
 
-  const goldText=this.add.text(d,Y+276,`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${curCoins} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(.5);
-  const msgText=this.add.text(d,Y+292,"",{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(.5);
-  o.add([goldText,msgText]);
+  // ── página da direita: a peça escolhida, o herói vestindo (prévia) e o botão de forjar com confirmação ──
+  const pName=this.add.text(RC,Y+16,"",{...ti,fontSize:"12px",color:"#ffd24a",align:"center",wordWrap:{width:RW}}).setOrigin(.5,0);
+  const pIcon=this.add.image(RC-70,Y+104,"icon-sword").setVisible(!1);
+  const pStats=this.add.text(RC,Y+160,"",{...Le,fontSize:"8px",color:"#e2e8f0",align:"center",wordWrap:{width:RW-10},lineSpacing:3}).setOrigin(.5,0);
+  const pOwn=this.add.text(RC,Y+200,"",{...Le,fontSize:"8px",color:"#9cc2ff"}).setOrigin(.5,0);
+  const forgeBtn=this.add.text(RC,Y+232,"",{...ti,fontSize:"11px",color:"#f6e7c8",backgroundColor:"#6e3b22",padding:{x:12,y:5}}).setOrigin(.5).setInteractive({useHandCursor:!0});
+  const ask=this.add.text(RC,Y+234,"",{...Le,fontSize:"9px",color:"#3b2416",align:"center",wordWrap:{width:RW-10}}).setOrigin(.5).setVisible(!1);
+  const yesBtn=this.add.text(RC-56,Y+254,L3("✔ FORJAR","✔ FORGE","✔ FORJAR"),{...ti,fontSize:"10px",color:"#f6e7c8",backgroundColor:"#2f5a2a",padding:{x:10,y:4}}).setOrigin(.5).setInteractive({useHandCursor:!0}).setVisible(!1);
+  const noBtn=this.add.text(RC+56,Y+254,L3("✕ CANCELAR","✕ CANCEL","✕ CANCELAR"),{...ti,fontSize:"10px",color:"#f6e7c8",backgroundColor:"#6e3b22",padding:{x:10,y:4}}).setOrigin(.5).setInteractive({useHandCursor:!0}).setVisible(!1);
+  const msgText=this.add.text(RC,Y+272,"",{...Le,fontSize:"8px",color:"#4ade80",align:"center",wordWrap:{width:RW-10}}).setOrigin(.5,0);
+  o.add([pName,pIcon,pStats,pOwn,forgeBtn,ask,yesBtn,noBtn,msgText]);
+  // prévia: o herói com a peça vestida (armadura muda o visual; arma, só o herói com o que já usa)
+  let pv=null;
+  const curEq=()=>{try{if(isCamp){const c=__cData(this);return{...(c?.d?.player?.equipment||{})}}const e=Nn(slot);return e.ok?{...(e.data.player?.equipment||{})}:{}}catch(_){return{}}};
+  try{const cd=this.classDef||pe?.[this.heroId];if(cd){pv=new Qe(this,cd,{x:RC+56,y:Y+112,scale:1.9,isPreview:!0});pv.container.__noPaper=1;o.add(pv.container);
+    const tick=(t,dt)=>{try{pv&&pv.container?.active&&pv.update(dt/1e3,null)}catch(_){}};this.events.on("update",tick);o.once("destroy",()=>{this.events.off("update",tick);pv=null})}}catch(_){pv=null}
+  const showPv=wp=>{if(!pv)return;try{const eq=curEq();arm&&(eq.armor={id:wp.id,rarity:"UNIQUE",uid:"pv-"+wp.id,seed:1});pv.refreshEquipment({equipment:eq})}catch(_){}};
 
-  list.forEach((wp,idx)=>{
-    const ry=R0+idx*RS;
-    const box=this.add.graphics();
-    const z=this.add.zone(d,ry+RH/2,400,RH).setInteractive({useHandCursor:!0});
+  let sel=0,confirming=!1;const rowsUi=[];
+  const ownTxt=wp=>{const own=ownedForge().filter(f=>f.it.id===wp.id);if(!own.length)return["",""];const f=own.sort((a,b)=>a.used-b.used)[0],left=Math.max(0,MAXR-f.used);return left?[`${L3("VOCÊ TEM","OWNED","TIENES")} · ${"▮".repeat(left)}${"▯".repeat(MAXR-left)} ${left}/${MAXR} ${L3("runs","runs","runs")}`,"#9cc2ff"]:[L3("QUEBRADA · CONSERTE","BROKEN · REPAIR","ROTA · REPARA"),"#f87171"]};
+  const paintRight=()=>{
+    const wp=list[sel];if(!wp)return;
+    pName.setText(wp.name.toUpperCase()).setColor(wp.color);
     const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
-    const im=hd?this.add.image(d-176,ry+16,"items-hd",wp.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(1.1);
-    wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&im.setTint(wp.tint);
-    const nm=this.add.text(d-154,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"10px",color:wp.color});
-    const stT=this.add.text(d-154,ry+18,wp.stats,{...Le,fontSize:"7px",color:"#e2e8f0"});
-    const prT=this.add.text(d+186,ry+(isCamp?10:5),`${this.__alPrice(wp.price)} ◆`,{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(1,0);
-    const durT=this.add.text(d+186,ry+20,"",{...Le,fontSize:"7px",color:"#9cc2ff"}).setOrigin(1,0);
-    const paintDur=()=>{const own=ownedForge().filter(f=>f.it.id===wp.id);if(!own.length){durT.setText("");return}const f=own.sort((a,b)=>a.used-b.used)[0],left=Math.max(0,MAXR-f.used);durT.setText(left?`${L3("TEM","OWNED","TIENES")} · ${"▮".repeat(left)}${"▯".repeat(MAXR-left)} ${left}/${MAXR}`:L3("QUEBRADA · CONSERTE","BROKEN · REPAIR","ROTA · REPARA")).setColor(left?"#9cc2ff":"#f87171")};
-    paintDur();
-
-    const drawRow=(hover)=>{
-      box.clear();
-      box.fillStyle(hover?0x3d2818:0x1a120b,hover?0.92:0.65);
-      box.fillRoundedRect(d-200,ry,400,RH,4);
-      box.lineStyle(1,hover?0xffd24a:0x5a4832,hover?1:0.5);
-      box.strokeRoundedRect(d-200,ry,400,RH,4);
-    };
-    drawRow(!1);
-
-    z.on("pointerover",()=>drawRow(!0));
-    z.on("pointerout",()=>drawRow(!1));
-    z.on("pointerdown",()=>{
+    hd?pIcon.setTexture("items-hd",wp.id).setDisplaySize(52,52):pIcon.setTexture(this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(2.2);
+    pIcon.clearTint();wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&pIcon.setTint(wp.tint);pIcon.setVisible(!0).setX(pv?RC-70:RC);
+    pStats.setText(wp.stats.split(" · ").join("\n"));
+    const [ot,oc]=ownTxt(wp);pOwn.setText(ot).setColor(oc||"#9cc2ff").setY(pStats.y+pStats.height+6);
+    forgeBtn.setText(`${L3("FORJAR","FORGE","FORJAR")} · ${this.__alPrice(wp.price)} ◆`);
+    showPv(wp);
+  };
+  const setConfirm=on=>{
+    confirming=on;const wp=list[sel];
+    forgeBtn.setVisible(!on);ask.setVisible(on);yesBtn.setVisible(on);noBtn.setVisible(on);
+    on&&ask.setText(L3(`Forjar ${wp.name} por ${this.__alPrice(wp.price)} ◆?`,`Forge ${wp.name} for ${this.__alPrice(wp.price)} ◆?`,`¿Forjar ${wp.name} por ${this.__alPrice(wp.price)} ◆?`));
+    for(const b of[forgeBtn,yesBtn,noBtn])b.input&&(b.input.enabled=b.visible);
+    for(const r of rowsUi)r.z.input&&(r.z.input.enabled=!on);   // durante a pergunta, a lista não troca a peça
+    this.__fnAuto(o,on?noBtn:cBtn,!0);
+    if(this.__fn){const want=on?yesBtn:forgeBtn,k=this.__fn.items.indexOf(want);k>=0&&(this.__fn.sel=k);this.__fnDraw()}
+  };
+  const select=(idx)=>{if(confirming)return;sel=idx;rowsUi.forEach((r,i)=>r.draw(i===sel));msgText.setText("");paintRight();this.game.audioEngine?.sfx?.("sfx-ui-tab")};
+  const doBuy=(wp)=>{
       curCoins=getCoins();
       const wpPrice=this.__alPrice(wp.price);if(curCoins<wpPrice){
         msgText.setText(L3("Pedra Cobalto insuficiente! Minere nas Cavernas Dorf (portal branco à direita).","Not enough Cobalt Stone! Mine it in the Dorf Caves (white portal on the right).","¡Piedra Cobalto insuficiente! Mina en las Cavernas Dorf.")).setColor("#f87171");
@@ -583,36 +598,63 @@ __forgeWeaponsShop(fromSmith,mode){
       }
       this.forgeCoinHud?.active&&this.forgeCoinHud.setText(`◆ ${curCoins}`);
       goldText.setText(`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${curCoins} ◆`);
-      msgText.setText(isCamp?L3(`Forjado: ${wp.name}! (Quebra se morrer na run)`,`Forged: ${wp.name}! (Breaks on death in run)`,`¡Forjado: ${wp.name}! (Se rompe si mueres en run)`):L3(`Forjado: ${wp.name}! Dura ${MAXR} runs.`,`Forged: ${wp.name}! Lasts ${MAXR} runs.`,`¡Forjado: ${wp.name}! Dura ${MAXR} runs.`)).setColor("#4ade80");paintDur();
+      msgText.setText(isCamp?L3(`Forjado: ${wp.name}! (Quebra se morrer na run)`,`Forged: ${wp.name}! (Breaks on death in run)`,`¡Forjado: ${wp.name}! (Se rompe si mueres en run)`):L3(`Forjado: ${wp.name}! Dura ${MAXR} runs.`,`Forged: ${wp.name}! Lasts ${MAXR} runs.`,`¡Forjado: ${wp.name}! Dura ${MAXR} runs.`)).setColor("#4ade80");
       window.__advancedAudio?.playMetalClang?.("E5");
       this.game.audioEngine?.sfx?.("sfx-item-pickup");
       const I=this.M?.interior;
       if(I?.spots?.rack)this.__sparks(I.spots.rack[0],I.spots.rack[1]-14,12);
-    });
+      return !0;
+  };
+  forgeBtn.on("pointerdown",()=>{if(!confirming){this.game.audioEngine?.sfx?.("sfx-ui-confirm");setConfirm(!0)}});
+  noBtn.on("pointerdown",()=>setConfirm(!1));
+  yesBtn.on("pointerdown",()=>{const wp=list[sel];setConfirm(!1);doBuy(wp);paintRight()});
 
+  list.forEach((wp,idx)=>{
+    const ry=R0+idx*RS;
+    const box=this.add.graphics();
+    const z=this.add.zone(LX+LW/2,ry+RH/2,LW,RH).setInteractive({useHandCursor:!0});
+    const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
+    const im=hd?this.add.image(LX+16,ry+RH/2,"items-hd",wp.id).setDisplaySize(24,24):this.add.image(LX+16,ry+RH/2,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(.9);
+    wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&im.setTint(wp.tint);
+    const nm=this.add.text(LX+34,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"9px",color:wp.color});
+    const own=ownTxt(wp)[0];
+    const stT=this.add.text(LX+34,ry+16,own?own:wp.stats.split(" · ").slice(0,2).join(" · "),{...Le,fontSize:"7px",color:own?"#9cc2ff":"#e2e8f0"});
+    const prT=this.add.text(LX+LW-4,ry+RH/2,`${this.__alPrice(wp.price)} ◆`,{...ti,fontSize:"10px",color:"#7fb2ff"}).setOrigin(1,.5);
+    const draw=(on,hover)=>{box.clear();box.fillStyle(on?0x3d2818:0x1a120b,on?.92:hover?.8:.55).fillRoundedRect(LX,ry,LW,RH,4);box.lineStyle(on?1.5:1,on?0xffd24a:hover?0xb8862f:0x5a4832,on||hover?1:.5).strokeRoundedRect(LX,ry,LW,RH,4)};
+    draw(idx===sel);
+    z.on("pointerover",()=>draw(idx===sel,!0));
+    z.on("pointerout",()=>draw(idx===sel));
+    z.on("pointerdown",()=>select(idx));       // tocar escolhe e mostra; forjar só pelo botão, com confirmação
+    rowsUi.push({z,draw});
     (o.__prTs=o.__prTs||[]).push([prT,wp]);this.__alDisc()&&prT.setColor("#4ade80");
-    o.add([box,im,nm,stT,prT,durT,z]);
+    o.add([box,im,nm,stT,prT,z]);
   });
 
+  const bY=Y+HH-16;
   if(!isCamp){
-    const rpBtn=this.add.text(d,Y+HH-16,L3("CONSERTAR ARMAS","REPAIR WEAPONS","REPARAR ARMAS"),{...ti,fontSize:"10px",color:"#9cc2ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
+    const rpBtn=this.add.text(LC-66,bY,L3("CONSERTAR","REPAIR","REPARAR"),{...ti,fontSize:"9px",color:"#9cc2ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
     rpBtn.on("pointerover",()=>rpBtn.setColor("#ffffff"));
     rpBtn.on("pointerout",()=>rpBtn.setColor("#9cc2ff"));
     rpBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeRepairPanel(slot,[...weaponsList,...armorsList],getCoins,setCoins);});
     o.add(rpBtn);
   }
-  const swBtn=this.add.text(isCamp?d-100:d-140,Y+HH-16,L3("⚙ MELHORIAS DA FORJA","⚙ FORGE UPGRADES","⚙ MEJORAS DE FORJA"),{...ti,fontSize:"10px",color:"#8fd8ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
+  const swBtn=this.add.text(isCamp?LC:LC+66,bY,L3("⚙ MELHORIAS","⚙ UPGRADES","⚙ MEJORAS"),{...ti,fontSize:"9px",color:"#8fd8ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
   swBtn.on("pointerover",()=>swBtn.setColor("#ffffff"));
   swBtn.on("pointerout",()=>swBtn.setColor("#8fd8ff"));
   swBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.openBlacksmith();});
 
-  const cBtn=this.add.text(isCamp?d+100:d+140,Y+HH-16,L3("✕ FECHAR","✕ CLOSE","✕ CERRAR"),{...ti,fontSize:"10px",color:"#d8cdb4"}).setOrigin(.5).setInteractive({useHandCursor:!0});
+  const cBtn=this.add.text(RC,bY,L3("✕ FECHAR","✕ CLOSE","✕ CERRAR"),{...ti,fontSize:"10px",color:"#d8cdb4"}).setOrigin(.5).setInteractive({useHandCursor:!0});
   cBtn.on("pointerover",()=>cBtn.setColor("#ffd24a"));
   cBtn.on("pointerout",()=>cBtn.setColor("#d8cdb4"));
-  cBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__busy=!1;});
+  cBtn.on("pointerdown",()=>{if(confirming){setConfirm(!1);return}o.destroy();this.panel=null;this.__busy=!1;});
 
   o.add([swBtn,cBtn]);
+  // ordem do foco no controle: abas, lista, botão de forjar, rodapé
+  o.bringToTop(forgeBtn);o.bringToTop(yesBtn);o.bringToTop(noBtn);for(const b of[swBtn,cBtn])o.bringToTop(b);
   this.__fixScroll?.(o);
   this.panel=o;
-  this.__fnAuto(o,cBtn);
+  paintRight();
+  setConfirm(!1);
+  // abrir já com o foco na primeira peça da lista
+  if(this.__fn){const k=this.__fn.items.indexOf(rowsUi[0]?.z);k>=0&&(this.__fn.sel=k,this.__fnDraw())}
 }

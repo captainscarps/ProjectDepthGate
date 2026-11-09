@@ -371,12 +371,67 @@ function __bkTabs(C) {
 /* abas de página inteira (crônicas, habilidades, poções, deck): a grade do inventário some — antes ficava atrás de
    um fundo escuro opaco, que no papel não existe mais */
 function __bkGrid(C) {
-  const full = (C.__logicalTab ?? 0) >= 3, on = !full;
+  const lt = C.__logicalTab ?? 0, full = lt !== 0, on = !full;   // a grade é só da aba de equipamento
   C.__chBg?.setVisible(!1);
   C.slotsG?.setVisible(on);
   C.invTitle?.setVisible(on);
   for (const g of C.gridUi || []) { g.zone?.setVisible(on); if (full) g.icon.setVisible(!1); }
   C.__bkGridOff = full;
+  try { __bkRight(C, lt); } catch (e) {}
+}
+/* página da direita das abas de texto: a identificação do que está na página da esquerda */
+const __BK_STATS = [
+  ["damage", "Dano", "Damage", "força de cada golpe físico.", "strength of each physical hit."],
+  ["magicDamage", "Dano mágico", "Magic damage", "força das magias e habilidades arcanas.", "power of spells and arcane skills."],
+  ["defense", "Defesa", "Defense", "tira uma parte do dano de cada golpe recebido.", "removes part of the damage of every hit you take."],
+  ["maxHp", "Vida", "Health", "quanto você aguenta antes de cair.", "how much you can take before falling."],
+  ["speed", "Velocidade", "Speed", "rapidez para andar e fugir dos golpes.", "how fast you move and dodge."],
+  ["critChance", "Crítico", "Crit", "chance de acertar um golpe crítico; o x mostra quanto ele multiplica.", "chance of a critical hit; the x shows its multiplier."],
+  [null, "Atq/s", "Atk/s", "golpes por segundo.", "attacks per second."],
+  [null, "Bloqueio", "Block", "chance de aparar o golpe com o escudo.", "chance to parry a hit with the shield."],
+  ["maxMana", "Recurso", "Resource", "fúria, mana ou energia da sua classe, gasta nas habilidades.", "your class's rage, mana or energy, spent on skills."],
+];
+function __bkRight(C, lt) {
+  const B = C.root?.__bk, S = C.ui;
+  if (!B || B.single) return;
+  const show = lt === 1 || lt === 2;
+  if (!C.__bkR) {
+    if (!show) return;
+    const x = Math.round(B.x + B.w / 2 + 18), w = Math.round(B.w / 2 - 40);
+    const PX = "PixelifySans, Georgia, serif", SER = "Georgia, 'Times New Roman', serif";
+    const t = S.add.text(x, B.y + 36, "", { fontFamily: PX, fontSize: "11px", color: "#8b1d16" });
+    const dv = S.add.image(x + w / 2, B.y + 54, "bk-divider").setScale(2, 1);
+    const b = S.add.text(x, B.y + 62, "", { fontFamily: SER, fontSize: "9px", color: "#3b2416", lineSpacing: 3, wordWrap: { width: w } });
+    for (const o of [t, dv, b]) { o.__noPaper = 1; C.root.add(o); }
+    C.__bkR = { t, dv, b, x, w };
+  }
+  const R = C.__bkR, pt = __L3("pt", "en", "es") !== "en";
+  for (const o of [R.t, R.dv, R.b]) o.setVisible(show);
+  if (!show) return;
+  const L = (a, b) => pt ? a : b;
+  if (lt === 1) {
+    R.t.setText(L("O QUE CADA ATRIBUTO FAZ", "WHAT EACH STAT DOES"));
+    const eq = C.gs?.()?.inventory?.equipment || {}, tot = {};
+    for (const it of Object.values(eq)) if (it?.stats) for (const [k, v] of Object.entries(it.stats)) tot[k] = (tot[k] || 0) + v;
+    const lines = __BK_STATS.map(([k, p, e, dp, de]) => `${L(p, e)}${k && tot[k] ? `  (+${tot[k]} ${L("do equipamento", "from gear")})` : ""} — ${L(dp, de)}`);
+    R.b.setText(lines.join("\n"));
+  } else {
+    R.t.setText(L("MISSÕES EM ANDAMENTO", "QUESTS IN PROGRESS"));
+    const G = S.scene.get("Game"), out = [];
+    try {
+      for (const q of (typeof __QLIST !== "undefined" ? __QLIST : [])) {
+        const st = q.st(G);
+        if (!st || st[0] === "done") continue;
+        const txt = String(st[1] || "").replace(/\s+/g, " ");
+        out.push(`◆ ${q.title}\n${txt.length > 150 ? txt.slice(0, 148) + "…" : txt}`);
+        if (out.length >= 4) break;
+      }
+    } catch (e) {}
+    R.b.setText(out.length ? out.join("\n\n") : L("Nenhuma missão em andamento.\nAbra o Diário [L] para ver as concluídas.", "No quests in progress.\nOpen the Journal [L] to see completed ones."));
+  }
+  const max = B.y + B.h - 20 - R.b.y;
+  R.b.setFontSize("9px");
+  if (R.b.height > max) R.b.setFontSize("8px");
 }
 /* o conteúdo da aba de equipamento não pode cair na lombada: a grade vai inteira para a página da direita */
 function __bkSpine(C) {

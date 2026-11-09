@@ -78,8 +78,10 @@ const __CAPE = {
    comum: só a cor da roupa · incomum: lenço no pescoço · raro: capa curta (mantelete) ·
    épico: capa quase inteira (o elmo continua) · lendário/relíquia: cabeça descoberta + capa inteira */
 const __CAPE_TIER = { UNCOMMON: 1, RARE: 2, EPIC: 3, LEGENDARY: 4, RELIC: 4 };
+// ladina, druida, samurai (berserker) e maga não usam capa nem lenço — só a cabeça descoberta no lendário
+const __NOCAPE = new Set(["rogue", "druid", "berserker", "mage"]);
 function __capeFor(cls, eq) {
-  const D = __CAPE[cls], tier = __CAPE_TIER[eq?.armor?.rarity] ?? 0;
+  const D = __NOCAPE.has(cls) ? null : __CAPE[cls], tier = __CAPE_TIER[eq?.armor?.rarity] ?? 0;
   if (!D || !tier) return null;
   if (tier === 1) return { n: 4, seg: 2.6, w0: 1.3, w1: 1.7, style: "scarf", tails: 1, tier };
   if (tier === 2) return D.style === "scarf" ? { ...D, n: Math.max(4, Math.round(D.n * .55)), tails: 1, tier }
@@ -108,6 +110,7 @@ function __capeUpdate(V, dt) {
   if (K && K.D !== D) { K.g.destroy(); K = V.__cape = null; }     // trocou a armadura: outra capa (outro tamanho)
   if (!K) {
     const g = V.scene.add.graphics();
+    g.__noPaper = 1;                          // dentro de um livro (prévia no inventário/forja) a capa mantém as cores
     par ? par.addAt(g, par.getIndex(C)) : 0;
     const mkP = o => Array.from({ length: D.n }, (_, i) => ({ x: ax + o, y: ay + i * 3 * u, px: ax + o, py: ay + i * 3 * u }));
     K = V.__cape = { g, D, ch: Array.from({ length: D.tails || 1 }, (_, t) => mkP(t * 2)), t: 0 };
