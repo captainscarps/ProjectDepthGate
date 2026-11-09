@@ -249,16 +249,19 @@ function __gtPet(S) {
     }
     s.setDepth(s.y); sh.setPosition(s.x, s.y).setDepth(s.y - 1);
   };
+  const mul = () => window.__petMul?.(S, "oll") ?? 1;      // treino do pet (pets.js): mais chance e mais ouro
   const onClear = () => {
-    if (!s.active || sniff || Math.random() > 0.4) return;
+    if (!s.active || sniff || Math.random() > Math.min(.85, 0.4 + (mul() - 1) * .3)) return;
     const a = Math.random() * Math.PI * 2, tx = S.player.x + Math.cos(a) * 50, ty = S.player.y + Math.sin(a) * 34;
     if (S.dungeon?.isWallAtWorld?.(tx, ty)) return;
-    sniff = { x: tx, y: ty, t: 2500, g: 8 + __Q.n(S) * 4 + ((Math.random() * 8) | 0) };
+    sniff = { x: tx, y: ty, t: 2500, g: Math.round((8 + __Q.n(S) * 4 + ((Math.random() * 8) | 0)) * mul()) };
     S.effects?.floatText?.(s.x, s.y - 26, L3("*fareja*", "*sniff*", "*olfatea*"), "#e8d090", 8);
   };
   S.game.events.on("room:cleared", onClear); S.__gtSniff = onClear;
   S.events.on("update", U);
-  S.events.once("shutdown", () => { S.events.off("update", U); S.game.events.off("room:cleared", onClear); S.__gtPet = null });
+  const kill = () => { S.events.off("update", U); S.game.events.off("room:cleared", onClear); S.__gtPet = null; S.__gtPetKill = null };
+  S.__gtPetKill = () => { kill(); s.destroy(); sh.destroy() };     // trocar de pet no meio da área (aba PETS do livro)
+  S.events.once("shutdown", kill);
 }
 /* ─── ganchos ─── */
 {
