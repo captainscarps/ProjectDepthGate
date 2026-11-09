@@ -20077,7 +20077,7 @@ function __bkPetTab(C, on) {
    com casinha, cama de feno, ração e água. Os pets que você tem descansam ali dentro, andam, comem e bebem; os
    caídos dormem no feno se recuperando; o que vai com você espera no portão e te segue pela vila.
    Tocar no cercado abre o Treino de Pets. Só na campanha. ─── */
-const __PEN = { x: 96, y: 440, w: 120, h: 80 };
+const __PEN = { x: 60, y: 424, w: 176, h: 112 };
 const __PEN_IMG = ["pet-pen-back", "pet-pen-front", "pet-kennel", "pet-bowl", "pet-trough", "pet-hay"];
 {
   const P0 = bo.prototype.preload;
@@ -20104,10 +20104,19 @@ function __petPen(H) {
   }
   H.add.image(P.x, P.y, "pet-pen-back").setOrigin(0).setDepth(P.y + 18);
   H.add.image(P.x, P.y, "pet-pen-front").setOrigin(0).setDepth(P.y + P.h - 2);
-  const spot = { kennel: [P.x + 26, P.y + 52], hay: [P.x + 62, P.y + 64], bowl: [P.x + 92, P.y + 44], water: [P.x + 96, P.y + 66] };
+  // a pedra e o caixote que ficavam nesse gramado saem do caminho (a pedra some, o caixote vai para perto dos bonecos)
+  for (const o of H.children.list.slice()) {
+    if (o.type !== "Image" || o.texture?.key !== "vh-props") continue;
+    const f = o.frame?.name;
+    if (f === "rock-s3" && Math.abs(o.x - 80) < 4 && Math.abs(o.y - 520) < 4) o.destroy();
+    else if (f === "crate-tall" && Math.abs(o.x - 60) < 4 && Math.abs(o.y - 560) < 4) o.setPosition(282, 562).setDepth(562);
+  }
+  const spot = { kennel: [P.x + 32, P.y + 64], hay: [P.x + 78, P.y + 96], hay2: [P.x + 40, P.y + 96], bowl: [P.x + 132, P.y + 56], bowl2: [P.x + 148, P.y + 60], water: [P.x + 146, P.y + 96] };
   H.add.image(...spot.kennel, "pet-kennel").setOrigin(.5, 1).setDepth(spot.kennel[1]);
   H.add.image(spot.hay[0], spot.hay[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay[1] - 8);
+  H.add.image(spot.hay2[0], spot.hay2[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay2[1] - 8).setFlipX(!0);
   H.add.image(...spot.bowl, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl[1] - 4);
+  H.add.image(...spot.bowl2, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl2[1] - 4);
   H.add.image(...spot.water, "pet-trough").setOrigin(.5, 1).setDepth(spot.water[1] - 4);
   const lab = H.add.text(P.x + P.w / 2, P.y - 2, L3("CANTO DOS PETS", "PET CORNER", "RINCÓN DE MASCOTAS"), { ...Le, fontSize: "8px", color: "#f0d090", stroke: "#120c08", strokeThickness: 3 }).setOrigin(.5, 1).setScale(.7).setDepth(9100).setAlpha(.9);
   H.labels.push(lab);
@@ -20160,7 +20169,7 @@ function __petPenFill(H) {
       if (mode === "idle" && t <= 0) {
         const r = Math.random();
         if (D.fly) { fly = !fly; [tx, ty] = fly ? [rnd(inX, inX + inW), rnd(inY - 6, inY + inH - 10)] : [spot.kennel[0], spot.kennel[1] - 14] }
-        else if (r < .3) { mode = "eat"; [tx, ty] = Math.random() < .5 ? [spot.bowl[0] - 10, spot.bowl[1] + 2] : [spot.water[0] - 14, spot.water[1] + 2] }
+        else if (r < .3) { mode = "eat"; { const f = [spot.bowl, spot.bowl2, spot.water][(Math.random() * 3) | 0]; [tx, ty] = [f[0] - (f === spot.water ? 14 : 10), f[1] + 2] } }
         else [tx, ty] = [rnd(inX, inX + inW), rnd(inY, inY + inH)];
         mode = mode === "eat" ? "goeat" : "walk";
       }

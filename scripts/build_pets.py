@@ -53,7 +53,7 @@ def crow():
 
 
 HOME = os.environ.get("HOME_PNG", "/tmp/dg/pen/a/PNG/exterior.png")
-PEN_COLS, PEN_ROWS = 13, 3          # colunas de mourão no meio e faixas laterais: 120 x 80 px
+PEN_COLS, PEN_ROWS = 20, 5          # colunas de mourão no meio e faixas laterais: 176 x 112 px
 
 
 def pen():
