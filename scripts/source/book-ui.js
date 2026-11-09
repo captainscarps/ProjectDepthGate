@@ -13,7 +13,7 @@ const __BKP = "pixel-art/book/";   // o carregador da cena de abertura já come�
 const __QGIVER_IMG = {
   "qp-velha": "pixel-art/npc/velha-face.png", "qp-paje": "pixel-art/npc/paje-p-calm.png", "qp-bispo": "pixel-art/npc/bispo-p-calm.png",
   "qp-guardia": "pixel-art/story/guardia-p-calm.png", "qp-menino": "pixel-art/npc/menino-p-calm.png", "qp-alline": "pixel-art/npc/alline-p-calm.png",
-  "qp-ferreiro": "pixel-art/npc/ferreiro-p-calm.png", "qp-h-archer": "pixel-art/heroes-p/archer-p-calm.png", "qp-h-berserker": "pixel-art/heroes-p/berserker-p-calm.png",
+  "qp-ferreiro": "pixel-art/npc/ferreiro-p-calm.png", "qp-carcereiro": "pixel-art/npc/carcereiro-p-calm.png", "qp-h-archer": "pixel-art/heroes-p/archer-p-calm.png", "qp-h-berserker": "pixel-art/heroes-p/berserker-p-calm.png",
 };
 function __qGiver(q, G) {
   const L = (p, e) => __L3(p, e, p);
@@ -21,7 +21,7 @@ function __qGiver(q, G) {
     bruxa: ["qp-velha", L("A Velha da Cabana", "The Old Woman of the Cabin")], paje: ["qp-paje", L("O Pajé", "The Shaman Elder")],
     bispo: ["qp-bispo", L("O Bispo", "The Bishop")], lamina: ["qp-guardia", L("A Guardiã", "The Guardian")],
     crianca: ["qp-menino", L("O menino perdido", "The lost boy")], gatos: ["qp-alline", "Alline"],
-    aprendiz: ["qp-ferreiro", L("O Ferreiro", "The Blacksmith")],
+    aprendiz: ["qp-ferreiro", L("O Ferreiro", "The Blacksmith")], carcereiro: ["qp-carcereiro", L("Durgan, o carcereiro", "Durgan, the jailer")],
   };
   if (q?.id === "irmaos") {
     let b = null;

@@ -2,6 +2,7 @@
 
   rafael — o ferreiro do Refúgio, grave: PT Gemini Algieba levada a ~112 Hz em toda fala; EN am_onyx (Kokoro, ~86 Hz).
   alline — a dona dos gatos, doce: PT Gemini Achernar levada a ~235 Hz em toda fala; EN af_heart (Kokoro).
+  durgan — o carcereiro anão da Fortaleza dos Dragões, velho e grave: PT Gemini Algenib a ~100 Hz; EN bm_george (Kokoro).
   (o Kokoro também fala pt-BR — "pt_engine": "kokoro" com pm_alex/pf_dora — se o Gemini não estiver disponível)
 As falas saem do código do jogo (o texto precisa ser idêntico) e ficam em assets/audio/voice/<idioma>/<id>.mp3,
 com o id e o manifesto no mesmo formato das outras vozes de NPC. Falas montadas na hora (com números ou nomes
@@ -49,6 +50,16 @@ NPCS = {
                    "E tem mais: o ferreiro do Refúgio", "Agora que os gatos voltaram, vamos morar",
                    "Nenhum voltou ainda…", "A Mel já está em casa!", "Só falta um! Veja no diário",
                    "Os gatos adoraram o Refúgio.", "O Rafael finge que é durão", "Cuida bem do Ollie lá fora."],
+    },
+    "durgan": {
+        # o carcereiro anão: velho e grave. PT Gemini Algenib (voz rouca) levada a ~100 Hz; EN bm_george (Kokoro, britânico, mais lento)
+        "src": "quests3.js", "pt": ("Algenib", 1.0), "pt_hz": 100, "pt_ok": (0.8, 1.15),
+        "en": ("bm_george", 0.9, "en-gb"), "en_rate": 0.74,   # ~146 Hz do George levados a ~108 Hz: voz de anão velho
+        "starts": ["Alto lá! Não dê nem mais um passo", "Sou Durgan, o último carcereiro", "Ele nunca foi o monstro.",
+                   "Três fechaduras rúnicas prendem", "Sem a fúria da prisão, ele vai lutar", "As correntes afrouxaram. Vá.",
+                   "Ainda faltam fechaduras.", "Acabou… depois de tantos séculos", "Leve isto: o Elo de Durgan",
+                   "A prisão ficou sem vigia. Feche os portais que restam, herói, antes", "Você venceu… mas ele morreu acorrentado",
+                   "Não é culpa sua. A prisão ficou sem vigia."],
     },
 }
 NPC = None
@@ -178,7 +189,7 @@ def main():
         if only != "pt":
             s, sr = kok.create(en, voice=EN_VOICE, speed=EN_SPEED, lang=EN_LANG)
             raw = os.path.join(tmp, "en.wav"); sf.write(raw, s, sr)
-            out = os.path.join(V.OUT_EN, lid + ".mp3"); to_mp3(raw, out)
+            out = os.path.join(V.OUT_EN, lid + ".mp3"); to_mp3(raw, out, NPC.get("en_rate", 1.0))
             d["en"] = dur(out)
             subprocess.run(["cp", out, os.path.join(V.MIRROR_EN, lid + ".mp3")], check=True)
         d.pop("byClass", None)
