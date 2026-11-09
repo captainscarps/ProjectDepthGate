@@ -9,6 +9,37 @@
    - inventário: o livro abre com a animação do kit, cada troca de aba vira a página, a aba ativa ganha a fita
      vermelha e o conteúdo é arrumado para não cair na lombada.                                                     */
 const __BKP = "pixel-art/book/";   // o carregador da cena de abertura já começa em assets/
+/* retrato de quem pediu cada missão do diário */
+const __QGIVER_IMG = {
+  "qp-velha": "pixel-art/npc/velha-face.png", "qp-paje": "pixel-art/npc/paje-p-calm.png", "qp-bispo": "pixel-art/npc/bispo-p-calm.png",
+  "qp-guardia": "pixel-art/story/guardia-p-calm.png", "qp-menino": "pixel-art/npc/menino-p-calm.png", "qp-alline": "pixel-art/npc/alline-p-calm.png",
+  "qp-ferreiro": "pixel-art/npc/ferreiro-p-calm.png", "qp-h-archer": "pixel-art/heroes-p/archer-p-calm.png", "qp-h-berserker": "pixel-art/heroes-p/berserker-p-calm.png",
+};
+function __qGiver(q, G) {
+  const L = (p, e) => __L3(p, e, p);
+  const M = {
+    bruxa: ["qp-velha", L("A Velha da Cabana", "The Old Woman of the Cabin")], paje: ["qp-paje", L("O Pajé", "The Shaman Elder")],
+    bispo: ["qp-bispo", L("O Bispo", "The Bishop")], lamina: ["qp-guardia", L("A Guardiã", "The Guardian")],
+    crianca: ["qp-menino", L("O menino perdido", "The lost boy")], gatos: ["qp-alline", "Alline"],
+    aprendiz: ["qp-ferreiro", L("O Ferreiro", "The Blacksmith")],
+  };
+  if (q?.id === "irmaos") {
+    let b = null;
+    try { b = __QBRO[__Q.cls(G)]; } catch (e) {}
+    return b ? ["qp-h-" + b.toLowerCase(), L("Seu irmão", "Your brother")] : null;
+  }
+  return M[q?.id] || null;
+}
+/* moldura com o retrato + "Pedida por" na página da direita do diário; devolve a altura usada */
+function __qGiverDraw(S, add, x, y, q, G) {
+  const g = __qGiver(q, G);
+  if (!g || !S.textures.exists(g[0])) return null;
+  const fr = add(S.add.image(x + 30, y + 30, "bk-slot_36").setDisplaySize(60, 60));
+  const im = add(S.add.image(x + 30, y + 30, g[0]).setDisplaySize(52, 52));
+  const lb = add(S.add.text(x + 68, y + 14, __L3("PEDIDA POR", "GIVEN BY", "PEDIDA POR"), { fontFamily: "PixelifySans, Georgia, serif", fontSize: "8px", color: "#8a7356" }));
+  const nm = add(S.add.text(x + 68, y + 26, g[1], { fontFamily: "PixelifySans, Georgia, serif", fontSize: "11px", color: "#3b2416" }));
+  return [fr, im, lb, nm];
+}
 const __BK_PARTS = ["book_spread", "panel_paper", "panel_paper_ornate", "panel_leather", "panel_inset", "banner_title",
   "divider", "close_button_normal", "close_button_hover", "slot_36", "slot_36_selected", "slot_36_locked",
   "button_leather_normal", "button_leather_hover", "button_red_normal", "button_green_normal", "ribbon_bookmark_red",
@@ -22,6 +53,7 @@ const __BK_PARTS = ["book_spread", "panel_paper", "panel_paper_ornate", "panel_l
     L.spritesheet("bk-open", __BKP + "open_sheet.png", { frameWidth: 492, frameHeight: 336 });
     for (const d of ["forward", "backward"]) for (const l of ["page", "shadow"])
       L.spritesheet(`bk-flip-${d[0]}-${l}`, __BKP + `flip_${d}_fast_${l}.png`, { frameWidth: 492, frameHeight: 336 });
+    for (const [k, f] of Object.entries(__QGIVER_IMG)) this.textures.exists(k) || L.image(k, f);
   };
 })();
 try { document.fonts?.load?.('10px "PixelifySans"'); } catch (e) {}
@@ -416,6 +448,7 @@ function __bkDiaryTab(C, on) {
     return { y };
   });
   if (!rows.length) add(S.add.text(lx + lw / 2, ry0 + 20, __L3("Nenhuma missão ainda.\nExplore e converse com quem encontrar.", "No quests yet.\nExplore and talk to whoever you meet.", "Sin misiones aún."), { fontFamily: SER, fontSize: "10px", color: "#6b4a2e", align: "center" }).setOrigin(.5, 0));
+  let gv = null;
   const tT = add(S.add.text(rx, top, "", { fontFamily: PX, fontSize: "14px", color: "#3b2416", wordWrap: { width: rw } }));
   const tS = add(S.add.text(rx, top + 22, "", { fontFamily: PX, fontSize: "9px", color: "#a32418" }));
   const dv = add(S.add.image(rx + rw / 2, top + 40, "bk-divider").setScale(2, 1));
@@ -430,7 +463,9 @@ function __bkDiaryTab(C, on) {
     C.__bkDia.cur = k;
     const [q, [st, txt]] = rows[k], done = st === "done";
     sel.setVisible(!0).setPosition(lx - 4, items[k].y);
-    tT.setText(q.title);
+    gv?.forEach(o => { o.destroy(); objs.splice(objs.indexOf(o), 1); });
+    gv = __qGiverDraw(S, add, rx, top - 4, q, G);
+    tT.setText(q.title).setY(gv ? top + 62 : top);
     tS.setText(done ? __L3("CONCLUÍDA", "COMPLETED", "COMPLETADA") : __L3("EM ANDAMENTO", "IN PROGRESS", "EN CURSO")).setColor(done ? "#3d6b2a" : "#a32418").setY(tT.y + tT.height + 4);
     dv.setY(tS.y + 18); box.setY(dv.y + 10);
     tD.setText(txt).setY(box.y + 10);
@@ -600,7 +635,7 @@ function __bkClose(S, root, btn) {
     const tD = add(ui.add.text(rx + 10, y0 + 86, "", { fontFamily: SER, fontSize: "11px", color: "#3b2416", lineSpacing: 5, wordWrap: { width: rw - 20 } }));
     const seal = add(ui.add.image(rx + rw - 14, y0 + 212, "bk-wax_seal").setScale(2).setVisible(!1));
     add(ui.add.text(sp + W / 4, y0 + H - 22, __L3("↑↓ escolher  ·  [L] / B ou toque fora para fechar", "↑↓ choose  ·  [L] / B or tap outside to close", "↑↓ elegir  ·  [L] / B o toca fuera para cerrar"), { fontFamily: PX, fontSize: "8px", color: "#8a7356" }).setOrigin(.5));
-    let cur = -1;
+    let cur = -1, gv = null;
     const pick = (k, flip) => {
       if (!items.length || k === cur) return;
       k = (k + items.length) % items.length;
@@ -608,7 +643,9 @@ function __bkClose(S, root, btn) {
       cur = k;
       const [q, [state, txt]] = rows[k], done = state === "done";
       sel.setVisible(!0).setPosition(lx - 4, items[k].y);
-      tT.setText(q.title);
+      gv?.forEach(o => o.destroy());
+      gv = __qGiverDraw(ui, add, rx, y0 + 14, q, S);
+      tT.setText(q.title).setY(gv ? y0 + 80 : y0 + 20);
       tS.setText(done ? __L3("CONCLUÍDA", "COMPLETED", "COMPLETADA") : __L3("EM ANDAMENTO", "IN PROGRESS", "EN CURSO")).setColor(done ? "#3d6b2a" : "#a32418");
       tS.setY(tT.y + tT.height + 4);
       dv.setY(tS.y + 18);
