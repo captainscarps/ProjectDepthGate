@@ -18580,16 +18580,30 @@ const __CAPE = {
   rogue: { n: 8, seg: 3, w0: 1.6, w1: 2.2, style: "scarf", tails: 1 },              // cachecol esvoaçante
   shaman: { n: 6, seg: 3.2, w0: 3.4, w1: 6, style: "feather", base: 0x7a4a26, feathers: [0xc8281e, 0x2e8c46, 0xf0c83c, 0x1e6eb4] },  // manto de penas
 };
+/* raridades mais baixas também aparecem no herói (só a armadura do peito decide):
+   comum: só a cor da roupa · incomum: lenço no pescoço · raro: capa curta (mantelete) ·
+   épico: capa quase inteira (o elmo continua) · lendário/relíquia: cabeça descoberta + capa inteira */
+const __CAPE_TIER = { UNCOMMON: 1, RARE: 2, EPIC: 3, LEGENDARY: 4, RELIC: 4 };
+function __capeFor(cls, eq) {
+  const D = __CAPE[cls], tier = __CAPE_TIER[eq?.armor?.rarity] ?? 0;
+  if (!D || !tier) return null;
+  if (tier === 1) return { n: 4, seg: 2.6, w0: 1.3, w1: 1.7, style: "scarf", tails: 1, tier };
+  if (tier === 2) return D.style === "scarf" ? { ...D, n: Math.max(4, Math.round(D.n * .55)), tails: 1, tier }
+    : { ...D, n: Math.max(4, Math.round(D.n * .5)), w1: D.w1 * .92, tier };
+  if (tier === 3) return { ...D, n: Math.max(4, Math.round(D.n * .82)), tier };
+  return { ...D, tier };
+}
 function __capeCols(eq) {
   const t = eq?.armor?.tint ?? 0x8b1d16, F = __FARM?.[eq?.armor?.id];
   const main = F ? F.main : t, [h, s, v] = __HSV(main >> 16 & 255, main >> 8 & 255, main & 255);
   const C = (H, S, V) => { const [r, g, b] = __RGB(H, Math.min(1, S), Math.max(0, Math.min(1, V))); return (r << 16) | (g << 8) | b; };
-  const trim = F ? F.trim : 0xd9a441;
+  const tier = __CAPE_TIER[eq?.armor?.rarity] ?? 0;
+  const trim = F ? F.trim : tier >= 3 ? 0xd9a441 : C(h, Math.max(.3, s * .8), Math.min(1, Math.max(.42, v) * 1.25));   // ouro só do épico para cima
   return { main: C(h, Math.max(.45, s), Math.max(.42, v)), shade: C(h, Math.max(.5, s), Math.max(.25, v) * .62), trim, line: 0x1a1210 };
 }
 function __capeUpdate(V, dt) {
-  const C = V.container, m = V.mk2, cls = V.classDef?.id?.toLowerCase(), D = __CAPE[cls];
-  const on = V.__hmodCape && D && m && C.visible && !V.deadPose;
+  const C = V.container, m = V.mk2, cls = V.classDef?.id?.toLowerCase(), D = V.__capeD;
+  const on = D && m && C.visible && !V.deadPose;
   if (!on) { V.__cape?.g.setVisible(!1); return; }
   const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, F = info?.frames?.[fi] ?? V.__capeLastF;
   if (!F) { V.__cape?.g.setVisible(!1); return; }
@@ -18597,11 +18611,12 @@ function __capeUpdate(V, dt) {
   const par = C.parentContainer, sx = C.scaleX, sy = C.scaleY, u = Math.abs(sx) * Math.abs(m.scaleX) / .69;
   const ax = C.x + (m.x + (F.neck[0] - 2 - 64) * m.scaleX) * sx, ay = C.y + (m.y + (F.neck[1] - 64) * m.scaleY) * sy;
   let K = V.__cape;
+  if (K && K.D !== D) { K.g.destroy(); K = V.__cape = null; }     // trocou a armadura: outra capa (outro tamanho)
   if (!K) {
     const g = V.scene.add.graphics();
     par ? par.addAt(g, par.getIndex(C)) : 0;
     const mkP = o => Array.from({ length: D.n }, (_, i) => ({ x: ax + o, y: ay + i * 3 * u, px: ax + o, py: ay + i * 3 * u }));
-    K = V.__cape = { g, ch: Array.from({ length: D.tails || 1 }, (_, t) => mkP(t * 2)), t: 0 };
+    K = V.__cape = { g, D, ch: Array.from({ length: D.tails || 1 }, (_, t) => mkP(t * 2)), t: 0 };
   }
   const cols = V.__capeCols ?? __capeCols(V.__eqRef), face = Math.sign(sx) || 1, seg = D.seg * u, k = Math.min(2, dt / 16.7);
   K.t += dt / 1000;
@@ -18708,9 +18723,11 @@ function __capeDraw(g, P, D, cols, u, tail) {
     ad0(V, eq);
     try {
       V.__eqRef = eq;
-      const on = __hmodOn(eq) && __HMOD_CLS.includes(V.classDef?.id?.toLowerCase());
-      V.__hmodCape = on;
-      if (on) { V.__capeCols = __capeCols(eq); if (V.__cape) V.__cape.cols = V.__capeCols; }
+      const cls = V.classDef?.id?.toLowerCase(), D = __HMOD_CLS.includes(cls) ? __capeFor(cls, eq) : null;
+      const sig = D ? `${eq.armor.uid ?? eq.armor.id}|${D.tier}` : "";
+      if (sig !== V.__capeSig) { V.__capeSig = sig; V.__capeD = D; }   // o mesmo item mantém a mesma capa (não reinicia o balanço)
+      V.__hmodCape = !!D;
+      if (D) V.__capeCols = __capeCols(eq);
       else V.__cape?.g.setVisible(!1);
     } catch (e) {}
   };
