@@ -61,3 +61,47 @@
     return r;
   };
 }
+/* ═══ Tela preta ao carregar ═══
+   No celular, às vezes uma tela nova (o Refúgio, a fase) abria preta e só aparecia depois de apertar START.
+   Vigia de todas as cenas de jogo, a cada quadro:
+   • esmaecimento preso: a câmera terminou de escurecer (fadeOut) e ficou parada no preto por mais de 2,5 s sem
+     nenhuma troca de cena acontecendo → a câmera volta a mostrar a cena (resetFX);
+   • câmera perdida: ela segue o herói mas ele está fora do que ela mostra por mais de 1,2 s (tela redimensionada /
+     girada no meio do carregamento) → centraliza nele de novo;
+   • cena ativa marcada como invisível → volta a desenhar. */
+{
+  const KEYS = ["Hub", "Game", "ArcticPrologue", "ReturnJourney"];
+  const calm = (s) => !s.__busy && !s.transitioning && !s.leaving && (s.scene.key !== "Game" || s.state === "playing");
+  const tick = (G, dt) => {
+    for (const k of KEYS) {
+      const s = G.scene.getScene(k);
+      if (!s?.sys?.isActive?.()) { if (s) s.__bkW = null; continue; }
+      const W = s.__bkW || (s.__bkW = { fade: 0, lost: 0 });
+      try {
+        if (!s.sys.settings.visible) s.sys.setVisible(!0);
+        const cam = s.cameras?.main;
+        if (!cam) continue;
+        const fe = cam.fadeEffect;
+        const stuck = fe && !fe.isRunning && fe.direction === !0 && fe.alpha >= .95 && calm(s);
+        W.fade = stuck ? W.fade + dt : 0;
+        if (W.fade > 2500) { W.fade = 0; try { fe.reset() } catch (e) {} cam.resetFX?.(); cam.fadeIn(300, 0, 0, 0); console.warn("[anti-trava] tela preta destravada em", k); }
+        const T = cam._follow;
+        if (T && T.active !== !1 && calm(s)) {
+          const v = cam.worldView, m = 60;
+          const out = v.width > 0 && (T.x < v.x - m || T.x > v.right + m || T.y < v.y - m || T.y > v.bottom + m);
+          W.lost = out ? W.lost + dt : 0;
+          if (W.lost > 1200) { W.lost = 0; cam.centerOn(T.x, T.y); console.warn("[anti-trava] câmera recentrada em", k); }
+        } else W.lost = 0;
+      } catch (e) {}
+    }
+  };
+  const C0 = bo.prototype.create;
+  bo.prototype.create = function () {
+    const r = C0.apply(this, arguments);
+    try {
+      const G = this.game;
+      if (!G.__bkWatch) { G.__bkWatch = 1; let last = performance.now(); G.events.on("poststep", () => { const n = performance.now(), dt = Math.min(250, n - last); last = n; tick(G, dt) }) }
+    } catch (e) {}
+    return r;
+  };
+}

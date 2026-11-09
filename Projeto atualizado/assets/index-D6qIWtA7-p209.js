@@ -18115,6 +18115,46 @@ function __bkFlip(S, root, fwd) {
     } catch (e) { return hk0.apply(this, arguments); }
   };
 }
+/* aba de poções no livro: os dois espaços de poção na página da esquerda (um embaixo do outro) e a bolsa da
+   herborista na página da direita — nada mais cruza a dobra do meio */
+if (typeof __potDraw === "function") {
+  const PD0 = __potDraw;
+  __potDraw = function (C) {
+    const r = PD0.apply(this, arguments);
+    try {
+      const B = C.root?.__bk;
+      if (!B || B.single || !C.__potC?.visible) return r;
+      const mid = B.x + B.w / 2, LX = B.x + 24, LW = mid - 18 - LX, RX = mid + 18, RW = B.x + B.w - 24 - RX;
+      const g = C.__potG, top = B.y + 44, S = C.gs(), H = __hbGet(S), k2 = H.s || "p";
+      g.clear();
+      const cards = [[C.__potS1, top, 14174826], [C.__potS2, top + 96, 16765514]];
+      for (const [o, y, col] of cards) {
+        g.fillStyle(1182736, .94).fillRoundedRect(LX, y, LW, 84, 6).lineStyle(1.5, col, .85).strokeRoundedRect(LX + .5, y + .5, LW - 1, 83, 6);
+        o.ic.setPosition(LX + 36, y + 42); o.tt.setPosition(LX + 72, y + 9); o.nm.setPosition(LX + 72, y + 28); o.ct.setPosition(LX + 72, y + 46); o.ky.setPosition(LX + 72, y + 62);
+        o.tt.setWordWrapWidth?.(LW - 80); o.nm.setWordWrapWidth?.(LW - 80);
+      }
+      C.__potH.setPosition(RX, top).setWordWrapWidth(RW).setFontSize("10px");
+      const y0 = top + C.__potH.height + 10, RH = 42;
+      C.__potR.forEach((o, n) => {
+        const y = y0 + n * (RH + 4), on = n === C.__pSel;
+        g.fillStyle(on ? 3813406 : 2366992, on ? .95 : .7).fillRoundedRect(RX, y, RW, RH, 5);
+        on && g.lineStyle(1.5, 16765514, .9).strokeRoundedRect(RX + .5, y + .5, RW - 1, RH - 1, 5);
+        o.ic.setPosition(RX + 18, y + RH / 2);
+        o.nm.setPosition(RX + 36, y + 4).setFontSize("9px");
+        o.ds.setPosition(RX + 36, y + 17).setWordWrapWidth(RW - 44).setFontSize("8px");
+        o.ct.setPosition(RX + RW - 6, y + 4).setFontSize("9px");
+        o.eq.setFontSize("8px").setPosition(RX + RW - 6 - o.ct.width - 8, y + 5);    // "◆ no slot 2" ao lado do "na bolsa", não por cima da descrição
+        const z = C.__potC.list.find((q) => q.type === "Zone" && q.__potN === n) || (() => { const zs = C.__potC.list.filter((q) => q.type === "Zone"); zs[n] && (zs[n].__potN = n); return zs[n] })();
+        z && (z.setPosition(RX, y), z.setSize(RW, RH), z.input?.hitArea?.setTo?.(0, 0, RW, RH));
+        // nome comprido não pode passar por baixo do "na bolsa"
+        const room = RW - 44 - o.ct.width - 8 - (o.eq.text ? o.eq.width + 8 : 0);
+        o.nm.width > room && o.nm.setFontSize("8px");
+      });
+      C.__potT.setPosition(RX + RW / 2, B.y + B.h - 22).setOrigin(.5, 1).setWordWrapWidth(RW).setAlign("center");
+    } catch (e) {}
+    return r;
+  };
+}
 /* abas: a ativa ganha a fita vermelha do kit; as outras ficam como tinta */
 function __bkTabs(C) {
   const S = C.ui, T = C.__tabT;
@@ -19025,6 +19065,50 @@ function __capeDraw(g, P, D, cols, u, tail) {
     return r;
   };
 }
+/* ═══ Tela preta ao carregar ═══
+   No celular, às vezes uma tela nova (o Refúgio, a fase) abria preta e só aparecia depois de apertar START.
+   Vigia de todas as cenas de jogo, a cada quadro:
+   • esmaecimento preso: a câmera terminou de escurecer (fadeOut) e ficou parada no preto por mais de 2,5 s sem
+     nenhuma troca de cena acontecendo → a câmera volta a mostrar a cena (resetFX);
+   • câmera perdida: ela segue o herói mas ele está fora do que ela mostra por mais de 1,2 s (tela redimensionada /
+     girada no meio do carregamento) → centraliza nele de novo;
+   • cena ativa marcada como invisível → volta a desenhar. */
+{
+  const KEYS = ["Hub", "Game", "ArcticPrologue", "ReturnJourney"];
+  const calm = (s) => !s.__busy && !s.transitioning && !s.leaving && (s.scene.key !== "Game" || s.state === "playing");
+  const tick = (G, dt) => {
+    for (const k of KEYS) {
+      const s = G.scene.getScene(k);
+      if (!s?.sys?.isActive?.()) { if (s) s.__bkW = null; continue; }
+      const W = s.__bkW || (s.__bkW = { fade: 0, lost: 0 });
+      try {
+        if (!s.sys.settings.visible) s.sys.setVisible(!0);
+        const cam = s.cameras?.main;
+        if (!cam) continue;
+        const fe = cam.fadeEffect;
+        const stuck = fe && !fe.isRunning && fe.direction === !0 && fe.alpha >= .95 && calm(s);
+        W.fade = stuck ? W.fade + dt : 0;
+        if (W.fade > 2500) { W.fade = 0; try { fe.reset() } catch (e) {} cam.resetFX?.(); cam.fadeIn(300, 0, 0, 0); console.warn("[anti-trava] tela preta destravada em", k); }
+        const T = cam._follow;
+        if (T && T.active !== !1 && calm(s)) {
+          const v = cam.worldView, m = 60;
+          const out = v.width > 0 && (T.x < v.x - m || T.x > v.right + m || T.y < v.y - m || T.y > v.bottom + m);
+          W.lost = out ? W.lost + dt : 0;
+          if (W.lost > 1200) { W.lost = 0; cam.centerOn(T.x, T.y); console.warn("[anti-trava] câmera recentrada em", k); }
+        } else W.lost = 0;
+      } catch (e) {}
+    }
+  };
+  const C0 = bo.prototype.create;
+  bo.prototype.create = function () {
+    const r = C0.apply(this, arguments);
+    try {
+      const G = this.game;
+      if (!G.__bkWatch) { G.__bkWatch = 1; let last = performance.now(); G.events.on("poststep", () => { const n = performance.now(), dt = Math.min(250, n - last); last = n; tick(G, dt) }) }
+    } catch (e) {}
+    return r;
+  };
+}
 /*__DGUARD__*/
 /*__QUESTS3__*/
 /* ══ Missões secundárias (parte 3) ══
@@ -19218,3 +19302,41 @@ function __ccEnd(S, freed) {
 }
 window.__dgQ3 = { CC: __CC, durgan: __ccDurgan, locks: __ccLocks, end: __ccEnd };
 /*__QUESTS3__*/
+/*__HUDTOUCH__*/
+/* ═══ HUD de toque: PAUSA e INVENTÁRIO sem ficar em cima dos botões ═══
+   As duas pílulas ficavam fixas no meio de baixo da tela; em telas mais estreitas (ou com o tamanho dos botões em
+   "grande") o ESCUDO e as poções da direita chegavam em cima do PAUSA. Agora elas ficam no vão livre entre o
+   joystick e o grupo de botões; se o vão não couber as duas, sobem para o alto da tela, no meio. */
+{
+  const A9 = Hd.prototype.applyLayout;
+  Hd.prototype.applyLayout = function () {
+    const r = A9.apply(this, arguments);
+    try {
+      const St = this.startBtn?.text, Se = this.selectBtn?.text;
+      if (!this.built || !St || !Se) return r;
+      const left = this.settings?.leftyMode === !0, o = this.insets || { left: 0, right: 0, top: 0, bottom: 0 };
+      const i = Gd[this.settings?.touchSize ?? "medium"] ?? 1;
+      const btns = [this.attackBtn, this.dashBtn, ...(this.abilityBtns || []), this.interactBtn, this.guardBtn, this.potionBtn, this.pot2Btn].filter(Boolean);
+      const pos = (b) => { const p = b.parts?.find((q) => q.x != null) || b; return [p.x, p.y, (b.r ?? b.radius ?? 22 * i)] };
+      // borda do grupo de botões que fica do lado das pílulas (com folga para o nome embaixo de cada botão)
+      let edge = left ? 0 : _;
+      for (const b of btns) { const [x, , rr] = pos(b); const pad = Math.max(rr, 30) + 8; edge = left ? Math.max(edge, x + pad) : Math.min(edge, x - pad) }
+      const J = this.joystick, jx = J?.homeX ?? J?.base?.x ?? (left ? _ - 84 * i : 84 * i), jr = 42 * i + 14;
+      const a = left ? edge : jx + jr, b = left ? jx - jr : edge;
+      const wS = St.displayWidth, wE = Se.displayWidth, gap = 12, need = wS + wE + gap;
+      const bottom = st - 16 - (o.bottom || 0);
+      if (b - a >= need + 8) {
+        const cx = (a + b) / 2;
+        this.selectBtn.setPosition(Math.round(cx - need / 2 + wE / 2), bottom);
+        this.startBtn.setPosition(Math.round(cx + need / 2 - wS / 2), bottom);
+      } else {
+        const top = 16 + (o.top || 0);
+        this.selectBtn.setPosition(Math.round(_ / 2 - need / 2 + wE / 2), top);
+        this.startBtn.setPosition(Math.round(_ / 2 + need / 2 - wS / 2), top);
+      }
+      typeof __joyExcl === "function" && __joyExcl(this);   // a área do joystick não engole o toque nas pílulas
+    } catch (e) {}
+    return r;
+  };
+}
+/*__HUDTOUCH__*/

@@ -386,6 +386,46 @@ function __bkFlip(S, root, fwd) {
     } catch (e) { return hk0.apply(this, arguments); }
   };
 }
+/* aba de poções no livro: os dois espaços de poção na página da esquerda (um embaixo do outro) e a bolsa da
+   herborista na página da direita — nada mais cruza a dobra do meio */
+if (typeof __potDraw === "function") {
+  const PD0 = __potDraw;
+  __potDraw = function (C) {
+    const r = PD0.apply(this, arguments);
+    try {
+      const B = C.root?.__bk;
+      if (!B || B.single || !C.__potC?.visible) return r;
+      const mid = B.x + B.w / 2, LX = B.x + 24, LW = mid - 18 - LX, RX = mid + 18, RW = B.x + B.w - 24 - RX;
+      const g = C.__potG, top = B.y + 44, S = C.gs(), H = __hbGet(S), k2 = H.s || "p";
+      g.clear();
+      const cards = [[C.__potS1, top, 14174826], [C.__potS2, top + 96, 16765514]];
+      for (const [o, y, col] of cards) {
+        g.fillStyle(1182736, .94).fillRoundedRect(LX, y, LW, 84, 6).lineStyle(1.5, col, .85).strokeRoundedRect(LX + .5, y + .5, LW - 1, 83, 6);
+        o.ic.setPosition(LX + 36, y + 42); o.tt.setPosition(LX + 72, y + 9); o.nm.setPosition(LX + 72, y + 28); o.ct.setPosition(LX + 72, y + 46); o.ky.setPosition(LX + 72, y + 62);
+        o.tt.setWordWrapWidth?.(LW - 80); o.nm.setWordWrapWidth?.(LW - 80);
+      }
+      C.__potH.setPosition(RX, top).setWordWrapWidth(RW).setFontSize("10px");
+      const y0 = top + C.__potH.height + 10, RH = 42;
+      C.__potR.forEach((o, n) => {
+        const y = y0 + n * (RH + 4), on = n === C.__pSel;
+        g.fillStyle(on ? 3813406 : 2366992, on ? .95 : .7).fillRoundedRect(RX, y, RW, RH, 5);
+        on && g.lineStyle(1.5, 16765514, .9).strokeRoundedRect(RX + .5, y + .5, RW - 1, RH - 1, 5);
+        o.ic.setPosition(RX + 18, y + RH / 2);
+        o.nm.setPosition(RX + 36, y + 4).setFontSize("9px");
+        o.ds.setPosition(RX + 36, y + 17).setWordWrapWidth(RW - 44).setFontSize("8px");
+        o.ct.setPosition(RX + RW - 6, y + 4).setFontSize("9px");
+        o.eq.setFontSize("8px").setPosition(RX + RW - 6 - o.ct.width - 8, y + 5);    // "◆ no slot 2" ao lado do "na bolsa", não por cima da descrição
+        const z = C.__potC.list.find((q) => q.type === "Zone" && q.__potN === n) || (() => { const zs = C.__potC.list.filter((q) => q.type === "Zone"); zs[n] && (zs[n].__potN = n); return zs[n] })();
+        z && (z.setPosition(RX, y), z.setSize(RW, RH), z.input?.hitArea?.setTo?.(0, 0, RW, RH));
+        // nome comprido não pode passar por baixo do "na bolsa"
+        const room = RW - 44 - o.ct.width - 8 - (o.eq.text ? o.eq.width + 8 : 0);
+        o.nm.width > room && o.nm.setFontSize("8px");
+      });
+      C.__potT.setPosition(RX + RW / 2, B.y + B.h - 22).setOrigin(.5, 1).setWordWrapWidth(RW).setAlign("center");
+    } catch (e) {}
+    return r;
+  };
+}
 /* abas: a ativa ganha a fita vermelha do kit; as outras ficam como tinta */
 function __bkTabs(C) {
   const S = C.ui, T = C.__tabT;
