@@ -258,6 +258,7 @@ function __bkFlip(S, root, fwd) {
     if (!was && this.root?.__bk) {
       this.__tw?.stop?.();                 // a entrada antiga (sobe e aparece) dá lugar ao livro abrindo
       this.root.setY(0);
+      __bkDiaryTab(this, !1);             // o diário refaz a lista a cada abertura (missões mudam)
       __bkTabs(this);
       __bkGrid(this);
       __bkOpenAnim(this.ui, this.root);
@@ -322,6 +323,10 @@ function __bkFlip(S, root, fwd) {
   const hk0 = Cd.prototype.handleKey;
   Cd.prototype.handleKey = function (k) {
     try {
+      if (this.open && this.__bkDia && (k === "ArrowUp" || k === "ArrowDown" || k === "w" || k === "s")) {
+        this.__bkDia.pick((this.__bkDia.cur < 0 ? 0 : this.__bkDia.cur) + (k === "ArrowUp" || k === "w" ? -1 : 1), !0);
+        return !0;
+      }
       const arrows = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
       const v = arrows[k];
       if (!v || !this.open || !this.__sk || (this.__logicalTab ?? this.__tab ?? 0) !== 0 || typeof __EQPOS === "undefined") return hk0.apply(this, arguments);
@@ -361,12 +366,81 @@ function __bkTabs(C) {
     o.setFontFamily?.("PixelifySans, Georgia, serif");
   });
   __bkClose(S, C.root, C.closeBtn);
+  __bkTabLayout(C);
   const t = T[C.__tab];
   if (t) {
     C.__bkRib.setVisible(!0).setSize(t.width + 34, 17).setPosition(t.x + t.width / 2, t.y + 1);
     C.root.bringToTop(C.__bkRib);
     C.root.bringToTop(t);
   }
+}
+/* a aba de Crônicas saiu: no lugar dela (campanha) fica o Diário de missões. As abas se dividem entre as duas
+   páginas, centradas em cada uma, longe da dobra do meio (e do selo de fechar) — nada de nome cortado pela lombada */
+const __bkEndless = C => C.ui?.game?.registry?.get("mode") === "endless" || !!C.gs?.()?.level?.endless;
+function __bkTabLayout(C) {
+  const B = C.root.__bk, T = C.__tabT;
+  if (!B || B.single || !T?.length) return;
+  if (!__bkEndless(C) && T[3] && !T[3].__bkDia) { T[3].__bkDia = 1; T[3].setText(__L3("DIÁRIO", "JOURNAL", "DIARIO")); }
+  const mid = B.x + B.w / 2, nL = Math.ceil(T.length / 2);
+  const place = (arr, x0, x1) => {
+    const tot = arr.reduce((a, o) => a + o.width, 0), gap = Math.max(10, Math.min(30, (x1 - x0 - tot) / (arr.length + 1)));
+    let x = x0 + (x1 - x0 - tot - gap * (arr.length - 1)) / 2;
+    for (const o of arr) { o.setX(Math.round(x)); x += o.width + gap; }
+  };
+  place(T.slice(0, nL), B.x + 22, mid - 20);
+  place(T.slice(nL), mid + 20, B.x + B.w - 46);
+}
+/* Diário dentro do livro: lista à esquerda (marcada quando concluída), a missão escolhida à direita */
+function __bkDiaryTab(C, on) {
+  const D = C.__bkDia;
+  if (!on) { if (D) for (const o of D.objs) o.destroy(); C.__bkDia = null; return; }
+  if (D) return;
+  const B = C.root.__bk, S = C.ui, G = S.scene.get("Game");
+  if (!B || B.single) return;
+  const PX = "PixelifySans, Georgia, serif", SER = "Georgia, 'Times New Roman', serif", objs = [];
+  const add = o => { o.__noPaper = 1; C.root.add(o); objs.push(o); return o; };
+  let rows = [];
+  try { rows = __QLIST.map(q => [q, q.st(G)]).filter(([, st]) => st).sort((a, b) => (a[1][0] === "done") - (b[1][0] === "done")); } catch (e) {}
+  const mid = B.x + B.w / 2, lx = B.x + 26, lw = mid - lx - 22, rx = mid + 22, rw = B.x + B.w - 26 - rx, top = B.y + 44;
+  const nDone = rows.filter(r => r[1][0] === "done").length;
+  add(S.add.text(lx, top, __L3(`Ativas: ${rows.length - nDone}    Concluídas: ${nDone}`, `Active: ${rows.length - nDone}    Done: ${nDone}`, `Activas: ${rows.length - nDone}    Hechas: ${nDone}`), { fontFamily: PX, fontSize: "9px", color: "#5a3a22" }));
+  const sel = add(S.add.nineslice(0, 0, "bk-list_row_selected", undefined, lw + 8, 20, 3, 3, 3, 3).setOrigin(0, .5).setVisible(!1));
+  const RH = 21, ry0 = top + 26, maxRows = Math.max(1, Math.floor((B.y + B.h - 30 - ry0) / RH));
+  const items = rows.slice(0, maxRows).map(([q, [st]], k) => {
+    const y = ry0 + k * RH, done = st === "done";
+    add(S.add.image(lx + 8, y, done ? "bk-checkbox_on" : "bk-checkbox_off"));
+    const t = add(S.add.text(lx + 20, y, q.title, { fontFamily: PX, fontSize: "10px", color: done ? "#8a7356" : "#3b2416" }).setOrigin(0, .5));
+    if (t.width > lw - 22) t.setFontSize("9px");
+    const z = add(S.add.zone(lx - 4, y - 10, lw + 8, 20).setOrigin(0).setInteractive({ useHandCursor: !0 }));
+    z.on("pointerdown", () => pick(k, !0));
+    return { y };
+  });
+  if (!rows.length) add(S.add.text(lx + lw / 2, ry0 + 20, __L3("Nenhuma missão ainda.\nExplore e converse com quem encontrar.", "No quests yet.\nExplore and talk to whoever you meet.", "Sin misiones aún."), { fontFamily: SER, fontSize: "10px", color: "#6b4a2e", align: "center" }).setOrigin(.5, 0));
+  const tT = add(S.add.text(rx, top, "", { fontFamily: PX, fontSize: "14px", color: "#3b2416", wordWrap: { width: rw } }));
+  const tS = add(S.add.text(rx, top + 22, "", { fontFamily: PX, fontSize: "9px", color: "#a32418" }));
+  const dv = add(S.add.image(rx + rw / 2, top + 40, "bk-divider").setScale(2, 1));
+  const box = add(S.add.nineslice(rx, top + 50, "bk-panel_inset", undefined, rw, 120, 2, 2, 2, 2).setOrigin(0));
+  const tD = add(S.add.text(rx + 10, top + 60, "", { fontFamily: SER, fontSize: "11px", color: "#3b2416", lineSpacing: 5, wordWrap: { width: rw - 20 } }));
+  const seal = add(S.add.image(rx + rw - 16, top + 200, "bk-wax_seal").setScale(2).setVisible(!1));
+  const pick = (k, flip) => {
+    if (!items.length) return;
+    k = (k + items.length) % items.length;
+    if (k === C.__bkDia?.cur) return;
+    flip && C.__bkDia.cur >= 0 && __bkFlip(S, C.root, k > C.__bkDia.cur);
+    C.__bkDia.cur = k;
+    const [q, [st, txt]] = rows[k], done = st === "done";
+    sel.setVisible(!0).setPosition(lx - 4, items[k].y);
+    tT.setText(q.title);
+    tS.setText(done ? __L3("CONCLUÍDA", "COMPLETED", "COMPLETADA") : __L3("EM ANDAMENTO", "IN PROGRESS", "EN CURSO")).setColor(done ? "#3d6b2a" : "#a32418").setY(tT.y + tT.height + 4);
+    dv.setY(tS.y + 18); box.setY(dv.y + 10);
+    tD.setText(txt).setY(box.y + 10);
+    const maxH = B.y + B.h - 24 - box.y;
+    tD.setFontSize("11px"); if (tD.height + 22 > maxH) tD.setFontSize("9px");
+    box.setSize(rw, Math.min(maxH, Math.max(60, tD.height + 22)));
+    seal.setVisible(done).setY(Math.min(box.y + box.height + 16, B.y + B.h - 22));
+  };
+  C.__bkDia = { objs, cur: -1, pick, n: items.length };
+  items.length ? pick(0) : (dv.setVisible(!1), box.setVisible(!1));
 }
 /* abas de página inteira (crônicas, habilidades, poções, deck): a grade do inventário some — antes ficava atrás de
    um fundo escuro opaco, que no papel não existe mais */
@@ -378,6 +452,11 @@ function __bkGrid(C) {
   for (const g of C.gridUi || []) { g.zone?.setVisible(on); if (full) g.icon.setVisible(!1); }
   C.__bkGridOff = full;
   try { __bkRight(C, lt); } catch (e) {}
+  try {
+    const dia = lt === 3 && !__bkEndless(C) && C.open !== !1;
+    if (dia) { C.__big?.setVisible(!1); C.__sbZ?.setVisible(!1); C.__dragZ?.setVisible(!1); C.__sbG?.clear(); }
+    __bkDiaryTab(C, dia);
+  } catch (e) {}
 }
 /* página da direita das abas de texto: a identificação do que está na página da esquerda */
 const __BK_STATS = [
