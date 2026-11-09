@@ -20046,8 +20046,8 @@ function __bkPetTab(C, on) {
     btn.on("pointerdown", () => {
       const id = list[sel], D = __PETS[id], s2 = state(id);
       if (s2.act || (D.quest && !s2.own)) return;
-      if (s2.fall) { delete s2.ps.fall[id]; s2.ps.act = id; __petSave(this, s2.ps); this.game.audioEngine?.sfx?.("sfx-item-pickup"); msg.setText(L3(`${D.nm} está recuperado e vai com você na próxima saída!`, `${D.nm} has recovered and will go with you on your next trip!`, `¡${D.nm} se recuperó e irá contigo en la próxima salida!`)).setColor("#8ae0b0"); paint(); return }
-      if (s2.own) { s2.ps.act = id; __petSave(this, s2.ps); this.game.audioEngine?.sfx?.("sfx-item-pickup"); msg.setText(L3(`${D.nm} vai com você na próxima saída.`, `${D.nm} will go with you on your next trip.`, `${D.nm} irá contigo en la próxima salida.`)).setColor("#8ae0b0"); paint(); return }
+      if (s2.fall) { delete s2.ps.fall[id]; s2.ps.act = id; __petSave(this, s2.ps); this.__petPenSpot && __petPenFill(this); this.game.audioEngine?.sfx?.("sfx-item-pickup"); msg.setText(L3(`${D.nm} está recuperado e vai com você na próxima saída!`, `${D.nm} has recovered and will go with you on your next trip!`, `¡${D.nm} se recuperó e irá contigo en la próxima salida!`)).setColor("#8ae0b0"); paint(); return }
+      if (s2.own) { s2.ps.act = id; __petSave(this, s2.ps); this.__petPenSpot && __petPenFill(this); this.game.audioEngine?.sfx?.("sfx-item-pickup"); msg.setText(L3(`${D.nm} vai com você na próxima saída.`, `${D.nm} will go with you on your next trip.`, `${D.nm} irá contigo en la próxima salida.`)).setColor("#8ae0b0"); paint(); return }
       if (gold() < D.price) { msg.setText(L3("Ouro da campanha insuficiente.", "Not enough campaign gold.", "Oro de campaña insuficiente.")).setColor("#e08a7a"); this.game.audioEngine?.sfx?.("sfx-event-refuse"); return }
       setConfirm(!0);
     });
@@ -20060,7 +20060,7 @@ function __bkPetTab(C, on) {
       if (g < D.price) { setConfirm(!1); msg.setText(L3("Ouro da campanha insuficiente.", "Not enough campaign gold.", "Oro de campaña insuficiente.")).setColor("#e08a7a"); return }
       c.d.player.gold = g - D.price;
       try { localStorage.setItem(Wt("campaign", c.sl), JSON.stringify(c.d)) } catch (e) { c.d.player.gold = g; setConfirm(!1); return }
-      const ps = __petSt(this); ps.own[id] = 1; ps.mis[id] ??= 0; ps.act = id; __petSave(this, ps);
+      const ps = __petSt(this); ps.own[id] = 1; ps.mis[id] ??= 0; ps.act = id; __petSave(this, ps); this.__petPenSpot && __petPenFill(this);
       try { this.refreshFragments?.() } catch (e) {}
       this.game.audioEngine?.sfx?.("sfx-item-pickup");
       setConfirm(!1);
@@ -20072,6 +20072,116 @@ function __bkPetTab(C, on) {
     this.__fnAuto(o, cB);
     refocus(rowsUi[sel].z);
   };
+}
+/* ─── Canto dos Pets no Refúgio: cercado de madeira no gramado da esquerda (entre o caminho e os bonecos de treino),
+   com casinha, cama de feno, ração e água. Os pets que você tem descansam ali dentro, andam, comem e bebem; os
+   caídos dormem no feno se recuperando; o que vai com você espera no portão e te segue pela vila.
+   Tocar no cercado abre o Treino de Pets. Só na campanha. ─── */
+const __PEN = { x: 96, y: 440, w: 120, h: 80 };
+const __PEN_IMG = ["pet-pen-back", "pet-pen-front", "pet-kennel", "pet-bowl", "pet-trough", "pet-hay"];
+{
+  const P0 = bo.prototype.preload;
+  bo.prototype.preload = function () {
+    const r = P0.apply(this, arguments);
+    try { const L = this.load, op = L.path; L.setPath(""); for (const k of __PEN_IMG) this.textures.exists(k) || L.image(k, `assets/pixel-art/pets/${k}.png`); L.setPath(op) } catch (e) {}
+    return r;
+  };
+  const I0 = Fl.prototype.__inters;
+  Fl.prototype.__inters = function () {
+    const r = I0.apply(this, arguments);
+    try { this.fromForest && this.textures.exists("pet-pen-back") && __petPen(this) } catch (e) { console.warn("[pets]", e) }
+    return r;
+  };
+}
+function __petPen(H) {
+  const P = __PEN, L3 = __PL;
+  // a cerca bloqueia o herói (cópia da grade: o Refúgio do modo infinito não tem cercado)
+  H.M = Object.assign({}, H.M, { coll: H.M.coll.slice() });
+  const M = H.M, g = M.g;
+  for (let y = P.y + 10; y < P.y + P.h - 2; y += g) for (let x = P.x; x < P.x + P.w; x += g) {
+    const gx = Math.floor(x / g), gy = Math.floor(y / g), row = M.coll[gy];
+    row && gx >= 0 && gx < row.length && (M.coll[gy] = row.slice(0, gx) + "1" + row.slice(gx + 1));
+  }
+  H.add.image(P.x, P.y, "pet-pen-back").setOrigin(0).setDepth(P.y + 18);
+  H.add.image(P.x, P.y, "pet-pen-front").setOrigin(0).setDepth(P.y + P.h - 2);
+  const spot = { kennel: [P.x + 26, P.y + 52], hay: [P.x + 62, P.y + 64], bowl: [P.x + 92, P.y + 44], water: [P.x + 96, P.y + 66] };
+  H.add.image(...spot.kennel, "pet-kennel").setOrigin(.5, 1).setDepth(spot.kennel[1]);
+  H.add.image(spot.hay[0], spot.hay[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay[1] - 8);
+  H.add.image(...spot.bowl, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl[1] - 4);
+  H.add.image(...spot.water, "pet-trough").setOrigin(.5, 1).setDepth(spot.water[1] - 4);
+  const lab = H.add.text(P.x + P.w / 2, P.y - 2, L3("CANTO DOS PETS", "PET CORNER", "RINCÓN DE MASCOTAS"), { ...Le, fontSize: "8px", color: "#f0d090", stroke: "#120c08", strokeThickness: 3 }).setOrigin(.5, 1).setScale(.7).setDepth(9100).setAlpha(.9);
+  H.labels.push(lab);
+  H.inters.push({ area: "out", id: "pets", x: P.x + P.w / 2, y: P.y + P.h + 4, ay: P.y + P.h + 12, r: 46, label: L3("CANTO DOS PETS", "PET CORNER", "RINCÓN DE MASCOTAS"), desc: L3("Treino de Pets: adotar, recrutar e escolher quem vai com você", "Pet Training: adopt, recruit and choose who goes with you", "Entrenamiento: adoptar, reclutar y elegir quién va contigo"), act: () => { H.panel || H.__petShop() } });
+  H.__petPenSpot = spot;
+  __petPenFill(H);
+}
+/* os bichos do cercado (refeito quando a loja muda o pet escolhido ou recruta um caído) */
+function __petPenFill(H) {
+  for (const o of H.__penPets || []) o.destroy();
+  H.__penPets = [];
+  const P = __PEN, spot = H.__petPenSpot, ps = __petSt(H), act = __petAct(H, ps), own = __petOwned(H, ps);
+  const inX = P.x + 14, inY = P.y + 30, inW = P.w - 28, inH = P.h - 38;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  own.forEach((id, n) => {
+    const D = __PETS[id];
+    if (!H.textures.exists(D.tex)) return;
+    const K = __petAnims(H.anims, id), fall = !!ps.fall?.[id], out = !fall && id === act;
+    const sc = D.sc * .9, hov = D.fly ? 18 : 0;
+    let x = out ? P.x + P.w / 2 + 14 : fall ? spot.hay[0] - 8 + n * 7 : rnd(inX, inX + inW), y = out ? P.y + P.h + 10 : fall ? spot.hay[1] - 3 : rnd(inY, inY + inH);
+    if (D.fly && !out && !fall) [x, y] = [spot.kennel[0], spot.kennel[1] - 14];          // o corvo pousa no telhado da casinha
+    const s = H.add.sprite(x, y, D.tex, 0).setOrigin(.5, 1).setScale(sc).setDepth(y);
+    const sh = H.add.ellipse(x, y, D.fly ? 10 : D.fw * sc * .5, 4, 0, .25).setDepth(y - 1);
+    K && H.anims.exists(K.idle) && s.play(K.idle);
+    s.setFlipX(Math.random() < .5);
+    if (fall) { s.setTint(0xb8b0a8); s.anims.timeScale = .4 }
+    let mode = "idle", t = rnd(.5, 3), tx = x, ty = y, zt = 0, fly = !1;
+    const U = (_t, dms) => {
+      if (!s.active) return;
+      const sec = Math.min(.06, dms / 1000);
+      if (fall) {                                         // caído: dorme no feno, soltando "z"
+        zt -= sec;
+        if (zt <= 0) { zt = 2.4; const z = H.add.text(s.x + 6, s.y - 18, "z", { ...Le, fontSize: "9px", color: "#e8f0ff", stroke: "#203040", strokeThickness: 2 }).setOrigin(.5).setScale(.6).setDepth(9050); H.tweens.add({ targets: z, y: z.y - 14, x: z.x + 6, alpha: 0, duration: 1800, onComplete: () => z.destroy() }) }
+        return;
+      }
+      if (out) {                                          // o escolhido segue o herói pela vila (de longe, sem atrapalhar)
+        const px = H.playerX, py = H.playerY;
+        if (px == null || H.area !== "out") return;
+        const dx = px - s.x, dy = py - s.y, d = Math.hypot(dx, dy);
+        if (d > 260) { s.setPosition(px - 24, py + 4); return }
+        if (d > 40) {
+          const sp = (d > 110 ? 150 : 90) * sec, nx = s.x + dx / d * sp, ny = s.y + dy / d * sp;
+          if (D.fly || H.__free?.(nx, ny) !== !1) s.setPosition(nx, ny); else s.setPosition(s.x + dx / d * sp * .5, s.y);
+          s.setFlipX(dx < 0); H.anims.exists(K.walk) && s.anims.currentAnim?.key !== K.walk && s.play(K.walk);
+        } else H.anims.exists(K.idle) && s.anims.currentAnim?.key !== K.idle && s.play(K.idle);
+        s.setDepth(s.y + (D.fly ? 30 : 0)); sh.setPosition(s.x, s.y + hov).setDepth(s.y - 1);
+        return;
+      }
+      t -= sec;
+      if (mode === "idle" && t <= 0) {
+        const r = Math.random();
+        if (D.fly) { fly = !fly; [tx, ty] = fly ? [rnd(inX, inX + inW), rnd(inY - 6, inY + inH - 10)] : [spot.kennel[0], spot.kennel[1] - 14] }
+        else if (r < .3) { mode = "eat"; [tx, ty] = Math.random() < .5 ? [spot.bowl[0] - 10, spot.bowl[1] + 2] : [spot.water[0] - 14, spot.water[1] + 2] }
+        else [tx, ty] = [rnd(inX, inX + inW), rnd(inY, inY + inH)];
+        mode = mode === "eat" ? "goeat" : "walk";
+      }
+      if (mode === "walk" || mode === "goeat") {
+        const dx = tx - s.x, dy = ty - s.y, d = Math.hypot(dx, dy), sp = (D.fly ? 70 : 34) * sec;
+        if (d <= sp + .5) {
+          s.setPosition(tx, ty);
+          if (mode === "goeat") { mode = "eating"; t = rnd(2.5, 4); s.setFlipX(!1); const k = id === "oll" ? K.idle : K.spec; H.anims.exists(k) && s.play(k) }
+          else { mode = "idle"; t = rnd(1.5, 4.5); H.anims.exists(K.idle) && s.play(K.idle) }
+        } else {
+          s.setPosition(s.x + dx / d * sp, s.y + dy / d * sp); Math.abs(dx) > .5 && s.setFlipX(dx < 0);
+          H.anims.exists(K.walk) && s.anims.currentAnim?.key !== K.walk && s.play(K.walk);
+        }
+      } else if (mode === "eating" && t <= 0) { mode = "idle"; t = rnd(1, 3); H.anims.exists(K.idle) && s.play(K.idle) }
+      s.setDepth(s.y + (D.fly && fly ? 30 : 0));
+      sh.setPosition(s.x, D.fly ? (fly ? s.y + 14 : spot.kennel[1]) : s.y).setDepth(s.y - 1).setVisible(!D.fly || fly);
+    };
+    H.events.on("update", U);
+    H.__penPets.push({ destroy() { H.events.off("update", U); s.destroy(); sh.destroy() } });
+  });
+  H.events.once("shutdown", () => { for (const o of H.__penPets || []) o.destroy(); H.__penPets = [] });
 }
 window.__dgPets = { PETS: __PETS, mission: __petMission, st: __petSt, save: __petSave, spawn: __petSpawn, swap: __petSwap, owned: __petOwned, act: __petAct, lv: __petLv, targets: __petTargets, tab: __bkPetTab };
 /*__PETS__*/
