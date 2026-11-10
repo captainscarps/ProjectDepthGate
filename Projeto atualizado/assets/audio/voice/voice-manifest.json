@@ -2683,7 +2683,15 @@
           "ROGUE": 4.68
         },
         "pt": {
-          "WARRIOR": 3.77
+          "WARRIOR": 3.77,
+          "BERSERKER": 4.39,
+          "HUNTER": 4.51,
+          "NECROMANCER": 4.51,
+          "DRUID": 4.2,
+          "ARCHER": 3.86,
+          "MAGE": 4.54,
+          "SHAMAN": 5.93,
+          "ROGUE": 4.27
         }
       },
       "_enk": {
@@ -4037,6 +4045,17 @@
           "MAGE": 3.06,
           "SHAMAN": 3.2,
           "ROGUE": 3.85
+        },
+        "pt": {
+          "WARRIOR": 4.22,
+          "BERSERKER": 4.27,
+          "HUNTER": 4.39,
+          "NECROMANCER": 5.57,
+          "DRUID": 4.56,
+          "ARCHER": 4.44,
+          "MAGE": 4.9,
+          "SHAMAN": 4.06,
+          "ROGUE": 4.37
         }
       },
       "_enk": {
@@ -4051,7 +4070,9 @@
         "ROGUE": 1
       },
       "en": 3.6,
-      "_genen": 1
+      "_genen": 1,
+      "pt": 4.22,
+      "_genpt": 1
     },
     "9effcadb": {
       "byClass": {
