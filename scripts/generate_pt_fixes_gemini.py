@@ -31,7 +31,7 @@ def load(name, file):
 
 
 P = load("prolv", "generate_prologue_hero_voices.py")   # gemini_pt, class_hz, V, DUB, Q, HV
-V, DUB, Q, HV = P.V, P.DUB, P.Q, P.HV
+V, DUB, Q, HV, D = P.V, P.DUB, P.Q, P.HV, P.D
 ECHO = {"echo-m": ("Orus", 118), "echo-f": ("Vindemiatrix", 205)}
 
 
@@ -47,35 +47,27 @@ def tts_text(t):
     return t.strip().strip("“”\"").strip()
 
 
-def gem(key, text, voice, target, tmp):
-    """Gemini com o tom levado ao alvo; refaz fala sussurrada ou fora do tom (como em gemini_pt)"""
-    raw = os.path.join(tmp, "g.mp3")
-    rate = 1.0
-    for take in range(6):   # tom já perto do natural: mudar mais que ~8% muda o timbre (soa como outra voz)
-        say = text
-        for tries in range(5):
-            try:
-                mp3, _ = V.generate_gemini(key, say, None, voice)
-                break
-            except RuntimeError as e:
-                if "429" not in str(e) and tries < 4:   # o modelo Pro às vezes responde em texto ou sem áudio: pede só a leitura
-                    say = f'Leia em voz alta: "{text}"'
-                    time.sleep(3)
-                    continue
-                if "429" not in str(e) or tries == 4:
-                    raise
-                print("  limite por minuto, esperando 65 s…", flush=True)
-                time.sleep(65)
-        open(raw, "wb").write(mp3)
-        hz, voiced = Q.f0(raw)
-        ok = hz > 0 and voiced > 0.35 and 0.92 <= target / hz <= 1.08
-        if say != text and Q.dur(raw) > len(text) / 10 + 1.0:   # leu a instrução junto: refaz
-            ok = False
-        print(f"    tirada {take + 1}: {hz:.0f} Hz (alvo {target}), {voiced:.0%} com voz{'' if ok else ' — refazendo'}", flush=True)
-        if ok or take == 5:
-            rate = min(1.08, max(0.92, target / hz)) if hz else 1.0
+def gem(key, text, voice, target, tmp, who=None):
+    """Gemini com persona e sentimento (pt_voice_direction): no máximo 2 tiradas, tom ajustado em até 8%"""
+    raw, best = os.path.join(tmp, "g.mp3"), None
+    for take in range(D.TAKES):
+        mp3 = P._gem_call(key, text, D.instruction(who, text), voice)
+        p = os.path.join(tmp, f"g{take}.mp3")
+        open(p, "wb").write(mp3)
+        hz, voiced = Q.f0(p)
+        hz = D.fold(hz, target)
+        good = D.ok(hz, voiced, target) and not D.read_instruction_too(Q.dur(p), text)
+        print(f"    tirada {take + 1}: {hz:.0f} Hz (alvo {target}), {voiced:.0%} com voz{'' if good else ' — fora'}", flush=True)
+        score = abs(target / hz - 1) if hz else 9
+        if not D.read_instruction_too(Q.dur(p), text) and (best is None or score < best[0]):
+            best = (score, p, hz)
+        if good:
             break
-    return raw, rate if abs(rate - 1) > 0.03 else 1.0
+    if best is None:
+        best = (0, p, 0)
+    shutil.copy(best[1], raw)
+    r = D.rate(best[2], target)
+    return raw, r if abs(r - 1) > 0.03 else 1.0
 
 
 def main():
@@ -116,12 +108,12 @@ def main():
             continue
         try:
             if mode == "exclusivas":
-                raw, rate = gem(key, tts_text(pt), HV.VOICES[who], hz[who], tmp)
+                raw, rate = gem(key, tts_text(pt), HV.VOICES[who], hz[who], tmp, who)
                 out = os.path.join(tmp, "o.mp3")
                 Q.to_mp3(raw, out, rate)
             else:
                 voice, target = ECHO[who]
-                raw, rate = gem(key, tts_text(pt), voice, target, tmp)
+                raw, rate = gem(key, tts_text(pt), voice, target, tmp, who)
                 tuned = os.path.join(tmp, "t.wav")
                 af = f"aresample=24000,asetrate=24000*{rate},aresample=24000,atempo={1 / rate:.4f}" if rate != 1.0 else "anull"
                 subprocess.run(["ffmpeg", "-v", "quiet", "-y", "-i", raw, "-af", af, "-ar", "44100", "-ac", "1", tuned], check=True)

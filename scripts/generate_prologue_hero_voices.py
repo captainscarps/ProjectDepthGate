@@ -36,6 +36,7 @@ def load(name, file):
 
 
 V = load("npcv", "generate_all_npc_voices_gemini.py")
+D = load("ptdir", "pt_voice_direction.py")
 HV = load("herov2", "generate_hero_voice.py")
 Q = load("questv", "generate_quest_npc_voices.py")      # f0, to_mp3, dur
 _argv, sys.argv = sys.argv, sys.argv[:1]
@@ -90,35 +91,46 @@ def class_hz(man):
 
 
 def gemini_pt(key, text, cls, target, tmp):
-    raw = os.path.join(tmp, "pt.mp3")
-    rate, mp3 = 1.0, None
-    for take in range(6):   # tom já perto do natural: mudar mais que ~8% muda o timbre (soa como outra voz)
-        say = text
-        for tries in range(5):
-            try:
-                mp3, _ = V.generate_gemini(key, say, None, HV.VOICES[cls])
-                break
-            except RuntimeError as e:
-                if "429" not in str(e) and tries < 4:   # o modelo Pro às vezes responde em texto ou sem áudio: pede só a leitura
-                    say = f'Leia em voz alta: "{text}"'
-                    time.sleep(3)
-                    continue
-                if "429" not in str(e) or tries == 4:
-                    raise
-                print("  limite por minuto, esperando 65 s…", flush=True)
-                time.sleep(65)
-        open(raw, "wb").write(mp3)
-        hz, voiced = Q.f0(raw)
-        ok = hz > 0 and voiced > 0.35 and 0.92 <= target / hz <= 1.08
-        if say != text and Q.dur(raw) > len(text) / 10 + 1.0:   # leu a instrução junto: refaz
-            ok = False
-        print(f"    tirada {take + 1}: {hz:.0f} Hz (alvo {target}), {voiced:.0%} com voz{'' if ok else ' — refazendo'}", flush=True)
-        if ok or take == 5:
-            rate = min(1.08, max(0.92, target / hz)) if hz else 1.0
+    """voz Gemini do herói com persona e sentimento (pt_voice_direction): no máximo 2 tiradas"""
+    raw, best = os.path.join(tmp, "pt.mp3"), None
+    for take in range(D.TAKES):
+        mp3 = _gem_call(key, text, D.instruction(cls, text), HV.VOICES[cls])
+        p = os.path.join(tmp, f"pt{take}.mp3")
+        open(p, "wb").write(mp3)
+        hz, voiced = Q.f0(p)
+        hz = D.fold(hz, target)
+        good = D.ok(hz, voiced, target) and not D.read_instruction_too(Q.dur(p), text)
+        print(f"    tirada {take + 1}: {hz:.0f} Hz (alvo {target}), {voiced:.0%} com voz{'' if good else ' — fora'}", flush=True)
+        score = abs(target / hz - 1) if hz else 9
+        if not D.read_instruction_too(Q.dur(p), text) and (best is None or score < best[0]):
+            best = (score, p, hz)
+        if good:
             break
+    if best is None:
+        best = (0, p, 0)
+    shutil.copy(best[1], raw)
+    r = D.rate(best[2], target)
     out = os.path.join(tmp, "pt-out.mp3")
-    Q.to_mp3(raw, out, rate if abs(rate - 1) > 0.03 else 1.0)
+    Q.to_mp3(raw, out, r if abs(r - 1) > 0.03 else 1.0)
     return out
+
+
+def _gem_call(key, text, instr, voice):
+    """uma chamada (com a instrução de persona/sentimento); 429 por minuto espera, 429 diário sobe o erro"""
+    say = instr
+    for tries in range(5):
+        try:
+            mp3, _ = V.generate_gemini(key, text, say, voice)
+            return mp3
+        except RuntimeError as e:
+            if "429" not in str(e) and tries < 4:   # às vezes o modelo responde sem áudio: tenta sem a direção
+                say = None if tries >= 1 else say
+                time.sleep(3)
+                continue
+            if "429" not in str(e) or tries == 4:
+                raise
+            print("  limite por minuto, esperando 65 s…", flush=True)
+            time.sleep(65)
 
 
 def kokoro_en(text, cls, tmp):
