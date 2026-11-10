@@ -706,7 +706,7 @@ function __petPen(H) {
   // a cerca bloqueia o herói (cópia da grade: o Refúgio do modo infinito não tem cercado)
   H.M = Object.assign({}, H.M, { coll: H.M.coll.slice() });
   const M = H.M, g = M.g;
-  for (let y = P.y - 8; y < P.y + P.h - 2; y += g) for (let x = P.x - 8; x < P.x + P.w + 8; x += g) {   // folga: o corpo do herói não encosta nos mourões
+  for (let y = P.y - 16; y < P.y + P.h + 2; y += g) for (let x = P.x - 16; x < P.x + P.w + 16; x += g) {   // folga: o corpo do herói não encosta nos mourões
     const gx = Math.floor(x / g), gy = Math.floor(y / g), row = M.coll[gy];
     row && gx >= 0 && gx < row.length && (M.coll[gy] = row.slice(0, gx) + "1" + row.slice(gx + 1));
   }

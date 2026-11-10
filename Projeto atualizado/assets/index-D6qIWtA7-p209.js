@@ -20098,7 +20098,7 @@ function __petPen(H) {
   // a cerca bloqueia o herói (cópia da grade: o Refúgio do modo infinito não tem cercado)
   H.M = Object.assign({}, H.M, { coll: H.M.coll.slice() });
   const M = H.M, g = M.g;
-  for (let y = P.y - 8; y < P.y + P.h - 2; y += g) for (let x = P.x - 8; x < P.x + P.w + 8; x += g) {   // folga: o corpo do herói não encosta nos mourões
+  for (let y = P.y - 16; y < P.y + P.h + 2; y += g) for (let x = P.x - 16; x < P.x + P.w + 16; x += g) {   // folga: o corpo do herói não encosta nos mourões
     const gx = Math.floor(x / g), gy = Math.floor(y / g), row = M.coll[gy];
     row && gx >= 0 && gx < row.length && (M.coll[gy] = row.slice(0, gx) + "1" + row.slice(gx + 1));
   }
@@ -20239,6 +20239,10 @@ window.__rfShadow = __rfShadow;
 function __rfRand(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296) }
 function __rfDecorate(H) {
   const A = H.anims, rnd = __rfRand(4242);
+  // o que é só enfeite animado fica registrado aqui: no modo leve (aparelho lento) tudo isso é desligado
+  const LIVE = (H.__rfLive = []);
+  const keep = (o) => (LIVE.push(o), o);
+  const onU = (fn) => { onU(fn); LIVE.push({ destroy: () => H.events.off("update", fn) }) };
   H.M = Object.assign({}, H.M, { coll: H.M.coll.slice() });
   const M = H.M, g = M.g, S = M.spots;
   const block = (x0, y0, x1, y1) => {
@@ -20260,7 +20264,10 @@ function __rfDecorate(H) {
     o.solid && block(x - o.solid[0], y - o.solid[1], x + o.solid[0], y);
     return im;
   };
-  const grass = (x, y) => { try { const c = H.textures.getPixel(x | 0, y | 0, "vh-ground"); return !!c && c.green > c.red + 12 } catch (e) { return !1 } };
+  // cores do chão lidas UMA vez (antes eram centenas de leituras de pixel na entrada do Refúgio)
+  let GD = null, GW = 0;
+  try { const src = H.textures.get("vh-ground").getSourceImage(), cv = document.createElement("canvas"); cv.width = GW = src.width; cv.height = src.height; const cx = cv.getContext("2d", { willReadFrequently: !0 }); cx.drawImage(src, 0, 0); GD = cx.getImageData(0, 0, cv.width, cv.height).data } catch (e) {}
+  const grass = (x, y) => { if (!GD) return !1; x |= 0; y |= 0; if (x < 0 || y < 0 || x >= GW) return !1; const i = (y * GW + x) * 4; return GD[i + 1] > GD[i] + 12 };
   // procura perto de (x, y) um lugar de grama livre para o enfeite
   const onGrass = (f, x, y, o = {}) => {
     for (let r = 0; r < 60; r += 6) for (let a = 0; a < 6.28; a += 1.05) {
@@ -20282,7 +20289,7 @@ function __rfDecorate(H) {
   for (const x of [372, 512, 650, 860, 160]) {                                       // tochas presas no muro
     BAKE.push({ rects: [[x - 2, WALL_Y + 14, 4, 10, "#2a2420"], [x - 4, WALL_Y + 12, 8, 3, "#4a4038"]] });
     H.add.sprite(x, WALL_Y + 13, "torch-flame", 0).play("torch-flame-burn").setOrigin(.5, 1).setDepth(WALL_Y + 4);
-    H.add.image(x, WALL_Y + 6, "light").setScale(.28).setBlendMode(j.BlendModes.ADD).setTint(16750130).setAlpha(.26).setDepth(9001);   // luz fixa (sem tween)
+    keep(H.add.image(x, WALL_Y + 6, "light")).setScale(.28).setBlendMode(j.BlendModes.ADD).setTint(16750130).setAlpha(.26).setDepth(9001);   // luz fixa (sem tween)
   }
   for (let x = 14; x < 1012; x += 22 + rnd() * 26) {                                 // a base reta do muro vira mato
     const y = WALL_B + 4 + rnd() * 5;
@@ -20356,10 +20363,10 @@ function __rfDecorate(H) {
     for (let i = 0; i < n; i++) {
       let x = zone[0] + rnd() * (zone[2] - zone[0]), y = zone[1] + rnd() * (zone[3] - zone[1]);
       for (let t = 0; t < 12 && solidAt(x, y); t++) x = zone[0] + rnd() * (zone[2] - zone[0]), y = zone[1] + rnd() * (zone[3] - zone[1]);
-      const s = H.add.sprite(x, y + 14, tex, 0).setOrigin(.5, 1).setScale(sc).setDepth(y).play(idleK);
+      const s = keep(H.add.sprite(x, y + 14, tex, 0).setOrigin(.5, 1).setScale(sc).setDepth(y).play(idleK));
       s.anims.setProgress(rnd());
       let tx = x, ty = y, wait = 1 + rnd() * 4, mv = !1;
-      H.events.on("update", (_t, dms) => {
+      onU((_t, dms) => {
         if (!s.active) return;
         const sec = Math.min(.06, dms / 1000);
         if (!mv) { wait -= sec; if (wait > 0) return; tx = zone[0] + rnd() * (zone[2] - zone[0]); ty = zone[1] + rnd() * (zone[3] - zone[1]); if (solidAt(tx, ty)) { wait = .5; return } mv = !0; s.play(walkK) }
@@ -20382,10 +20389,10 @@ function __rfDecorate(H) {
   for (let i = 0; i < 3; i++) {
     const home = [C[0] - 90 + rnd() * 180, C[1] - 120 + rnd() * 70];
     if (solidAt(...home)) continue;
-    const s = H.add.sprite(home[0], home[1], "rf-birds", 0).setOrigin(.5, 1).setScale(.75).setDepth(home[1]).play("rf-bird-peck").setFlipX(rnd() < .5);
+    const s = keep(H.add.sprite(home[0], home[1], "rf-birds", 0)).setOrigin(.5, 1).setScale(.75).setDepth(home[1]).play("rf-bird-peck").setFlipX(rnd() < .5);
     s.anims.setProgress(rnd());
     let gone = !1;
-    H.events.on("update", () => {
+    onU(() => {
       if (gone || !s.active) return;
       const hx = H.playerX, hy = H.playerY;
       if (hx == null || H.area !== "out" || Math.hypot(hx - s.x, hy - s.y) > 46) return;
@@ -20402,10 +20409,10 @@ function __rfDecorate(H) {
   // borboletas sobre os canteiros e a horta
   for (let i = 0; i < 3; i++) {
     const cx = [780, 930, 250, 700][i], cy = [170, 150, 380, 540][i];
-    const s = H.add.sprite(cx, cy, "rf-butterfly", 0).setOrigin(.5).setScale(.6).setDepth(cy + 40).play("rf-bfly");
+    const s = keep(H.add.sprite(cx, cy, "rf-butterfly", 0)).setOrigin(.5).setScale(.6).setDepth(cy + 40).play("rf-bfly");
     s.setTint([0xffffff, 0xfff0a0, 0xd8b0ff][i % 3]);
     const ph = rnd() * 10;
-    H.events.on("update", (t) => { if (!s.active) return; const k = t / 1000 + ph; s.setPosition(cx + Math.sin(k * .7) * 34 + Math.sin(k * 2.3) * 6, cy + Math.cos(k * .9) * 18 + Math.sin(k * 3.1) * 4); s.setFlipX(Math.cos(k * .7) < 0) });
+    onU((t) => { if (!s.active) return; const k = t / 1000 + ph; s.setPosition(cx + Math.sin(k * .7) * 34 + Math.sin(k * 2.3) * 6, cy + Math.cos(k * .9) * 18 + Math.sin(k * 3.1) * 4); s.setFlipX(Math.cos(k * .7) < 0) });
   }
   // vaga-lumes no entardecer: um ponto de luz pronto (textura) por vaga-lume e um único laço de atualização
   if (!H.textures.exists("rf-ff")) { const gg = H.make.graphics({ x: 0, y: 0 }, !1); gg.fillStyle(0xe8ff80, .22).fillCircle(5, 5, 5).fillStyle(0xf8f0a0, 1).fillCircle(5, 5, 1.4); gg.generateTexture("rf-ff", 10, 10); gg.destroy() }
@@ -20413,11 +20420,11 @@ function __rfDecorate(H) {
   for (let i = 0; i < 10; i++) {
     const zone = i % 3 === 0 ? [40, 100, 330, 200] : i % 3 === 1 ? [720, 440, 990, 680] : [40, 440, 330, 560];
     const x0 = zone[0] + rnd() * (zone[2] - zone[0]), y0 = zone[1] + rnd() * (zone[3] - zone[1]);
-    FF.push({ x0, y0, ph: rnd() * 20, o: H.add.image(x0, y0, "rf-ff").setDepth(8990).setBlendMode(j.BlendModes.ADD).setData("rfFF", 1) });
+    FF.push({ x0, y0, ph: rnd() * 20, o: keep(H.add.image(x0, y0, "rf-ff")).setDepth(8990).setBlendMode(j.BlendModes.ADD).setData("rfFF", 1) });
   }
   H.__rfFF = FF;
   let ffT = 0;
-  H.events.on("update", (t, dms) => {
+  onU((t, dms) => {
     if ((ffT += dms) < 33) return;                          // ~30 quadros por segundo bastam
     ffT = 0;
     for (const f of FF) {
@@ -20428,7 +20435,7 @@ function __rfDecorate(H) {
   });
   // folhas caindo das árvores das bordas
   const trees = (M.props || []).filter((p) => /^(tree|pine)/.test(p[0])).map((p) => [p[1], p[2]]);
-  trees.length && H.time.addEvent({ delay: 1400, loop: !0, callback: () => {
+  trees.length && LIVE.push(((ev) => ({ destroy: () => ev.remove() }))(H.time.addEvent({ delay: 1400, loop: !0, callback: () => {
     if (H.area !== "out" || rnd() < .5) return;
     const [tx, ty] = trees[(rnd() * trees.length) | 0], x = tx + (rnd() - .5) * 40, y = ty - 40 - rnd() * 30;
     __rfTex(H);
@@ -20436,7 +20443,7 @@ function __rfDecorate(H) {
     const dx = (rnd() - .3) * 60;
     H.tweens.add({ targets: lf, y: y + 46 + rnd() * 20, x: x + dx, angle: 360 * (rnd() < .5 ? 1 : -1), duration: 2600 + rnd() * 1400, ease: "Sine.easeIn" });
     H.tweens.add({ targets: lf, alpha: 0, delay: 2200, duration: 900, onComplete: () => lf.destroy() });
-  } });
+  } })));
 }
 window.__dgRefugio = { decorate: __rfDecorate };
 /*__REFUGIO__*/
@@ -20468,7 +20475,7 @@ window.__dgRefugio = { decorate: __rfDecorate };
   const I0 = Fl.prototype.__inters;
   Fl.prototype.__inters = function () {
     const r = I0.apply(this, arguments);
-    for (const f of [__rfChimney, __rfLake, __rfGrowth, __rfResidents, __rfSky]) { try { f(this) } catch (e) { console.warn("[refugio2]", f.name, e) } }
+    for (const f of [__rfChimney, __rfLake, __rfGrowth, __rfResidents, __rfSky, __rfQuality]) { try { f(this) } catch (e) { console.warn("[refugio2]", f.name, e) } }
     return r;
   };
 }
@@ -20476,10 +20483,13 @@ window.__dgRefugio = { decorate: __rfDecorate };
   const A0 = Fl.prototype.__area;
   Fl.prototype.__area = function (a) {
     const r = A0.apply(this, arguments);
-    try { this.__rfSkyA != null && this.shade?.setAlpha(a === "out" ? this.__rfSkyA : Math.min(.12, this.__rfSkyA)) } catch (e) {}
+    try { if (this.__rfSkyA != null) { const al = a === "out" ? this.__rfSkyA : Math.min(.12, this.__rfSkyA); this.shade?.setAlpha(al).setVisible(al > 0) } } catch (e) {}
     return r;
   };
 }
+const __rfKeep = (H, o) => ((H.__rfLive ??= []).push(o), o);
+const __rfOnU = (H, fn) => { H.events.on("update", fn); __rfKeep(H, { destroy: () => H.events.off("update", fn) }) };
+const __rfEv = (H, cfg) => { const ev = H.time.addEvent(cfg); __rfKeep(H, { destroy: () => ev.remove() }); return ev };
 const __RF_L = (pt, en, es) => (typeof __L3 === "function" ? __L3(pt, en, es ?? en) : pt);
 function __rfCollSet(H, x0, y0, x1, y1, v) {
   const M = H.M, g = M.g;
@@ -20504,16 +20514,18 @@ function __rfLake(H) {
   const floor = H.textures.exists("rf-ground") ? H.textures.get("rf-ground") : null, fctx = floor?.getSourceImage?.()?.getContext?.("2d");
   if (fctx) fctx.drawImage(H.textures.get("rf-lake").getSourceImage(), K.x, K.y);
   else H.add.image(K.x, K.y, "rf-lake").setOrigin(0).setDepth(-4);
+  let LD = null; try { const im = H.textures.get("rf-lake").getSourceImage(), cv = document.createElement("canvas"); cv.width = K.w; cv.height = K.h; const cx = cv.getContext("2d", { willReadFrequently: !0 }); cx.drawImage(im, 0, 0); LD = cx.getImageData(0, 0, K.w, K.h).data } catch (e) {}
+  const px = (x, y) => { x |= 0; y |= 0; if (!LD || x < 0 || y < 0 || x >= K.w || y >= K.h) return null; const i = (y * K.w + x) * 4; return { red: LD[i], green: LD[i + 1], blue: LD[i + 2], alpha: LD[i + 3] } };
   // a água bloqueia o herói (alfa da imagem, em células de 8 px)
   for (let y = 0; y < K.h; y += 8) for (let x = 0; x < K.w; x += 8) {
-    const c = H.textures.getPixel(x + 4, y + 4, "rf-lake");
+    const c = px(x + 4, y + 4);
     c && c.alpha > 0 && __rfCollSet(H, K.x + x, K.y + y, K.x + x + 8, K.y + y + 8, "1");
   }
-  const inWater = (x, y) => { const c = H.textures.getPixel((x - K.x) | 0, (y - K.y) | 0, "rf-lake"); return !!c && c.alpha > 0 && c.blue > c.red + 40 };
+  const inWater = (x, y) => { const c = px(x - K.x, y - K.y); return !!c && c.alpha > 0 && c.blue > c.red + 40 };
   // pier: entra na água pela margem de baixo
   // (à direita da cabana: o telhado dela esconderia o herói)
   const PX = K.x + 196;
-  let yb = 0; for (let y = 0; y < K.h; y++) { const c = H.textures.getPixel(196, y, "rf-lake"); c && c.alpha > 0 && c.blue > c.red + 40 && (yb = y) }
+  let yb = 0; for (let y = 0; y < K.h; y++) { const c = px(196, y); c && c.alpha > 0 && c.blue > c.red + 40 && (yb = y) }
   const PY = K.y + yb + 18;
   if (fctx) { const pi = H.textures.get("rf-pier").getSourceImage(); fctx.drawImage(pi, Math.round(PX - pi.width / 2), PY - pi.height); floor.refresh?.() }
   else H.add.image(PX, PY, "rf-pier").setOrigin(.5, 1).setDepth(K.y + K.h - 10);
@@ -20523,10 +20535,10 @@ function __rfLake(H) {
   A.exists("rf-frog-idle") || (H.textures.exists("rf-frog") && A.create({ key: "rf-frog-idle", frames: A.generateFrameNumbers("rf-frog", { start: 0, end: 3 }), frameRate: 4, repeat: -1 }));
   for (let i = 0; i < 2; i++) {
     if (!H.textures.exists("rf-duck")) break;
-    const d = H.add.sprite(K.x + 80 + i * 70, K.y + 40, "rf-duck", 0).setOrigin(.5, .78).setScale(.8).setDepth(K.y + 30).play("rf-duck-idle");
+    const d = __rfKeep(H, H.add.sprite(K.x + 80 + i * 70, K.y + 40, "rf-duck", 0).setOrigin(.5, .78).setScale(.8).setDepth(K.y + 30).play("rf-duck-idle"));
     d.setCrop(0, 0, 48, 34);                                  // pés debaixo d'água
     let tx = d.x, ty = d.y;
-    H.events.on("update", (_t, ms) => {
+    __rfOnU(H, (_t, ms) => {
       if (!d.active) return;
       const dx = tx - d.x, dy = ty - d.y, dd = Math.hypot(dx, dy), st = 9 * Math.min(.06, ms / 1000);
       if (dd < 1) { for (let k = 0; k < 8; k++) { const nx = K.x + 30 + Math.random() * (K.w - 60), ny = K.y + 24 + Math.random() * (K.h - 44); if (inWater(nx, ny) && inWater(nx - 10, ny) && inWater(nx + 10, ny)) { tx = nx; ty = ny; break } } return }
@@ -20538,7 +20550,7 @@ function __rfLake(H) {
   if (!H.textures.exists("rf-ring")) { const gg = H.make.graphics({ x: 0, y: 0 }, !1); gg.lineStyle(1, 0xc8e8f8, 1).strokeEllipse(10, 5, 18, 8); gg.generateTexture("rf-ring", 20, 10); gg.destroy() }
   const rings = [0, 1, 2].map(() => H.add.image(0, 0, "rf-ring").setDepth(K.y + 6).setVisible(!1));
   let ri = 0;
-  H.time.addEvent({ delay: 900, loop: !0, callback: () => {
+  __rfEv(H, { delay: 900, loop: !0, callback: () => {
     if (H.area !== "out") return;
     const x = K.x + 30 + Math.random() * (K.w - 60), y = K.y + 20 + Math.random() * (K.h - 40);
     if (!inWater(x, y)) return;
@@ -20720,7 +20732,7 @@ function __rfSky(H) {
   const h = new Date().getHours() + new Date().getMinutes() / 60;
   // [cor, alfa]: noite azul-escura, amanhecer rosado, dia limpo, entardecer laranja-roxo (o padrão antigo)
   const P = h < 5 ? [0x0c1430, .5] : h < 7 ? [0x6a3a5a, .28] : h < 9 ? [0xf0b070, .1] : h < 16.5 ? [0xffffff, 0] : h < 18 ? [0xe08040, .14] : h < 19.5 ? [0x1a2032, .26] : [0x0c1430, .46];
-  sh.setFillStyle(P[0], 1).setAlpha(P[1]);
+  sh.setFillStyle(P[0], 1).setAlpha(P[1]).setVisible(P[1] > 0);       // de dia: uma camada de tela inteira a menos
   H.__rfSkyA = P[1];
   H.__rfNight = h < 6 || h >= 19;
   // à noite os vaga-lumes e as lanternas ficam mais fortes; de dia os vaga-lumes somem
@@ -20733,10 +20745,26 @@ function __rfSky(H) {
     sh.setAlpha(Math.max(sh.alpha, .2)).setFillStyle(0x2a3448, 1); H.__rfSkyA = sh.alpha;
     if (!H.textures.exists("rf-drop")) { const gg = H.make.graphics({ x: 0, y: 0 }, !1); gg.fillStyle(0xb8c8e8, 1).fillRect(0, 0, 1, 6); gg.generateTexture("rf-drop", 1, 6); gg.destroy() }
     try {
-      const em = H.add.particles(0, 0, "rf-drop", { x: { min: -40, max: 520 }, y: -10, speedY: { min: 380, max: 460 }, speedX: -70, rotate: 10, lifespan: 800, quantity: 1, frequency: 45, alpha: { start: .55, end: .2 }, maxParticles: 40 }).setDepth(9050);
-      H.events.on("update", () => { const v = cam.worldView; em.setPosition(v.x, v.y); em.emitting = H.area === "out" });
+      const em = __rfKeep(H, H.add.particles(0, 0, "rf-drop", { x: { min: -40, max: 520 }, y: -10, speedY: { min: 380, max: 460 }, speedX: -70, rotate: 10, lifespan: 800, quantity: 1, frequency: 45, alpha: { start: .55, end: .2 }, maxParticles: 40 }).setDepth(9050));
+      __rfOnU(H, () => { if (!em.active) return; const v = cam.worldView; em.setPosition(v.x, v.y); em.emitting = H.area === "out" });
     } catch (e) {}
   }
+}
+/* modo leve: se o aparelho não segura o Refúgio (abaixo de ~40 quadros/s), os enfeites animados (bichos soltos,
+   borboletas, vaga-lumes, passarinhos, ondinhas, folhas, chuva, luzes extras) são desligados e a escolha fica
+   guardada no aparelho para as próximas visitas. */
+const __RF_LITE_K = "depthgate:refugio:lite";
+function __rfLite(H, save) {
+  if (H.__rfLiteOn) return; H.__rfLiteOn = 1;
+  for (const o of H.__rfLive || []) { try { o.destroy() } catch (e) {} }
+  H.__rfLive = [];
+  if (save) try { localStorage.setItem(__RF_LITE_K, "1") } catch (e) {}
+}
+function __rfQuality(H) {
+  let lite = !1; try { lite = localStorage.getItem(__RF_LITE_K) === "1" } catch (e) {}
+  if (lite) return __rfLite(H, !1);
+  const check = (k) => { if (!H.scene.isActive()) return; const f = H.game.loop.actualFps; if (f < 40) __rfLite(H, !0); else if (k < 2) H.time.delayedCall(5000, () => check(k + 1)) };
+  H.time.delayedCall(2500, () => check(0));
 }
 window.__dgRefugio2 = { prog: __rfProg, sky: __rfSky };
 /*__REFUGIO2__*/
