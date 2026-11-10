@@ -25,7 +25,7 @@
   const I0 = Fl.prototype.__inters;
   Fl.prototype.__inters = function () {
     const r = I0.apply(this, arguments);
-    for (const f of [__rfChimney, __rfLake, __rfGrowth, __rfResidents, __rfSky, __rfQuality]) { try { f(this) } catch (e) { console.warn("[refugio2]", f.name, e) } }
+    for (const f of [__rfGear, __rfChimney, __rfLake, __rfGrowth, __rfResidents, __rfSky, __rfQuality]) { try { f(this) } catch (e) { console.warn("[refugio2]", f.name, e) } }
     return r;
   };
 }
@@ -33,6 +33,10 @@
   const A0 = Fl.prototype.__area;
   Fl.prototype.__area = function (a) {
     const r = A0.apply(this, arguments);
+    try {                                                       // câmera mais perto: dentro da forja ela segue o herói, presa às paredes
+      const I = this.M?.interior, cam = this.cameras.main;
+      if (a === "in" && I && (I.w > cam.width / cam.zoom || I.h > cam.height / cam.zoom)) { cam.setBounds(I.x, I.y, I.w, I.h); cam.useBounds = !0; cam.startFollow(this.rig.container, !0, .14, .14) }
+    } catch (e) {}
     try { if (this.__rfSkyA != null) { const al = a === "out" ? this.__rfSkyA : Math.min(.12, this.__rfSkyA); this.shade?.setAlpha(al).setVisible(al > 0) } } catch (e) {}
     return r;
   };
@@ -49,6 +53,20 @@ function __rfCollSet(H, x0, y0, x1, y1, v) {
     const gx = Math.floor(x / g), gy = Math.floor(y / g), row = C[gy];
     row && gx >= 0 && gx < row.length && (C[gy] = row.slice(0, gx) + v + row.slice(gx + 1));
   }
+}
+/* o herói no Refúgio veste o que está equipado no save: campanha (save do slot) e modo infinito (save da run),
+   com a raridade de cada peça — armaduras, capas e visuais lendários (hero-mods) aparecem como na aventura */
+function __rfGear(H) {
+  const rig = H.rig; if (!rig?.refreshEquipment) return;
+  const endless = !H.fromForest, slot = endless ? Es(H.game) : H.retSlot;
+  let raw = null;
+  try { raw = JSON.parse(localStorage.getItem(Wt(endless ? "endless" : "campaign", slot)) || "null") } catch (e) {}
+  const eq0 = raw?.player?.equipment;
+  if (!eq0 || (raw.player.classId && H.classDef?.id && raw.player.classId !== H.classDef.id)) return;
+  const L = new Bh(H), equipment = {};
+  for (const [k, v] of Object.entries(eq0)) { try { equipment[k] = v ? L.makeItem(v.id, v.rarity, v.seed ?? 0) : null } catch (e) { equipment[k] = null } }
+  rig.refreshEquipment({ equipment, items: [] });
+  H.__rfGearEq = equipment;
 }
 function __rfChimney(H) {
   for (const o of H.children.list.slice()) if (o.type === "Image" && o.texture?.key === "vh-props" && o.frame?.name === "chimney" && Math.abs(o.x - 296) < 6 && Math.abs(o.y - 250) < 6) o.destroy();

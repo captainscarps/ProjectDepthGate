@@ -1912,7 +1912,7 @@ mk("vh-sf","vh-smith-forge",0,5,8,-1);mk("vh-sfi","vh-smith-fidle",0,5,6,-1);mk(
 mk("vh-ht","vh-hunter-tans",0,5,6,-1);this.textures.exists("vh-herb-boil")&&mk("vh-herb-a","vh-herb-boil",0,11,7,-1);this.textures.exists("vh-herb-caul")&&mk("vh-herb-c","vh-herb-caul",0,11,7,-1);mk("vh-htk","vh-hunter-take",0,4,7,0);mk("vh-hlv","vh-hunter-leave",0,4,7,0);
 this.textures.exists("peasant-1")&&(mk("peasant-1-idle","peasant-1",0,11,6),mk("peasant-1-talk","peasant-1",48,58,7));this.textures.exists("ferreiro")&&(mk("ferreiro-idle","ferreiro",0,11,6),mk("ferreiro-talk","ferreiro",48,58,7));this.textures.exists("peasant-3")&&(mk("peasant-3-idle","peasant-3",0,6,6),mk("peasant-3-talk","peasant-3",32,40,7));this.textures.exists("elf-1")&&(mk("elf-1-idle","elf-1",0,5,6),mk("elf-1-talk","elf-1",48,54,7));this.textures.exists("dorf-brazier")&&mk("dorf-brazier-a","dorf-brazier",0,5,8,-1);A.exists("hub-portal-a")||A.create({key:"hub-portal-a",frames:A.generateFrameNumbers("hub-portal",{start:0,end:13}),frameRate:10,repeat:-1})}
 create(){le(this);try{typeof __qAnims==="function"&&__qAnims(this)}catch(_){}try{typeof __gtAnims==="function"&&__gtAnims(this)}catch(_){}this.game.audioEngine?.music("hub-theme"),this.game.audioEngine?.startAmbience("hub"),this.game.audioEngine?.setState("REFUGE");
-const __F=this.game.registry.get("hub:fromForest");this.game.registry.remove("hub:fromForest");this.fromForest=!!__F;this.retSlot=__F?.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main;cam.setZoom(Pt*1.5);const z=cam.zoom;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);this.__us=Pt/z;cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
+const __F=this.game.registry.get("hub:fromForest");this.game.registry.remove("hub:fromForest");this.fromForest=!!__F;this.retSlot=__F?.slot??1;const M=this.M=this.cache.json.get("vh-map"),cam=this.cameras.main;cam.setZoom(Pt*1.9);const z=cam.zoom;this.__ox=cam.width/2*(1-1/z);this.__oy=cam.height/2*(1-1/z);this.__us=Pt/z;cam.setBackgroundColor(657681);this.__anims();this.meta=Xe();
 const ADD=j.BlendModes.ADD,L3=__L3;this.area="out";this.inters=[];this.npcs=[];this.labels=[];this.title=null;this.shade=null;this.hud=null;this.smith=null;this.hunter=null;this.herb=null;this.panel=null;this.panelRows=null;this.__pz=null;this.__hs=null;this.__bub=null;this.dummies=[];
 this.__busy=!1;this.__uiTap=!1;this.__caveWarned=!1;this.__alDiscTold=!1;this.alline=null;this.alCats=[];this.__apzTalking=!1;this.__apzMournSeen=!1;this.apzB=null;this.__hubDlgO=null;
 /* chão, casa, props */
@@ -20475,7 +20475,7 @@ window.__dgRefugio = { decorate: __rfDecorate };
   const I0 = Fl.prototype.__inters;
   Fl.prototype.__inters = function () {
     const r = I0.apply(this, arguments);
-    for (const f of [__rfChimney, __rfLake, __rfGrowth, __rfResidents, __rfSky, __rfQuality]) { try { f(this) } catch (e) { console.warn("[refugio2]", f.name, e) } }
+    for (const f of [__rfGear, __rfChimney, __rfLake, __rfGrowth, __rfResidents, __rfSky, __rfQuality]) { try { f(this) } catch (e) { console.warn("[refugio2]", f.name, e) } }
     return r;
   };
 }
@@ -20483,6 +20483,10 @@ window.__dgRefugio = { decorate: __rfDecorate };
   const A0 = Fl.prototype.__area;
   Fl.prototype.__area = function (a) {
     const r = A0.apply(this, arguments);
+    try {                                                       // câmera mais perto: dentro da forja ela segue o herói, presa às paredes
+      const I = this.M?.interior, cam = this.cameras.main;
+      if (a === "in" && I && (I.w > cam.width / cam.zoom || I.h > cam.height / cam.zoom)) { cam.setBounds(I.x, I.y, I.w, I.h); cam.useBounds = !0; cam.startFollow(this.rig.container, !0, .14, .14) }
+    } catch (e) {}
     try { if (this.__rfSkyA != null) { const al = a === "out" ? this.__rfSkyA : Math.min(.12, this.__rfSkyA); this.shade?.setAlpha(al).setVisible(al > 0) } } catch (e) {}
     return r;
   };
@@ -20499,6 +20503,20 @@ function __rfCollSet(H, x0, y0, x1, y1, v) {
     const gx = Math.floor(x / g), gy = Math.floor(y / g), row = C[gy];
     row && gx >= 0 && gx < row.length && (C[gy] = row.slice(0, gx) + v + row.slice(gx + 1));
   }
+}
+/* o herói no Refúgio veste o que está equipado no save: campanha (save do slot) e modo infinito (save da run),
+   com a raridade de cada peça — armaduras, capas e visuais lendários (hero-mods) aparecem como na aventura */
+function __rfGear(H) {
+  const rig = H.rig; if (!rig?.refreshEquipment) return;
+  const endless = !H.fromForest, slot = endless ? Es(H.game) : H.retSlot;
+  let raw = null;
+  try { raw = JSON.parse(localStorage.getItem(Wt(endless ? "endless" : "campaign", slot)) || "null") } catch (e) {}
+  const eq0 = raw?.player?.equipment;
+  if (!eq0 || (raw.player.classId && H.classDef?.id && raw.player.classId !== H.classDef.id)) return;
+  const L = new Bh(H), equipment = {};
+  for (const [k, v] of Object.entries(eq0)) { try { equipment[k] = v ? L.makeItem(v.id, v.rarity, v.seed ?? 0) : null } catch (e) { equipment[k] = null } }
+  rig.refreshEquipment({ equipment, items: [] });
+  H.__rfGearEq = equipment;
 }
 function __rfChimney(H) {
   for (const o of H.children.list.slice()) if (o.type === "Image" && o.texture?.key === "vh-props" && o.frame?.name === "chimney" && Math.abs(o.x - 296) < 6 && Math.abs(o.y - 250) < 6) o.destroy();
