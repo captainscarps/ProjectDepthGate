@@ -38,7 +38,7 @@ function __rfDecorate(H) {
       row && gx >= 0 && gx < row.length && (M.coll[gy] = row.slice(0, gx) + "1" + row.slice(gx + 1));
     }
   };
-  const solidAt = (x, y) => { const row = M.coll[Math.floor(y / g)]; return !row || row[Math.floor(x / g)] !== "0" };
+  const solidAt = (x, y) => { const row = H.M.coll[Math.floor(y / g)]; return !row || row[Math.floor(x / g)] !== "0" };
   // perto de algum ponto de interação ou personagem? (não enfeitar em cima de quem se usa)
   const busy = (x, y, r = 22) => (H.inters || []).some((o) => o.area === "out" && Math.hypot(o.x - x, o.y - y) < r + 10) || Object.values(S).some((p) => Math.hypot(p[0] - x, p[1] - y) < r);
   const deco = (f, x, y, o = {}) => {
@@ -142,7 +142,7 @@ function __rfDecorate(H) {
     }
   };
   walker("rf-sheep", "rf-sheep-walk", "rf-sheep-idle", [730, 470, 960, 600], 3, 14, .9);
-  walker("rf-rabbit", "rf-rabbit-hop", "rf-rabbit-idle", [70, 110, 320, 230], 2, 34, .8);
+  walker("rf-rabbit", "rf-rabbit-hop", "rf-rabbit-idle", [200, 190, 330, 276], 2, 34, .8);
   walker("rf-duck", "rf-duck-idle", "rf-duck-idle", [720, 330, 960, 440], 2, 16, .8);
   // passarinhos ciscando na praça: voam quando o herói chega perto e pousam de novo depois
   for (let i = 0; i < 4; i++) {
@@ -175,7 +175,7 @@ function __rfDecorate(H) {
   }
   // vaga-lumes no entardecer
   for (let i = 0; i < 18; i++) {
-    const zone = i % 3 === 0 ? [40, 110, 330, 280] : i % 3 === 1 ? [720, 440, 990, 680] : [40, 440, 330, 560];
+    const zone = i % 3 === 0 ? [40, 100, 330, 200] : i % 3 === 1 ? [720, 440, 990, 680] : [40, 440, 330, 560];
     const x0 = zone[0] + rnd() * (zone[2] - zone[0]), y0 = zone[1] + rnd() * (zone[3] - zone[1]);
     const f = H.add.circle(x0, y0, 1.2, 0xf8f0a0, 1).setDepth(8990).setBlendMode(j.BlendModes.ADD);
     const gl = H.add.circle(x0, y0, 4, 0xe8ff80, .25).setDepth(8989).setBlendMode(j.BlendModes.ADD);

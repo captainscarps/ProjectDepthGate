@@ -10,6 +10,10 @@ Saída:
   duck.png   (48x48)     pato: parado 0-3, voando 4-7
   butterfly.png (48x48)  borboleta: 0-3
   birds.png  (32x32)     pardal/corvinho ciscando: 20 quadros (linha 1 da folha original)
+  frog.png   (48x48)     sapo: 0-3 (pasta 6)
+  lake.png               laguinho de bordas orgânicas (240x84) com margem de terra e mato, juncos, vitórias-régias
+                         e reflexos; o alfa dele também é a área de colisão (desenhado aqui)
+  pier.png               pierzinho de tábuas para a pescaria (desenhado aqui)
 Uso: HOME_PNG=.../PNG WILD=... python3 scripts/build_refugio_deco.py
 """
 import json
@@ -133,6 +137,56 @@ def save(name, im):
         im.save(os.path.join(d, name), optimize=True)
 
 
+def lake():
+    """blob orgânico (soma de senos no raio) — nada de borda reta"""
+    import math
+    import random
+    import numpy as np
+    rnd = random.Random(5)
+    W, H = 240, 84
+    cx, cy, rx, ry = W / 2, H / 2 + 2, W / 2 - 8, H / 2 - 9
+    yy, xx = np.mgrid[0:H, 0:W]
+    ang = np.arctan2((yy - cy) / ry, (xx - cx) / rx)
+    wob = 1 + .07 * np.sin(3 * ang + .7) + .05 * np.sin(5 * ang + 2.1) + .035 * np.sin(9 * ang + .3)
+    r = np.hypot((xx - cx) / rx, (yy - cy) / ry) / wob
+    out = np.zeros((H, W, 4), np.uint8)
+    shore = (r < 1.0) & (r >= .9)
+    water = r < .9
+    deep = np.clip((.9 - r) / .9, 0, 1)
+    sh = np.array([84, 150, 190]); dp = np.array([38, 82, 124])
+    col = sh[None, None, :] * (1 - deep[..., None] ** .7) + dp[None, None, :] * deep[..., None] ** .7
+    out[water, :3] = col[water].astype(np.uint8); out[water, 3] = 255
+    out[shore, :3] = (112, 92, 58); out[shore, 3] = 255                    # margem de terra
+    inner = (r < .93) & (r >= .9)
+    out[inner, :3] = (66, 120, 160)                                         # borda molhada
+    rim = (r < 1.04) & (r >= 1.0)
+    out[rim, :3] = (62, 112, 44); out[rim, 3] = 255                         # mato em volta
+    im = Image.fromarray(out, "RGBA"); d = ImageDraw.Draw(im)
+    for _ in range(14):                                                     # reflexos
+        x, y = rnd.uniform(cx - rx * .6, cx + rx * .6), rnd.uniform(cy - ry * .5, cy + ry * .5)
+        L = rnd.randint(3, 8); d.line((x, y, x + L, y), fill=(170, 214, 236, 150))
+    for (x, y, rr) in ((52, 46, 5), (62, 52, 4), (176, 34, 5), (186, 40, 3), (150, 58, 4)):   # vitórias-régias
+        d.pieslice((x - rr, y - rr * .6, x + rr, y + rr * .6), 30, 330, fill=(70, 140, 60, 255), outline=(36, 80, 32, 255))
+    d.ellipse((60, 49, 63, 52), fill=(240, 150, 190, 255)); d.point((61, 50), fill=(255, 230, 120, 255))
+    d.ellipse((174, 31, 177, 34), fill=(250, 240, 250, 255))
+    for (x0, x1, y0) in ((16, 40, 34), (196, 226, 30), (100, 120, 10)):     # juncos na margem de trás
+        for x in range(x0, x1, 3):
+            hgt = rnd.randint(7, 14); y = y0 + rnd.randint(-2, 2)
+            d.line((x, y, x + rnd.choice((-1, 0, 1)), y - hgt), fill=(70, 120, 48, 255))
+            rnd.random() < .45 and d.rectangle((x - 1, y - hgt - 1, x, y - hgt + 3), fill=(110, 70, 38, 255))
+    return im
+
+
+def pier():
+    im = Image.new("RGBA", (16, 34)); d = ImageDraw.Draw(im)
+    O = (40, 24, 16, 255)
+    for y in range(2, 32, 4):
+        d.rectangle((2, y, 13, y + 3), fill=(150, 98, 58, 255) if y % 8 else (132, 84, 48, 255), outline=O)
+    for x in (2, 13):
+        d.rectangle((x - 1, 0, x + 1, 33), fill=(96, 60, 34, 255), outline=O)
+    return im
+
+
 if __name__ == "__main__":
     P = {k: trim(EXT.crop((x, y, x + w, y + h))) for k, (x, y, w, h) in CUT.items()}
     tufts, pebbles = gg_pieces()
@@ -152,4 +206,6 @@ if __name__ == "__main__":
     save("butterfly.png", strip([(W4(5, "S_Fly"), 4)], 48, 48))
     bj = Image.open(os.path.join(HOME, "bird_jump_animation.png")).convert("RGBA").crop((0, 32, 640, 64))
     save("birds.png", bj)
+    save("frog.png", strip([(W4(6, "S_Idle"), 4)], 48, 48))
+    save("lake.png", lake()); save("pier.png", pier())
     print("ok", len(P), "peças;", sorted(k for k in P if k.startswith(("tuft", "peb")))[:4], "...")
