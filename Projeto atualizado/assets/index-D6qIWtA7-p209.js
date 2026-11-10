@@ -20475,7 +20475,7 @@ window.__dgRefugio = { decorate: __rfDecorate };
   const I0 = Fl.prototype.__inters;
   Fl.prototype.__inters = function () {
     const r = I0.apply(this, arguments);
-    for (const f of [__rfGear, __rfChimney, __rfLake, __rfGrowth, __rfResidents, __rfSky, __rfQuality]) { try { f(this) } catch (e) { console.warn("[refugio2]", f.name, e) } }
+    for (const f of [__rfGear, __rfChimney, __rfLake, __rfGrowth, __rfResidents, __rfSky, __rfQuality, __rfPanelInput]) { try { f(this) } catch (e) { console.warn("[refugio2]", f.name, e) } }
     return r;
   };
 }
@@ -20778,6 +20778,16 @@ function __rfLite(H, save) {
   H.__rfLive = [];
   if (save) try { localStorage.setItem(__RF_LITE_K, "1") } catch (e) {}
 }
+/* Toque/mouse nos painéis do Refúgio: o painel é um container preso à tela (scrollFactor 0), mas o Phaser testa o
+   clique com o scrollFactor de cada filho (1 por padrão) — com a câmera rolada e com zoom o toque caía longe do botão.
+   A cada quadro, os filhos de qualquer container preso à tela herdam o scrollFactor 0 (barato: só objetos novos mudam). */
+function __rfPanelInput(H) {
+  if (H.__rfPI) return; H.__rfPI = 1;
+  const fix = (c) => { for (const o of c.list) { if (o.scrollFactorX !== c.scrollFactorX || o.scrollFactorY !== c.scrollFactorY) o.setScrollFactor(c.scrollFactorX, c.scrollFactorY); if (o.list) fix(o) } };
+  const run = () => { for (const o of H.children.list) if (o.list && o.scrollFactorX !== 1) fix(o) };
+  H.events.on("preupdate", run); H.events.once("shutdown", () => { H.events.off("preupdate", run); H.__rfPI = 0 });
+}
+
 function __rfQuality(H) {
   let lite = !1; try { lite = localStorage.getItem(__RF_LITE_K) === "1" } catch (e) {}
   if (lite) return __rfLite(H, !1);
