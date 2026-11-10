@@ -9,8 +9,8 @@ Saída (uma linha por animação, 13 colunas; quadro = linha*13 + k):
   pet-corvo.png pasta 3 (corvo)          48x48  parado 4 · voando 4 (virado para a direita, como os outros)
 Canto dos Pets no Refúgio (cercado onde os pets descansam):
   pet-pen-back.png / pet-pen-front.png  cercado de madeira montado com as peças da cerca do pacote
-                   "Main Characters Home" (HOME = PNG/exterior.png); a frente fica separada para os bichos
-                   passarem por trás dela
+                   "Main Characters Home" (HOME = PNG/exterior.png); a frente (só a faixa de baixo, 16 px) fica separada
+                   para os bichos passarem por trás dela
   pet-kennel.png, pet-bowl.png, pet-trough.png, pet-hay.png   casinha, tigela de ração, cocho de água e
                    cama de feno (desenhados aqui, na paleta da cerca)
 Uso: URBAN=... WILD=... HOME=.../exterior.png python3 scripts/build_pets.py
@@ -68,7 +68,7 @@ def pen():
             if 0 < bi < len(bands) - 1 and 0 < ci < len(cols) - 1:
                 continue                                  # o miolo do cercado é grama: nas faixas do meio só entram os lados
             (front if bi == len(bands) - 1 else back).alpha_composite(src.crop((x0, y0, x1, y1)), (ci * 8, bi * 16))
-    return back, front
+    return back, front.crop((0, H - 16, W, H))          # a frente é só a faixa de baixo (textura justa)
 
 
 def px(d, pts, c):

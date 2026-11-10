@@ -706,12 +706,15 @@ function __petPen(H) {
   // a cerca bloqueia o herói (cópia da grade: o Refúgio do modo infinito não tem cercado)
   H.M = Object.assign({}, H.M, { coll: H.M.coll.slice() });
   const M = H.M, g = M.g;
-  for (let y = P.y + 10; y < P.y + P.h - 2; y += g) for (let x = P.x; x < P.x + P.w; x += g) {
+  for (let y = P.y - 8; y < P.y + P.h - 2; y += g) for (let x = P.x - 8; x < P.x + P.w + 8; x += g) {   // folga: o corpo do herói não encosta nos mourões
     const gx = Math.floor(x / g), gy = Math.floor(y / g), row = M.coll[gy];
     row && gx >= 0 && gx < row.length && (M.coll[gy] = row.slice(0, gx) + "1" + row.slice(gx + 1));
   }
-  H.add.image(P.x, P.y, "pet-pen-back").setOrigin(0).setDepth(P.y + 18);
-  H.add.image(P.x, P.y, "pet-pen-front").setOrigin(0).setDepth(P.y + P.h - 2);
+  // desempenho: o que é chão (cerca de trás, feno, tigelas, cocho) é pintado na textura do chão pelo refugio.js
+  // (H.__rfBake); só a casinha e a faixa da frente da cerca ficam como imagens
+  const bake = (H.__rfBake ??= []);
+  bake.push(H.add.image(P.x, P.y, "pet-pen-back").setOrigin(0).setDepth(P.y + 18));
+  H.add.image(P.x, P.y + P.h - 16, "pet-pen-front").setOrigin(0).setDepth(P.y + P.h - 2);
   // a pedra e o caixote que ficavam nesse gramado saem do caminho (a pedra some, o caixote vai para perto dos bonecos)
   for (const o of H.children.list.slice()) {
     if (o.type !== "Image" || o.texture?.key !== "vh-props") continue;
@@ -721,11 +724,11 @@ function __petPen(H) {
   }
   const spot = { kennel: [P.x + 32, P.y + 64], hay: [P.x + 78, P.y + 96], hay2: [P.x + 40, P.y + 96], bowl: [P.x + 132, P.y + 56], bowl2: [P.x + 148, P.y + 60], water: [P.x + 146, P.y + 96] };
   H.add.image(...spot.kennel, "pet-kennel").setOrigin(.5, 1).setDepth(spot.kennel[1]);
-  H.add.image(spot.hay[0], spot.hay[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay[1] - 8);
-  H.add.image(spot.hay2[0], spot.hay2[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay2[1] - 8).setFlipX(!0);
-  H.add.image(...spot.bowl, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl[1] - 4);
-  H.add.image(...spot.bowl2, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl2[1] - 4);
-  H.add.image(...spot.water, "pet-trough").setOrigin(.5, 1).setDepth(spot.water[1] - 4);
+  bake.push(H.add.image(spot.hay[0], spot.hay[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay[1] - 8));
+  bake.push(H.add.image(spot.hay2[0], spot.hay2[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay2[1] - 8).setFlipX(!0));
+  bake.push(H.add.image(...spot.bowl, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl[1] - 4));
+  bake.push(H.add.image(...spot.bowl2, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl2[1] - 4));
+  bake.push(H.add.image(...spot.water, "pet-trough").setOrigin(.5, 1).setDepth(spot.water[1] - 4));
   const lab = H.add.text(P.x + P.w / 2, P.y - 2, L3("CANTO DOS PETS", "PET CORNER", "RINCÓN DE MASCOTAS"), { ...Le, fontSize: "8px", color: "#f0d090", stroke: "#120c08", strokeThickness: 3 }).setOrigin(.5, 1).setScale(.7).setDepth(9100).setAlpha(.9);
   H.labels.push(lab);
   H.inters.push({ area: "out", id: "pets", x: P.x + P.w / 2, y: P.y + P.h + 4, ay: P.y + P.h + 12, r: 46, label: L3("CANTO DOS PETS", "PET CORNER", "RINCÓN DE MASCOTAS"), desc: L3("Treino de Pets: adotar, recrutar e escolher quem vai com você", "Pet Training: adopt, recruit and choose who goes with you", "Entrenamiento: adoptar, reclutar y elegir quién va contigo"), act: () => { H.panel || H.__petShop() } });
@@ -747,7 +750,7 @@ function __petPenFill(H) {
     let x = out ? P.x + P.w / 2 + 14 : fall ? spot.hay[0] - 8 + n * 7 : rnd(inX, inX + inW), y = out ? P.y + P.h + 10 : fall ? spot.hay[1] - 3 : rnd(inY, inY + inH);
     if (D.fly && !out && !fall) [x, y] = [spot.kennel[0], spot.kennel[1] - 14];          // o corvo pousa no telhado da casinha
     const s = H.add.sprite(x, y, D.tex, 0).setOrigin(.5, 1).setScale(sc).setDepth(y);
-    const sh = H.add.ellipse(x, y, D.fly ? 10 : D.fw * sc * .5, 4, 0, .25).setDepth(y - 1);
+    const sh = (window.__rfShadow ? window.__rfShadow(H, x, y, D.fly ? 10 : D.fw * sc * .5, 4, .25) : H.add.ellipse(x, y, D.fly ? 10 : D.fw * sc * .5, 4, 0, .25)).setDepth(y - 1);
     K && H.anims.exists(K.idle) && s.play(K.idle);
     s.setFlipX(Math.random() < .5);
     if (fall) { s.setTint(0xb8b0a8); s.anims.timeScale = .4 }

@@ -27,6 +27,15 @@ const __RF_SHEETS = { "rf-sheep": 48, "rf-rabbit": 48, "rf-duck": 48, "rf-butter
     return r;
   };
 }
+/* texturas pequenas prontas (sombra e pixel): imagens são bem mais leves que formas (Ellipse/Rectangle), que o
+   Phaser 4 refaz a cada quadro */
+function __rfTex(H) {
+  if (!H.textures.exists("rf-shadow")) { const g = H.make.graphics({ x: 0, y: 0 }, !1); g.fillStyle(0, 1).fillEllipse(16, 4, 32, 8); g.generateTexture("rf-shadow", 32, 8); g.destroy() }
+  if (!H.textures.exists("rf-px")) { const g = H.make.graphics({ x: 0, y: 0 }, !1); g.fillStyle(0xffffff, 1).fillRect(0, 0, 4, 2); g.generateTexture("rf-px", 4, 2); g.destroy() }
+}
+window.__rfTex = __rfTex;
+function __rfShadow(H, x, y, w, h, a) { __rfTex(H); return H.add.image(x, y, "rf-shadow").setDisplaySize(w, h).setAlpha(a) }
+window.__rfShadow = __rfShadow;
 function __rfRand(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296) }
 function __rfDecorate(H) {
   const A = H.anims, rnd = __rfRand(4242);
@@ -41,8 +50,12 @@ function __rfDecorate(H) {
   const solidAt = (x, y) => { const row = H.M.coll[Math.floor(y / g)]; return !row || row[Math.floor(x / g)] !== "0" };
   // perto de algum ponto de interação ou personagem? (não enfeitar em cima de quem se usa)
   const busy = (x, y, r = 22) => (H.inters || []).some((o) => o.area === "out" && Math.hypot(o.x - x, o.y - y) < r + 10) || Object.values(S).some((p) => Math.hypot(p[0] - x, p[1] - y) < r);
+  // desempenho: o que é chão/parede (pedrinhas, tufos, flores, hera, estandartes) vai todo para UMA textura
+  // (bake) em vez de centenas de imagens soltas; só os objetos sólidos continuam como imagens
+  const BAKE = [];
   const deco = (f, x, y, o = {}) => {
     const im = H.add.image(x, y, "rf-deco", f).setOrigin(.5, 1).setDepth(o.depth ?? y);
+    o.bake && BAKE.push(im);
     o.flip && im.setFlipX(!0); o.alpha && im.setAlpha(o.alpha); o.scale && im.setScale(o.scale);
     o.solid && block(x - o.solid[0], y - o.solid[1], x + o.solid[0], y);
     return im;
@@ -56,26 +69,25 @@ function __rfDecorate(H) {
     }
     return null;
   };
-  const flat = (f, x, y, a = 1) => H.add.image(x, y, "rf-deco", f).setOrigin(.5).setDepth(-5).setAlpha(a);   // no chão, atrás de tudo
+  const flat = (f, x, y, a = 1) => BAKE.push(H.add.image(x, y, "rf-deco", f).setOrigin(.5).setAlpha(a));   // no chão
 
   /* ─── muro do topo ─── */
   const WALL_Y = 58, WALL_B = 88;
   for (const x of [52, 118, 196, 262, 338, 402, 586, 650, 742, 828, 902, 968]) {
-    const k = (x * 7) % 4; deco(`ivy${k}`, x + ((x * 13) % 9) - 4, WALL_Y + [22, 30, 18, 26][k], { depth: WALL_Y + 1 });
+    const k = (x * 7) % 4; deco(`ivy${k}`, x + ((x * 13) % 9) - 4, WALL_Y + [22, 30, 18, 26][k], { bake: 1 });
   }
   for (const x of [292, 452, 572, 720]) {
-    deco("banner", x, WALL_Y + 35, { depth: WALL_Y + 2 });
+    deco("banner", x, WALL_Y + 35, { bake: 1 });
   }
   for (const x of [372, 512, 650, 860, 160]) {                                       // tochas presas no muro
-    const gq = H.add.graphics().setDepth(WALL_Y + 3);
-    gq.fillStyle(0x2a2420, 1).fillRect(x - 2, WALL_Y + 14, 4, 10).fillStyle(0x4a4038, 1).fillRect(x - 4, WALL_Y + 12, 8, 3);
+    BAKE.push({ rects: [[x - 2, WALL_Y + 14, 4, 10, "#2a2420"], [x - 4, WALL_Y + 12, 8, 3, "#4a4038"]] });
     H.add.sprite(x, WALL_Y + 13, "torch-flame", 0).play("torch-flame-burn").setOrigin(.5, 1).setDepth(WALL_Y + 4);
-    H.__glow?.(x, WALL_Y + 6, .4, 16750130, .32, 760 + (x % 7) * 60);
+    H.add.image(x, WALL_Y + 6, "light").setScale(.28).setBlendMode(j.BlendModes.ADD).setTint(16750130).setAlpha(.26).setDepth(9001);   // luz fixa (sem tween)
   }
   for (let x = 14; x < 1012; x += 22 + rnd() * 26) {                                 // a base reta do muro vira mato
     const y = WALL_B + 4 + rnd() * 5;
     if (solidAt(x, y + 6) && !solidAt(x, y + 14)) continue;
-    deco(rnd() < .78 ? `tuft${(rnd() * 14) | 0}` : `fl${1 + ((rnd() * 9) | 0)}`, x, y, { depth: WALL_B + 1, flip: rnd() < .5 });
+    deco(rnd() < .78 ? `tuft${(rnd() * 14) | 0}` : `fl${1 + ((rnd() * 9) | 0)}`, x, y, { bake: 1, flip: rnd() < .5 });
   }
 
   /* ─── praça ─── */
@@ -89,27 +101,49 @@ function __rfDecorate(H) {
   for (const [x, y] of M.lamps) {                                                       // canteiros nos pés dos postes
     for (let k = 0; k < 4; k++) {
       const a = (k / 4) * Math.PI * 2 + rnd(), d = 9 + rnd() * 6, fx = x + Math.cos(a) * d, fy = y + 2 + Math.sin(a) * d * .5;
-      deco(k % 2 ? `fl${1 + ((rnd() * 9) | 0)}` : `tuft${(rnd() * 14) | 0}`, fx, fy, { depth: fy - 2, flip: rnd() < .5 });
+      deco(k % 2 ? `fl${1 + ((rnd() * 9) | 0)}` : `tuft${(rnd() * 14) | 0}`, fx, fy, { bake: 1, flip: rnd() < .5 });
     }
   }
   for (let n = 0; n < 70; n++) {                                                        // pedrinhas e tufos pelo tijolo
     const x = 330 + rnd() * 380, y = 300 + rnd() * 270;
     if (solidAt(x, y) || busy(x, y, 18) || Math.hypot(x - C[0], y - C[1]) < 40) continue;
     if (grass(x, y)) continue;
-    rnd() < .6 ? flat(`peb${(rnd() * 12) | 0}`, x, y, .4) : deco(`tuft${(rnd() * 14) | 0}`, x, y, { depth: -4, alpha: .9 });
+    rnd() < .6 ? flat(`peb${(rnd() * 12) | 0}`, x, y, .4) : deco(`tuft${(rnd() * 14) | 0}`, x, y, { bake: 1, alpha: .9 });
   }
   /* ─── cantos de grama ─── */
   onGrass("log", 300, 236, { solid: [16, 6] });
   onGrass("stump-b", 930, 500, { solid: [14, 8] });
   onGrass("mush-b", 960, 560, { solid: [10, 6] });
   onGrass("stump-r", 60, 446, { solid: [10, 6] });
-  onGrass("mush", 744, 650); onGrass("mush", 300, 560, { scale: .8 });
+  onGrass("mush", 744, 650, { bake: 1 }); onGrass("mush", 300, 560, { scale: .8, bake: 1 });
   for (let n = 0; n < 60; n++) {                                                        // flores e mato espalhados na grama
     const x = 40 + rnd() * 944, y = 100 + rnd() * 580;
     if (x > 320 && x < 720 && y > 280 && y < 600) continue;
     if (solidAt(x, y) || busy(x, y, 16) || !grass(x, y)) continue;
-    deco(rnd() < .5 ? `fl${1 + ((rnd() * 9) | 0)}` : `tuft${(rnd() * 14) | 0}`, x, y, { depth: y - 3, flip: rnd() < .5 });
+    deco(rnd() < .5 ? `fl${1 + ((rnd() * 9) | 0)}` : `tuft${(rnd() * 14) | 0}`, x, y, { bake: 1, flip: rnd() < .5 });
   }
+  // desenha tudo direto NA textura do chão (canvas): nenhuma camada a mais para a placa de vídeo pintar
+  try {
+    const gImg = H.children.list.find((o) => o.texture?.key === "vh-ground");
+    const src = H.textures.get("vh-ground").getSourceImage(), atl = H.textures.get("rf-deco");
+    const cv = document.createElement("canvas"); cv.width = src.width; cv.height = src.height;
+    const c2 = cv.getContext("2d"); c2.imageSmoothingEnabled = !1; c2.drawImage(src, 0, 0);
+    for (const o of (H.__rfBake || [])) BAKE.push(o);               // a cerca de trás e os comedouros do Canto dos Pets
+    H.__rfBake = null;
+    for (const o of BAKE) {
+      if (o.rects) { for (const [x, y, w, h, col] of o.rects) { c2.fillStyle = col; c2.fillRect(x, y, w, h) } continue }
+      const fr = o.frame, sc = Math.abs(o.scaleX), w = fr.cutWidth * sc, h = fr.cutHeight * sc;
+      c2.save(); c2.globalAlpha = o.alpha; c2.translate(Math.round(o.x), Math.round(o.y));
+      o.flipX && c2.scale(-1, 1);
+      c2.drawImage(fr.source.image, fr.cutX, fr.cutY, fr.cutWidth, fr.cutHeight, Math.round(-w * o.originX), Math.round(-h * o.originY), w, h);
+      c2.restore();
+    }
+    H.textures.exists("rf-ground") && H.textures.remove("rf-ground");
+    H.textures.addCanvas("rf-ground", cv);
+    gImg?.setTexture("rf-ground");
+    H.__rfFloor = gImg;
+  } catch (e) { console.warn("[refugio] bake", e); for (const o of BAKE) o.setDepth?.(-3); BAKE.length = 0 }
+  for (const o of BAKE) o.destroy?.();
 
   /* ─── bichos ─── */
   const anim = (key, tex, a, b, fr, rep = -1) => { A.exists(key) || A.create({ key, frames: A.generateFrameNumbers(tex, { start: a, end: b }), frameRate: fr, repeat: rep }) };
@@ -141,11 +175,11 @@ function __rfDecorate(H) {
       });
     }
   };
-  walker("rf-sheep", "rf-sheep-walk", "rf-sheep-idle", [730, 470, 960, 600], 3, 14, .9);
+  walker("rf-sheep", "rf-sheep-walk", "rf-sheep-idle", [730, 470, 960, 600], 2, 14, .9);
   walker("rf-rabbit", "rf-rabbit-hop", "rf-rabbit-idle", [200, 190, 330, 276], 2, 34, .8);
-  walker("rf-duck", "rf-duck-idle", "rf-duck-idle", [720, 330, 960, 440], 2, 16, .8);
+  walker("rf-duck", "rf-duck-idle", "rf-duck-idle", [720, 330, 960, 440], 1, 16, .8);
   // passarinhos ciscando na praça: voam quando o herói chega perto e pousam de novo depois
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 3; i++) {
     const home = [C[0] - 90 + rnd() * 180, C[1] - 120 + rnd() * 70];
     if (solidAt(...home)) continue;
     const s = H.add.sprite(home[0], home[1], "rf-birds", 0).setOrigin(.5, 1).setScale(.75).setDepth(home[1]).play("rf-bird-peck").setFlipX(rnd() < .5);
@@ -166,33 +200,39 @@ function __rfDecorate(H) {
     });
   }
   // borboletas sobre os canteiros e a horta
-  for (let i = 0; i < 6; i++) {
-    const cx = [780, 860, 930, 120, 250, 700][i], cy = [170, 210, 150, 160, 380, 540][i];
+  for (let i = 0; i < 3; i++) {
+    const cx = [780, 930, 250, 700][i], cy = [170, 150, 380, 540][i];
     const s = H.add.sprite(cx, cy, "rf-butterfly", 0).setOrigin(.5).setScale(.6).setDepth(cy + 40).play("rf-bfly");
     s.setTint([0xffffff, 0xfff0a0, 0xd8b0ff][i % 3]);
     const ph = rnd() * 10;
     H.events.on("update", (t) => { if (!s.active) return; const k = t / 1000 + ph; s.setPosition(cx + Math.sin(k * .7) * 34 + Math.sin(k * 2.3) * 6, cy + Math.cos(k * .9) * 18 + Math.sin(k * 3.1) * 4); s.setFlipX(Math.cos(k * .7) < 0) });
   }
-  // vaga-lumes no entardecer
-  for (let i = 0; i < 18; i++) {
+  // vaga-lumes no entardecer: um ponto de luz pronto (textura) por vaga-lume e um único laço de atualização
+  if (!H.textures.exists("rf-ff")) { const gg = H.make.graphics({ x: 0, y: 0 }, !1); gg.fillStyle(0xe8ff80, .22).fillCircle(5, 5, 5).fillStyle(0xf8f0a0, 1).fillCircle(5, 5, 1.4); gg.generateTexture("rf-ff", 10, 10); gg.destroy() }
+  const FF = [];
+  for (let i = 0; i < 10; i++) {
     const zone = i % 3 === 0 ? [40, 100, 330, 200] : i % 3 === 1 ? [720, 440, 990, 680] : [40, 440, 330, 560];
     const x0 = zone[0] + rnd() * (zone[2] - zone[0]), y0 = zone[1] + rnd() * (zone[3] - zone[1]);
-    const f = H.add.circle(x0, y0, 1.2, 0xf8f0a0, 1).setDepth(8990).setBlendMode(j.BlendModes.ADD);
-    const gl = H.add.circle(x0, y0, 4, 0xe8ff80, .25).setDepth(8989).setBlendMode(j.BlendModes.ADD);
-    const ph = rnd() * 20;
-    H.events.on("update", (t) => {
-      if (!f.active) return;
-      const k = t / 1000 + ph, x = x0 + Math.sin(k * .4) * 20 + Math.sin(k * 1.3) * 5, y = y0 + Math.cos(k * .5) * 12;
-      const a = Math.max(0, Math.sin(k * 1.7)) ** 2;
-      f.setPosition(x, y).setAlpha(a); gl.setPosition(x, y).setAlpha(a * .35);
-    });
+    FF.push({ x0, y0, ph: rnd() * 20, o: H.add.image(x0, y0, "rf-ff").setDepth(8990).setBlendMode(j.BlendModes.ADD).setData("rfFF", 1) });
   }
+  H.__rfFF = FF;
+  let ffT = 0;
+  H.events.on("update", (t, dms) => {
+    if ((ffT += dms) < 33) return;                          // ~30 quadros por segundo bastam
+    ffT = 0;
+    for (const f of FF) {
+      if (!f.o.visible) continue;
+      const k = t / 1000 + f.ph, a = Math.max(0, Math.sin(k * 1.7)) ** 2;
+      f.o.setPosition(f.x0 + Math.sin(k * .4) * 20 + Math.sin(k * 1.3) * 5, f.y0 + Math.cos(k * .5) * 12).setAlpha(a);
+    }
+  });
   // folhas caindo das árvores das bordas
   const trees = (M.props || []).filter((p) => /^(tree|pine)/.test(p[0])).map((p) => [p[1], p[2]]);
-  trees.length && H.time.addEvent({ delay: 900, loop: !0, callback: () => {
-    if (H.area !== "out" || rnd() < .35) return;
+  trees.length && H.time.addEvent({ delay: 1400, loop: !0, callback: () => {
+    if (H.area !== "out" || rnd() < .5) return;
     const [tx, ty] = trees[(rnd() * trees.length) | 0], x = tx + (rnd() - .5) * 40, y = ty - 40 - rnd() * 30;
-    const lf = H.add.rectangle(x, y, 2, 1.5, [0x8cc060, 0xc0a040, 0x6ea048][(rnd() * 3) | 0]).setDepth(ty + 30);
+    __rfTex(H);
+    const lf = H.add.image(x, y, "rf-px").setDisplaySize(2, 1.5).setTint([0x8cc060, 0xc0a040, 0x6ea048][(rnd() * 3) | 0]).setDepth(ty + 30);
     const dx = (rnd() - .3) * 60;
     H.tweens.add({ targets: lf, y: y + 46 + rnd() * 20, x: x + dx, angle: 360 * (rnd() < .5 ? 1 : -1), duration: 2600 + rnd() * 1400, ease: "Sine.easeIn" });
     H.tweens.add({ targets: lf, alpha: 0, delay: 2200, duration: 900, onComplete: () => lf.destroy() });

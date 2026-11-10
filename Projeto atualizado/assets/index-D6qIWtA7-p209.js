@@ -20098,12 +20098,15 @@ function __petPen(H) {
   // a cerca bloqueia o herói (cópia da grade: o Refúgio do modo infinito não tem cercado)
   H.M = Object.assign({}, H.M, { coll: H.M.coll.slice() });
   const M = H.M, g = M.g;
-  for (let y = P.y + 10; y < P.y + P.h - 2; y += g) for (let x = P.x; x < P.x + P.w; x += g) {
+  for (let y = P.y - 8; y < P.y + P.h - 2; y += g) for (let x = P.x - 8; x < P.x + P.w + 8; x += g) {   // folga: o corpo do herói não encosta nos mourões
     const gx = Math.floor(x / g), gy = Math.floor(y / g), row = M.coll[gy];
     row && gx >= 0 && gx < row.length && (M.coll[gy] = row.slice(0, gx) + "1" + row.slice(gx + 1));
   }
-  H.add.image(P.x, P.y, "pet-pen-back").setOrigin(0).setDepth(P.y + 18);
-  H.add.image(P.x, P.y, "pet-pen-front").setOrigin(0).setDepth(P.y + P.h - 2);
+  // desempenho: o que é chão (cerca de trás, feno, tigelas, cocho) é pintado na textura do chão pelo refugio.js
+  // (H.__rfBake); só a casinha e a faixa da frente da cerca ficam como imagens
+  const bake = (H.__rfBake ??= []);
+  bake.push(H.add.image(P.x, P.y, "pet-pen-back").setOrigin(0).setDepth(P.y + 18));
+  H.add.image(P.x, P.y + P.h - 16, "pet-pen-front").setOrigin(0).setDepth(P.y + P.h - 2);
   // a pedra e o caixote que ficavam nesse gramado saem do caminho (a pedra some, o caixote vai para perto dos bonecos)
   for (const o of H.children.list.slice()) {
     if (o.type !== "Image" || o.texture?.key !== "vh-props") continue;
@@ -20113,11 +20116,11 @@ function __petPen(H) {
   }
   const spot = { kennel: [P.x + 32, P.y + 64], hay: [P.x + 78, P.y + 96], hay2: [P.x + 40, P.y + 96], bowl: [P.x + 132, P.y + 56], bowl2: [P.x + 148, P.y + 60], water: [P.x + 146, P.y + 96] };
   H.add.image(...spot.kennel, "pet-kennel").setOrigin(.5, 1).setDepth(spot.kennel[1]);
-  H.add.image(spot.hay[0], spot.hay[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay[1] - 8);
-  H.add.image(spot.hay2[0], spot.hay2[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay2[1] - 8).setFlipX(!0);
-  H.add.image(...spot.bowl, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl[1] - 4);
-  H.add.image(...spot.bowl2, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl2[1] - 4);
-  H.add.image(...spot.water, "pet-trough").setOrigin(.5, 1).setDepth(spot.water[1] - 4);
+  bake.push(H.add.image(spot.hay[0], spot.hay[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay[1] - 8));
+  bake.push(H.add.image(spot.hay2[0], spot.hay2[1], "pet-hay").setOrigin(.5, 1).setDepth(spot.hay2[1] - 8).setFlipX(!0));
+  bake.push(H.add.image(...spot.bowl, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl[1] - 4));
+  bake.push(H.add.image(...spot.bowl2, "pet-bowl").setOrigin(.5, 1).setDepth(spot.bowl2[1] - 4));
+  bake.push(H.add.image(...spot.water, "pet-trough").setOrigin(.5, 1).setDepth(spot.water[1] - 4));
   const lab = H.add.text(P.x + P.w / 2, P.y - 2, L3("CANTO DOS PETS", "PET CORNER", "RINCÓN DE MASCOTAS"), { ...Le, fontSize: "8px", color: "#f0d090", stroke: "#120c08", strokeThickness: 3 }).setOrigin(.5, 1).setScale(.7).setDepth(9100).setAlpha(.9);
   H.labels.push(lab);
   H.inters.push({ area: "out", id: "pets", x: P.x + P.w / 2, y: P.y + P.h + 4, ay: P.y + P.h + 12, r: 46, label: L3("CANTO DOS PETS", "PET CORNER", "RINCÓN DE MASCOTAS"), desc: L3("Treino de Pets: adotar, recrutar e escolher quem vai com você", "Pet Training: adopt, recruit and choose who goes with you", "Entrenamiento: adoptar, reclutar y elegir quién va contigo"), act: () => { H.panel || H.__petShop() } });
@@ -20139,7 +20142,7 @@ function __petPenFill(H) {
     let x = out ? P.x + P.w / 2 + 14 : fall ? spot.hay[0] - 8 + n * 7 : rnd(inX, inX + inW), y = out ? P.y + P.h + 10 : fall ? spot.hay[1] - 3 : rnd(inY, inY + inH);
     if (D.fly && !out && !fall) [x, y] = [spot.kennel[0], spot.kennel[1] - 14];          // o corvo pousa no telhado da casinha
     const s = H.add.sprite(x, y, D.tex, 0).setOrigin(.5, 1).setScale(sc).setDepth(y);
-    const sh = H.add.ellipse(x, y, D.fly ? 10 : D.fw * sc * .5, 4, 0, .25).setDepth(y - 1);
+    const sh = (window.__rfShadow ? window.__rfShadow(H, x, y, D.fly ? 10 : D.fw * sc * .5, 4, .25) : H.add.ellipse(x, y, D.fly ? 10 : D.fw * sc * .5, 4, 0, .25)).setDepth(y - 1);
     K && H.anims.exists(K.idle) && s.play(K.idle);
     s.setFlipX(Math.random() < .5);
     if (fall) { s.setTint(0xb8b0a8); s.anims.timeScale = .4 }
@@ -20224,6 +20227,15 @@ const __RF_SHEETS = { "rf-sheep": 48, "rf-rabbit": 48, "rf-duck": 48, "rf-butter
     return r;
   };
 }
+/* texturas pequenas prontas (sombra e pixel): imagens são bem mais leves que formas (Ellipse/Rectangle), que o
+   Phaser 4 refaz a cada quadro */
+function __rfTex(H) {
+  if (!H.textures.exists("rf-shadow")) { const g = H.make.graphics({ x: 0, y: 0 }, !1); g.fillStyle(0, 1).fillEllipse(16, 4, 32, 8); g.generateTexture("rf-shadow", 32, 8); g.destroy() }
+  if (!H.textures.exists("rf-px")) { const g = H.make.graphics({ x: 0, y: 0 }, !1); g.fillStyle(0xffffff, 1).fillRect(0, 0, 4, 2); g.generateTexture("rf-px", 4, 2); g.destroy() }
+}
+window.__rfTex = __rfTex;
+function __rfShadow(H, x, y, w, h, a) { __rfTex(H); return H.add.image(x, y, "rf-shadow").setDisplaySize(w, h).setAlpha(a) }
+window.__rfShadow = __rfShadow;
 function __rfRand(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296) }
 function __rfDecorate(H) {
   const A = H.anims, rnd = __rfRand(4242);
@@ -20238,8 +20250,12 @@ function __rfDecorate(H) {
   const solidAt = (x, y) => { const row = H.M.coll[Math.floor(y / g)]; return !row || row[Math.floor(x / g)] !== "0" };
   // perto de algum ponto de interação ou personagem? (não enfeitar em cima de quem se usa)
   const busy = (x, y, r = 22) => (H.inters || []).some((o) => o.area === "out" && Math.hypot(o.x - x, o.y - y) < r + 10) || Object.values(S).some((p) => Math.hypot(p[0] - x, p[1] - y) < r);
+  // desempenho: o que é chão/parede (pedrinhas, tufos, flores, hera, estandartes) vai todo para UMA textura
+  // (bake) em vez de centenas de imagens soltas; só os objetos sólidos continuam como imagens
+  const BAKE = [];
   const deco = (f, x, y, o = {}) => {
     const im = H.add.image(x, y, "rf-deco", f).setOrigin(.5, 1).setDepth(o.depth ?? y);
+    o.bake && BAKE.push(im);
     o.flip && im.setFlipX(!0); o.alpha && im.setAlpha(o.alpha); o.scale && im.setScale(o.scale);
     o.solid && block(x - o.solid[0], y - o.solid[1], x + o.solid[0], y);
     return im;
@@ -20253,26 +20269,25 @@ function __rfDecorate(H) {
     }
     return null;
   };
-  const flat = (f, x, y, a = 1) => H.add.image(x, y, "rf-deco", f).setOrigin(.5).setDepth(-5).setAlpha(a);   // no chão, atrás de tudo
+  const flat = (f, x, y, a = 1) => BAKE.push(H.add.image(x, y, "rf-deco", f).setOrigin(.5).setAlpha(a));   // no chão
 
   /* ─── muro do topo ─── */
   const WALL_Y = 58, WALL_B = 88;
   for (const x of [52, 118, 196, 262, 338, 402, 586, 650, 742, 828, 902, 968]) {
-    const k = (x * 7) % 4; deco(`ivy${k}`, x + ((x * 13) % 9) - 4, WALL_Y + [22, 30, 18, 26][k], { depth: WALL_Y + 1 });
+    const k = (x * 7) % 4; deco(`ivy${k}`, x + ((x * 13) % 9) - 4, WALL_Y + [22, 30, 18, 26][k], { bake: 1 });
   }
   for (const x of [292, 452, 572, 720]) {
-    deco("banner", x, WALL_Y + 35, { depth: WALL_Y + 2 });
+    deco("banner", x, WALL_Y + 35, { bake: 1 });
   }
   for (const x of [372, 512, 650, 860, 160]) {                                       // tochas presas no muro
-    const gq = H.add.graphics().setDepth(WALL_Y + 3);
-    gq.fillStyle(0x2a2420, 1).fillRect(x - 2, WALL_Y + 14, 4, 10).fillStyle(0x4a4038, 1).fillRect(x - 4, WALL_Y + 12, 8, 3);
+    BAKE.push({ rects: [[x - 2, WALL_Y + 14, 4, 10, "#2a2420"], [x - 4, WALL_Y + 12, 8, 3, "#4a4038"]] });
     H.add.sprite(x, WALL_Y + 13, "torch-flame", 0).play("torch-flame-burn").setOrigin(.5, 1).setDepth(WALL_Y + 4);
-    H.__glow?.(x, WALL_Y + 6, .4, 16750130, .32, 760 + (x % 7) * 60);
+    H.add.image(x, WALL_Y + 6, "light").setScale(.28).setBlendMode(j.BlendModes.ADD).setTint(16750130).setAlpha(.26).setDepth(9001);   // luz fixa (sem tween)
   }
   for (let x = 14; x < 1012; x += 22 + rnd() * 26) {                                 // a base reta do muro vira mato
     const y = WALL_B + 4 + rnd() * 5;
     if (solidAt(x, y + 6) && !solidAt(x, y + 14)) continue;
-    deco(rnd() < .78 ? `tuft${(rnd() * 14) | 0}` : `fl${1 + ((rnd() * 9) | 0)}`, x, y, { depth: WALL_B + 1, flip: rnd() < .5 });
+    deco(rnd() < .78 ? `tuft${(rnd() * 14) | 0}` : `fl${1 + ((rnd() * 9) | 0)}`, x, y, { bake: 1, flip: rnd() < .5 });
   }
 
   /* ─── praça ─── */
@@ -20286,27 +20301,49 @@ function __rfDecorate(H) {
   for (const [x, y] of M.lamps) {                                                       // canteiros nos pés dos postes
     for (let k = 0; k < 4; k++) {
       const a = (k / 4) * Math.PI * 2 + rnd(), d = 9 + rnd() * 6, fx = x + Math.cos(a) * d, fy = y + 2 + Math.sin(a) * d * .5;
-      deco(k % 2 ? `fl${1 + ((rnd() * 9) | 0)}` : `tuft${(rnd() * 14) | 0}`, fx, fy, { depth: fy - 2, flip: rnd() < .5 });
+      deco(k % 2 ? `fl${1 + ((rnd() * 9) | 0)}` : `tuft${(rnd() * 14) | 0}`, fx, fy, { bake: 1, flip: rnd() < .5 });
     }
   }
   for (let n = 0; n < 70; n++) {                                                        // pedrinhas e tufos pelo tijolo
     const x = 330 + rnd() * 380, y = 300 + rnd() * 270;
     if (solidAt(x, y) || busy(x, y, 18) || Math.hypot(x - C[0], y - C[1]) < 40) continue;
     if (grass(x, y)) continue;
-    rnd() < .6 ? flat(`peb${(rnd() * 12) | 0}`, x, y, .4) : deco(`tuft${(rnd() * 14) | 0}`, x, y, { depth: -4, alpha: .9 });
+    rnd() < .6 ? flat(`peb${(rnd() * 12) | 0}`, x, y, .4) : deco(`tuft${(rnd() * 14) | 0}`, x, y, { bake: 1, alpha: .9 });
   }
   /* ─── cantos de grama ─── */
   onGrass("log", 300, 236, { solid: [16, 6] });
   onGrass("stump-b", 930, 500, { solid: [14, 8] });
   onGrass("mush-b", 960, 560, { solid: [10, 6] });
   onGrass("stump-r", 60, 446, { solid: [10, 6] });
-  onGrass("mush", 744, 650); onGrass("mush", 300, 560, { scale: .8 });
+  onGrass("mush", 744, 650, { bake: 1 }); onGrass("mush", 300, 560, { scale: .8, bake: 1 });
   for (let n = 0; n < 60; n++) {                                                        // flores e mato espalhados na grama
     const x = 40 + rnd() * 944, y = 100 + rnd() * 580;
     if (x > 320 && x < 720 && y > 280 && y < 600) continue;
     if (solidAt(x, y) || busy(x, y, 16) || !grass(x, y)) continue;
-    deco(rnd() < .5 ? `fl${1 + ((rnd() * 9) | 0)}` : `tuft${(rnd() * 14) | 0}`, x, y, { depth: y - 3, flip: rnd() < .5 });
+    deco(rnd() < .5 ? `fl${1 + ((rnd() * 9) | 0)}` : `tuft${(rnd() * 14) | 0}`, x, y, { bake: 1, flip: rnd() < .5 });
   }
+  // desenha tudo direto NA textura do chão (canvas): nenhuma camada a mais para a placa de vídeo pintar
+  try {
+    const gImg = H.children.list.find((o) => o.texture?.key === "vh-ground");
+    const src = H.textures.get("vh-ground").getSourceImage(), atl = H.textures.get("rf-deco");
+    const cv = document.createElement("canvas"); cv.width = src.width; cv.height = src.height;
+    const c2 = cv.getContext("2d"); c2.imageSmoothingEnabled = !1; c2.drawImage(src, 0, 0);
+    for (const o of (H.__rfBake || [])) BAKE.push(o);               // a cerca de trás e os comedouros do Canto dos Pets
+    H.__rfBake = null;
+    for (const o of BAKE) {
+      if (o.rects) { for (const [x, y, w, h, col] of o.rects) { c2.fillStyle = col; c2.fillRect(x, y, w, h) } continue }
+      const fr = o.frame, sc = Math.abs(o.scaleX), w = fr.cutWidth * sc, h = fr.cutHeight * sc;
+      c2.save(); c2.globalAlpha = o.alpha; c2.translate(Math.round(o.x), Math.round(o.y));
+      o.flipX && c2.scale(-1, 1);
+      c2.drawImage(fr.source.image, fr.cutX, fr.cutY, fr.cutWidth, fr.cutHeight, Math.round(-w * o.originX), Math.round(-h * o.originY), w, h);
+      c2.restore();
+    }
+    H.textures.exists("rf-ground") && H.textures.remove("rf-ground");
+    H.textures.addCanvas("rf-ground", cv);
+    gImg?.setTexture("rf-ground");
+    H.__rfFloor = gImg;
+  } catch (e) { console.warn("[refugio] bake", e); for (const o of BAKE) o.setDepth?.(-3); BAKE.length = 0 }
+  for (const o of BAKE) o.destroy?.();
 
   /* ─── bichos ─── */
   const anim = (key, tex, a, b, fr, rep = -1) => { A.exists(key) || A.create({ key, frames: A.generateFrameNumbers(tex, { start: a, end: b }), frameRate: fr, repeat: rep }) };
@@ -20338,11 +20375,11 @@ function __rfDecorate(H) {
       });
     }
   };
-  walker("rf-sheep", "rf-sheep-walk", "rf-sheep-idle", [730, 470, 960, 600], 3, 14, .9);
+  walker("rf-sheep", "rf-sheep-walk", "rf-sheep-idle", [730, 470, 960, 600], 2, 14, .9);
   walker("rf-rabbit", "rf-rabbit-hop", "rf-rabbit-idle", [200, 190, 330, 276], 2, 34, .8);
-  walker("rf-duck", "rf-duck-idle", "rf-duck-idle", [720, 330, 960, 440], 2, 16, .8);
+  walker("rf-duck", "rf-duck-idle", "rf-duck-idle", [720, 330, 960, 440], 1, 16, .8);
   // passarinhos ciscando na praça: voam quando o herói chega perto e pousam de novo depois
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 3; i++) {
     const home = [C[0] - 90 + rnd() * 180, C[1] - 120 + rnd() * 70];
     if (solidAt(...home)) continue;
     const s = H.add.sprite(home[0], home[1], "rf-birds", 0).setOrigin(.5, 1).setScale(.75).setDepth(home[1]).play("rf-bird-peck").setFlipX(rnd() < .5);
@@ -20363,33 +20400,39 @@ function __rfDecorate(H) {
     });
   }
   // borboletas sobre os canteiros e a horta
-  for (let i = 0; i < 6; i++) {
-    const cx = [780, 860, 930, 120, 250, 700][i], cy = [170, 210, 150, 160, 380, 540][i];
+  for (let i = 0; i < 3; i++) {
+    const cx = [780, 930, 250, 700][i], cy = [170, 150, 380, 540][i];
     const s = H.add.sprite(cx, cy, "rf-butterfly", 0).setOrigin(.5).setScale(.6).setDepth(cy + 40).play("rf-bfly");
     s.setTint([0xffffff, 0xfff0a0, 0xd8b0ff][i % 3]);
     const ph = rnd() * 10;
     H.events.on("update", (t) => { if (!s.active) return; const k = t / 1000 + ph; s.setPosition(cx + Math.sin(k * .7) * 34 + Math.sin(k * 2.3) * 6, cy + Math.cos(k * .9) * 18 + Math.sin(k * 3.1) * 4); s.setFlipX(Math.cos(k * .7) < 0) });
   }
-  // vaga-lumes no entardecer
-  for (let i = 0; i < 18; i++) {
+  // vaga-lumes no entardecer: um ponto de luz pronto (textura) por vaga-lume e um único laço de atualização
+  if (!H.textures.exists("rf-ff")) { const gg = H.make.graphics({ x: 0, y: 0 }, !1); gg.fillStyle(0xe8ff80, .22).fillCircle(5, 5, 5).fillStyle(0xf8f0a0, 1).fillCircle(5, 5, 1.4); gg.generateTexture("rf-ff", 10, 10); gg.destroy() }
+  const FF = [];
+  for (let i = 0; i < 10; i++) {
     const zone = i % 3 === 0 ? [40, 100, 330, 200] : i % 3 === 1 ? [720, 440, 990, 680] : [40, 440, 330, 560];
     const x0 = zone[0] + rnd() * (zone[2] - zone[0]), y0 = zone[1] + rnd() * (zone[3] - zone[1]);
-    const f = H.add.circle(x0, y0, 1.2, 0xf8f0a0, 1).setDepth(8990).setBlendMode(j.BlendModes.ADD);
-    const gl = H.add.circle(x0, y0, 4, 0xe8ff80, .25).setDepth(8989).setBlendMode(j.BlendModes.ADD);
-    const ph = rnd() * 20;
-    H.events.on("update", (t) => {
-      if (!f.active) return;
-      const k = t / 1000 + ph, x = x0 + Math.sin(k * .4) * 20 + Math.sin(k * 1.3) * 5, y = y0 + Math.cos(k * .5) * 12;
-      const a = Math.max(0, Math.sin(k * 1.7)) ** 2;
-      f.setPosition(x, y).setAlpha(a); gl.setPosition(x, y).setAlpha(a * .35);
-    });
+    FF.push({ x0, y0, ph: rnd() * 20, o: H.add.image(x0, y0, "rf-ff").setDepth(8990).setBlendMode(j.BlendModes.ADD).setData("rfFF", 1) });
   }
+  H.__rfFF = FF;
+  let ffT = 0;
+  H.events.on("update", (t, dms) => {
+    if ((ffT += dms) < 33) return;                          // ~30 quadros por segundo bastam
+    ffT = 0;
+    for (const f of FF) {
+      if (!f.o.visible) continue;
+      const k = t / 1000 + f.ph, a = Math.max(0, Math.sin(k * 1.7)) ** 2;
+      f.o.setPosition(f.x0 + Math.sin(k * .4) * 20 + Math.sin(k * 1.3) * 5, f.y0 + Math.cos(k * .5) * 12).setAlpha(a);
+    }
+  });
   // folhas caindo das árvores das bordas
   const trees = (M.props || []).filter((p) => /^(tree|pine)/.test(p[0])).map((p) => [p[1], p[2]]);
-  trees.length && H.time.addEvent({ delay: 900, loop: !0, callback: () => {
-    if (H.area !== "out" || rnd() < .35) return;
+  trees.length && H.time.addEvent({ delay: 1400, loop: !0, callback: () => {
+    if (H.area !== "out" || rnd() < .5) return;
     const [tx, ty] = trees[(rnd() * trees.length) | 0], x = tx + (rnd() - .5) * 40, y = ty - 40 - rnd() * 30;
-    const lf = H.add.rectangle(x, y, 2, 1.5, [0x8cc060, 0xc0a040, 0x6ea048][(rnd() * 3) | 0]).setDepth(ty + 30);
+    __rfTex(H);
+    const lf = H.add.image(x, y, "rf-px").setDisplaySize(2, 1.5).setTint([0x8cc060, 0xc0a040, 0x6ea048][(rnd() * 3) | 0]).setDepth(ty + 30);
     const dx = (rnd() - .3) * 60;
     H.tweens.add({ targets: lf, y: y + 46 + rnd() * 20, x: x + dx, angle: 360 * (rnd() < .5 ? 1 : -1), duration: 2600 + rnd() * 1400, ease: "Sine.easeIn" });
     H.tweens.add({ targets: lf, alpha: 0, delay: 2200, duration: 900, onComplete: () => lf.destroy() });
@@ -20457,7 +20500,10 @@ const __RF_LAKE = { x: 70, y: 96, w: 240, h: 84 };
 function __rfLake(H) {
   if (!H.textures.exists("rf-lake")) return;
   const K = __RF_LAKE, L3 = __RF_L, A = H.anims;
-  H.add.image(K.x, K.y, "rf-lake").setOrigin(0).setDepth(-4);
+  // o lago é chão: pintado direto na textura do chão (sem camada extra)
+  const floor = H.textures.exists("rf-ground") ? H.textures.get("rf-ground") : null, fctx = floor?.getSourceImage?.()?.getContext?.("2d");
+  if (fctx) fctx.drawImage(H.textures.get("rf-lake").getSourceImage(), K.x, K.y);
+  else H.add.image(K.x, K.y, "rf-lake").setOrigin(0).setDepth(-4);
   // a água bloqueia o herói (alfa da imagem, em células de 8 px)
   for (let y = 0; y < K.h; y += 8) for (let x = 0; x < K.w; x += 8) {
     const c = H.textures.getPixel(x + 4, y + 4, "rf-lake");
@@ -20469,7 +20515,8 @@ function __rfLake(H) {
   const PX = K.x + 196;
   let yb = 0; for (let y = 0; y < K.h; y++) { const c = H.textures.getPixel(196, y, "rf-lake"); c && c.alpha > 0 && c.blue > c.red + 40 && (yb = y) }
   const PY = K.y + yb + 18;
-  H.add.image(PX, PY, "rf-pier").setOrigin(.5, 1).setDepth(K.y + K.h - 10);
+  if (fctx) { const pi = H.textures.get("rf-pier").getSourceImage(); fctx.drawImage(pi, Math.round(PX - pi.width / 2), PY - pi.height); floor.refresh?.() }
+  else H.add.image(PX, PY, "rf-pier").setOrigin(.5, 1).setDepth(K.y + K.h - 10);
   __rfCollSet(H, PX - 8, PY - 34, PX + 8, PY - 6, "0");
   // patos nadando, sapos nas vitórias-régias, ondinhas e peixes pulando
   A.exists("rf-duck-idle") || A.create({ key: "rf-duck-idle", frames: A.generateFrameNumbers("rf-duck", { start: 0, end: 3 }), frameRate: 5, repeat: -1 });
@@ -20487,14 +20534,21 @@ function __rfLake(H) {
     });
   }
   if (A.exists("rf-frog-idle")) for (const [x, y] of [[K.x + 52, K.y + 44], [K.x + 176, K.y + 32]]) H.add.sprite(x, y, "rf-frog", 0).setOrigin(.5, .7).setScale(.55).setDepth(K.y + 20).play("rf-frog-idle").setFlipX(x > K.x + 100);
-  H.time.addEvent({ delay: 700, loop: !0, callback: () => {
+  // ondinhas: 3 anéis prontos reaproveitados (nada de Graphics redesenhado a cada quadro)
+  if (!H.textures.exists("rf-ring")) { const gg = H.make.graphics({ x: 0, y: 0 }, !1); gg.lineStyle(1, 0xc8e8f8, 1).strokeEllipse(10, 5, 18, 8); gg.generateTexture("rf-ring", 20, 10); gg.destroy() }
+  const rings = [0, 1, 2].map(() => H.add.image(0, 0, "rf-ring").setDepth(K.y + 6).setVisible(!1));
+  let ri = 0;
+  H.time.addEvent({ delay: 900, loop: !0, callback: () => {
     if (H.area !== "out") return;
     const x = K.x + 30 + Math.random() * (K.w - 60), y = K.y + 20 + Math.random() * (K.h - 40);
     if (!inWater(x, y)) return;
-    const g = H.add.graphics().setDepth(K.y + 6), o = { r: 1 };
-    H.tweens.add({ targets: o, r: 9, duration: 1400, onUpdate: () => { g.clear().lineStyle(1, 0xc8e8f8, .7 * (1 - o.r / 9)).strokeEllipse(x, y, o.r * 2, o.r * .9) }, onComplete: () => g.destroy() });
+    const rg = rings[ri++ % 3];
+    H.tweens.killTweensOf(rg);
+    rg.setPosition(x, y).setScale(.1).setAlpha(.8).setVisible(!0);
+    H.tweens.add({ targets: rg, scale: 1, alpha: 0, duration: 1400, onComplete: () => rg.setVisible(!1) });
     if (Math.random() < .18) {                                 // peixe pulando
-      const f = H.add.rectangle(x, y, 4, 2, 0xd8dce8).setDepth(K.y + 40);
+      __rfTex(H);
+      const f = H.add.image(x, y, "rf-px").setTint(0xd8dce8).setDepth(K.y + 40);
       H.tweens.add({ targets: f, x: x + 14, duration: 520 });
       H.tweens.add({ targets: f, y: y - 12, duration: 260, yoyo: !0, ease: "Quad.easeOut", onComplete: () => f.destroy() });
       H.tweens.add({ targets: f, angle: 160, duration: 520 });
@@ -20565,24 +20619,33 @@ function __rfGrowth(H) {
   const { n, fin } = __rfProg(H), M = H.M;
   H.__rfStage = n;
   const lamps = M.lamps;                                       // [344,352] [680,352] [344,560] [680,560] [430,600] [594,600]
+  let bn = 0;
+  // cada varal vira uma textura do tamanho justo dele (pouca área transparente para a placa de vídeo pintar)
   const bunting = (a, b, sag, cols, lant) => {
-    const g = H.add.graphics().setDepth(Math.max(a[1], b[1]) + 60);
-    const pts = []; for (let i = 0; i <= 24; i++) { const t = i / 24; pts.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t + Math.sin(Math.PI * t) * sag]) }
+    const W = []; for (let i = 0; i <= 24; i++) { const t = i / 24; W.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t + Math.sin(Math.PI * t) * sag]) }
+    const x0 = Math.min(...W.map((p) => p[0])) - 4, y0 = Math.min(...W.map((p) => p[1])) - 2, x1 = Math.max(...W.map((p) => p[0])) + 4, y1 = Math.max(...W.map((p) => p[1])) + (lant ? 14 : 9);
+    const pts = W.map(([x, y]) => [x - x0, y - y0]);
+    const g = H.make.graphics({ x: 0, y: 0 }, !1);
     g.lineStyle(1, 0x3a2a1a, .9); g.beginPath(); g.moveTo(...pts[0]); for (const p of pts) g.lineTo(...p); g.strokePath();
     for (let i = 1; i < 24; i += 2) { const [x, y] = pts[i]; g.fillStyle(cols[(i >> 1) % cols.length], 1).fillTriangle(x - 3, y, x + 3, y, x, y + 6).lineStyle(1, 0x2a1a10, .5).strokeTriangle(x - 3, y, x + 3, y, x, y + 6) }
     if (lant) for (let i = 4; i < 24; i += 6) {
       const [x, y] = pts[i];
       g.fillStyle(0x3a2a1a, 1).fillRect(x - .5, y, 1, 3).fillStyle(0xe8742a, 1).fillEllipse(x, y + 7, 7, 8).fillStyle(0xffc860, 1).fillEllipse(x, y + 7, 3, 5);
-      H.__glow?.(x, y + 7, .22, 16750130, .35, 900 + i * 40);
+      LIT.push([x + x0, y + y0 + 7]);
     }
+    const key = "rf-bunt" + bn++;
+    H.textures.exists(key) && H.textures.remove(key);
+    g.generateTexture(key, Math.ceil(x1 - x0), Math.ceil(y1 - y0)); g.destroy();
+    H.add.image(x0, y0, key).setOrigin(0).setDepth(8400);
   };
+  const LIT = [];
   const C1 = [0xd84a3a, 0xf0c040, 0x4a9ad8, 0x68b850, 0xf0f0e0], CG = [0xe8c050, 0xf8e8a0, 0xc89830];
   if (n >= 1) bunting([lamps[0][0], lamps[0][1] - 30], [lamps[1][0], lamps[1][1] - 30], 26, fin ? CG : C1, n >= 3);
   if (n >= 2) bunting([lamps[2][0], lamps[2][1] - 30], [lamps[3][0], lamps[3][1] - 30], 22, fin ? CG : C1, n >= 3);
   if (n >= 4) bunting([lamps[4][0], lamps[4][1] - 30], [lamps[5][0], lamps[5][1] - 30], 16, fin ? CG : C1, n >= 6);
   // estátua da Guardiã (5+ regiões)
   if (n >= 5 && H.textures.exists("guardia-sp-idle")) {
-    const x = 512, y = 560, g = H.add.graphics().setDepth(y);
+    const x = 512, y = 560;
     // pedra: a Guardiã em tons de cinza (cópia dessaturada do quadro 0)
     if (!H.textures.exists("rf-statue")) {
       const fr = H.textures.getFrame("guardia-sp-idle", 0), cv = document.createElement("canvas"); cv.width = fr.cutWidth; cv.height = fr.cutHeight;
@@ -20591,16 +20654,21 @@ function __rfGrowth(H) {
       for (let i = 0; i < d.length; i += 4) { const l = d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11, v = 46 + l * .5; d[i] = v; d[i + 1] = v * .98; d[i + 2] = v * 1.04 }
       cx2.putImageData(id, 0, 0); H.textures.addCanvas("rf-statue", cv);
     }
-    g.fillStyle(0, .3).fillEllipse(x, y + 1, 30, 7);
-    g.fillStyle(0x6e6a72, 1).fillRoundedRect(x - 13, y - 12, 26, 12, 3).fillStyle(0x8e8a92, 1).fillRoundedRect(x - 11, y - 12, 22, 3, 1);
-    g.fillStyle(0x5a5660, 1).fillRoundedRect(x - 10, y - 20, 20, 9, 2);
+    if (!H.textures.exists("rf-plinth")) {                    // pedestal pronto como textura
+      const g = H.make.graphics({ x: 0, y: 0 }, !1), X = 16, Y = 22;
+      g.fillStyle(0, .3).fillEllipse(X, Y + 1, 30, 7);
+      g.fillStyle(0x6e6a72, 1).fillRoundedRect(X - 13, Y - 12, 26, 12, 3).fillStyle(0x8e8a92, 1).fillRoundedRect(X - 11, Y - 12, 22, 3, 1);
+      g.fillStyle(0x5a5660, 1).fillRoundedRect(X - 10, Y - 20, 20, 9, 2);
+      g.generateTexture("rf-plinth", 32, 26); g.destroy();
+    }
+    H.add.image(x - 16, y - 22, "rf-plinth").setOrigin(0).setDepth(y);
     H.add.image(x, y - 19, H.textures.exists("rf-statue") ? "rf-statue" : "guardia-sp-idle", 0).setOrigin(.5, 124 / 128).setScale(.6).setDepth(y + 1);
-    H.__glow?.(x, y - 40, .3, 0xfff0c8, .18, 1600);
     __rfCollSet(H, x - 14, y - 10, x + 14, y, "1");
     H.inters.push({ area: "out", id: "statue", x, y: y + 4, ay: y + 12, r: 30, label: __RF_L("ESTÁTUA DA GUARDIÃ", "GUARDIAN STATUE", "ESTATUA DE LA GUARDIANA"), desc: "", act: () => H.__say?.(x, y - 60, __RF_L("“Para quem guardou a luz enquanto o mundo escurecia.”", "“For the one who kept the light while the world went dark.”", "“Para quien guardó la luz mientras el mundo se oscurecía.”"), 3200, "#f0e6c8") });
   }
   // estandartes dourados no fim da campanha
-  if (fin) for (const o of H.children.list) o.frame?.name === "banner" && o.texture?.key === "rf-deco" && o.setTint(0xffe08a);
+  if (fin) for (const o of H.children.list) o === H.__rfFloor || (o.frame?.name === "banner" && o.texture?.key === "rf-deco" && o.setTint(0xffe08a));
+  if (fin && H.__rfFloor) for (const x of [292, 452, 572, 720]) H.add.image(x, 58 + 35, "rf-deco", "banner").setOrigin(.5, 1).setDepth(-2).setTint(0xffe08a);   // estandartes dourados por cima dos vermelhos
 }
 /* quem você ajudou vem morar no Refúgio */
 function __rfResidents(H) {
@@ -20616,7 +20684,7 @@ function __rfResidents(H) {
     const s = H.add.sprite(x, y, tex, 0).setOrigin(.5, 1).setScale(sc).setDepth(y);
     A.exists(anim) && s.play(anim);
     o.flip && s.setFlipX(!0);
-    H.add.ellipse(x, y, 18, 5, 0, .28).setDepth(y - 1);
+    __rfShadow(H, x, y, 18, 5, .28).setDepth(y - 1);
     __rfCollSet(H, x - 6, y - 6, x + 6, y, "1");
     let k = 0;
     H.inters.push({ area: "out", id: "res-" + tex, x, y: y + 2, ay: y + 12, r: 30, label: o.name, desc: "", act: () => { const l = lines[k++ % lines.length]; H.__say?.(x, y - (o.h ?? 46), l, 3000, "#fff3c4") } });
@@ -20657,21 +20725,17 @@ function __rfSky(H) {
   H.__rfNight = h < 6 || h >= 19;
   // à noite os vaga-lumes e as lanternas ficam mais fortes; de dia os vaga-lumes somem
   const day = h >= 8 && h < 17;
-  for (const o of H.children.list) if (o.type === "Arc" && o.blendMode === j.BlendModes.ADD && o.depth >= 8989 && o.depth <= 8990) o.setVisible(!day);
+  for (const f of H.__rfFF || []) f.o.setVisible(!day);
   // chuva fina: um dia em cada ~7 (fixo para o dia, para não piscar entre visitas)
   const d = new Date(), seed = d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate();
   if ((seed * 9301 + 49297) % 233280 / 233280 < .15) {
     const cam = H.cameras.main;
     sh.setAlpha(Math.max(sh.alpha, .2)).setFillStyle(0x2a3448, 1); H.__rfSkyA = sh.alpha;
-    H.time.addEvent({ delay: 40, loop: !0, callback: () => {
-      if (H.area !== "out") return;
-      const v = cam.worldView, x = v.x + Math.random() * (v.width + 60), y = v.y - 10;
-      const r = H.add.rectangle(x, y, 1, 6, 0xb8c8e8, .55).setDepth(9050).setAngle(12);
-      H.tweens.add({ targets: r, x: x - 30, y: y + v.height + 20, duration: 700, onComplete: () => {
-        r.destroy();
-        if (Math.random() < .3) { const sp = H.add.ellipse(x - 30, y + v.height + 20 - Math.random() * v.height * .6, 4, 1.5, 0xb8c8e8, .5).setDepth(-3); H.tweens.add({ targets: sp, scaleX: 2, alpha: 0, duration: 300, onComplete: () => sp.destroy() }) }
-      } });
-    } });
+    if (!H.textures.exists("rf-drop")) { const gg = H.make.graphics({ x: 0, y: 0 }, !1); gg.fillStyle(0xb8c8e8, 1).fillRect(0, 0, 1, 6); gg.generateTexture("rf-drop", 1, 6); gg.destroy() }
+    try {
+      const em = H.add.particles(0, 0, "rf-drop", { x: { min: -40, max: 520 }, y: -10, speedY: { min: 380, max: 460 }, speedX: -70, rotate: 10, lifespan: 800, quantity: 1, frequency: 45, alpha: { start: .55, end: .2 }, maxParticles: 40 }).setDepth(9050);
+      H.events.on("update", () => { const v = cam.worldView; em.setPosition(v.x, v.y); em.emitting = H.area === "out" });
+    } catch (e) {}
   }
 }
 window.__dgRefugio2 = { prog: __rfProg, sky: __rfSky };
