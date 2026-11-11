@@ -1,4 +1,17 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p209 · cache ded-web-v1.44.2)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p210 · cache ded-web-v6.3.0-cacador-dragao)
+
+P210 — CONJUNTO LENDÁRIO "CAÇADOR DE DRAGÃO" (GUERREIRO)
+· DROP EXCLUSIVO: ao derrotar o Dragão Ancião da Fortaleza dos Dragões (campanha) com o
+  Guerreiro, as 5 peças lendárias caem de uma vez: Elmo, Couraça, Botas, Escudo e Espada do
+  Caçador de Dragão. Não aparecem em loja, baú, Fenda nem no Modo Infinito.
+· BÔNUS DO CONJUNTO: 2 peças +3 de dano · 3 peças +3 de defesa e +4 de vida · 5 peças SOPRO DO DRAGÃO.
+· SOPRO DO DRAGÃO (só com as 5 peças): apertar o botão do escudo (BLOQUEIO, tecla C / botão
+  "ESCUDO" no toque / gamepad) solta um sopro de fogo em cone à frente que empurra os inimigos para
+  longe e causa dano leve. Recarga de 7 s (anel laranja sobre o herói); segurar continua bloqueando.
+· VISUAL: com o conjunto completo o Guerreiro veste a armadura de escamas de dragão (obsidiana,
+  carmesim e dourado, crista de escamas no elmo), com aura laranja. Ícones próprios das 5 peças.
+· Código em scripts/source/dragon-hunter.js (aplicar com scripts/patch_dragon_hunter.py);
+  arte gerada por scripts/build_dragon_hunter_art.py.
 
 P209.1 — AJUSTES DA XAMÃ, LOBO-GUARÁ E TRILHA SONORA DOS BIOMAS
 · XAMÃ SEM TREMEDEIRA/PULO AO PARAR: os quadros 4 e 5 da animação de espera

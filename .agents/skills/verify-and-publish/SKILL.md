@@ -37,7 +37,7 @@ node --experimental-vm-modules ".agents/skills/verify-and-publish/scripts/verify
 ```
 
 A suíte valida automaticamente:
-1. **Sintaxe ES Module de todos os bundles** (`assets/index-D6qIWtA7-p209.js` e espelho em `Projeto atualizado/`).
+1. **Sintaxe ES Module de todos os bundles** (`assets/index-D6qIWtA7-p209.js`).
 2. **Integridade de Métodos**: Detecta se algum método `this.__*` foi chamado sem estar implementado (prevenindo travamentos como o do menu de pausa).
 3. **Teste Funcional Unitário Headless**: Simula o ciclo completo de abertura, navegação, confirmação e encerramento do menu de pausa e painéis do Refúgio.
 4. **Auditoria de Recursos**: Detecta timers e loops órfãos.

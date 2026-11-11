@@ -36,6 +36,8 @@ const bundles = [
 for (const b of bundles) {
   const rel = path.relative(ROOT, b);
   if (!fs.existsSync(b)) {
+    // o espelho "Projeto atualizado/" foi removido do repositório; só o bundle principal é obrigatório
+    if (rel.startsWith('Projeto atualizado')) continue;
     logFail(`Bundle não encontrado: ${rel}`);
     continue;
   }
