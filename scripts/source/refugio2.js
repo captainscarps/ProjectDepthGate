@@ -328,6 +328,26 @@ function __rfLite(H, save) {
   H.__rfLive = [];
   if (save) try { localStorage.setItem(__RF_LITE_K, "1") } catch (e) {}
 }
+/* Painel aberto = os comandos do Refúgio ficam em espera, mas o leitor de comandos parava de ser atualizado e
+   o último "INTERAGIR" (E, A do controle, botão ! do toque) continuava valendo. Ao fechar o painel, esse aperto
+   velho — ou o próprio A/E usado para fechar — abria o painel de novo na hora (no cercado dos Pets parecia que o
+   menu tinha travado). Enquanto há painel, e no primeiro quadro depois dele, os apertos pendentes são descartados
+   e os botões do controle que já estão segurados não contam como aperto novo. */
+{
+  const U0 = Fl.prototype.update;
+  Fl.prototype.update = function () {
+    try {
+      const inp = this.game.inputManager, blocked = !!(this.panel || this.__busy);
+      if (inp && (blocked || this.__rfWasBlocked)) {
+        inp.pressed?.clear?.(); inp.keyPressedBuffer?.clear?.(); inp.touch?.pressed?.clear?.();
+        const g = inp.pad?.();
+        if (g) inp.padButtons = g.buttons.map((b) => b.pressed || b.value > .5);
+      }
+      this.__rfWasBlocked = blocked;
+    } catch (e) {}
+    return U0.apply(this, arguments);
+  };
+}
 /* Toque/mouse nos painéis do Refúgio: o painel é um container preso à tela (scrollFactor 0), mas o Phaser testa o
    clique com o scrollFactor de cada filho (1 por padrão) — com a câmera rolada e com zoom o toque caía longe do botão.
    A cada quadro, os filhos de qualquer container preso à tela herdam o scrollFactor 0 (barato: só objetos novos mudam). */
@@ -336,6 +356,16 @@ function __rfPanelInput(H) {
   const fix = (c) => { for (const o of c.list) { if (o.scrollFactorX !== c.scrollFactorX || o.scrollFactorY !== c.scrollFactorY) o.setScrollFactor(c.scrollFactorX, c.scrollFactorY); if (o.list) fix(o) } };
   const run = () => { for (const o of H.children.list) if (o.list && o.scrollFactorX !== 1) fix(o) };
   H.events.on("preupdate", run); H.events.once("shutdown", () => { H.events.off("preupdate", run); H.__rfPI = 0 });
+  /* O toque que FECHA um painel (✕ FECHAR, voltar, aba que troca de painel) seguia para o mundo: o Phaser chama o
+     botão primeiro e depois o "pointerdown" da cena — já sem painel aberto, a cena tratava como toque no chão e, com
+     o herói ao lado do cercado/vendedor, abria o mesmo painel de novo (parecia travado no menu dos Pets).
+     Se o toque caiu num objeto preso à tela (interface), a cena ignora esse toque. */
+  const I = H.input, em = I.emit;
+  I.emit = function (ev, p, over) {
+    if (ev === "pointerdown" && !H.panel && Array.isArray(over) && over.some((g) => g && g.scrollFactorX === 0)) H.__uiTap = !0;
+    return em.apply(this, arguments);
+  };
+  H.events.once("shutdown", () => { I.emit = em });
 }
 
 function __rfQuality(H) {

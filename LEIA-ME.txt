@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p210 · cache ded-web-v6.3.1-abas)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p210 · cache ded-web-v6.3.2-pets)
+
+P210.2 — TREINO DE PETS NÃO TRAVA MAIS NO REFÚGIO
+· Parado ao lado do cercado dos Pets (ou do vendedor), fechar o Treino de Pets abria o painel de novo na
+  mesma hora — parecia que o menu tinha travado. Duas causas: o toque/clique em "✕ FECHAR" seguia para o
+  mundo e contava como interagir com o cercado, e o último "interagir" (E / A do controle / botão ! do toque)
+  ficava guardado enquanto o painel estava aberto e valia de novo ao fechar. Agora os dois são descartados.
 
 P210.1 — ABAS DO LIVRO SEM SOBREPOSIÇÃO
 · A fita vermelha da aba ativa cobria o começo do nome da aba vizinha (ex.: EQUIPMENT sobre
