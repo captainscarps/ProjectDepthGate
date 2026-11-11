@@ -1,0 +1,1171 @@
+{
+ "_sobre": "Falas PT a regravar no Gemini TTS (gerado da auditoria de 11/11/2026). id = chave no voice-manifest; cls = versão do herói (byClass) ou null para o arquivo comum.",
+ "jobs": [
+  {
+   "id": "0358ee46",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Desfaça o feitiço. Agora.",
+   "out": "pt/0358ee46-BERSERKER.mp3",
+   "motivo": "Tom não medido (sussurro, grito ou efeito): conferir ouvindo"
+  },
+  {
+   "id": "34b18f19",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Voltaram… só que em outro canto. Espertos.",
+   "out": "pt/34b18f19-BERSERKER.mp3",
+   "motivo": "Tom acima do padrão (+11.4 semitons) · Tom de voz feminina/aguda em herói masculino"
+  },
+  {
+   "id": "5de361e5",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Mostre-se! Por que não aparece?",
+   "out": "pt/5de361e5-BERSERKER.mp3",
+   "motivo": "Tom acima do padrão (+10.9 semitons) · Tom de voz feminina/aguda em herói masculino"
+  },
+  {
+   "id": "7dddefcf",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Você me envenenou!",
+   "out": "pt/7dddefcf-BERSERKER.mp3",
+   "motivo": "Tom acima do padrão (+14.5 semitons) · Tom de voz feminina/aguda em herói masculino"
+  },
+  {
+   "id": "8660d473",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Quem é o senhor?",
+   "out": "pt/8660d473-BERSERKER.mp3",
+   "motivo": "Tom acima do padrão (+12.6 semitons) · Tom de voz feminina/aguda em herói masculino"
+  },
+  {
+   "id": "e86dbb72",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Conseguimos… como quando éramos crianças, lembra?",
+   "out": "pt/e86dbb72-BERSERKER.mp3",
+   "motivo": "Tom acima do padrão (+12.8 semitons) · Tom de voz feminina/aguda em herói masculino"
+  },
+  {
+   "id": "0358ee46",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Desfaça o feitiço. Agora.",
+   "out": "pt/0358ee46-WARRIOR.mp3",
+   "motivo": "Tom não medido (sussurro, grito ou efeito): conferir ouvindo"
+  },
+  {
+   "id": "5de361e5",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Mostre-se! Por que não aparece?",
+   "out": "pt/5de361e5-WARRIOR.mp3",
+   "motivo": "Tom acima do padrão (+11.1 semitons) · Tom de voz feminina/aguda em herói masculino"
+  },
+  {
+   "id": "7dddefcf",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Você me envenenou!",
+   "out": "pt/7dddefcf-ARCHER.mp3",
+   "motivo": "Tom acima do padrão (+9.8 semitons) · Tom de voz feminina/aguda em herói masculino"
+  },
+  {
+   "id": "34b18f19",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Voltaram… só que em outro canto. Espertos.",
+   "out": "pt/34b18f19-HUNTER.mp3",
+   "motivo": "Tom acima do padrão (+16.6 semitons) · Tom de voz feminina/aguda em herói masculino · Tom não medido (sussurro, grito ou efeito): conferir ouvindo"
+  },
+  {
+   "id": "6e833bf7",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "Antes eu aguentava muito mais. O que está acontecendo comigo?",
+   "out": "pt/6e833bf7-DRUID.mp3",
+   "motivo": "Tom acima do padrão (+12.6 semitons) · Tom de voz feminina/aguda em herói masculino"
+  },
+  {
+   "id": "955b8d52",
+   "cls": null,
+   "voice": "Charon",
+   "text": "A Lâmina Faminta. Fica mais forte a cada vida que toma. 60 moedas e ela é sua. Sem devoluções.",
+   "out": "pt/955b8d52.mp3",
+   "motivo": "Tom não medido (sussurro, grito ou efeito): conferir ouvindo"
+  },
+  {
+   "id": "e4fe9f52",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Hehe… alimente-a bem.",
+   "out": "pt/e4fe9f52.mp3",
+   "motivo": "Tom abaixo do padrão (-5.8 semitons) · Tom não medido (sussurro, grito ou efeito): conferir ouvindo"
+  },
+  {
+   "id": "06f113b8",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Ele prometeu salvar o reino, Elyndra.",
+   "out": "pt/06f113b8.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "14aacd83",
+   "cls": null,
+   "voice": "Orus",
+   "text": "O brasão vai em cada fechadura. É a nossa assinatura.",
+   "out": "pt/14aacd83.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "15a9f6ad",
+   "cls": null,
+   "voice": "Orus",
+   "text": "…O Rei já não é o Rei.",
+   "out": "pt/15a9f6ad.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "24a65096",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Aelric, não abra! Não sabemos o que ele é!",
+   "out": "pt/24a65096.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "26cb4b1a",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Lacrem os túmulos. Ninguém pode saber que fugimos.",
+   "out": "pt/26cb4b1a.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "461e757d",
+   "cls": null,
+   "voice": "Orus",
+   "text": "E se gente de fora vier procurar?",
+   "out": "pt/461e757d.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "51035584",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Que fiquem. Os nomes vão guardar a mentira.",
+   "out": "pt/51035584.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "6066cedd",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Guarde-o, velho amigo. Enquanto você vigiar, ele não acorda.",
+   "out": "pt/6066cedd.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "63a93b2b",
+   "cls": null,
+   "voice": "Orus",
+   "text": "E se um dia eu voltar… não me deixe passar.",
+   "out": "pt/63a93b2b.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "70aaf856",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Até ele dormir para sempre.",
+   "out": "pt/70aaf856.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "87fcebc2",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Por quanto tempo, minha rainha?",
+   "out": "pt/87fcebc2.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "baa5ba69",
+   "cls": null,
+   "voice": "Orus",
+   "text": "…Abram as portas.",
+   "out": "pt/baa5ba69.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "c88c1753",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Vigie os mortos, minha sentinela.",
+   "out": "pt/c88c1753.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "cd2d06f4",
+   "cls": null,
+   "voice": "Orus",
+   "text": "E se um de nós quiser abri-las um dia?",
+   "out": "pt/cd2d06f4.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "d14530c3",
+   "cls": null,
+   "voice": "Orus",
+   "text": "E se os portais acordarem?",
+   "out": "pt/d14530c3.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "dfd4e123",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Então que o sangue da família o impeça.",
+   "out": "pt/dfd4e123.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "e266cdf5",
+   "cls": null,
+   "voice": "Orus",
+   "text": "Congele tudo. Que nada derreta esta prisão.",
+   "out": "pt/e266cdf5.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "0e5129f2",
+   "cls": null,
+   "voice": "Vindemiatrix",
+   "text": "E os nomes gravados?",
+   "out": "pt/0e5129f2.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "48876132",
+   "cls": null,
+   "voice": "Vindemiatrix",
+   "text": "Majestade… e o Rei?",
+   "out": "pt/48876132.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "80d8af75",
+   "cls": null,
+   "voice": "Vindemiatrix",
+   "text": "É exatamente isso que eles querem.",
+   "out": "pt/80d8af75.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "b11dfc99",
+   "cls": null,
+   "voice": "Vindemiatrix",
+   "text": "Marquem as pedras. A Ordem vai precisar do caminho.",
+   "out": "pt/b11dfc99.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "b80e4c21",
+   "cls": null,
+   "voice": "Vindemiatrix",
+   "text": "O selo dorme debaixo da sumaúma. Ninguém derruba esta árvore.",
+   "out": "pt/b80e4c21.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "cda9ff63",
+   "cls": null,
+   "voice": "Vindemiatrix",
+   "text": "O Anhangá confunde o caminho deles. A mata se protege.",
+   "out": "pt/cda9ff63.mp3",
+   "motivo": "Dublador diferente (motor antigo Kokoro)"
+  },
+  {
+   "id": "1cb19678",
+   "cls": "ROGUE",
+   "voice": "Leda",
+   "text": "Alguém está construindo portais novos.",
+   "out": "pt/1cb19678-ROGUE.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de ROGUE"
+  },
+  {
+   "id": "2516f408",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Hayato… se você me seguiu até aqui, perdoe o seu irmão teimoso. Eu precisava descer sozinho.",
+   "out": "pt/2516f408-BERSERKER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de BERSERKER"
+  },
+  {
+   "id": "25c9f25a",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "No Yukon, os mineiros cavaram fundo demais numa geleira. O que saiu de lá tinha o mesmo frio deste lugar.",
+   "out": "pt/25c9f25a-HUNTER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de HUNTER"
+  },
+  {
+   "id": "2a3e2061",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "“Estas trilhas não aparecem em nenhum mapa. Como você as conhece?”",
+   "out": "pt/2a3e2061-ARCHER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de ARCHER"
+  },
+  {
+   "id": "2aa3cf23",
+   "cls": "MAGE",
+   "voice": "Kore",
+   "text": "O templo não queimava as trevas. Prendia-as. Isto não é uma porta… é uma cela.",
+   "out": "pt/2aa3cf23-MAGE.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de MAGE"
+  },
+  {
+   "id": "2b395b2d",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Meus ancestrais forjaram as fechaduras nesta lava. E juraram nunca contar por quê.",
+   "out": "pt/2b395b2d-BERSERKER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de BERSERKER"
+  },
+  {
+   "id": "483ad510",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Estas marcas na rocha… são do corte do Akihiro. Meu irmão passou por aqui.",
+   "out": "pt/483ad510-ARCHER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de ARCHER"
+  },
+  {
+   "id": "501c03e8",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Eu treinava o arco no alto de Sakurajima, contra o vento de cinzas.",
+   "out": "pt/501c03e8-ARCHER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de ARCHER"
+  },
+  {
+   "id": "5484cdea",
+   "cls": "MAGE",
+   "voice": "Kore",
+   "text": "“Seu manto tem runas dos Antigos. Isso não se compra.”",
+   "out": "pt/5484cdea-MAGE.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de MAGE"
+  },
+  {
+   "id": "5bae4e80",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Se ainda restar alguma coisa dele aqui dentro… quem vai encontrá-lo sou eu.",
+   "out": "pt/5bae4e80-WARRIOR.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de WARRIOR"
+  },
+  {
+   "id": "695e116a",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Minha família guardou a memória destes corredores por séculos. Meu ancestral, o Rei de Valdrak, abriu estes portões para salvar o nosso povo.",
+   "out": "pt/695e116a-WARRIOR.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de WARRIOR"
+  },
+  {
+   "id": "6b3eca99",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Os lobos do norte não uivam mais aqui. Alguma coisa os calou.",
+   "out": "pt/6b3eca99-HUNTER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de HUNTER"
+  },
+  {
+   "id": "73f99743",
+   "cls": "ROGUE",
+   "voice": "Leda",
+   "text": "“Quem paga as suas contas, Guardiã?”",
+   "out": "pt/73f99743-ROGUE.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de ROGUE"
+  },
+  {
+   "id": "7ef26727",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Este trono pertenceu ao meu sangue. As Profundezas não vão usá-lo como coroa.",
+   "out": "pt/7ef26727-WARRIOR.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de WARRIOR"
+  },
+  {
+   "id": "8fc2fba5",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "“Esse símbolo no seu cajado… é o brasão do meu clã.”",
+   "out": "pt/8fc2fba5-BERSERKER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de BERSERKER"
+  },
+  {
+   "id": "91ce803d",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Este não é o meu vulcão… mas a cinza tem o mesmo cheiro de casa.",
+   "out": "pt/91ce803d-ARCHER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de ARCHER"
+  },
+  {
+   "id": "94e711b0",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Neve que não derrete, vento que corta a pele… parece o Yukon. Mas o Yukon nunca teve este silêncio.",
+   "out": "pt/94e711b0-HUNTER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de HUNTER"
+  },
+  {
+   "id": "9a00de42",
+   "cls": "MAGE",
+   "voice": "Kore",
+   "text": "Os portais não são aleatórios. Formam um círculo — e este é um dos elos.",
+   "out": "pt/9a00de42-MAGE.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de MAGE"
+  },
+  {
+   "id": "9fd43e11",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Esta cinza… é a mesma que caía sobre Sakurajima. O vulcão da minha terra.",
+   "out": "pt/9fd43e11-BERSERKER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de BERSERKER"
+  },
+  {
+   "id": "a73701ab",
+   "cls": "ROGUE",
+   "voice": "Leda",
+   "text": "Pedras marcadas, barcos sem bandeira… a Ordem do Limiar é real.",
+   "out": "pt/a73701ab-ROGUE.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de ROGUE"
+  },
+  {
+   "id": "bdfc9941",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "“As feras se afastam de você. Por quê?”",
+   "out": "pt/bdfc9941-HUNTER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de HUNTER"
+  },
+  {
+   "id": "c40c6daf",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Meu clã guardava as forjas da cratera. O que atravessou o fogo até aqui?",
+   "out": "pt/c40c6daf-BERSERKER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de BERSERKER"
+  },
+  {
+   "id": "cc448887",
+   "cls": "MAGE",
+   "voice": "Kore",
+   "text": "Cresci entre as dunas de Ra-Khem. Os espelhos do templo nunca apontaram para baixo… até agora.",
+   "out": "pt/cc448887-MAGE.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de MAGE"
+  },
+  {
+   "id": "d6557bba",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "O Dragão Pálido guardava a cratera como quem guarda um portão. Sakurajima precisa saber disso.",
+   "out": "pt/d6557bba-ARCHER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de ARCHER"
+  },
+  {
+   "id": "dc0eb544",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "“Você fala como quem já esteve lá dentro.”",
+   "out": "pt/dc0eb544-WARRIOR.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de WARRIOR"
+  },
+  {
+   "id": "e59b25e1",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "“As árvores não crescem perto de você.”",
+   "out": "pt/e59b25e1-DRUID.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de DRUID"
+  },
+  {
+   "id": "f0ce0a9d",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "O Golem de Gelo não caçava. Vigiava. As feras fugiam da prisão, não dele.",
+   "out": "pt/f0ce0a9d-HUNTER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de HUNTER"
+  },
+  {
+   "id": "f632d45a",
+   "cls": "ROGUE",
+   "voice": "Leda",
+   "text": "Nasci nestas ilhas, entre contrabandistas. Conheço cada enseada — e estas marcas não estavam aqui.",
+   "out": "pt/f632d45a-ROGUE.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de ROGUE"
+  },
+  {
+   "id": "fad018c5",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "“Os mortos daqui ficam em silêncio quando você fala.”",
+   "out": "pt/fad018c5-NECROMANCER.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria · Dublador diferente (motor antigo Kokoro) → voz própria de NECROMANCER"
+  },
+  {
+   "id": "8660d473",
+   "cls": "SHAMAN",
+   "voice": "Zephyr",
+   "text": "Quem é o senhor?",
+   "out": "pt/8660d473-SHAMAN.mp3",
+   "motivo": "Araí sem versão própria"
+  },
+  {
+   "id": "9203c20c",
+   "cls": "SHAMAN",
+   "voice": "Zephyr",
+   "text": "“Os espíritos da mata sussurram o seu nome, Guardiã. E não é com carinho.”",
+   "out": "pt/9203c20c-SHAMAN.mp3",
+   "also_generic": true,
+   "motivo": "Fala de herói com voz genérica: nenhum herói tem versão própria → voz própria de SHAMAN"
+  },
+  {
+   "id": "05b10dc4",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Essa névoa… não é natural. Está fria demais.",
+   "out": "pt/05b10dc4-BERSERKER.mp3",
+   "motivo": "Tom abaixo do padrão (-5.7 semitons)"
+  },
+  {
+   "id": "47a8c4e7",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Como você sabe tudo isso? Quem é você?",
+   "out": "pt/47a8c4e7-BERSERKER.mp3",
+   "motivo": "Tom acima do padrão (+7.9 semitons)"
+  },
+  {
+   "id": "6e833bf7",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Antes eu aguentava muito mais. O que está acontecendo comigo?",
+   "out": "pt/6e833bf7-BERSERKER.mp3",
+   "motivo": "Tom acima do padrão (+8.1 semitons)"
+  },
+  {
+   "id": "b8decd05",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Cada selo me deixa mais fraco… ou é impressão minha?",
+   "out": "pt/b8decd05-BERSERKER.mp3",
+   "motivo": "Tom acima do padrão (+5.6 semitons)"
+  },
+  {
+   "id": "c3558df0",
+   "cls": "BERSERKER",
+   "voice": "Schedar",
+   "text": "Você veio. Eu sabia que viria.",
+   "out": "pt/c3558df0-BERSERKER.mp3",
+   "motivo": "Tom abaixo do padrão (-5.0 semitons)"
+  },
+  {
+   "id": "1329c0b5",
+   "cls": "SHAMAN",
+   "voice": "Zephyr",
+   "text": "Nossa, estou falando e entendendo uma língua diferente, que mágica é essa?",
+   "out": "pt/1329c0b5-SHAMAN.mp3",
+   "motivo": "Tom acima do padrão (+5.3 semitons)"
+  },
+  {
+   "id": "47a8c4e7",
+   "cls": "SHAMAN",
+   "voice": "Zephyr",
+   "text": "Como você sabe tudo isso? Quem é você?",
+   "out": "pt/47a8c4e7-SHAMAN.mp3",
+   "motivo": "Tom acima do padrão (+6.0 semitons)"
+  },
+  {
+   "id": "5da873e6",
+   "cls": "MAGE",
+   "voice": "Kore",
+   "text": "A correnteza está puxando mais forte. Preciso manobrar.",
+   "out": "pt/5da873e6-MAGE.mp3",
+   "motivo": "Tom acima do padrão (+5.1 semitons)"
+  },
+  {
+   "id": "b8decd05",
+   "cls": "MAGE",
+   "voice": "Kore",
+   "text": "Cada selo me deixa mais fraco… ou é impressão minha?",
+   "out": "pt/b8decd05-MAGE.mp3",
+   "motivo": "Tom abaixo do padrão (-4.5 semitons)"
+  },
+  {
+   "id": "01375905",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Aelric… meu ancestral. Encontrei o que restava de você. Agora a nossa linhagem pode descansar.",
+   "out": "pt/01375905-WARRIOR.mp3",
+   "motivo": "Tom abaixo do padrão (-6.4 semitons)"
+  },
+  {
+   "id": "32d6ac62",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Até os pássaros fogem… preciso aprender a andar mais leve.",
+   "out": "pt/32d6ac62-WARRIOR.mp3",
+   "motivo": "Tom abaixo do padrão (-5.3 semitons)"
+  },
+  {
+   "id": "6b629dcb",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "A floresta está sussurrando… ou é a minha cabeça?",
+   "out": "pt/6b629dcb-WARRIOR.mp3",
+   "motivo": "Tom abaixo do padrão (-5.2 semitons)"
+  },
+  {
+   "id": "7dddefcf",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Você me envenenou!",
+   "out": "pt/7dddefcf-WARRIOR.mp3",
+   "motivo": "Tom acima do padrão (+7.4 semitons)"
+  },
+  {
+   "id": "8660d473",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Quem é o senhor?",
+   "out": "pt/8660d473-WARRIOR.mp3",
+   "motivo": "Tom abaixo do padrão (-4.6 semitons)"
+  },
+  {
+   "id": "86f461e6",
+   "cls": "WARRIOR",
+   "voice": "Alnilam",
+   "text": "Outro viajante… que você encontre a paz que não achou em vida.",
+   "out": "pt/86f461e6-WARRIOR.mp3",
+   "motivo": "Tom abaixo do padrão (-5.9 semitons)"
+  },
+  {
+   "id": "0818e463",
+   "cls": null,
+   "voice": "Aoede",
+   "text": "A ordem não importa. Escolha o portal que o seu coração mandar.",
+   "out": "pt/0818e463.mp3",
+   "motivo": "Tom acima do padrão (+4.9 semitons)"
+  },
+  {
+   "id": "2bed2ecd",
+   "cls": null,
+   "voice": "Aoede",
+   "text": "“Escolha quem vai atravessar.”",
+   "out": "pt/2bed2ecd.mp3",
+   "motivo": "Tom acima do padrão (+5.0 semitons)"
+  },
+  {
+   "id": "553fad27",
+   "cls": null,
+   "voice": "Aoede",
+   "text": "Eu imploro… deixe-me viver. Deixe-me consertar o que eu fiz.",
+   "out": "pt/553fad27.mp3",
+   "motivo": "Tom acima do padrão (+5.3 semitons)"
+  },
+  {
+   "id": "6c395a9e",
+   "cls": null,
+   "voice": "Aoede",
+   "text": "Espere… por favor! Não me mate… sou eu, Elyndra.",
+   "out": "pt/6c395a9e.mp3",
+   "motivo": "Tom acima do padrão (+8.1 semitons)"
+  },
+  {
+   "id": "74e7f858",
+   "cls": null,
+   "voice": "Aoede",
+   "text": "Obrigada… Aelric… eu só queria você de volta.",
+   "out": "pt/74e7f858.mp3",
+   "motivo": "Tom acima do padrão (+6.8 semitons)"
+  },
+  {
+   "id": "ba5c428a",
+   "cls": null,
+   "voice": "Aoede",
+   "text": "Você ousa me negar? Depois de tudo que fiz por este reino?",
+   "out": "pt/ba5c428a.mp3",
+   "motivo": "Tom acima do padrão (+5.5 semitons)"
+  },
+  {
+   "id": "dc199f36",
+   "cls": null,
+   "voice": "Aoede",
+   "text": "Todos os selos… depois de tanto tempo.",
+   "out": "pt/dc199f36.mp3",
+   "motivo": "Tom acima do padrão (+5.7 semitons)"
+  },
+  {
+   "id": "05b10dc4",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Essa névoa… não é natural. Está fria demais.",
+   "out": "pt/05b10dc4-ARCHER.mp3",
+   "motivo": "Tom abaixo do padrão (-5.7 semitons)"
+  },
+  {
+   "id": "458b00a2",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Fique perto de mim. Vou te tirar daqui.",
+   "out": "pt/458b00a2-ARCHER.mp3",
+   "motivo": "Tom abaixo do padrão (-6.7 semitons)"
+  },
+  {
+   "id": "47a8c4e7",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Como você sabe tudo isso? Quem é você?",
+   "out": "pt/47a8c4e7-ARCHER.mp3",
+   "motivo": "Tom acima do padrão (+9.3 semitons)"
+  },
+  {
+   "id": "5de361e5",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Mostre-se! Por que não aparece?",
+   "out": "pt/5de361e5-ARCHER.mp3",
+   "motivo": "Tom acima do padrão (+9.2 semitons)"
+  },
+  {
+   "id": "5fc59cba",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "É a letra do meu irmão mais velho… AKIHIRO.",
+   "out": "pt/5fc59cba-ARCHER.mp3",
+   "motivo": "Tom acima do padrão (+4.9 semitons)"
+  },
+  {
+   "id": "6e833bf7",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Antes eu aguentava muito mais. O que está acontecendo comigo?",
+   "out": "pt/6e833bf7-ARCHER.mp3",
+   "motivo": "Tom acima do padrão (+8.6 semitons)"
+  },
+  {
+   "id": "8660d473",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Quem é o senhor?",
+   "out": "pt/8660d473-ARCHER.mp3",
+   "motivo": "Tom acima do padrão (+8.9 semitons)"
+  },
+  {
+   "id": "d93a3fa5",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "A mata fechou… só resta a trilha agora.",
+   "out": "pt/d93a3fa5-ARCHER.mp3",
+   "motivo": "Tom abaixo do padrão (-5.3 semitons)"
+  },
+  {
+   "id": "e86dbb72",
+   "cls": "ARCHER",
+   "voice": "Puck",
+   "text": "Conseguimos… como quando éramos crianças, lembra?",
+   "out": "pt/e86dbb72-ARCHER.mp3",
+   "motivo": "Tom acima do padrão (+7.8 semitons)"
+  },
+  {
+   "id": "05b10dc4",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Essa névoa… não é natural. Está fria demais.",
+   "out": "pt/05b10dc4-HUNTER.mp3",
+   "motivo": "Tom abaixo do padrão (-6.0 semitons)"
+  },
+  {
+   "id": "1329c0b5",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Nossa, estou falando e entendendo uma língua diferente, que mágica é essa?",
+   "out": "pt/1329c0b5-HUNTER.mp3",
+   "motivo": "Tom acima do padrão (+9.3 semitons)"
+  },
+  {
+   "id": "2cf75c4c",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Água fria… mas dá pé.",
+   "out": "pt/2cf75c4c-HUNTER.mp3",
+   "motivo": "Tom abaixo do padrão (-5.8 semitons)"
+  },
+  {
+   "id": "458b00a2",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Fique perto de mim. Vou te tirar daqui.",
+   "out": "pt/458b00a2-HUNTER.mp3",
+   "motivo": "Tom abaixo do padrão (-7.6 semitons)"
+  },
+  {
+   "id": "5de361e5",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Mostre-se! Por que não aparece?",
+   "out": "pt/5de361e5-HUNTER.mp3",
+   "motivo": "Tom acima do padrão (+7.6 semitons)"
+  },
+  {
+   "id": "6e833bf7",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Antes eu aguentava muito mais. O que está acontecendo comigo?",
+   "out": "pt/6e833bf7-HUNTER.mp3",
+   "motivo": "Tom acima do padrão (+4.6 semitons)"
+  },
+  {
+   "id": "7dddefcf",
+   "cls": "HUNTER",
+   "voice": "Algenib",
+   "text": "Você me envenenou!",
+   "out": "pt/7dddefcf-HUNTER.mp3",
+   "motivo": "Tom acima do padrão (+6.2 semitons)"
+  },
+  {
+   "id": "190b910b",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Durante séculos, contamos a mesma história.",
+   "out": "pt/190b910b.mp3",
+   "motivo": "Tom acima do padrão (+6.4 semitons)"
+  },
+  {
+   "id": "1c9188ae",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Aqui, nem os mortos descansam.",
+   "out": "pt/1c9188ae.mp3",
+   "motivo": "Tom abaixo do padrão (-8.0 semitons)"
+  },
+  {
+   "id": "21407f3d",
+   "cls": null,
+   "voice": "Charon",
+   "text": "E alguns... porque os mortos pediram que viessem.",
+   "out": "pt/21407f3d.mp3",
+   "motivo": "Tom acima do padrão (+5.6 semitons)"
+  },
+  {
+   "id": "2305e8ee",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Alguém forjou aqui algo que não queria ver aberto.",
+   "out": "pt/2305e8ee.mp3",
+   "motivo": "Tom acima do padrão (+5.5 semitons)"
+  },
+  {
+   "id": "2df21fa5",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Alguém esteve aqui antes de você — e não veio fechar portais.",
+   "out": "pt/2df21fa5.mp3",
+   "motivo": "Tom abaixo do padrão (-6.2 semitons)"
+  },
+  {
+   "id": "32737972",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Barcos sem bandeira deixaram marcas nas pedras destas ilhas.",
+   "out": "pt/32737972.mp3",
+   "motivo": "Tom abaixo do padrão (-4.9 semitons)"
+  },
+  {
+   "id": "7b22c41c",
+   "cls": null,
+   "voice": "Charon",
+   "text": "O guardião caiu.",
+   "out": "pt/7b22c41c.mp3",
+   "motivo": "Tom abaixo do padrão (-4.7 semitons)"
+  },
+  {
+   "id": "81f0a787",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Eles fugiram...",
+   "out": "pt/81f0a787.mp3",
+   "motivo": "Tom abaixo do padrão (-4.7 semitons)"
+  },
+  {
+   "id": "b37b38ea",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Dissemos que os antigos foram destruídos pelo poder que encontraram.",
+   "out": "pt/b37b38ea.mp3",
+   "motivo": "Tom acima do padrão (+5.7 semitons)"
+  },
+  {
+   "id": "b4b00416",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Este lugar não aparece em nenhum mapa.",
+   "out": "pt/b4b00416.mp3",
+   "motivo": "Tom acima do padrão (+5.2 semitons)"
+  },
+  {
+   "id": "e1ea8c57",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Até esta noite.",
+   "out": "pt/e1ea8c57.mp3",
+   "motivo": "Tom abaixo do padrão (-6.0 semitons)"
+  },
+  {
+   "id": "f5cc1d40",
+   "cls": null,
+   "voice": "Charon",
+   "text": "...e deixaram algo para trás.",
+   "out": "pt/f5cc1d40.mp3",
+   "motivo": "Tom acima do padrão (+10.7 semitons)"
+  },
+  {
+   "id": "fb368daa",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Alguns vieram em busca de respostas. Alguns, por vingança.",
+   "out": "pt/fb368daa.mp3",
+   "motivo": "Tom abaixo do padrão (-5.6 semitons)"
+  },
+  {
+   "id": "6cac7274",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Toda descida às profundezas começa onde a luz ainda toca o chão.",
+   "out": "pt/6cac7274.mp3",
+   "motivo": "Tom acima do padrão (+5.2 semitons)"
+  },
+  {
+   "id": "990e900b",
+   "cls": null,
+   "voice": "Algieba",
+   "text": "Brokk! Você trouxe ele vivo… obrigado, de verdade.",
+   "out": "pt/990e900b.mp3",
+   "motivo": "Tom abaixo do padrão (-6.7 semitons)"
+  },
+  {
+   "id": "15f14ca2",
+   "cls": null,
+   "voice": "Fenrir",
+   "text": "…alguém aí? Eu ainda… estou aqui…",
+   "out": "pt/15f14ca2.mp3",
+   "motivo": "Tom acima do padrão (+15.1 semitons)"
+  },
+  {
+   "id": "8d041623",
+   "cls": null,
+   "voice": "Fenrir",
+   "text": "Ele usa meus olhos. Minhas mãos. Mas o meu nome… ele não conseguiu levar.",
+   "out": "pt/8d041623.mp3",
+   "motivo": "Tom abaixo do padrão (-5.8 semitons)"
+  },
+  {
+   "id": "0358ee46",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "Desfaça o feitiço. Agora.",
+   "out": "pt/0358ee46-DRUID.mp3",
+   "motivo": "Tom abaixo do padrão (-8.9 semitons)"
+  },
+  {
+   "id": "05b10dc4",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "Essa névoa… não é natural. Está fria demais.",
+   "out": "pt/05b10dc4-DRUID.mp3",
+   "motivo": "Tom abaixo do padrão (-5.8 semitons)"
+  },
+  {
+   "id": "1329c0b5",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "Nossa, estou falando e entendendo uma língua diferente, que mágica é essa?",
+   "out": "pt/1329c0b5-DRUID.mp3",
+   "motivo": "Tom acima do padrão (+9.1 semitons)"
+  },
+  {
+   "id": "47a8c4e7",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "Como você sabe tudo isso? Quem é você?",
+   "out": "pt/47a8c4e7-DRUID.mp3",
+   "motivo": "Tom acima do padrão (+11.4 semitons)"
+  },
+  {
+   "id": "48fb5d34",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "Eu também sinto… como se algo me vigiasse entre as árvores.",
+   "out": "pt/48fb5d34-DRUID.mp3",
+   "motivo": "Tom acima do padrão (+5.1 semitons)"
+  },
+  {
+   "id": "79e01c91",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "Essa missão foi mais difícil do que deveria ser… o que será?",
+   "out": "pt/79e01c91-DRUID.mp3",
+   "motivo": "Tom acima do padrão (+8.7 semitons)"
+  },
+  {
+   "id": "7dddefcf",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "Você me envenenou!",
+   "out": "pt/7dddefcf-DRUID.mp3",
+   "motivo": "Tom acima do padrão (+6.2 semitons)"
+  },
+  {
+   "id": "951675a6",
+   "cls": "DRUID",
+   "voice": "Charon",
+   "text": "Me perdoe. Eu não fui rápido o bastante.",
+   "out": "pt/951675a6-DRUID.mp3",
+   "motivo": "Tom acima do padrão (+5.8 semitons)"
+  },
+  {
+   "id": "0358ee46",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Desfaça o feitiço. Agora.",
+   "out": "pt/0358ee46-NECROMANCER.mp3",
+   "motivo": "Tom abaixo do padrão (-9.1 semitons)"
+  },
+  {
+   "id": "1329c0b5",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Nossa, estou falando e entendendo uma língua diferente, que mágica é essa?",
+   "out": "pt/1329c0b5-NECROMANCER.mp3",
+   "motivo": "Tom acima do padrão (+10.6 semitons)"
+  },
+  {
+   "id": "47a8c4e7",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Como você sabe tudo isso? Quem é você?",
+   "out": "pt/47a8c4e7-NECROMANCER.mp3",
+   "motivo": "Tom acima do padrão (+9.6 semitons)"
+  },
+  {
+   "id": "5de361e5",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Mostre-se! Por que não aparece?",
+   "out": "pt/5de361e5-NECROMANCER.mp3",
+   "motivo": "Tom acima do padrão (+9.1 semitons)"
+  },
+  {
+   "id": "6e833bf7",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Antes eu aguentava muito mais. O que está acontecendo comigo?",
+   "out": "pt/6e833bf7-NECROMANCER.mp3",
+   "motivo": "Tom acima do padrão (+6.8 semitons)"
+  },
+  {
+   "id": "7dddefcf",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Você me envenenou!",
+   "out": "pt/7dddefcf-NECROMANCER.mp3",
+   "motivo": "Tom acima do padrão (+8.5 semitons)"
+  },
+  {
+   "id": "8660d473",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Quem é o senhor?",
+   "out": "pt/8660d473-NECROMANCER.mp3",
+   "motivo": "Tom acima do padrão (+6.8 semitons)"
+  },
+  {
+   "id": "b8decd05",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Cada selo me deixa mais fraco… ou é impressão minha?",
+   "out": "pt/b8decd05-NECROMANCER.mp3",
+   "motivo": "Tom acima do padrão (+5.4 semitons)"
+  },
+  {
+   "id": "be268be4",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Minhas pernas pesam como pedra… isso não é normal.",
+   "out": "pt/be268be4-NECROMANCER.mp3",
+   "motivo": "Tom acima do padrão (+4.7 semitons)"
+  },
+  {
+   "id": "ecc53c38",
+   "cls": "NECROMANCER",
+   "voice": "Enceladus",
+   "text": "Guardiões do selo… e você era um deles? Quem é você, afinal?",
+   "out": "pt/ecc53c38-NECROMANCER.mp3",
+   "motivo": "Tom acima do padrão (+4.5 semitons)"
+  },
+  {
+   "id": "a2c03a37",
+   "cls": null,
+   "voice": "Charon",
+   "text": "“Que nada derreta esta prisão”, ela sussurrou. E partiu sem olhar para trás.",
+   "out": "pt/a2c03a37.mp3",
+   "motivo": "Tom abaixo do padrão (-4.6 semitons)"
+  },
+  {
+   "id": "dd97ae2a",
+   "cls": null,
+   "voice": "Charon",
+   "text": "Os ferreiros de Valdrak forjaram as fechaduras com o próprio sangue.",
+   "out": "pt/dd97ae2a.mp3",
+   "motivo": "Tom acima do padrão (+8.5 semitons)"
+  }
+ ]
+}
