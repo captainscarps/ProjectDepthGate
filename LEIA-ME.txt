@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p210 · cache ded-web-v6.3.0-cacador-dragao)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p210 · cache ded-web-v6.3.1-abas)
+
+P210.1 — ABAS DO LIVRO SEM SOBREPOSIÇÃO
+· A fita vermelha da aba ativa cobria o começo do nome da aba vizinha (ex.: EQUIPMENT sobre
+  ATTRIBUTES). Agora sobra espaço entre as abas para a fita e, se os nomes não couberem, a fonte das
+  abas diminui por igual nas duas páginas. Conferido em português, inglês e espanhol.
 
 P210 — CONJUNTO LENDÁRIO "CAÇADOR DE DRAGÃO" (GUERREIRO)
 · DROP EXCLUSIVO: ao derrotar o Dragão Ancião da Fortaleza dos Dragões (campanha) com o

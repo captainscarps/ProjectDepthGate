@@ -441,7 +441,9 @@ function __bkTabs(C) {
   __bkTabLayout(C);
   const t = T[C.__tab];
   if (t) {
-    C.__bkRib.setVisible(!0).setSize(t.width + 34, 17).setPosition(t.x + t.width / 2, t.y + 1);
+    /* a fita não pode passar do meio do espaço até a aba vizinha (senão cobre o nome dela) */
+    const pad = Math.max(6, Math.min(17, Math.floor((C.__bkGap ?? 34) / 2) - 3));
+    C.__bkRib.setVisible(!0).setSize(t.width + pad * 2, 17).setPosition(t.x + t.width / 2, t.y + 1);
     C.root.bringToTop(C.__bkRib);
     C.root.bringToTop(t);
   }
@@ -454,13 +456,24 @@ function __bkTabLayout(C) {
   if (!B || B.single || !T?.length) return;
   if (!__bkEndless(C) && T[3] && !T[3].__bkDia) { T[3].__bkDia = 1; T[3].setText(__L3("DIÁRIO", "JOURNAL", "DIARIO")); }
   const mid = B.x + B.w / 2, nL = Math.ceil(T.length / 2);
-  const place = (arr, x0, x1) => {
-    const tot = arr.reduce((a, o) => a + o.width, 0), gap = Math.max(10, Math.min(30, (x1 - x0 - tot) / (arr.length + 1)));
-    let x = x0 + (x1 - x0 - tot - gap * (arr.length - 1)) / 2;
+  /* entre duas abas precisa sobrar espaço para a fita da aba ativa; se os nomes (inglês/espanhol) não couberem,
+     a fonte das abas diminui um ponto por vez — a mesma nas duas páginas, para não ficarem desiguais */
+  const MIN_GAP = 22, L = T.slice(0, nL), R = T.slice(nL), xL = [B.x + 16, mid - 20], xR = [mid + 20, B.x + B.w - 46];
+  const wid = arr => arr.reduce((a, o) => a + o.width, 0);
+  const fits = (arr, [x0, x1]) => wid(arr) + MIN_GAP * Math.max(0, arr.length - 1) <= x1 - x0;
+  for (const o of T) { o.__bkFs ??= parseFloat(o.style?.fontSize) || 10; o.setFontSize(o.__bkFs); }
+  for (let k = 0; k < 4 && !(fits(L, xL) && fits(R, xR)); k++)
+    for (const o of T) o.setFontSize(Math.max(7, (parseFloat(o.style.fontSize) || o.__bkFs) - 1));
+  const place = (arr, [x0, x1]) => {
+    const free = x1 - x0 - wid(arr);
+    let gap = free / (arr.length + 1);
+    if (gap < MIN_GAP) gap = Math.min(MIN_GAP, free / Math.max(1, arr.length - 1));
+    gap = Math.max(8, Math.min(30, gap));
+    let x = x0 + (x1 - x0 - wid(arr) - gap * (arr.length - 1)) / 2;
     for (const o of arr) { o.setX(Math.round(x)); x += o.width + gap; }
+    return gap;
   };
-  place(T.slice(0, nL), B.x + 22, mid - 20);
-  place(T.slice(nL), mid + 20, B.x + B.w - 46);
+  C.__bkGap = Math.min(place(L, xL), place(R, xR));
 }
 /* Diário dentro do livro: lista à esquerda (marcada quando concluída), a missão escolhida à direita */
 function __bkDiaryTab(C, on) {
