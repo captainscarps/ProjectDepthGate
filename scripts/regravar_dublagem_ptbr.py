@@ -122,11 +122,12 @@ def main():
     if only:
         jobs = [j for j in jobs if j["out"] == only]
     todo = [j for j in jobs if redo or not man["d"].get(j["id"], {}).get("rg", {}).get(j["cls"] or "_")]
+    done_before = len(jobs) - len(todo)
     lim = arg("--limite")
     if lim:
         todo = todo[:int(lim)]
     model = arg("--modelo", "gemini-2.5-flash-preview-tts")
-    print(f"{len(todo)} falas para regravar ({len(jobs) - len(todo)} já feitas) · modelo {model} · "
+    print(f"{len(todo)} falas para regravar ({done_before} já feitas) · modelo {model} · "
           f"no máximo {len(todo)} chamadas (+1 só em erro passageiro)")
     if "--executar" not in sys.argv:
         for j in todo:
