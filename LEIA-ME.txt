@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p210 · cache ded-web-v6.3.2-pets)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p211 · cache ded-web-v6.3.3-voz-br)
+
+P211 — DUBLAGEM BRASILEIRA NOVA (PARTE 1 DE 3)
+· Regravadas do zero no ElevenLabs (modelo v4, vozes brasileiras), 499 falas: Draven, Hayato, Valthor,
+  Arthelia, Seris, Araí, Guardiã, Ecos dos Antigos, Rei possuído e Rafael.
+· As 14 falas finais dos heróis (e as 4 de um herói só) ganharam português para esses seis heróis.
+  Akihiro, Kael e Tharion usam por enquanto a voz do Draven nessas falas finais, até a parte 2.
+· Partes seguintes: 2 = Akihiro, Kael, Tharion · 3 = Narrador (com Visão, vídeos e Vendedor).
+· Ferramentas: scripts/montar_refazer_eleven.py (lista), scripts/regravar_dublagem_elevenlabs.py
+  (uma chamada por fala), scripts/elevenlabs_elenco.json (vozes). Chave em .env, fora do git.
 
 P210.2 — TREINO DE PETS NÃO TRAVA MAIS NO REFÚGIO
 · Parado ao lado do cercado dos Pets (ou do vendedor), fechar o Treino de Pets abria o painel de novo na
