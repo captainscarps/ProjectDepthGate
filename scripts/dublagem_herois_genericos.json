@@ -1,0 +1,314 @@
+{
+ "jobs": [
+  {
+   "id": "1cb19678",
+   "cls": "ROGUE",
+   "voice": "ROGUE",
+   "text": "Alguém está construindo portais novos.",
+   "out": "pt/1cb19678-ROGUE.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "2516f408",
+   "cls": "BERSERKER",
+   "voice": "BERSERKER",
+   "text": "Hayato… se você me seguiu até aqui, perdoe o seu irmão teimoso. Eu precisava descer sozinho.",
+   "out": "pt/2516f408-BERSERKER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "25c9f25a",
+   "cls": "HUNTER",
+   "voice": "HUNTER",
+   "text": "No Yukon, os mineiros cavaram fundo demais numa geleira. O que saiu de lá tinha o mesmo frio deste lugar.",
+   "out": "pt/25c9f25a-HUNTER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "2a3e2061",
+   "cls": "ARCHER",
+   "voice": "ARCHER",
+   "text": "“Estas trilhas não aparecem em nenhum mapa. Como você as conhece?”",
+   "out": "pt/2a3e2061-ARCHER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "2aa3cf23",
+   "cls": "MAGE",
+   "voice": "MAGE",
+   "text": "O templo não queimava as trevas. Prendia-as. Isto não é uma porta… é uma cela.",
+   "out": "pt/2aa3cf23-MAGE.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "2b395b2d",
+   "cls": "BERSERKER",
+   "voice": "BERSERKER",
+   "text": "Meus ancestrais forjaram as fechaduras nesta lava. E juraram nunca contar por quê.",
+   "out": "pt/2b395b2d-BERSERKER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "483ad510",
+   "cls": "ARCHER",
+   "voice": "ARCHER",
+   "text": "Estas marcas na rocha… são do corte do Akihiro. Meu irmão passou por aqui.",
+   "out": "pt/483ad510-ARCHER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "501c03e8",
+   "cls": "ARCHER",
+   "voice": "ARCHER",
+   "text": "Eu treinava o arco no alto de Sakurajima, contra o vento de cinzas.",
+   "out": "pt/501c03e8-ARCHER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "5484cdea",
+   "cls": "MAGE",
+   "voice": "MAGE",
+   "text": "“Seu manto tem runas dos Antigos. Isso não se compra.”",
+   "out": "pt/5484cdea-MAGE.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "5bae4e80",
+   "cls": "WARRIOR",
+   "voice": "WARRIOR",
+   "text": "Se ainda restar alguma coisa dele aqui dentro… quem vai encontrá-lo sou eu.",
+   "out": "pt/5bae4e80-WARRIOR.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "695e116a",
+   "cls": "WARRIOR",
+   "voice": "WARRIOR",
+   "text": "Minha família guardou a memória destes corredores por séculos. Meu ancestral, o Rei de Valdrak, abriu estes portões para salvar o nosso povo.",
+   "out": "pt/695e116a-WARRIOR.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "6b3eca99",
+   "cls": "HUNTER",
+   "voice": "HUNTER",
+   "text": "Os lobos do norte não uivam mais aqui. Alguma coisa os calou.",
+   "out": "pt/6b3eca99-HUNTER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "73f99743",
+   "cls": "ROGUE",
+   "voice": "ROGUE",
+   "text": "“Quem paga as suas contas, Guardiã?”",
+   "out": "pt/73f99743-ROGUE.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "7ef26727",
+   "cls": "WARRIOR",
+   "voice": "WARRIOR",
+   "text": "Este trono pertenceu ao meu sangue. As Profundezas não vão usá-lo como coroa.",
+   "out": "pt/7ef26727-WARRIOR.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "8660d473",
+   "cls": "SHAMAN",
+   "voice": "SHAMAN",
+   "text": "Quem é o senhor?",
+   "out": "pt/8660d473-SHAMAN.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": false,
+   "parte": 4
+  },
+  {
+   "id": "8fc2fba5",
+   "cls": "BERSERKER",
+   "voice": "BERSERKER",
+   "text": "“Esse símbolo no seu cajado… é o brasão do meu clã.”",
+   "out": "pt/8fc2fba5-BERSERKER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "91ce803d",
+   "cls": "ARCHER",
+   "voice": "ARCHER",
+   "text": "Este não é o meu vulcão… mas a cinza tem o mesmo cheiro de casa.",
+   "out": "pt/91ce803d-ARCHER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "9203c20c",
+   "cls": "SHAMAN",
+   "voice": "SHAMAN",
+   "text": "“Os espíritos da mata sussurram o seu nome, Guardiã. E não é com carinho.”",
+   "out": "pt/9203c20c-SHAMAN.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "94e711b0",
+   "cls": "HUNTER",
+   "voice": "HUNTER",
+   "text": "Neve que não derrete, vento que corta a pele… parece o Yukon. Mas o Yukon nunca teve este silêncio.",
+   "out": "pt/94e711b0-HUNTER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "9a00de42",
+   "cls": "MAGE",
+   "voice": "MAGE",
+   "text": "Os portais não são aleatórios. Formam um círculo — e este é um dos elos.",
+   "out": "pt/9a00de42-MAGE.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "9fd43e11",
+   "cls": "BERSERKER",
+   "voice": "BERSERKER",
+   "text": "Esta cinza… é a mesma que caía sobre Sakurajima. O vulcão da minha terra.",
+   "out": "pt/9fd43e11-BERSERKER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "a73701ab",
+   "cls": "ROGUE",
+   "voice": "ROGUE",
+   "text": "Pedras marcadas, barcos sem bandeira… a Ordem do Limiar é real.",
+   "out": "pt/a73701ab-ROGUE.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "bdfc9941",
+   "cls": "HUNTER",
+   "voice": "HUNTER",
+   "text": "“As feras se afastam de você. Por quê?”",
+   "out": "pt/bdfc9941-HUNTER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "c40c6daf",
+   "cls": "BERSERKER",
+   "voice": "BERSERKER",
+   "text": "Meu clã guardava as forjas da cratera. O que atravessou o fogo até aqui?",
+   "out": "pt/c40c6daf-BERSERKER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "cc448887",
+   "cls": "MAGE",
+   "voice": "MAGE",
+   "text": "Cresci entre as dunas de Ra-Khem. Os espelhos do templo nunca apontaram para baixo… até agora.",
+   "out": "pt/cc448887-MAGE.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "d6557bba",
+   "cls": "ARCHER",
+   "voice": "ARCHER",
+   "text": "O Dragão Pálido guardava a cratera como quem guarda um portão. Sakurajima precisa saber disso.",
+   "out": "pt/d6557bba-ARCHER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "dc0eb544",
+   "cls": "WARRIOR",
+   "voice": "WARRIOR",
+   "text": "“Você fala como quem já esteve lá dentro.”",
+   "out": "pt/dc0eb544-WARRIOR.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "e59b25e1",
+   "cls": "DRUID",
+   "voice": "DRUID",
+   "text": "“As árvores não crescem perto de você.”",
+   "out": "pt/e59b25e1-DRUID.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "f0ce0a9d",
+   "cls": "HUNTER",
+   "voice": "HUNTER",
+   "text": "O Golem de Gelo não caçava. Vigiava. As feras fugiam da prisão, não dele.",
+   "out": "pt/f0ce0a9d-HUNTER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "f632d45a",
+   "cls": "ROGUE",
+   "voice": "ROGUE",
+   "text": "Nasci nestas ilhas, entre contrabandistas. Conheço cada enseada — e estas marcas não estavam aqui.",
+   "out": "pt/f632d45a-ROGUE.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  },
+  {
+   "id": "fad018c5",
+   "cls": "NECROMANCER",
+   "voice": "NECROMANCER",
+   "text": "“Os mortos daqui ficam em silêncio quando você fala.”",
+   "out": "pt/fad018c5-NECROMANCER.mp3",
+   "motivo": "fala pessoal de herói com voz genérica",
+   "also_generic": true,
+   "parte": 4
+  }
+ ]
+}

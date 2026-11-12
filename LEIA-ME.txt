@@ -1,10 +1,19 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p211 · cache ded-web-v6.3.3-voz-br)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p211.1 · cache ded-web-v6.3.4-voz-br)
+
+P211.1 — DUBLAGEM BRASILEIRA NOVA (PARTES 2 E 3 + FALAS PESSOAIS)
+· Parte 2: Akihiro, Kael e Tharion regravados do zero (179 falas, incluindo as falas finais).
+· Parte 3: Narrador, Visão dos cristais, Narrador dos vídeos e Vendedor (96 falas).
+· 31 falas pessoais de herói que tocavam com voz genérica (Sakurajima, Yukon, Ra-Khem, perguntas à
+  Guardiã...) agora são do herói certo, com a voz dele.
+· Os 96 áudios "genéricos" de herói (tocados quando o jogo não sabe o herói) passaram a ser cópia da voz
+  nova do herói dono da fala, sem custo extra.
+· Mantidos como estavam: Alline, Durgan, Rei (livre), Curtidor, Herbalista, Aprendiz, Ferreiro e falas
+  sem personagem identificado.
 
 P211 — DUBLAGEM BRASILEIRA NOVA (PARTE 1 DE 3)
 · Regravadas do zero no ElevenLabs (modelo v4, vozes brasileiras), 499 falas: Draven, Hayato, Valthor,
   Arthelia, Seris, Araí, Guardiã, Ecos dos Antigos, Rei possuído e Rafael.
 · As 14 falas finais dos heróis (e as 4 de um herói só) ganharam português para esses seis heróis.
-  Akihiro, Kael e Tharion usam por enquanto a voz do Draven nessas falas finais, até a parte 2.
 · Partes seguintes: 2 = Akihiro, Kael, Tharion · 3 = Narrador (com Visão, vídeos e Vendedor).
 · Ferramentas: scripts/montar_refazer_eleven.py (lista), scripts/regravar_dublagem_elevenlabs.py
   (uma chamada por fala), scripts/elevenlabs_elenco.json (vozes). Chave em .env, fora do git.
