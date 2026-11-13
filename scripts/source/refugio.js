@@ -42,7 +42,7 @@ function __rfDecorate(H) {
   // o que é só enfeite animado fica registrado aqui: no modo leve (aparelho lento) tudo isso é desligado
   const LIVE = (H.__rfLive = []);
   const keep = (o) => (LIVE.push(o), o);
-  const onU = (fn) => { onU(fn); LIVE.push({ destroy: () => H.events.off("update", fn) }) };
+  const onU = (fn) => { H.events.on("update", fn); LIVE.push({ destroy: () => H.events.off("update", fn) }) };
   H.M = Object.assign({}, H.M, { coll: H.M.coll.slice() });
   const M = H.M, g = M.g, S = M.spots;
   const block = (x0, y0, x1, y1) => {

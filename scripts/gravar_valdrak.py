@@ -26,6 +26,11 @@ VOZES = {  # vozes brasileiras da biblioteca do ElevenLabs (o mesmo timbre lê o
     "morador": "5p9IbzcK4R8rN1fpGdMF",       # Davi — amigável
     "halvard": "rnJZLKxtlBZt77uIED10",       # Sergio — grave, sênior
     "rei": CAST["Fenrir"],                   # a mesma voz do Rei possuído
+    "guardia": CAST["Aoede"],                # Elyndra = a Guardiã
+    "narrador": CAST["Charon"],              # o narrador do jogo
+    "conselheiro": "5lrBPYY4YvMbKHTo8kvZ",
+    "crianca": "iTvRNZPNPS0EiSgOCQG0",
+    "observador": "I5Mp8yDo0fn7upNW3DzQ",    # A Voz (o Observador)
 }
 CLASSES = ["WARRIOR", "BERSERKER", "ARCHER", "HUNTER", "DRUID", "NECROMANCER", "MAGE", "ROGUE", "SHAMAN"]
 
@@ -41,7 +46,7 @@ def jobs():
             v = LINES["speakers"][who]["voice"]; lid = H(pt)
             for lang, text in (("pt", pt), ("en", en)):
                 if v == "hero":
-                    for c in CLASSES: out.append(dict(id=lid, lang=lang, text=text, voice=CAST[c], cls=c, keys=(pt, en, es)))
+                    for c in (["WARRIOR"] if scene.startswith("dv_") else CLASSES): out.append(dict(id=lid, lang=lang, text=text, voice=CAST[c], cls=c, keys=(pt, en, es)))
                 else: out.append(dict(id=lid, lang=lang, text=text, voice=VOZES[v], cls=None, keys=(pt, en, es)))
     return out
 

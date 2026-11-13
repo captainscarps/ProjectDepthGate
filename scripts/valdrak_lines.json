@@ -100,6 +100,54 @@
   "hero": {
    "name": null,
    "voice": "hero"
+  },
+  "elyndra": {
+   "name": [
+    "ELYNDRA",
+    "ELYNDRA",
+    "ELYNDRA"
+   ],
+   "voice": "guardia"
+  },
+  "council": {
+   "name": [
+    "CONSELHEIRO",
+    "COUNCILLOR",
+    "CONSEJERO"
+   ],
+   "voice": "conselheiro"
+  },
+  "farmer": {
+   "name": [
+    "CAMPONÊS",
+    "PEASANT",
+    "CAMPESINO"
+   ],
+   "voice": "morador"
+  },
+  "voice": {
+   "name": [
+    "A VOZ",
+    "THE VOICE",
+    "LA VOZ"
+   ],
+   "voice": "observador"
+  },
+  "child": {
+   "name": [
+    "CRIANÇA",
+    "CHILD",
+    "NIÑA"
+   ],
+   "voice": "crianca"
+  },
+  "narrador": {
+   "name": [
+    "NARRADOR",
+    "NARRATOR",
+    "NARRADOR"
+   ],
+   "voice": "narrador"
   }
  },
  "scenes": {
@@ -412,6 +460,312 @@
     "This village… is the Refuge. The well, the square… I sleep where she was left behind.",
     "Esta aldea… es el Refugio. El pozo, la plaza… Duermo donde ella se quedó atrás."
    ]
+  ],
+  "m1_start": [
+   [
+    "narr",
+    "Começou nas minas do sul. Uma névoa fria. Quem respira não acorda.",
+    "It began in the southern mines. A cold mist. Whoever breathes it doesn't wake up.",
+    "Empezó en las minas del sur. Una niebla fría. Quien la respira no despierta."
+   ]
+  ],
+  "m1_farmer": [
+   [
+    "farmer",
+    "Majestade… as plantações morreram numa noite. Os animais também.",
+    "Your Majesty… the crops died in a single night. The animals too.",
+    "Majestad… las cosechas murieron en una noche. Los animales también."
+   ],
+   [
+    "narr",
+    "Ela para nas muralhas. Como se tivesse medo das pedras.",
+    "It stops at the walls. As if it feared the stones.",
+    "Se detiene en las murallas. Como si temiera a las piedras."
+   ]
+  ],
+  "m1_gate": [
+   [
+    "council",
+    "Majestade, os campos estão cheios de gente nos portões. Milhares.",
+    "Majesty, the fields are full of people at the gates. Thousands.",
+    "Majestad, los campos están llenos de gente en las puertas. Miles."
+   ],
+   [
+    "council",
+    "A lei é clara.",
+    "The law is clear.",
+    "La ley es clara."
+   ],
+   [
+    "narr",
+    "Eu conheço a lei. Eu tinha dezesseis anos da última vez que ela foi cumprida.",
+    "I know the law. I was sixteen the last time it was obeyed.",
+    "Conozco la ley. Tenía dieciséis años la última vez que se cumplió."
+   ],
+   [
+    "elyndra",
+    "Aelric. Olhe para mim. Há uma razão para essa lei.",
+    "Aelric. Look at me. There is a reason for that law.",
+    "Aelric. Mírame. Hay una razón para esa ley."
+   ],
+   [
+    "narr",
+    "Então me diga qual é.",
+    "Then tell me what it is.",
+    "Entonces dime cuál es."
+   ],
+   [
+    "elyndra",
+    "…Eu não posso. Jurei no dia em que virei sua rainha.",
+    "…I can't. I swore it the day I became your queen.",
+    "…No puedo. Lo juré el día en que me convertí en tu reina."
+   ],
+   [
+    "narr",
+    "Um juramento contra milhares de vidas. Você sabe o que eu jurei, Elyndra.",
+    "One oath against thousands of lives. You know what I swore, Elyndra.",
+    "Un juramento contra miles de vidas. Tú sabes lo que yo juré, Elyndra."
+   ]
+  ],
+  "m2_pray": [
+   [
+    "narr",
+    "Deuses dos Antigos. Me deem um sinal. Uma porta, um caminho, qualquer coisa.",
+    "Gods of the Ancients. Give me a sign. A door, a path, anything.",
+    "Dioses de los Antiguos. Denme una señal. Una puerta, un camino, lo que sea."
+   ],
+   [
+    "voice",
+    "…Há um caminho, rei de Valdrak.",
+    "…There is a path, king of Valdrak.",
+    "…Hay un camino, rey de Valdrak."
+   ],
+   [
+    "narr",
+    "Quem fala?",
+    "Who speaks?",
+    "¿Quién habla?"
+   ],
+   [
+    "voice",
+    "Quem ouviu um menino chorar diante de um portão fechado. Quem esperou você crescer.",
+    "One who heard a boy weep before a closed gate. One who waited for you to grow up.",
+    "Quien oyó a un niño llorar ante una puerta cerrada. Quien esperó a que crecieras."
+   ],
+   [
+    "voice",
+    "A lei é uma mentira dos Antigos. Abra os grandes portões, e a névoa vai dormir. Seu povo vai viver.",
+    "The law is a lie of the Ancients. Open the great gates, and the mist will sleep. Your people will live.",
+    "La ley es una mentira de los Antiguos. Abre las grandes puertas y la niebla dormirá. Tu pueblo vivirá."
+   ],
+   [
+    "narr",
+    "E o preço?",
+    "And the price?",
+    "¿Y el precio?"
+   ],
+   [
+    "voice",
+    "Nenhum que um bom rei não pague com prazer.",
+    "None that a good king would not gladly pay.",
+    "Ninguno que un buen rey no pague con gusto."
+   ]
+  ],
+  "m2_queen": [
+   [
+    "elyndra",
+    "Com quem você estava falando?",
+    "Who were you talking to?",
+    "¿Con quién hablabas?"
+   ],
+   [
+    "narr",
+    "Com os deuses. Eles responderam.",
+    "With the gods. They answered.",
+    "Con los dioses. Respondieron."
+   ],
+   [
+    "elyndra",
+    "Os deuses não respondem neste lugar, Aelric. Nunca responderam.",
+    "The gods don't answer in this place, Aelric. They never have.",
+    "Los dioses no responden en este lugar, Aelric. Nunca lo han hecho."
+   ]
+  ],
+  "m3_echo": [
+   [
+    "elyndra",
+    "Aelric, não abra! Não sabemos o que ele é!",
+    "Aelric, don't open it! We don't know what he is!",
+    "¡Aelric, no abras! ¡No sabemos lo que es!"
+   ],
+   [
+    "narr",
+    "Ele prometeu salvar o reino, Elyndra.",
+    "He promised to save the kingdom, Elyndra.",
+    "Prometió salvar el reino, Elyndra."
+   ],
+   [
+    "narr",
+    "…Abram as portas.",
+    "…Open the gates.",
+    "…Abran las puertas."
+   ]
+  ],
+  "m3_child": [
+   [
+    "child",
+    "Mãe… dá para respirar!",
+    "Mom… we can breathe!",
+    "Mamá… ¡se puede respirar!"
+   ]
+  ],
+  "m3_rise": [
+   [
+    "voice",
+    "Obrigado, rei de Valdrak. Trezentos anos esperando uma porta aberta.",
+    "Thank you, king of Valdrak. Three hundred years waiting for an open door.",
+    "Gracias, rey de Valdrak. Trescientos años esperando una puerta abierta."
+   ],
+   [
+    "elyndra",
+    "Feche o portão! O círculo está quebrado!",
+    "Close the gate! The circle is broken!",
+    "¡Cierra la puerta! ¡El círculo está roto!"
+   ]
+  ],
+  "m3_absorb": [
+   [
+    "narr",
+    "Não dá tempo. Ele já está passando.",
+    "There's no time. He's already coming through.",
+    "No hay tiempo. Ya está pasando."
+   ],
+   [
+    "narr",
+    "Se ele precisa de uma porta… vai ter a minha.",
+    "If he needs a door… he'll have mine.",
+    "Si necesita una puerta… tendrá la mía."
+   ]
+  ],
+  "m3_end": [
+   [
+    "narr",
+    "Elyndra… o povo?",
+    "Elyndra… the people?",
+    "Elyndra… ¿el pueblo?"
+   ],
+   [
+    "elyndra",
+    "Vivo. Todos vivos.",
+    "Alive. All of them alive.",
+    "Vivo. Todos vivos."
+   ],
+   [
+    "narr",
+    "Então eu cumpri. Vigie os portões. E se um dia eu tentar sair…",
+    "Then I kept my word. Watch the gates. And if one day I try to leave…",
+    "Entonces cumplí. Vigila las puertas. Y si un día intento salir…"
+   ],
+   [
+    "elyndra",
+    "Não peça isso.",
+    "Don't ask me that.",
+    "No me pidas eso."
+   ],
+   [
+    "narr",
+    "…não me deixe passar.",
+    "…don't let me through.",
+    "…no me dejes pasar."
+   ]
+  ],
+  "m3_hero": [
+   [
+    "hero",
+    "Ele não traiu ninguém. Ele virou a fechadura.",
+    "He didn't betray anyone. He became the lock.",
+    "No traicionó a nadie. Se convirtió en la cerradura."
+   ],
+   [
+    "hero",
+    "E ela sabia. Desde o começo, ela sabia que havia alguma coisa lá embaixo.",
+    "And she knew. From the start, she knew there was something down there.",
+    "Y ella lo sabía. Desde el principio, sabía que había algo allá abajo."
+   ]
+  ],
+  "fin_intro": [
+   [
+    "narr",
+    "Então você viu tudo. Do moinho até a última porta.",
+    "So you saw everything. From the mill to the last door.",
+    "Así que lo viste todo. Desde el molino hasta la última puerta."
+   ],
+   [
+    "narr",
+    "O povo de hoje me conhece como o rei que abriu os portões e condenou o reino.",
+    "Today's people know me as the king who opened the gates and doomed the kingdom.",
+    "El pueblo de hoy me conoce como el rey que abrió las puertas y condenó el reino."
+   ],
+   [
+    "narr",
+    "Você pode contar a eles o que viu. Ou pode deixar a lenda como está.",
+    "You can tell them what you saw. Or you can leave the legend as it is.",
+    "Puedes contarles lo que viste. O puedes dejar la leyenda como está."
+   ]
+  ],
+  "fin_truth": [
+   [
+    "narr",
+    "Então que lembrem do menino no portão, não do rei.",
+    "Then let them remember the boy at the gate, not the king.",
+    "Entonces que recuerden al niño en la puerta, no al rey."
+   ]
+  ],
+  "fin_secret": [
+   [
+    "narr",
+    "Talvez seja melhor assim. Lendas assustam o suficiente para ninguém abrir aquelas portas de novo.",
+    "Perhaps it's better this way. Legends frighten enough that no one opens those gates again.",
+    "Quizá sea mejor así. Las leyendas asustan lo suficiente para que nadie vuelva a abrir esas puertas."
+   ],
+   [
+    "narr",
+    "Leve isto. Já não é minha para usar.",
+    "Take this. It's no longer mine to wear.",
+    "Lleva esto. Ya no es mía para usarla."
+   ]
+  ],
+  "dv_dream": [
+   [
+    "hero",
+    "O sangue da família… era por isso que as fechaduras me conheciam.",
+    "The family blood… that's why the locks knew me.",
+    "La sangre de la familia… por eso las cerraduras me reconocían."
+   ]
+  ],
+  "dv_prince": [
+   [
+    "hero",
+    "Meu avô dizia que a nossa linhagem carregava uma dívida. Eu achava que era história de inverno.",
+    "My grandfather said our bloodline carried a debt. I thought it was a winter's tale.",
+    "Mi abuelo decía que nuestro linaje cargaba una deuda. Yo creía que era un cuento de invierno."
+   ]
+  ],
+  "dv_final": [
+   [
+    "hero",
+    "Aelric. Eu sou do seu sangue. Deixa eu contar a eles.",
+    "Aelric. I am of your blood. Let me tell them.",
+    "Aelric. Soy de tu sangre. Déjame contárselo."
+   ]
+  ],
+  "fin_narr": [
+   [
+    "narrador",
+    "Em Valdrak, um rei se tornou prisão para salvar o seu povo.",
+    "In Valdrak, a king became a prison to save his people.",
+    "En Valdrak, un rey se convirtió en prisión para salvar a su pueblo."
+   ]
   ]
  },
  "ui": {
@@ -524,6 +878,96 @@
    "A MEMÓRIA SE APAGA",
    "THE MEMORY FADES",
    "EL RECUERDO SE DESVANECE"
+  ],
+  "mem1": [
+   "MEMÓRIA — A NÉVOA",
+   "MEMORY — THE MIST",
+   "RECUERDO — LA NIEBLA"
+  ],
+  "mem2": [
+   "MEMÓRIA — A VOZ",
+   "MEMORY — THE VOICE",
+   "RECUERDO — LA VOZ"
+  ],
+  "mem3": [
+   "MEMÓRIA — A NOITE DAS PORTAS",
+   "MEMORY — THE NIGHT OF THE GATES",
+   "RECUERDO — LA NOCHE DE LAS PUERTAS"
+  ],
+  "memsub1": [
+   "Valdrak, anos depois · o rei Aelric",
+   "Valdrak, years later · King Aelric",
+   "Valdrak, años después · el rey Aelric"
+  ],
+  "memsub2": [
+   "O templo do deserto, onde o rei rezava",
+   "The desert temple, where the king prayed",
+   "El templo del desierto, donde el rey rezaba"
+  ],
+  "memsub3": [
+   "Os grandes portões de Valdrak",
+   "The great gates of Valdrak",
+   "Las grandes puertas de Valdrak"
+  ],
+  "o_gates2": [
+   "Vá até os portões do castelo",
+   "Go to the castle gates",
+   "Ve a las puertas del castillo"
+  ],
+  "o_mirror": [
+   "Gire os espelhos e leve a luz até o altar",
+   "Turn the mirrors and bring the light to the altar",
+   "Gira los espejos y lleva la luz al altar"
+  ],
+  "o_pray": [
+   "Reze no altar",
+   "Pray at the altar",
+   "Reza en el altar"
+  ],
+  "o_defend": [
+   "Proteja o povo das sombras",
+   "Protect the people from the shades",
+   "Protege al pueblo de las sombras"
+  ],
+  "turn": [
+   "Girar o espelho",
+   "Turn the mirror",
+   "Girar el espejo"
+  ],
+  "pray": [
+   "Rezar",
+   "Pray",
+   "Rezar"
+  ],
+  "keysK": [
+   "Mover: WASD/setas · Defender: Espaço · Atacar: J · Falar: E",
+   "Move: WASD/arrows · Guard: Space · Attack: J · Talk: E",
+   "Mover: WASD/flechas · Defender: Espacio · Atacar: J · Hablar: E"
+  ],
+  "frag": [
+   "Um novo fragmento da coroa brilha no Refúgio.",
+   "A new crown fragment glows in the Refuge.",
+   "Un nuevo fragmento de la corona brilla en el Refugio."
+  ],
+  "choiceTruth": [
+   "Contar a verdade ao povo",
+   "Tell the people the truth",
+   "Contar la verdad al pueblo"
+  ],
+  "choiceSecret": [
+   "Guardar o segredo",
+   "Keep the secret",
+   "Guardar el secreto"
+  ],
+  "crown": [
+   "COROA DE VALDRAK",
+   "CROWN OF VALDRAK",
+   "CORONA DE VALDRAK"
+  ],
+  "crownD": [
+   "Acessório lendário recebido",
+   "Legendary accessory received",
+   "Accesorio legendario recibido"
   ]
  },
  "chatter": [

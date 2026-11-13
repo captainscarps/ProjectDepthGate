@@ -1,4 +1,17 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212.7 · cache ded-web-v6.4.7-paineis)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212.8 · cache ded-web-v6.4.8-memorias)
+
+P212.8 — "O REI QUE ABRIU AS PORTAS": MEMÓRIAS DO REI, FINAL E CODEX
+· Três memórias do rei Aelric adulto, uma por visita ao Refúgio pelo portal dourado (6, 7 e 8 portais):
+  A Névoa (Valdrak cinzenta, o povo caindo diante dos portões, o conselheiro e Elyndra), A Voz (templo do deserto
+  novo: girar 3 espelhos e levar a luz do sol até o altar; a oração e a resposta do Observador) e A Noite das
+  Portas (os portões se abrem, o chão racha, sombras atacam; Elyndra luta ao lado e protege com escudo; o rei
+  absorve o Observador). No papel de rei, Espaço = defender.
+· Final no Refúgio com o Rei libertado: contar a verdade (o Narrador fecha a história) ou guardar o segredo
+  (Coroa de Valdrak, acessório lendário, entra no save). Falas extras do Draven (Guerreiro) no sonho, no Ato 3 e no final.
+· Codex: a relíquia do castelo agora conta que Aelric abriu os portões para salvar o povo (PT/EN/ES).
+· 122 falas novas no ElevenLabs (português e inglês).
+· Correção no Refúgio: a decoração animada entrava em recursão infinita (onU chamava a si mesma) desde a v6.2.2
+  e parava no meio; agora roda inteira.
 
 P212.7 — PAINÉIS DO REFÚGIO À PROVA DE TOQUE PERDIDO + PROPORÇÃO NA VALDRAK ANTIGA
 · Rede de segurança em todos os painéis do Refúgio (Treino de Pets, vendedor, forja, santuário, mural): se um
