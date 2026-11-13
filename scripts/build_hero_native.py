@@ -61,7 +61,20 @@ async def tts_phrased(text, v, path):
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-c:a", "libmp3lame", "-b:a", "64k", path], check=True)
 
 
+def eleven(text, v, path):
+    """uma chamada no ElevenLabs (repete uma vez só em erro passageiro, dentro de regravar_dublagem_elevenlabs)"""
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import regravar_dublagem_elevenlabs as R
+    body = {"text": text, "model_id": v.get("eleven_model", "eleven_v4"), "voice_settings": R.SETTINGS,
+            "language_code": v.get("eleven_lang", "en")}
+    mp3 = R.req(R.api_key(), "POST", f"/v1/text-to-speech/{v['eleven_voice']}?output_format=mp3_44100_128", body, raw=True)
+    open(path, "wb").write(mp3)
+
+
 async def tts(text, v, path):
+    if v.get("engine") == "eleven":
+        return await asyncio.get_running_loop().run_in_executor(None, eleven, text, v, path)
     import edge_tts
     proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy") or None
     for k in range(4):
@@ -137,7 +150,15 @@ def main():
         f = os.path.join(OUT, f"{hid}-{cls}.mp3")
         man["d"].setdefault(hid, {})
         man["s"].setdefault(hid, {})
-        if old.get("s", {}).get(hid, {}).get(cls) == sig and os.path.exists(f):
+        same = old.get("s", {}).get(hid, {}).get(cls) == sig
+        if v.get("engine") != "eleven" and not old.get("s", {}).get(hid, {}).get(cls) and old.get("d", {}).get(hid, {}).get(cls) is not None:
+            same = True   # áudio Edge antigo sem assinatura gravada: mantém, não regrava
+        fresh = os.environ.get("NAT_FRESH")   # arquivos ElevenLabs já gravados depois deste arquivo de referência
+        if v.get("engine") == "eleven" and fresh and os.path.exists(f) and os.path.getmtime(f) > os.path.getmtime(fresh):
+            d = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f], capture_output=True, text=True).stdout.strip()
+            man["d"][hid][cls] = round(float(d), 2); man["s"][hid][cls] = sig
+            continue
+        if same and os.path.exists(f):
             man["d"][hid][cls] = old["d"][hid][cls]
             man["s"][hid][cls] = sig
             continue
@@ -156,9 +177,14 @@ def main():
                         import re
                         nat = re.sub("[\u064B-\u0650\u0652\u0670]", "", nat)
                     try:
-                        await (tts_phrased if v.get("phrased") else tts)(nat, v, raw)
-                    except Exception:   # se o corte por frases falhar, gera a fala inteira de uma vez
-                        await tts(nat, dict(v, phrased=False), raw)
+                        await (tts_phrased if v.get("phrased") and v.get("engine") != "eleven" else tts)(nat, v, raw)
+                    except Exception as e:
+                        if v.get("engine") == "eleven":   # sem segunda tentativa: mantém o áudio antigo e segue
+                            print(f"  ERRO {cls} {hid}: {e}")
+                            if old.get("d", {}).get(hid, {}).get(cls) is not None and os.path.exists(f):
+                                man["d"][hid][cls] = old["d"][hid][cls]
+                            return
+                        await tts(nat, dict(v, phrased=False), raw)   # Edge: se o corte por frases falhar, gera a fala inteira
                     man["d"][hid][cls] = finish(raw, f)
                     man["s"][hid][cls] = sig
                     print(f"  {cls:12s} {man['d'][hid][cls]:4.1f}s  {nat[:50]}")

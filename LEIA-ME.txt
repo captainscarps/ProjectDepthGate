@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p211.1 · cache ded-web-v6.3.4-voz-br)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p211.2 · cache ded-web-v6.3.5-voz-nativa)
+
+P211.2 — LÍNGUAS NATIVAS COM A MESMA VOZ DA DUBLAGEM
+· Draven (inglês), Kael (inglês), Tharion (tcheco), Valthor (polonês), Arthelia (árabe) e Araí (nheengatu)
+  tiveram as 413 falas nativas regravadas no ElevenLabs com a mesma voz da dublagem em português.
+· Akihiro e Hayato (japonês) e Seris (francês) continuam com as vozes nativas de antes (Edge TTS).
+· scripts/hero_native_lines.json: "engine": "eleven" marca os heróis gravados no ElevenLabs.
 
 P211.1 — DUBLAGEM BRASILEIRA NOVA (PARTES 2 E 3 + FALAS PESSOAIS)
 · Parte 2: Akihiro, Kael e Tharion regravados do zero (179 falas, incluindo as falas finais).

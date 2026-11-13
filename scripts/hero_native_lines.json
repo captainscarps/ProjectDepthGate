@@ -1,12 +1,15 @@
 {
- "_about": "Falas dos heróis na língua de cada um (o jogo mostra a legenda no idioma escolhido e toca esta voz). generic = valem para qualquer herói (uma tradução por língua); own = fala de um herói só. Línguas: en (Draven, Reino Unido; Kael, Yukon/Canadá), ja (Akihiro e Hayato), cs (Tharion, República Tcheca, de origem celta boia), pl (Valthor), ar (Arthelia, Egito), fr (Seris, Seicheles), yrl (Araí, nheengatu). yrl_tts / terceiro item = grafia de pronúncia para a voz (o texto certo fica em yrl).",
+ "_about": "Falas dos heróis na língua de cada um (o jogo mostra a legenda no idioma escolhido e toca esta voz). generic = valem para qualquer herói (uma tradução por língua); own = fala de um herói só. Línguas: en (Draven, Reino Unido; Kael, Yukon/Canadá), ja (Akihiro e Hayato), cs (Tharion, República Tcheca, de origem celta boia), pl (Valthor), ar (Arthelia, Egito), fr (Seris, Seicheles), yrl (Araí, nheengatu). yrl_tts / terceiro item = grafia de pronúncia para a voz (o texto certo fica em yrl). engine \"eleven\" = gravado no ElevenLabs (eleven_v4) com a mesma voz da dublagem em português; sem engine = Edge TTS.",
  "voices": {
   "WARRIOR": {
    "lang": "en",
    "voice": "en-GB-RyanNeural",
    "rate": "-4%",
    "pitch": "-2Hz",
-   "phrased": true
+   "phrased": true,
+   "engine": "eleven",
+   "eleven_voice": "jkiD8IhCU1i2V7VvmNwi",
+   "eleven_lang": "en"
   },
   "BERSERKER": {
    "lang": "ja",
@@ -28,7 +31,10 @@
    "voice": "en-US-ChristopherNeural",
    "rate": "-6%",
    "pitch": "-4Hz",
-   "phrased": true
+   "phrased": true,
+   "engine": "eleven",
+   "eleven_voice": "h96v1HCJtcisNNeagp0R",
+   "eleven_lang": "en"
   },
   "DRUID": {
    "lang": "cs",
@@ -36,14 +42,20 @@
    "rate": "-6%",
    "pitch": "-4Hz",
    "phrased": true,
-   "_nota": "a voz tcheca nativa (cs-CZ-AntoninNeural) estava fora do ar no serviço; a multilíngue lê o tcheco"
+   "_nota": "a voz tcheca nativa (cs-CZ-AntoninNeural) estava fora do ar no serviço; a multilíngue lê o tcheco",
+   "engine": "eleven",
+   "eleven_voice": "X3j2R63Qu4Gdv6dsU2hB",
+   "eleven_lang": "cs"
   },
   "NECROMANCER": {
    "lang": "pl",
    "voice": "pl-PL-MarekNeural",
    "rate": "-8%",
    "pitch": "-8Hz",
-   "phrased": true
+   "phrased": true,
+   "engine": "eleven",
+   "eleven_voice": "EeTjZnu1OfgjhGKT6ywY",
+   "eleven_lang": "pl"
   },
   "MAGE": {
    "lang": "ar",
@@ -51,7 +63,10 @@
    "rate": "-4%",
    "pitch": "+0Hz",
    "plain": true,
-   "_nota": "frase inteira (sem cortes) e sem as vogais curtas marcadas: a voz escolhe a pronúncia natural; a shadda fica"
+   "_nota": "frase inteira (sem cortes) e sem as vogais curtas marcadas: a voz escolhe a pronúncia natural; a shadda fica",
+   "engine": "eleven",
+   "eleven_voice": "oqUwsXKac3MSo4E51ySV",
+   "eleven_lang": "ar"
   },
   "ROGUE": {
    "lang": "fr",
@@ -65,7 +80,10 @@
    "voice": "pt-BR-ThalitaMultilingualNeural",
    "rate": "+0%",
    "pitch": "+0Hz",
-   "phrased": true
+   "phrased": true,
+   "engine": "eleven",
+   "eleven_voice": "UZ8QqWVrz7tMdxiglcLh",
+   "eleven_lang": "pt"
   }
  },
  "generic": [
