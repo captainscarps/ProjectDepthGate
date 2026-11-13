@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212.9 · cache ded-web-v6.4.9-doca)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p213.0 · cache ded-web-v6.5.0-praia)
+
+P213.0 — REFÚGIO: PRAIA DE VERDADE, ENTRADA DA DOCA E ANDAR NO RASO
+· Praia refeita: borda da grama serrilhada com tufinhos, areia seca com grão, areia molhada perto da água, linha
+  de espuma, raso esverdeado que escurece em degraus pontilhados até o fundo, conchas, pedrinhas e gravetos.
+· Entrada da doca livre: o caminho de tijolo termina na areia e o píer tem passagem larga (os caixotes do canto
+  saíram e o tubarão foi para a areia, como pesca do dia).
+· Dá para andar no raso: o herói fica mais lento quanto mais fundo, com a água pelas pernas, ondinhas, respingos,
+  splash ao entrar e passos molhados (sons do barco do prólogo). Mais fundo não passa.
+· Espuma indo e voltando na beira e som de mar (ondas sintetizadas) que cresce conforme chega perto da praia.
+· A grade da doca agora mede os pés do herói (no Refúgio a posição dele fica na cintura).
 
 P212.9 — REFÚGIO: A DOCA (SETOR ABERTO PARA O MAR)
 · O Refúgio cresceu para o sul (704 → 1120 px): um caminho de tijolo sai da praça ao lado do portal, desce pela
