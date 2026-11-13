@@ -1,4 +1,18 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p213.5 · cache ded-web-v6.5.5-caminhos)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.0 · cache ded-web-v6.6.0-pesca)
+
+P214.0 — PESCA NO MAR (DOCA DO REFÚGIO) · ETAPA 1
+· Três pontos de pesca marcados por ondinhas na água: ponta do píer, escada do barco e o ponto fundo (fim da
+  ponte). Aperte para jogar a linha, espere a boia afundar e aperte quando aparecer o "!".
+· Barra de puxar: segure (toque/clique em qualquer lugar, Espaço/E/Enter ou A do controle) para subir a faixa
+  verde e manter o peixe dentro; a barra de captura enche com o peixe na faixa e esvazia quando ele escapa.
+  Peixes mais fortes se debatem mais e a faixa é menor. Puxar cedo demais ou demorar no "!" perde o peixe.
+· 10 espécies (pacote "Fishing and Gathering"): Sardinha, Robalo, Pescada, Peixe-palhaço, Garoupa, Peixe-anjo,
+  Aleta-noturna (só à noite, pelo relógio do aparelho), Carpa-koi (só de manhã), Barracuda e Espadarte
+  (lendário) — esses dois só no ponto fundo. Tamanho sorteado em cm, recorde por espécie.
+· Diário de Pesca na porta da casa do pescador: silhueta e dica dos que faltam, maior tamanho e quantidade dos
+  pescados. Completar o diário dá 500 de ouro (fragmentos no modo infinito).
+· Os peixes ficam no cesto para a etapa 2 (vender para a Maria e o Farias cozinhar pratos com bônus).
+· Correção: o E chama a interação duas vezes no mesmo toque; a pesca e o diário ignoram a segunda chamada.
 
 P213.5 — CAMINHO DA DOCA E GATO DA FORJA
 · O caminho de tijolo até a doca agora nasce de dentro da praça (sem o corte reto na grama), com borda
