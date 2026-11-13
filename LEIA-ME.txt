@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212.8 · cache ded-web-v6.4.8-memorias)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212.9 · cache ded-web-v6.4.9-doca)
+
+P212.9 — REFÚGIO: A DOCA (SETOR ABERTO PARA O MAR)
+· O Refúgio cresceu para o sul (704 → 1120 px): um caminho de tijolo sai da praça ao lado do portal, desce pela
+  grama até a margem e chega a uma doca de pesca sobre o mar — casa do pescador, rede, tubarão pendurado, caixotes,
+  barris, cestos de peixe, varal, ponte para um segundo píer, escada até o barco à vela, botes amarrados.
+· Só o cenário e os peixes do pacote CraftPix "2D Pixel Fishing Village"; os personagens dele ficaram de fora.
+· Objetos com profundidade (o herói passa atrás e na frente), colisão na água e nos objetos, peixes pulando,
+  brilho na água e o nome DOCA. Gerado por scripts/build_refugio_dock.py.
+· O sonho do arco do príncipe mostra só a parte de cima do chão do Refúgio (como antes).
 
 P212.8 — "O REI QUE ABRIU AS PORTAS": MEMÓRIAS DO REI, FINAL E CODEX
 · Três memórias do rei Aelric adulto, uma por visita ao Refúgio pelo portal dourado (6, 7 e 8 portais):

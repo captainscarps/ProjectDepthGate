@@ -633,7 +633,7 @@ class __ValdrakAntiga extends j.Scene {
     const S = this, cam = S.cameras.main;
     S.textures.exists("vh-ground") ? 0 : 0;
     const go = () => {
-      const im = S.add.image(cam.width / 2, cam.height / 2, S.textures.exists("vh-ground") ? "vh-ground" : "vk-ground").setDisplaySize(cam.width, cam.height).setAlpha(0);
+      const im = S.add.image(cam.width / 2, cam.height / 2, S.textures.exists("vh-ground") ? "vh-ground" : "vk-ground", S.textures.exists("vh-ground") ? (S.textures.get("vh-ground").has("top") || S.textures.get("vh-ground").add("top", 0, 0, 0, 1024, 704), "top") : undefined).setDisplaySize(cam.width, cam.height).setAlpha(0);
       S.ui.add(im); S.ui.sendToBack(im); cam.fadeIn(1200);
       S.tweens.add({ targets: im, alpha: 1, duration: 1800, onComplete: () => S.say("a3_reveal", () => __vDv(S, "dv_prince", () => S.finish())) });
     };
