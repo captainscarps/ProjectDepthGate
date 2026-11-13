@@ -17,14 +17,20 @@
    "rate": "-8%",
    "pitch": "-12Hz",
    "natkey": "ja_b",
-   "phrased": true
+   "phrased": true,
+   "engine": "eleven",
+   "eleven_voice": "7i7dgyCkKt4c16dLtwT3",
+   "eleven_lang": "ja"
   },
   "ARCHER": {
    "lang": "ja",
    "voice": "ja-JP-KeitaNeural",
    "rate": "+2%",
    "pitch": "+6Hz",
-   "phrased": true
+   "phrased": true,
+   "engine": "eleven",
+   "eleven_voice": "WFSxKvz27RguNRD3Phoq",
+   "eleven_lang": "ja"
   },
   "HUNTER": {
    "lang": "en",
@@ -73,7 +79,10 @@
    "voice": "fr-FR-DeniseNeural",
    "rate": "+2%",
    "pitch": "+0Hz",
-   "phrased": true
+   "phrased": true,
+   "engine": "eleven",
+   "eleven_voice": "GDzHdQOi6jjf8zaXhCYD",
+   "eleven_lang": "fr"
   },
   "SHAMAN": {
    "lang": "yrl",
@@ -891,8 +900,7 @@
    "ar": "مهلاً… هذه لغتي أنا. لقد زال سحرُ الحارسة.",
    "fr": "Attends… c'est ma propre langue. La magie de la Gardienne a disparu.",
    "yrl": "Asaru… kuá se nheẽnga tee. Mukameẽsara pusanga ukanhemu ana.",
-   "yrl_tts": "Assáru… cuá se nhênga teê. Mucamenssára pussanga ucanhêmu ana.",
-   "_nota": "BERSERKER, ARCHER e ROGUE desta fala foram gravados no ElevenLabs (Edge bloqueado na rede); o build mantém o arquivo."
+   "yrl_tts": "Assáru… cuá se nhênga teê. Mucamenssára pussanga ucanhêmu ana."
   }
  ],
  "own": {

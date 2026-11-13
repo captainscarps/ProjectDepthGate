@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p211.3 · cache ded-web-v6.3.7-epilogo-nativo)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p211.4 · cache ded-web-v6.3.8-nativas-eleven)
+
+P211.4 — TODAS AS LÍNGUAS NATIVAS COM A VOZ DA DUBLAGEM
+· Akihiro e Hayato (japonês) e Seris (francês) também tiveram as falas nativas regravadas no ElevenLabs
+  (211 falas). Agora os 9 heróis têm a mesma voz na língua nativa e em português; o Edge TTS não é
+  mais usado nas vozes dos heróis.
 
 P211.3 — NO CAMINHO DE VOLTA, CADA HERÓI VOLTA A FALAR A PRÓPRIA LÍNGUA
 · Na volta de barco do fim do jogo a magia da Guardiã se desfaz: as falas finais tocam na língua nativa
