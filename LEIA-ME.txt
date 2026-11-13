@@ -1,4 +1,18 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p211.4 · cache ded-web-v6.3.8-nativas-eleven)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212 · cache ded-web-v6.4.0-valdrak)
+
+P212 — MISSÃO "O REI QUE ABRIU AS PORTAS" (PARTE 1: O PRÍNCIPE DE VALDRAK)
+· Com metade dos selos, ao chegar no Refúgio o herói sonha com a voz do Rei e acorda com um fragmento da
+  coroa; um portal dourado (Eco de Valdrak) aparece ao lado da fogueira.
+· O portal leva à Valdrak de trezentos anos atrás (onde hoje fica o Refúgio). Você joga com o príncipe
+  Aelric: Ato I (moinho, riacho com pulo, o menino Tico, a lei dos portões contada por Bram), Ato II (cerco
+  dos Corvos de Ferro: levar 4 moradores ao poço e vencer o chefe) e Ato III (os portões fechados, a corda
+  e o juramento). Teclado, controle e toque.
+· Dublagem PT/EN no ElevenLabs (140 gravações). Roteiro completo em docs/roteiro-o-rei-que-abriu-as-portas.md.
+· Arquivos: scripts/source/valdrak.js, scripts/valdrak_lines.json, scripts/patch_valdrak.py,
+  scripts/build_valdrak_map.py, scripts/build_valdrak_sprites.py, scripts/gravar_valdrak.py,
+  assets/pixel-art/valdrak/. Cenário dos pacotes de vila, taberna e fazenda (sem os personagens da taberna).
+· Ainda a fazer: as 3 memórias do Rei adulto (Névoa, Voz, Noite das Portas), o final com a escolha,
+  as falas extras do Draven e o texto novo do Codex.
 
 P211.4 — TODAS AS LÍNGUAS NATIVAS COM A VOZ DA DUBLAGEM
 · Akihiro e Hayato (japonês) e Seris (francês) também tiveram as falas nativas regravadas no ElevenLabs

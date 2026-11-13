@@ -1,0 +1,124 @@
+{
+ "_about": "Falas da missão 'O Rei que Abriu as Portas' (arco do príncipe). who = quem fala (ver speakers). pt/en/es = texto exibido; a dublagem usa pt e en. O patch embute este arquivo em scripts/source/valdrak.js.",
+ "speakers": {
+  "aelric": {"name": ["AELRIC", "AELRIC", "AELRIC"], "voice": "aelric_jovem"},
+  "mira": {"name": ["MIRA", "MIRA", "MIRA"], "voice": "mira"},
+  "baker": {"name": ["PADEIRA", "BAKER", "PANADERA"], "voice": "padeira"},
+  "smith": {"name": ["FERREIRO", "BLACKSMITH", "HERRERO"], "voice": "ferreiro_v"},
+  "mom": {"name": ["MÃE DE TICO", "TICO'S MOTHER", "MADRE DE TICO"], "voice": "mae"},
+  "tico": {"name": ["TICO", "TICO", "TICO"], "voice": "tico"},
+  "bram": {"name": ["BRAM", "BRAM", "BRAM"], "voice": "bram"},
+  "chief": {"name": ["CHEFE DOS CORVOS", "CROW CHIEF", "JEFE DE LOS CUERVOS"], "voice": "corvo"},
+  "villager": {"name": ["MORADOR", "VILLAGER", "ALDEANO"], "voice": "morador"},
+  "halvard": {"name": ["REI HALVARD", "KING HALVARD", "REY HALVARD"], "voice": "halvard"},
+  "narr": {"name": ["AELRIC", "AELRIC", "AELRIC"], "voice": "rei"},
+  "king": {"name": ["O REI", "THE KING", "EL REY"], "voice": "rei"},
+  "hero": {"name": null, "voice": "hero"}
+ },
+ "scenes": {
+  "dream": [
+   ["king", "…alguém aí? Eu ainda… estou aqui…", "…is anyone there? I'm still… here…", "…¿hay alguien ahí? Todavía… estoy aquí…"],
+   ["king", "Ela diz que eu traí o meu povo. Venha ver com os próprios olhos.", "She says I betrayed my people. Come and see with your own eyes.", "Ella dice que traicioné a mi pueblo. Ven a verlo con tus propios ojos."],
+   ["king", "Comece por onde eu comecei. Por Valdrak… antes da névoa.", "Start where I started. With Valdrak… before the mist.", "Empieza por donde yo empecé. Por Valdrak… antes de la niebla."],
+   ["hero", "Um pedaço de coroa… Estava na minha mão quando acordei.", "A piece of a crown… It was in my hand when I woke up.", "Un pedazo de corona… Estaba en mi mano cuando desperté."],
+   ["hero", "A Guardiã mandou não dar ouvidos. Mas ninguém sonha com um objeto e acorda segurando ele.", "The Guardian told me not to listen. But nobody dreams of something and wakes up holding it.", "La Guardiana me dijo que no escuchara. Pero nadie sueña con un objeto y despierta sosteniéndolo."]
+  ],
+  "a1_intro": [
+   ["mira", "Aelric! Você fugiu de novo? Se o seu pai descobre…", "Aelric! You snuck out again? If your father finds out…", "¡Aelric! ¿Te escapaste otra vez? Si tu padre se entera…"],
+   ["aelric", "Ele não vai descobrir. É dia de festa, Mira. Até os guardas estão bêbados.", "He won't find out. It's a feast day, Mira. Even the guards are drunk.", "No se va a enterar. Es día de fiesta, Mira. Hasta los guardias están borrachos."],
+   ["mira", "Então prova que é príncipe: o meu pai precisa de ajuda no moinho e eu não alcanço a trava.", "Then prove you're a prince: my father needs help at the mill and I can't reach the latch.", "Entonces demuestra que eres príncipe: mi padre necesita ayuda en el molino y no alcanzo el cerrojo."]
+  ],
+  "a1_mill": [
+   ["mira", "Viu? Um dia você vai ser um bom rei. Pelo menos para moinhos.", "See? Someday you'll be a good king. For mills, at least.", "¿Ves? Algún día serás un buen rey. Por lo menos para molinos."],
+   ["mira", "Vai, a vila inteira está na praça. Eu te encontro lá!", "Go on, the whole village is at the square. I'll meet you there!", "¡Ve, todo el pueblo está en la plaza. Te veo allí!"]
+  ],
+  "a1_baker": [
+   ["baker", "Alteza? Aqui fora? Pegue um pão, por favor… e não conte ao rei que eu deixei.", "Your Highness? Out here? Take some bread, please… and don't tell the king I let you.", "¿Alteza? ¿Aquí afuera? Tome un pan, por favor… y no le diga al rey que lo dejé."]
+  ],
+  "a1_smith": [
+   ["smith", "A ponte do riacho caiu de novo. Se alguém atravessar pelas pedras, eu mando as tábuas.", "The creek bridge fell again. If someone crosses on the stones, I'll send the planks over.", "El puente del arroyo se cayó otra vez. Si alguien cruza por las piedras, le paso las tablas."]
+  ],
+  "a1_smith_done": [
+   ["smith", "Pulou feito um cabrito! Pegue as tábuas — amanhã a ponte está de pé.", "Jumped like a goat! Take the planks — the bridge will be up by tomorrow.", "¡Saltó como un cabrito! Llévese las tablas: mañana el puente estará en pie."]
+  ],
+  "a1_mom": [
+   ["mom", "O meu Tico sumiu no meio da festa! Alguém viu um menino deste tamanho?", "My Tico disappeared in the middle of the feast! Has anyone seen a boy this tall?", "¡Mi Tico desapareció en medio de la fiesta! ¿Alguien vio a un niño de este tamaño?"]
+  ],
+  "a1_tico": [
+   ["tico", "Shh! Estou me escondendo dos Corvos de Ferro! …É de mentira. Mas eles são de verdade?", "Shh! I'm hiding from the Iron Crows! …It's pretend. But are they real?", "¡Shh! ¡Me escondo de los Cuervos de Hierro! …Es de mentira. ¿Pero existen de verdad?"],
+   ["aelric", "São só histórias, Tico. Vem, a sua mãe está preocupada.", "They're just stories, Tico. Come on, your mother is worried.", "Son solo historias, Tico. Ven, tu madre está preocupada."]
+  ],
+  "a1_mom_done": [
+   ["mom", "Que os deuses guardem você, menino. O povo nunca vê ninguém do castelo aqui embaixo.", "May the gods keep you, boy. Folk never see anyone from the castle down here.", "Que los dioses lo guarden, muchacho. El pueblo nunca ve a nadie del castillo aquí abajo."],
+   ["aelric", "Pois deveria.", "Well, they should.", "Pues deberían."]
+  ],
+  "a1_tavern": [
+   ["bram", "Ora, o principezinho. Sente. Já ouviu a história dos grandes portões?", "Well, the little prince. Sit down. Ever heard the story of the great gates?", "Vaya, el principito. Siéntese. ¿Ya oyó la historia de las grandes puertas?"],
+   ["aelric", "Que nunca se abrem. Todo mundo sabe.", "That they never open. Everybody knows.", "Que nunca se abren. Todo el mundo lo sabe."],
+   ["bram", "Todo mundo sabe o \"nunca\". Ninguém sabe o \"porquê\". Os Antigos construíram o castelo e deixaram uma única lei.", "Everybody knows the \"never\". Nobody knows the \"why\". The Ancients built the castle and left a single law.", "Todos saben el \"nunca\". Nadie sabe el \"porqué\". Los Antiguos construyeron el castillo y dejaron una sola ley."],
+   ["bram", "Nem em guerra, nem em fome, nem em festa. Os grandes portões não se abrem.", "Not in war, not in famine, not on a feast day. The great gates do not open.", "Ni en guerra, ni en hambruna, ni en fiesta. Las grandes puertas no se abren."],
+   ["aelric", "E se o povo precisar entrar?", "And if the people need to get in?", "¿Y si el pueblo necesita entrar?"],
+   ["bram", "Então o povo reza, menino. Como sempre rezou.", "Then the people pray, boy. As they always have.", "Entonces el pueblo reza, muchacho. Como siempre ha rezado."],
+   ["mira", "Vem! Vão acender as lanternas da praça!", "Come on! They're lighting the lanterns in the square!", "¡Ven! ¡Van a encender los faroles de la plaza!"]
+  ],
+  "a2_alarm": [
+   ["bram", "Corvos de Ferro! Saqueadores! Todo mundo para o castelo!", "Iron Crows! Raiders! Everyone to the castle!", "¡Cuervos de Hierro! ¡Saqueadores! ¡Todos al castillo!"],
+   ["mira", "O castelo não abre, Bram! Você mesmo disse!", "The castle doesn't open, Bram! You said so yourself!", "¡El castillo no se abre, Bram! ¡Tú mismo lo dijiste!"],
+   ["aelric", "Existe uma passagem. Debaixo do poço velho, leva aos porões do castelo. Eu fujo por ela desde criança.", "There's a passage. Under the old well, it leads to the castle cellars. I've used it to sneak out since I was a kid.", "Hay un pasaje. Bajo el pozo viejo, lleva a los sótanos del castillo. Lo uso para escaparme desde niño."],
+   ["mira", "Então leva todo mundo!", "Then take everyone!", "¡Entonces lleva a todos!"]
+  ],
+  "a2_rescue": [
+   ["villager", "Alteza! Minha filha ficou lá dentro!", "Your Highness! My daughter is still inside!", "¡Alteza! ¡Mi hija se quedó adentro!"],
+   ["aelric", "Vai para o poço. Eu trago ela.", "Go to the well. I'll bring her.", "Ve al pozo. Yo la traigo."]
+  ],
+  "a2_chief": [
+   ["chief", "Um menino de lança? Vão contar histórias de você, garoto — curtas.", "A boy with a spear? They'll tell stories about you, kid — short ones.", "¿Un niño con lanza? Contarán historias de ti, chico… cortas."]
+  ],
+  "a2_well": [
+   ["smith", "A passagem está desabando! Não cabe mais ninguém!", "The passage is caving in! There's no room for anyone else!", "¡El pasaje se está derrumbando! ¡No cabe nadie más!"],
+   ["aelric", "Então o resto vem comigo. Para os portões.", "Then the rest come with me. To the gates.", "Entonces el resto viene conmigo. A las puertas."]
+  ],
+  "a3_gates": [
+   ["aelric", "Pai! Abra os portões! São só alguns, eles cabem!", "Father! Open the gates! There are only a few, they'll fit!", "¡Padre! ¡Abre las puertas! ¡Son solo unos pocos, caben!"],
+   ["halvard", "Aelric? O que você está fazendo do lado de fora?", "Aelric? What are you doing outside?", "¿Aelric? ¿Qué haces afuera?"],
+   ["aelric", "Salvando o seu povo. Abra!", "Saving your people. Open up!", "Salvando a tu pueblo. ¡Abre!"],
+   ["halvard", "Os grandes portões não se abrem, filho. Nem para mim. Nem para você.", "The great gates do not open, son. Not for me. Not for you.", "Las grandes puertas no se abren, hijo. Ni para mí. Ni para ti."],
+   ["halvard", "Guardas — desçam uma corda para o príncipe. Só para o príncipe.", "Guards — lower a rope for the prince. Only for the prince.", "Guardias, bajen una cuerda para el príncipe. Solo para el príncipe."],
+   ["aelric", "Não vou subir sozinho!", "I'm not going up alone!", "¡No voy a subir solo!"],
+   ["mira", "Vai, Aelric. Alguém precisa lembrar da gente lá dentro.", "Go, Aelric. Someone in there has to remember us.", "Ve, Aelric. Alguien allá adentro tiene que acordarse de nosotros."],
+   ["aelric", "Mira, segura a corda comigo—", "Mira, grab the rope with me—", "Mira, agárrate a la cuerda conmigo…"],
+   ["mira", "Não cabe dois. Vai.", "It won't hold two. Go.", "No aguanta a dos. Ve."]
+  ],
+  "a3_after": [
+   ["narr", "Nunca soube o que aconteceu com ela. Procurei por anos.", "I never learned what happened to her. I searched for years.", "Nunca supe qué le pasó. La busqué durante años."],
+   ["narr", "Naquela noite eu jurei: enquanto eu for rei, nenhuma porta de Valdrak ficará fechada para o meu povo.", "That night I swore: as long as I am king, no door of Valdrak will stay closed to my people.", "Esa noche juré: mientras yo sea rey, ninguna puerta de Valdrak quedará cerrada para mi pueblo."]
+  ],
+  "a3_reveal": [
+   ["hero", "Esta vila… é o Refúgio. O poço, a praça… Eu durmo onde ela ficou para trás.", "This village… is the Refuge. The well, the square… I sleep where she was left behind.", "Esta aldea… es el Refugio. El pozo, la plaza… Duermo donde ella se quedó atrás."]
+  ]
+ },
+ "ui": {
+  "title": ["VALDRAK", "VALDRAK", "VALDRAK"],
+  "subtitle": ["Trezentos anos atrás · Festa da Colheita", "Three hundred years ago · Harvest Feast", "Hace trescientos años · Fiesta de la Cosecha"],
+  "act1": ["ATO I — A VILA", "ACT I — THE VILLAGE", "ACTO I — LA ALDEA"],
+  "act2": ["ATO II — O CERCO", "ACT II — THE SIEGE", "ACTO II — EL ASEDIO"],
+  "act3": ["ATO III — OS PORTÕES FECHADOS", "ACT III — THE CLOSED GATES", "ACTO III — LAS PUERTAS CERRADAS"],
+  "o_mill": ["Destrave o moinho do pai da Mira", "Unlatch Mira's father's mill", "Destraba el molino del padre de Mira"],
+  "o_square": ["Ajude os moradores na festa", "Help the villagers at the feast", "Ayuda a los aldeanos en la fiesta"],
+  "o_bridge": ["Atravesse o riacho pelas pedras (pule)", "Cross the creek on the stones (jump)", "Cruza el arroyo por las piedras (salta)"],
+  "o_tico": ["Encontre o Tico", "Find Tico", "Encuentra a Tico"],
+  "o_tavern": ["Vá até a taberna", "Go to the tavern", "Ve a la taberna"],
+  "o_rescue": ["Leve os moradores até o poço", "Lead the villagers to the well", "Lleva a los aldeanos al pozo"],
+  "o_chief": ["Derrote o chefe dos Corvos", "Defeat the Crow chief", "Derrota al jefe de los Cuervos"],
+  "o_well": ["Volte ao poço", "Return to the well", "Vuelve al pozo"],
+  "o_gate": ["Leve os sobreviventes aos portões do castelo", "Bring the survivors to the castle gates", "Lleva a los sobrevivientes a las puertas del castillo"],
+  "talk": ["Falar", "Talk", "Hablar"],
+  "pull": ["Puxar a trava", "Pull the latch", "Tirar del cerrojo"],
+  "help": ["Ajudar", "Help", "Ayudar"],
+  "fell": ["Você caiu na água!", "You fell in the water!", "¡Caíste al agua!"],
+  "down": ["Aelric caiu… tente de novo.", "Aelric fell… try again.", "Aelric cayó… inténtalo de nuevo."],
+  "saved": ["moradores salvos", "villagers saved", "aldeanos a salvo"],
+  "keys": ["Mover: WASD/setas · Pular: Espaço · Atacar: J · Falar: E", "Move: WASD/arrows · Jump: Space · Attack: J · Talk: E", "Mover: WASD/flechas · Saltar: Espacio · Atacar: J · Hablar: E"],
+  "end": ["A MEMÓRIA SE APAGA", "THE MEMORY FADES", "EL RECUERDO SE DESVANECE"]
+ }
+}
