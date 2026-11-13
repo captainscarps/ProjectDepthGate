@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p214.0 · cache ded-web-v6.6.0-pesca)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.1 · cache ded-web-v6.6.1-vara)
+
+P214.1 — VARA DE PESCAR ANIMADA
+· O herói segura uma vara de verdade ao pescar: cabo de cortiça, molinete, vara de madeira que afina na ponta e
+  a linha com barriga quando frouxa.
+· Animações: arremesso (a vara vai para trás da cabeça e chicoteia; a boia sai da ponta fazendo arco), espera
+  (balança de leve e às vezes um peixe belisca), fisgada (verga e treme), briga (verga mais quanto mais o peixe
+  foge da faixa), pegou (levanta a vara) e arrebentou (chicoteia e para). Ao desistir, recolhe a linha.
 
 P214.0 — PESCA NO MAR (DOCA DO REFÚGIO) · ETAPA 1
 · Três pontos de pesca marcados por ondinhas na água: ponta do píer, escada do barco e o ponto fundo (fim da

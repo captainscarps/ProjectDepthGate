@@ -66,20 +66,66 @@ function __pqBuild(H) {
   const line = H.add.graphics();
   const say = (t, c, ms = 2000) => { try { H.__say(H.playerX, H.playerY - 40, t, ms, c) } catch (e) { } };
   const sfx = (k, v) => { try { __rfSfx?.(H, k, v) } catch (e) { } };
-  const hand = () => { const fx = H.facing?.x || 0; return [H.playerX + (fx ? fx * 9 : 6), H.playerY - 6] };
-  const drawLine = () => { if (!F.spot) return; const [hx, hy] = hand(); line.clear().lineStyle(1, 0x5a3a1c, 1).lineBetween(hx, hy, hx + (H.facing?.x || 0) * 6, hy - 10).lineStyle(1, 0xeef4f8, .75).lineBetween(hx + (H.facing?.x || 0) * 6, hy - 10, bob.x, bob.y - 2); line.setDepth(H.playerY + 2) };
-  const end = () => { F.st = 0; bob.setVisible(!1); line.clear(); F.ev?.remove(); F.ev = null; H.tweens.killTweensOf(bob); F.spot = null };
+  /* vara de pescar desenhada na mão do herói: curva (verga com a força do peixe), molinete, cabo de cortiça e a
+     linha com barriga quando frouxa. Animações: arremesso (vai atrás da cabeça e chicoteia), espera (balança,
+     beliscadas falsas), fisgada (verga e treme), briga (tensão conforme o peixe foge da faixa), pegou (levanta) e
+     arrebentou (chicoteia e para). */
+  const ROD = H.__pqRod = { vis: !1, ang: -50, bend: 0, shake: 0, sag: 10, anim: null, launched: !0, tension: 0 };
+  const rodG = H.add.graphics();
+  const rdir = () => H.facing?.x || (F.spot ? Math.sign(F.spot.w[0] - H.playerX) || 1 : 1);
+  const hand = () => { const d = rdir(); return [H.playerX + d * 5, H.playerY + 7] };
+  const rodPlay = (keys, dur, then) => { ROD.anim = { k: keys, t: 0, dur, then } };
+  const lerpK = (k, t) => { for (let i = 1; i < k.length; i++) if (t <= k[i][0]) { const a = k[i - 1], b = k[i], u = (t - a[0]) / Math.max(1e-6, b[0] - a[0]), e = u * u * (3 - 2 * u); return [a[1] + (b[1] - a[1]) * e, a[2] + (b[2] - a[2]) * e] } const z = k[k.length - 1]; return [z[1], z[2]] };
+  let nibT = 2 + rnd() * 3, nib = 0;
+  const rodTick = (t, ms) => {
+    if (!ROD.vis) { rodG.clear(); return }
+    const dt = ms / 1000; let ang = ROD.ang, bend = ROD.bend, shake = 0;
+    if (ROD.anim) { const A = ROD.anim; A.t += ms; const u = Math.min(1, A.t / A.dur); [ang, bend] = lerpK(A.k, u); A.onT?.(u); if (u >= 1) { ROD.anim = null; ROD.ang = ang; ROD.bend = bend; A.then?.() } }
+    else if (F.st === 1) {   // esperando: balança de leve e às vezes um peixe belisca
+      ang = -45 + Math.sin(t / 760) * 3; bend = .08 + nib; if ((nibT -= dt) <= 0) { nibT = 1.5 + rnd() * 3.5; nib = .22; bob.y += 1.2; H.time.delayedCall(140, () => { nib = 0; bob.y -= 1.2 }) }
+    } else if (F.st === 2) { ang = -32; bend = .58; shake = Math.sin(t / 22) * 2.2 }
+    else if (F.st === 3) { ang = -52 + ROD.tension * 14; bend = .32 + ROD.tension * .5; shake = Math.sin(t / 30) * ROD.tension * 2.4 }
+    const d = rdir(), [hx, hy] = hand(), L = 24, ar = ang * Math.PI / 180;
+    let tx = hx + Math.cos(ar) * L * d, ty = hy + Math.sin(ar) * L;
+    const bx = bob.visible && ROD.launched ? bob.x : tx, by = bob.visible && ROD.launched ? bob.y : ty + 6;
+    // a ponta verga na direção da linha
+    const vx = bx - tx, vy = by - ty, vl = Math.hypot(vx, vy) || 1, b = bend * L * .42;
+    tx += vx / vl * b * .7 + shake * .3; ty += vy / vl * b * .7 + shake;
+    const cx = (hx + tx) / 2 + vx / vl * b * .55, cy = (hy + ty) / 2 + vy / vl * b * .55;
+    const pts = []; for (let i = 0; i <= 8; i++) { const u = i / 8, w = 1 - u; pts.push([w * w * hx + 2 * w * u * cx + u * u * tx, w * w * hy + 2 * w * u * cy + u * u * ty]) }
+    rodG.clear().setDepth(H.playerY + 1.5);
+    // linha: da ponta até a boia, com barriga quando frouxa
+    if (bob.visible) { const sag = ROD.sag * (1 - Math.min(1, bend * 1.4)), mx = (tx + bx) / 2, my = (ty + by) / 2 + sag; rodG.lineStyle(1, 0xeef4f8, .8).beginPath().moveTo(tx, ty); for (let i = 1; i <= 8; i++) { const u = i / 8, w = 1 - u; rodG.lineTo(w * w * tx + 2 * w * u * mx + u * u * bx, w * w * ty + 2 * w * u * my + u * u * by) } rodG.strokePath() }
+    // cabo de cortiça (atrás da mão)
+    const ux = (pts[1][0] - hx), uy = (pts[1][1] - hy), ul = Math.hypot(ux, uy) || 1;
+    rodG.lineStyle(3, 0xc89a62, 1).lineBetween(hx - ux / ul * 4, hy - uy / ul * 4, hx + ux / ul * 1, hy + uy / ul * 1);
+    // vara: escura com brilho, afinando na ponta
+    rodG.lineStyle(2, 0x4a2e16, 1).beginPath().moveTo(pts[0][0], pts[0][1]); for (let i = 1; i <= 5; i++) rodG.lineTo(pts[i][0], pts[i][1]); rodG.strokePath();
+    rodG.lineStyle(1, 0x5a3a1c, 1).beginPath().moveTo(pts[5][0], pts[5][1]); for (let i = 6; i <= 8; i++) rodG.lineTo(pts[i][0], pts[i][1]); rodG.strokePath();
+    rodG.lineStyle(1, 0xb07a40, .9).beginPath().moveTo(pts[0][0], pts[0][1] - .6); for (let i = 1; i <= 4; i++) rodG.lineTo(pts[i][0], pts[i][1] - .6); rodG.strokePath();
+    // molinete
+    rodG.fillStyle(0x9aa0aa, 1).fillCircle(hx + ux / ul * 2.5 - uy / ul * 2, hy + uy / ul * 2.5 + ux / ul * 2, 1.7).fillStyle(0x3a3a44, 1).fillCircle(hx + ux / ul * 2.5 - uy / ul * 2, hy + uy / ul * 2.5 + ux / ul * 2, .7);
+    ROD.tip = [tx, ty];
+  };
+  H.events.on("update", rodTick); H.events.once("shutdown", () => H.events.off("update", rodTick));
+  const rodHide = ms => H.time.delayedCall(ms, () => { if (!F.st) { ROD.vis = !1; rodG.clear() } });
+  const drawLine = () => { };
+  const drawLineOld = () => { if (!F.spot) return; const [hx, hy] = hand(); line.clear().lineStyle(1, 0x5a3a1c, 1).lineBetween(hx, hy, hx + (H.facing?.x || 0) * 6, hy - 10).lineStyle(1, 0xeef4f8, .75).lineBetween(hx + (H.facing?.x || 0) * 6, hy - 10, bob.x, bob.y - 2); line.setDepth(H.playerY + 2) };
+  const end = (outro) => { F.st = 0; bob.setVisible(!1); line.clear(); F.ev?.remove(); F.ev = null; H.tweens.killTweensOf(bob); F.spot = null;
+    if (!outro && ROD.vis) rodPlay([[0, ROD.ang, ROD.bend], [.5, -70, .05], [1, -60, 0]], 300, () => rodHide(0)) };
   const hour = () => new Date().getHours();
   const ok = (s, sp) => !s[8] || (s[8] === "night" ? (hour() >= 19 || hour() < 6) : s[8] === "morning" ? (hour() >= 6 && hour() < 11) : s[8] === "deep" ? sp.deep : !0);
   const roll = sp => { const pool = __PZ_SPECIES.filter(s => ok(s, sp)).map(s => [s, s[5] * (sp.deep && s[4] >= 2 ? 2.2 : 1)]); let t = pool.reduce((a, b) => a + b[1], 0) * rnd(); for (const [s, w] of pool) { if ((t -= w) <= 0) return s } return pool[0][0] };
   const cast = sp => {
     F.spot = sp; F.st = 1; const dx = sp.w[0] - H.playerX; H.facing = Math.abs(dx) > 8 ? { x: Math.sign(dx), y: 0 } : { x: 0, y: 1 };
-    const [hx, hy] = hand(); bob.setPosition(hx, hy).setVisible(!0).setAlpha(1).setDepth(sp.w[1] - FO + 1);
-    H.tweens.add({ targets: bob, x: sp.w[0], duration: 420 }); H.tweens.add({ targets: bob, y: { value: sp.w[1], ease: "Quad.easeIn" }, duration: 420, onUpdate: drawLine, onComplete: () => {
+    ROD.vis = !0; ROD.launched = !1; ROD.sag = 10; bob.setVisible(!1).setAlpha(1).setDepth(sp.w[1] - FO + 1);
+    rodPlay([[0, -55, 0], [.38, -150, .12], [.6, -14, .3], [.8, -48, .06], [1, -45, .08]], 560);
+    H.time.delayedCall(330, () => { if (F.st !== 1 || F.spot !== sp) return;
+    const [sx, sy] = ROD.tip || hand(); bob.setPosition(sx, sy).setVisible(!0); ROD.launched = !0; sfx("paddle", .12);
+    const c = { u: 0 }; H.tweens.add({ targets: c, u: 1, duration: 520, ease: "Sine.easeOut", onUpdate: () => { bob.x = sx + (sp.w[0] - sx) * c.u; bob.y = sy + (sp.w[1] - sy) * c.u - Math.sin(Math.PI * c.u) * 26 }, onComplete: () => {
       sfx("splash", .25); const r = H.add.image(sp.w[0], sp.w[1], "pq-ring").setAlpha(.8).setDepth(-18); H.tweens.add({ targets: r, scale: 1.6, alpha: 0, duration: 700, onComplete: () => r.destroy() });
       H.tweens.add({ targets: bob, y: sp.w[1] + 1, duration: 700, yoyo: !0, repeat: -1, ease: "Sine.easeInOut", onUpdate: drawLine });
-    } });
-    sfx("paddle", .15);
+    } }); });
     F.fish = roll(sp);
     F.ev = H.time.delayedCall(2000 + rnd() * 4500, () => {
       if (F.st !== 1) return; F.st = 2; H.tweens.killTweensOf(bob); bob.y += 3; bob.setAlpha(.55); drawLine(); sfx("wade", .45);
@@ -122,7 +168,9 @@ function __pqBuild(H) {
       if (done) return; done = !0; H.events.off("update", upd); window.removeEventListener("keydown", kd); window.removeEventListener("keyup", ku);
       H.tweens.add({ targets: o, alpha: 0, duration: 200, onComplete: () => o.destroy() });
       H.time.delayedCall(220, () => { H.__busy = !1; H.__pqReel = 0 });
-      const sp = F.spot; end();
+      const sp = F.spot; end(!0);
+      if (win) rodPlay([[0, ROD.ang, .6], [.35, -88, .25], [.7, -80, .05], [1, -82, 0]], 700, () => rodHide(900));
+      else rodPlay([[0, ROD.ang, .7], [.15, -20, -.35], [.35, -60, .25], [.55, -38, -.12], [.75, -50, .06], [1, -46, 0]], 650, () => rodHide(500));
       if (win) caught(S, sp); else { sfx("splash", .3); say(L3("A linha arrebentou… ele era forte!", "The line snapped… it was strong!", "Se rompió el sedal… ¡era fuerte!"), "#ffb0a0") }
     };
     const upd = (_t, ms) => {
@@ -135,6 +183,7 @@ function __pqBuild(H) {
       if ((ftT -= dt) <= 0) { ftT = .35 + rnd() * (1.4 - lvl * .1); ft = BY + 8 + rnd() * (BH - 16); if (rnd() < lvl * .06) ftT *= .4 }
       fy += (ft - fy) * Math.min(1, dt * (1.6 + lvl * .55)); fi.y = fy; fi.x = BX + 3 + Math.sin(_t / 90) * (lvl > 5 ? 1.5 : .7);
       const inZ = Math.abs(fy - zy) < zoneH / 2;
+      ROD.tension = Math.min(1, Math.abs(fy - zy) / (BH * .45) + (held() ? .15 : 0));
       grace -= dt; prog += (inZ ? .3 - lvl * .012 : grace > 0 ? 0 : -(.11 + lvl * .018)) * dt; prog = Math.max(0, Math.min(1, prog));
       meter.height = Math.max(1, prog * (BH - 2)); meter.fillColor = prog > .7 ? 0x8fff8a : prog > .35 ? 0xffd24a : 0xff7a5a;
       zone.fillColor = inZ ? 0x6fe07a : 0x8aa070;
