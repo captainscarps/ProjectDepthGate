@@ -23,9 +23,11 @@ class __ValdrakAntiga extends j.Scene {
     this.cache.json.exists("vk-map") || L.json("vk-map", P + "map/map.json");
     const sp = { "aelric-young": ["idle", "idle2", "walk", "run", "attack1", "attack2", "jump", "hurt", "dead"], "aelric-king": ["idle", "dialogue"] };
     for (const who in sp) for (const a of sp[who]) ex(`vk-${who}-${a}`) || L.spritesheet(`vk-${who}-${a}`, `${P}${who}-${a}.png`, { frameWidth: 128, frameHeight: 128 });
-    for (const k of ["peasant-1", "peasant-2", "peasant-4"]) ex(k) || L.spritesheet(k, `assets/pixel-art/npc/${k}.png`, { frameWidth: 128, frameHeight: 128 });
+    for (const k of ["peasant-1", "peasant-2", "peasant-3", "peasant-4"]) ex(k) || L.spritesheet(k, `assets/pixel-art/npc/${k}.png`, { frameWidth: 128, frameHeight: 128 });
     ex("elf-1") || L.spritesheet("elf-1", "assets/pixel-art/npc/elf-1.png", { frameWidth: 128, frameHeight: 128 });
-    ex("menino") || L.spritesheet("menino", "assets/pixel-art/npc/menino.png", { frameWidth: 128, frameHeight: 154 });
+    ex("menino") || L.spritesheet("menino", "assets/pixel-art/npc/menino.png", { frameWidth: 64, frameHeight: 77 });
+    const vq = m => { for (const k in m) { const f = m[k]; this.textures.exists("vkv-" + k) || L.spritesheet("vkv-" + k, P + "npc/" + k + ".png", { frameWidth: f.fw || 128, frameHeight: f.fh }) } };
+    if (this.cache.json.exists("vk-vill")) vq(this.cache.json.get("vk-vill")); else { L.json("vk-vill", P + "npc/villagers.json"); L.once("filecomplete-json-vk-vill", (k, t, d) => vq(d)) }
     ex("vk-raider") || L.spritesheet("vk-raider", "assets/pixel-art/enemies/nf-pyro-ashblade.png", { frameWidth: 75, frameHeight: 98 });
     ex("vk-chief") || L.spritesheet("vk-chief", "assets/pixel-art/enemies/nf-pyro-cultist.png", { frameWidth: 85, frameHeight: 79 });
   }
@@ -33,9 +35,11 @@ class __ValdrakAntiga extends j.Scene {
     const A = this.anims, mk = (k, t, fr, rep = -1, s = 0, e) => { if (A.exists(k) || !this.textures.exists(t)) return; const n = this.textures.get(t).frameTotal - 1; A.create({ key: k, frames: A.generateFrameNumbers(t, { start: s, end: e ?? n - 1 }), frameRate: fr, repeat: rep }) };
     for (const a of [["idle", 7], ["idle2", 7], ["walk", 12], ["run", 16], ["attack1", 14, 0], ["attack2", 14, 0], ["jump", 16, 0], ["hurt", 10, 0], ["dead", 8, 0]]) mk("vk-ay-" + a[0], "vk-aelric-young-" + a[0], a[1], a[2] ?? -1);
     mk("vk-k-idle", "vk-aelric-king-idle", 7);
-    mk("vk-mira-idle", "elf-1", 6, -1, 0, 5); mk("vk-mira-walk", "elf-1", 10, -1, 16, 27);
-    mk("vk-p1-idle", "peasant-1", 6, -1, 0, 11); mk("vk-p2-idle", "peasant-2", 6, -1, 0, 11); mk("vk-p4-idle", "peasant-4", 6, -1, 0, 11);
-    mk("vk-tico-idle", "menino", 6, -1, 0, 4);
+    mk("vk-mira-idle", "elf-1", 6, -1, 0, 5); mk("vk-mira-walk", "elf-1", 11, -1, 32, 43);
+    mk("vk-p1-idle", "peasant-1", 6, -1, 16, 22); mk("vk-p2-idle", "peasant-2", 6, -1, 0, 6); mk("vk-p4-idle", "peasant-4", 6, -1, 0, 6); mk("vk-p3-idle", "peasant-3", 6, -1, 0, 6);
+    mk("vk-tico-idle", "menino", 6, -1, 0, 5); mk("vk-tico-walk", "menino", 12, -1, 12, 23);
+    const VM = this.cache.json.get("vk-vill") || {};
+    for (const k in VM) { const f = VM[k], t = "vkv-" + k; mk("vkv-i-" + k, t, 6, -1, 0, f.idle - 1); mk("vkv-m-" + k, t, f.walk ? 11 : 6, -1, f.cols, f.cols + f.move - 1) }
     mk("vk-r-idle", "vk-raider", 8, -1, 0, 7); mk("vk-r-walk", "vk-raider", 10, -1, 8, 15); mk("vk-r-atk", "vk-raider", 14, 0, 23, 33); mk("vk-r-die", "vk-raider", 10, 0, 38, 47);
     mk("vk-c-idle", "vk-chief", 8, -1, 0, 7); mk("vk-c-walk", "vk-chief", 10, -1, 8, 23); mk("vk-c-atk", "vk-chief", 14, 0, 24, 38); mk("vk-c-die", "vk-chief", 10, 0, 39, 47);
   }
@@ -60,9 +64,10 @@ class __ValdrakAntiga extends j.Scene {
     npc("baker", "peasant-2", "vk-p2-idle", sp.baker[0], sp.baker[1], .68);
     npc("smith", "peasant-4", "vk-p4-idle", sp.smith[0], sp.smith[1], .7, !0);
     npc("mom", "peasant-2", "vk-p2-idle", sp.ticoMom[0], sp.ticoMom[1], .64).setTint(0xd8c8b8);
-    npc("tico", "menino", "vk-tico-idle", sp.tico[0], sp.tico[1], .42);
-    npc("bram", "peasant-1", "vk-p1-idle", sp.bram[0] + 60, sp.bram[1] + 40, .7, !0);
+    npc("tico", "menino", "vk-tico-idle", sp.tico[0], sp.tico[1], .62);
+    npc("bram", "vkv-bram", "vkv-i-bram", sp.bram[0] + 60, sp.bram[1] + 40, .7, !0);
     S.enemies = []; S.followers = [];
+    S.spawnVillagers();
     // câmera e camadas de luz
     cam.setBounds(0, 0, S.W, S.H); cam.startFollow(S.hero, !0, .12, .12); cam.setZoom(Math.max(.8, cam.width / 1150)); cam.setBackgroundColor(0x1a2a14);
     S.night = S.add.rectangle(0, 0, S.W * 2, S.H * 2, 0x0a0a28, 0).setOrigin(0).setDepth(9e3);
@@ -147,7 +152,7 @@ class __ValdrakAntiga extends j.Scene {
   speaker(who) {
     const sp = __VL.speakers[who] || {}, S = this;
     if (who === "hero") { const nm = (typeof __HN !== "undefined" && __HN[S.cls]) || S.cls; return { name: String(nm).toUpperCase(), tex: this.textures.exists("mk4b-" + S.cls.toLowerCase()) ? "mk4b-" + S.cls.toLowerCase() : "__DEFAULT", sc: .9, cls: S.cls } }
-    const T = { aelric: ["vk-aelric-young-idle", .95], narr: ["vk-aelric-king-idle", .95], king: ["vk-aelric-king-idle", .95], mira: ["elf-1", .9], baker: ["peasant-2", .85], mom: ["peasant-2", .85], smith: ["peasant-4", .85], tico: ["menino", .6], bram: ["peasant-1", .85], villager: ["peasant-1", .85], chief: ["vk-chief", 1.1], halvard: ["vk-aelric-king-idle", .95] }[who] || ["__DEFAULT", 1];
+    const T = { aelric: ["vk-aelric-young-idle", .95], narr: ["vk-aelric-king-idle", .95], king: ["vk-aelric-king-idle", .95], mira: ["elf-1", .9], baker: ["peasant-2", .85], mom: ["peasant-2", .85], smith: ["peasant-4", .85], tico: ["menino", 1.1], bram: ["vkv-bram", .85], villager: ["peasant-3", .85], chief: ["vk-chief", 1.1], halvard: ["vk-aelric-king-idle", .95] }[who] || ["__DEFAULT", 1];
     return { name: sp.name ? __vT(sp.name) : who, tex: T[0], sc: T[1], dark: who === "halvard" || who === "king" };
   }
   say(scene, done) {
@@ -176,6 +181,49 @@ class __ValdrakAntiga extends j.Scene {
     S.tweens.add({ targets: [t1, t2], alpha: 1, duration: 700, hold: 1600, yoyo: !0, onComplete: () => { t1.destroy(); t2.destroy(); S.busy = !1; done?.() } });
   }
   setObj(k, extra = "") { this.objK = k; this.objT.setText(k ? "◆ " + __vT(__VL.ui[k]) + extra : "") }
+  // ── moradores (variações dos NPCs do jogo): andam, conversam e comentam a festa ───────────────────
+  spawnVillagers() {
+    const S = this, VM = S.cache.json.get("vk-vill") || {}, keys = Object.keys(VM), R = Math.random;
+    if (!keys.length) return; S.vill = [];
+    const walkers = keys.filter(k => VM[k].walk && !VM[k].kid), standers = keys.filter(k => !VM[k].walk), kids = keys.filter(k => VM[k].kid);
+    const pick = a => a[Math.floor(R() * a.length)];
+    const GROUPS = [  // [x, y, raio, quantos, tipo]  tipo: w = anda · s = parado conversando · k = criança correndo
+      [1600, 930, 230, 9, "w"], [1500, 1000, 40, 2, "s"], [1720, 880, 40, 2, "s"], [1600, 960, 200, 3, "k"],
+      [1430, 1185, 30, 1, "s"], [1785, 1180, 30, 1, "s"], [1410, 800, 30, 1, "s"], [1800, 800, 40, 2, "s"],
+      [600, 1120, 90, 3, "s"], [700, 1090, 140, 2, "w"], [1100, 900, 220, 3, "w"], [2150, 920, 220, 3, "w"],
+      [1600, 450, 160, 3, "w"], [1600, 330, 60, 2, "s"], [1580, 1400, 260, 3, "w"], [380, 1950, 160, 2, "w"],
+      [870, 2000, 140, 2, "w"], [900, 1820, 60, 1, "s"], [1130, 1950, 120, 2, "k"], [2860, 980, 60, 1, "s"],
+      [2300, 1200, 160, 2, "w"], [1250, 640, 140, 2, "w"], [1950, 640, 140, 2, "w"], [1330, 1600, 130, 2, "w"]];
+    for (const [gx, gy, rad, n, type] of GROUPS) for (let i = 0; i < n; i++) {
+      const pool = type === "k" ? kids : type === "s" ? (R() < .6 ? standers : walkers) : walkers, k = pick(pool), f = VM[k];
+      let x = gx, y = gy; for (let t = 0; t < 12; t++) { const a = R() * 6.28, d = R() * rad; x = gx + Math.cos(a) * d; y = gy + Math.sin(a) * d * .7; if (S.free(x, y) && S.free(x, y - 10)) break }
+      const sc = f.kid ? .55 + R() * .1 : .8 + R() * .1, s = S.add.sprite(x, y, "vkv-" + k, 0).setOrigin(.5, .99).setScale(sc).setFlipX(R() < .5);
+      s.play({ key: "vkv-i-" + k, startFrame: Math.floor(R() * Math.max(1, f.idle - 1)) });
+      S.vill.push({ s, k, f, home: [gx, gy], rad, type, mob: f.walk && type !== "s", wait: 600 + R() * 4000, tgt: null, talk: 0 });
+    }
+    // conversas: quem está parado em grupo alterna entre parado e falando
+    S.time.addEvent({ delay: 1600, loop: !0, callback: () => { for (const v of S.vill) if (!v.mob && v.s.visible && R() < .35) { const tk = v.f.walk ? "vkv-i-" + v.k : (v.s.anims.currentAnim?.key === "vkv-m-" + v.k ? "vkv-i-" + v.k : "vkv-m-" + v.k); v.s.play(tk, !0) } } });
+  }
+  updVillagers(dtMs, dt) {
+    const S = this; if (!S.vill) return; const H = S.hero, CH = __VL.chatter; S.bubCd = (S.bubCd || 0) - dtMs;
+    for (const v of S.vill) {
+      const s = v.s; if (!s.visible) continue; s.setDepth(s.y);
+      if (v.bub) { v.bub.setPosition(s.x, s.y - s.displayHeight - 6); v.bubT -= dtMs; if (v.bubT <= 0) { v.bub.destroy(); v.bub = null } }
+      if (CH && !v.bub && !S.busy && S.bubCd <= 0 && (v.cd = (v.cd || 0) - dtMs) <= 0 && Math.abs(H.x - s.x) < 90 && Math.abs(H.y - s.y) < 60) {
+        S.bubCd = 2800;
+        v.cd = 9000 + Math.random() * 8000; const line = CH[Math.floor(Math.random() * CH.length)];
+        v.bub = S.add.text(s.x, s.y - s.displayHeight - 6, __vT(line), { fontFamily: "Georgia, serif", fontSize: "11px", color: "#2a1a10", backgroundColor: "#f4ead2", padding: { x: 5, y: 3 }, align: "center", wordWrap: { width: 170 } }).setOrigin(.5, 1).setDepth(19500); v.bubT = 2600;
+        s.setFlipX(H.x < s.x);
+      }
+      if (!v.mob) continue;
+      if (!v.tgt) { v.wait -= dtMs; if (v.wait > 0) continue; for (let t = 0; t < 6; t++) { const a = Math.random() * 6.28, d = Math.random() * v.rad, x = v.home[0] + Math.cos(a) * d, y = v.home[1] + Math.sin(a) * d * .7; if (S.free(x, y) && S.free(x, y - 10)) { v.tgt = [x, y]; break } } if (v.tgt) s.play("vkv-m-" + v.k, !0); else v.wait = 800; continue }
+      const dx = v.tgt[0] - s.x, dy = v.tgt[1] - s.y, d = Math.hypot(dx, dy), sp = (v.type === "k" ? 95 : 48) * dt;
+      if (d < 4) { v.tgt = null; v.wait = 1200 + Math.random() * 4500; s.play("vkv-i-" + v.k, !0); continue }
+      const ox = s.x, oy = s.y; S.move(s, dx / d * sp, dy / d * sp, !1); s.setFlipX(dx < 0);
+      if (Math.abs(s.x - ox) + Math.abs(s.y - oy) < sp * .2) { v.tgt = null; v.wait = 500; s.play("vkv-i-" + v.k, !0) }
+    }
+  }
+  hideVillagers() { for (const v of S_VILL(this)) { v.s.setVisible(!1); v.bub?.destroy(); v.bub = null } }
   // ── mundo ──────────────────────────────────────────────────────────────────────────────────────
   cell(x, y) { const r = this.coll[Math.floor(y / this.G)]; return r ? r[Math.floor(x / this.G)] ?? "1" : "1" }
   free(x, y, air) { const c = this.cell(x, y); return c === "0" || c === "3" || (air && c === "2") }
@@ -242,7 +290,7 @@ class __ValdrakAntiga extends j.Scene {
     for (const id in S.npcs) { const n = S.npcs[id]; n.setDepth(n.y) }
     // seguidores (Ato III)
     let prev = H; for (const f of S.followers) { const dx = prev.x - f.x, dy = prev.y - f.y, d = Math.hypot(dx, dy); if (d > 46) { f.x += dx / d * (d - 46) * Math.min(1, dt * 6); f.y += dy / d * (d - 46) * Math.min(1, dt * 6) } f.setFlipX(dx < 0); f.setDepth(f.y); prev = f }
-    S.updEnemies(dtMs, dt); S.updRunners(dt); S.triggers();
+    S.updEnemies(dtMs, dt); S.updRunners(dt); S.updVillagers(dtMs, dt); S.triggers();
   }
   updEnemies(dtMs, dt) {
     const S = this, H = S.hero;
@@ -291,6 +339,7 @@ class __ValdrakAntiga extends j.Scene {
     S.cameras.main.fadeOut(800); S.time.delayedCall(820, () => {
       S.tweens.add({ targets: S.night, fillAlpha: .55, duration: 10 });
       for (const id in S.npcs) if (id !== "mira" && id !== "bram") S.npcs[id].setVisible(!1);
+      S.hideVillagers();
       S.npcs.mira.setPosition(sp.festival[0] - 40, sp.festival[1] + 30); S.npcs.bram.setPosition(sp.festival[0] + 50, sp.festival[1] + 30);
       S.hero.setPosition(sp.festival[0], sp.festival[1] + 60);
       // fogo nas plantações e casas
@@ -302,8 +351,8 @@ class __ValdrakAntiga extends j.Scene {
   startRaid() {
     const S = this, sp = S.M.spots; S.state.a2 = 1; S.hp = S.maxHp; S.saved = 0; S.runners = []; S.saidRescue = S.saidRescue || !1;
     S.npcs.mira.setVisible(!1); S.npcs.bram.setVisible(!1);
-    const tex = [["peasant-2", "vk-p2-idle"], ["peasant-4", "vk-p4-idle"], ["peasant-1", "vk-p1-idle"], ["menino", "vk-tico-idle"]];
-    S.rescueNpcs = sp.rescue.slice(0, 4).map(([x, y], i) => { const s = S.add.sprite(x, y, tex[i][0], 0).setOrigin(.5, .99).setScale(i === 3 ? .42 : .68); s.play(tex[i][1]); return { s } });
+    const tex = [["peasant-2", "vk-p2-idle"], ["peasant-4", "vk-p4-idle"], ["peasant-3", "vk-p3-idle"], ["menino", "vk-tico-idle"]];
+    S.rescueNpcs = sp.rescue.slice(0, 4).map(([x, y], i) => { const s = S.add.sprite(x, y, tex[i][0], 0).setOrigin(.5, .99).setScale(i === 3 ? .78 : .85); s.play(tex[i][1]); return { s } });
     S.setObj("o_rescue", " (0/4)");
     const waves = () => { if (S.state.a2 !== 1) return; const alive = S.enemies.filter(e => !e.dead).length; if (alive < 5) { const [rx, ry] = sp.raidFrom; S.spawnRaider(rx + (Math.random() - .5) * 500, ry - 300 + Math.random() * 200) } S.time.delayedCall(4200, waves) };
     for (let i = 0; i < 3; i++) S.spawnRaider(sp.raidFrom[0] - 300 + i * 220, sp.raidFrom[1] - 420); waves();
@@ -359,6 +408,7 @@ class __ValdrakAntiga extends j.Scene {
     S.titleCard(__vT(__VL.ui.end), "", () => { S.cameras.main.fadeOut(900); S.time.delayedCall(950, () => { const cb = S.onDone; S.scene.stop(); cb?.() }) });
   }
 }
+function S_VILL(S) { return S.vill || [] }
 function Phaser_JD(k) { return !!k && j.Input.Keyboard.JustDown(k) }
 window.__valdrakNow = function (cls, onDone, act, mode) {
   const game = window.__DED_GAME; if (!game) return;

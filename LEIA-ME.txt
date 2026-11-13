@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212.1 · cache ded-web-v6.4.1-valdrak)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212.2 · cache ded-web-v6.4.2-valdrak)
+
+P212.2 — VALDRAK ANTIGA CHEIA DE GENTE
+· 27 variações dos NPCs do jogo (camponeses, elfas e o menino) com outras cores de cabelo (preto, castanho,
+  loiro, ruivo, grisalho), de roupa e tons de pele (scripts/build_valdrak_villagers.py).
+· Cerca de 60 moradores espalhados: multidão na praça da festa, conversas em grupo, feirantes nas barracas,
+  gente na frente da taberna, crianças correndo, camponeses nas plantações e no portão. Andam pela vila
+  desviando dos obstáculos e comentam a festa num balão quando o príncipe passa perto (só texto).
+· Bram ganhou visual próprio (cabelo grisalho, avental). No cerco a vila esvazia (todos fugiram).
 
 P212.1 — VALDRAK ANTIGA COM CENÁRIO ORGÂNICO
 · Caminhos de pedra redesenhados como no pacote da vila: bordas seguindo o contorno de cada pedra, curvas

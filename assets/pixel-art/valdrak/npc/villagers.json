@@ -1,0 +1,255 @@
+{
+ "peasant-2-0": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-2-1": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-2-2": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-2-3": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-3-0": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-3-1": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-3-2": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-3-3": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-3-4": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-4-0": {
+  "idle": 7,
+  "move": 7,
+  "walk": false,
+  "cols": 7,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-4-1": {
+  "idle": 7,
+  "move": 7,
+  "walk": false,
+  "cols": 7,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "peasant-4-2": {
+  "idle": 7,
+  "move": 7,
+  "walk": false,
+  "cols": 7,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-1-0": {
+  "idle": 6,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-1-1": {
+  "idle": 6,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-1-2": {
+  "idle": 6,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-2-0": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-2-1": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-2-2": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-2-3": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-3-0": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-3-1": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-3-2": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "elf-3-3": {
+  "idle": 7,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 128,
+  "fh": 128,
+  "kid": false
+ },
+ "menino-0": {
+  "idle": 6,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 64,
+  "fh": 77,
+  "kid": true
+ },
+ "menino-1": {
+  "idle": 6,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 64,
+  "fh": 77,
+  "kid": true
+ },
+ "menino-2": {
+  "idle": 6,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 64,
+  "fh": 77,
+  "kid": true
+ },
+ "menino-3": {
+  "idle": 6,
+  "move": 12,
+  "walk": true,
+  "cols": 12,
+  "fw": 64,
+  "fh": 77,
+  "kid": true
+ },
+ "bram": {
+  "idle": 7,
+  "move": 7,
+  "walk": false,
+  "cols": 7,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "special": true
+ }
+}
