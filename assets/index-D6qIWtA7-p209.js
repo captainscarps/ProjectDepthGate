@@ -22020,7 +22020,7 @@ const __OL_L = /*__OLINES__*/{"speakers":{"olivia":{"name":["OLIVIA","OLIVIA","O
       const L = this.load, op = L.path, N = "assets/pixel-art/npc/", ex = k => this.textures.exists(k); L.setPath("");
       ex("olivia") || L.spritesheet("olivia", N + "olivia.png", { frameWidth: 128, frameHeight: 128 });
       ex("mussarela") || L.spritesheet("mussarela", N + "mussarela.png", { frameWidth: 32, frameHeight: 32 });
-      ex("gato-o") || L.spritesheet("gato-o", N + "gato-o.png", { frameWidth: 100, frameHeight: 100 });
+      ex("gato-o") || L.spritesheet("gato-o", N + "gato-o.png", { frameWidth: 100, frameHeight: 50 });   // quadros de 100x50 (um gato por quadro)
       for (const e of ["talk", "calm", "smile", "sadness", "aggression", "special"]) ex("olivia-p-" + e) || L.image("olivia-p-" + e, `${N}olivia-p-${e}.png`);
       L.setPath(op);
     } catch (e) {}

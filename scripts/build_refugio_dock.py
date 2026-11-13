@@ -59,7 +59,8 @@ OBJ = render(["Objects1", "Objects2", "Objects3", "piles_top_front"])
 water_tile = np.array(tile(1507)[0].convert("RGB"))
 
 # ── chão original e o pedaço novo ───────────────────────────────────────────────────────────────────
-G0 = Image.open(os.path.join(V, "ground.png")).convert("RGBA").crop((0, 0, W, H0))
+ORIG = os.path.join(ROOT, "art-src", "refugio-ground-original.png")   # o chão do Refúgio antes da doca (sem o caminho já pintado)
+G0 = Image.open(ORIG if os.path.isfile(ORIG) else os.path.join(V, "ground.png")).convert("RGBA").crop((0, 0, W, H0))
 A0 = np.array(G0).astype(np.int16); A0[H0 - 1] = A0[H0 - 2]   # a última linha era uma borda escura do mapa
 rng = np.random.default_rng(7)
 def noise(w, h, cell, seed):
@@ -130,16 +131,19 @@ hi, lo = sea & (wn > .86), sea & (wn < .1)
 new[hi] = np.clip(wt[hi] + 9, 0, 255); new[lo] = np.clip(wt[lo] - 10, 0, 255)
 new = new.astype(np.int16)
 foam = np.zeros((H, W), bool); cliff = np.zeros((H, W), bool)
-# caminho de tijolo da praça (sai ao lado do portal) até a areia na frente do píer, com borda irregular
-pts = [(652, 640), (666, 700), (696, 750), (712, 790), (716, deckTop - 6)]
-im = Image.new("L", (W, H)); d = ImageDraw.Draw(im)
-for (a, b), (c, e) in zip(pts, pts[1:]): d.line([a, b, c, e], fill=255, width=50)
-for (a, b) in pts: d.ellipse([a - 25, b - 25, a + 25, b + 25], fill=255)
-edge_n = np.kron(noise(W // 2, H // 2, 6, 9), np.ones((2, 2)))[:H, :W]
-pm = ndimage.binary_dilation(np.array(im) > 0, iterations=3) & ((ndimage.distance_transform_edt(~np.array(im).astype(bool)) < 3 + edge_n * 6) | (np.array(im) > 0))
-path = pm & (yy >= 630)
-brick = A0[560:608, 560:608, :3]
-bt = np.tile(brick, (H // 48 + 1, W // 48 + 1, 1))[:H, :W]
+# caminho de tijolo: nasce dentro da praça (lado direito do portal), desce até a areia na frente do píer; borda
+# serrilhada em degraus de 2 px com o mesmo contorno verde-escuro + brilho verde-claro da praça, tijolo alinhado ao da praça
+pts = [(690, 636), (694, 700), (704, 748), (712, 790), (716, deckTop - 6)]
+hw = np.zeros((H // 2, W // 2), np.float32); hy_, hx_ = np.mgrid[0:H // 2, 0:W // 2]
+dist = np.full((H // 2, W // 2), 1e9, np.float32)
+for (a_, b_), (c_, e_) in zip(pts, pts[1:]):
+    a2, b2, c2, e2 = a_ / 2, b_ / 2, c_ / 2, e_ / 2; vx, vy = c2 - a2, e2 - b2; L2 = vx * vx + vy * vy
+    t_ = np.clip(((hx_ - a2) * vx + (hy_ - b2) * vy) / L2, 0, 1); dist = np.minimum(dist, np.hypot(hx_ - (a2 + t_ * vx), hy_ - (b2 + t_ * vy)))
+jag = noise(W // 2, H // 2, 5, 9); wav = noise(W // 2, H // 2, 22, 10)
+pm2 = dist < (11 + wav * 4 + (jag - .5) * 3)
+path = np.kron(pm2, np.ones((2, 2), bool))[:H, :W] & (yy >= 600)
+brick = A0[512:576, 560:624, :3]                                   # 64x64 de tijolo puro da praça
+bt = brick[(yy - 512) % 64, (xx - 560) % 64]
 # florzinhas e tufos: recortados da grama do próprio Refúgio e espalhados pela grama nova
 gref = A0[140:690, :, :3]; base = np.array([123, 174, 85]); dev = np.abs(gref - base).sum(-1) > 60
 grassy = ndimage.uniform_filter((np.abs(gref - base).sum(-1) < 30).astype(float), 15) > .8
@@ -155,11 +159,14 @@ for _ in range(int(W * ADD * len(decals) / max(1, gref.shape[0] * W) * 1.0)):
     sub = new[y_:y_ + hh, x_:x_ + ww]; sub[m_] = d_[m_]; dens += 1
 print("enfeites", len(decals), dens)
 # tijolo por cima da grama e da terra (nunca na água), com contorno escuro como a praça
-pth = path & (grassM | (yy < H0) | ((landD > -10 - en * 10) & land))
-outline = ndimage.binary_dilation(pth, iterations=1) & ~pth & (grassM | (yy < H0))
+orig_brick = np.zeros((H, W), bool); orig_brick[:H0] = np.abs(A0[..., :3] - np.array([189, 159, 129])).sum(-1) < 90
+pth = path & (grassM | (yy < H0) | ((landD > -10 - en * 10) & land)) & ~orig_brick       # onde já é praça fica a praça
+allb = pth | (orig_brick & ndimage.binary_dilation(path, iterations=4))
+outline = ndimage.binary_dilation(allb, iterations=1) & ~allb & (grassM | (yy < H0)) & ndimage.binary_dilation(pth, iterations=2)
+halo = ndimage.binary_dilation(allb, iterations=2) & ~allb & ~outline & (grassM | (yy < H0)) & ndimage.binary_dilation(pth, iterations=3) & ((xx + yy) % 3 > 0)
 region = yy >= H0
 FULL[region, :3] = new[region]; FULL[region, 3] = 255
-FULL[pth, :3] = bt[pth]; FULL[outline & ~pth, :3] = np.array([92, 120, 60])
+FULL[pth, :3] = bt[pth]; FULL[outline, :3] = np.array([38, 70, 40]); FULL[halo, :3] = np.array([150, 196, 86])
 # junção suave com o chão antigo (as últimas linhas dele são só grama)
 for k in range(10):
     a = (k + 1) / 11; row = H0 + k; m = ~pth[row]
@@ -199,7 +206,9 @@ Image.open(os.path.join(P, "Fish", "Fish1_animation.png")).save(os.path.join(RF,
 Image.open(os.path.join(P, "Fish", "Fish2_animation.png")).save(os.path.join(RF, "fish-jump2.png"))
 
 # ── grade de colisão ───────────────────────────────────────────────────────────────────────────────
-v = json.load(open(os.path.join(V, "village.json")))
+VO = os.path.join(ROOT, "art-src", "refugio-village-original.json")   # a grade antes da doca (sem aberturas antigas)
+v = json.load(open(os.path.join(V, "village.json"))); v0 = json.load(open(VO)) if os.path.isfile(VO) else v
+v["coll"] = v0["coll"][:H0 // G]
 coll = [list(row) for row in v["coll"][:H0 // G]]
 deck = np.zeros((H, W), bool); da = np.array(DECK)[..., 3] > 0; deck[DY:DY + DH, DX:DX + DW] = da[:min(DH, H - DY)]
 hull = np.zeros((H, W), bool); fa = np.array(render(["Big_boat1", "Big_boat2", "Small_boats", "Small_boats2"]))[..., 3] > 0; hull[DY:DY + DH, DX:DX + DW] = fa & ~da   # barcos (postes finos não travam)

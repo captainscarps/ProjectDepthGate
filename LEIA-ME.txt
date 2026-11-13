@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p213.4 · cache ded-web-v6.5.4-vozes-taverna)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p213.5 · cache ded-web-v6.5.5-caminhos)
+
+P213.5 — CAMINHO DA DOCA E GATO DA FORJA
+· O caminho de tijolo até a doca agora nasce de dentro da praça (sem o corte reto na grama), com borda
+  serrilhada, contorno verde-escuro e brilho verde-claro iguais aos da praça e tijolos alinhados aos dela.
+· O Fumaça (gato da forja) aparecia em dobro: os quadros dele são de 100x50 e eram lidos como 100x100.
+· scripts/build_refugio_dock.py passa a partir sempre do chão e da grade originais (art-src/refugio-*-original).
 
 P213.4 — VOZES DO FARIAS E DA MARIA
 · Farias com voz de senhor idoso, grossa e séria (ElevenLabs "Jaan"); Maria com voz de jovem de uns 20 anos,
