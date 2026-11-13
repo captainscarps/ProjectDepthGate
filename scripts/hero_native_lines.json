@@ -891,7 +891,8 @@
    "ar": "مهلاً… هذه لغتي أنا. لقد زال سحرُ الحارسة.",
    "fr": "Attends… c'est ma propre langue. La magie de la Gardienne a disparu.",
    "yrl": "Asaru… kuá se nheẽnga tee. Mukameẽsara pusanga ukanhemu ana.",
-   "yrl_tts": "Assáru… cuá se nhênga teê. Mucamenssára pussanga ucanhêmu ana."
+   "yrl_tts": "Assáru… cuá se nhênga teê. Mucamenssára pussanga ucanhêmu ana.",
+   "_nota": "BERSERKER, ARCHER e ROGUE desta fala foram gravados no ElevenLabs (Edge bloqueado na rede); o build mantém o arquivo."
   }
  ],
  "own": {
