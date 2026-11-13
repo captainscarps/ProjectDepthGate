@@ -1,4 +1,8 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212.5 · cache ded-web-v6.4.5-valdrak)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212.6 · cache ded-web-v6.4.6-valdrak)
+
+P212.6 — SEM TABERNEIRO NA RUA
+· O taberneiro careca de barba ruiva e avental também saiu da multidão (só o Bram, com o visual dele, fica na
+  frente da taberna). O ferreiro do outro lado do riacho agora é o ferreiro com a bigorna, martelando.
 
 P212.5 — MAIS MORADORES (PACOTE "PEASANTS")
 · 3 camponeses novos do pacote Peasants da craftpix — um rapaz, uma camponesa com a cesta e um lavrador com

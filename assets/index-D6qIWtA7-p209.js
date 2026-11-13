@@ -21058,7 +21058,7 @@ class __ValdrakAntiga extends j.Scene {
     const npc = (id, tex, anim, x, y, sc = .7, flip = !1) => { const s = S.add.sprite(x, y, tex, 0).setOrigin(.5, .99).setScale(sc * 1.25).setFlipX(flip); S.anims.exists(anim) && s.play(anim); s.idA = anim; S.npcs[id] = s; return s };
     npc("mira", "elf-1", "vk-mira-idle", sp.mira[0], sp.mira[1], .68, !0);
     npc("baker", "peasant-2", "vk-p2-idle", sp.baker[0], sp.baker[1], .68);
-    npc("smith", "peasant-4", "vk-p4-idle", sp.smith[0], sp.smith[1], .7, !0);
+    npc("smith", "peasant-1", "vk-p1-idle", sp.smith[0], sp.smith[1] - 40, .7, !0);   // o ferreiro na bigorna (sprite com a bigorna desenhada)
     npc("mom", "vkv-elf-3-1", "vkv-i-elf-3-1", sp.ticoMom[0], sp.ticoMom[1], .64);
     npc("barmaid", "peasant-2", "vk-p2-idle", sp.tavernDoor[0] + 150, sp.tavernDoor[1] + 50, .64, !0);   // só uma garçonete, na frente da taberna
     npc("tico", "menino", "vk-tico-idle", sp.tico[0], sp.tico[1], .62);
@@ -21150,7 +21150,7 @@ class __ValdrakAntiga extends j.Scene {
   speaker(who) {
     const sp = __VL.speakers[who] || {}, S = this;
     if (who === "hero") { const nm = (typeof __HN !== "undefined" && __HN[S.cls]) || S.cls; return { name: String(nm).toUpperCase(), tex: this.textures.exists("mk4b-" + S.cls.toLowerCase()) ? "mk4b-" + S.cls.toLowerCase() : "__DEFAULT", sc: .9, cls: S.cls } }
-    const T = { aelric: ["vk-aelric-young-idle", .95], narr: ["vk-aelric-king-idle", .95], king: ["vk-aelric-king-idle", .95], mira: ["elf-1", .9], baker: ["peasant-2", .85], mom: ["vkv-elf-3-1", .85], smith: ["peasant-4", .85], tico: ["menino", 1.1], bram: ["vkv-bram", .85], villager: ["peasant-3", .85], chief: ["vk-chief", 1.1], halvard: ["vk-aelric-king-idle", .95] }[who] || ["__DEFAULT", 1];
+    const T = { aelric: ["vk-aelric-young-idle", .95], narr: ["vk-aelric-king-idle", .95], king: ["vk-aelric-king-idle", .95], mira: ["elf-1", .9], baker: ["peasant-2", .85], mom: ["vkv-elf-3-1", .85], smith: ["peasant-1", .85], tico: ["menino", 1.1], bram: ["vkv-bram", .85], villager: ["peasant-3", .85], chief: ["vk-chief", 1.1], halvard: ["vk-aelric-king-idle", .95] }[who] || ["__DEFAULT", 1];
     return { name: sp.name ? __vT(sp.name) : who, tex: T[0], sc: T[1], dark: who === "halvard" || who === "king" };
   }
   say(scene, done) {
@@ -21181,9 +21181,9 @@ class __ValdrakAntiga extends j.Scene {
   setObj(k, extra = "") { this.objK = k; this.objT.setText(k ? "◆ " + __vT(__VL.ui[k]) + extra : "") }
   // ── moradores (variações dos NPCs do jogo): andam, conversam e comentam a festa ───────────────────
   spawnVillagers() {
-    const S = this, VM = S.cache.json.get("vk-vill") || {}, keys = Object.keys(VM).filter(k => !VM[k].special && !k.startsWith("peasant-2")), R = Math.random;  // a garçonete da taberna (com bandeja) e o Bram não entram na multidão
+    const S = this, VM = S.cache.json.get("vk-vill") || {}, keys = Object.keys(VM).filter(k => !VM[k].special && !k.startsWith("peasant-2") && !k.startsWith("peasant-4")), R = Math.random;  // gente da taberna (garçonete e taberneiro de avental) e o Bram não entram na multidão
     if (!keys.length) return; S.vill = [];
-    const farmers = keys.filter(k => VM[k].farm), walkers = keys.filter(k => VM[k].walk && !VM[k].kid && !VM[k].farm), standers = keys.filter(k => !VM[k].walk), kids = keys.filter(k => VM[k].kid);
+    const farmers = keys.filter(k => VM[k].farm), walkers = keys.filter(k => VM[k].walk && !VM[k].kid && !VM[k].farm), standers = (a => a.length ? a : keys.filter(k => !VM[k].kid && !VM[k].farm))(keys.filter(k => !VM[k].walk && !VM[k].kid)), kids = keys.filter(k => VM[k].kid);
     const pick = a => a[Math.floor(R() * a.length)];
     const GROUPS = [  // [x, y, raio, quantos, tipo]  tipo: w = anda · s = parado conversando · k = criança correndo
       [1600, 930, 230, 9, "w"], [1500, 1000, 40, 2, "s"], [1720, 880, 40, 2, "s"], [1600, 960, 200, 3, "k"],
@@ -21398,7 +21398,7 @@ class __ValdrakAntiga extends j.Scene {
   startRaid() {
     const S = this, sp = S.M.spots; S.state.a2 = 1; S.hp = S.maxHp; S.saved = 0; S.runners = []; S.saidRescue = S.saidRescue || !1;
     S.npcs.mira.setVisible(!1); S.npcs.bram.setVisible(!1);
-    const tex = [["vkv-elf-2-1", "vkv-i-elf-2-1"], ["peasant-4", "vk-p4-idle"], ["peasant-3", "vk-p3-idle"], ["menino", "vk-tico-idle"]];
+    const tex = [["vkv-elf-2-1", "vkv-i-elf-2-1"], ["vkv-camp-rapaz-1", "vkv-i-camp-rapaz-1"], ["peasant-3", "vk-p3-idle"], ["menino", "vk-tico-idle"]];
     S.rescueNpcs = sp.rescue.slice(0, 4).map(([x, y], i) => { const s = S.add.sprite(x, y, tex[i][0], 0).setOrigin(.5, .99).setScale(i === 3 ? .78 : .85); s.play(tex[i][1]); return { s } });
     S.setObj("o_rescue", " (0/4)");
     const waves = () => { if (S.state.a2 !== 1) return; const alive = S.enemies.filter(e => !e.dead).length; if (alive < 5) { const [rx, ry] = sp.raidFrom; S.spawnRaider(rx + (Math.random() - .5) * 500, ry - 300 + Math.random() * 200) } S.time.delayedCall(4200, waves) };
