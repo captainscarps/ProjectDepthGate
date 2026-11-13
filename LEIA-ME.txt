@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p211.2 · cache ded-web-v6.3.5-voz-nativa)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p211.3 · cache ded-web-v6.3.6-epilogo-nativo)
+
+P211.3 — NO CAMINHO DE VOLTA, CADA HERÓI VOLTA A FALAR A PRÓPRIA LÍNGUA
+· Na volta de barco do fim do jogo a magia da Guardiã se desfaz: as falas finais tocam na língua nativa
+  do herói (legenda no idioma do jogo). Ao sair da cena a magia volta, então o resto do jogo não muda.
+· Fala nova, a primeira da volta: "Espera… essa é a minha língua. A magia da Guardiã se foi." — gravada
+  na língua de Draven, Kael, Tharion, Valthor, Arthelia e Araí. Akihiro, Hayato e Seris (vozes Edge)
+  ainda sem áudio dessa fala: o serviço do Edge estava bloqueado na rede (só legenda por enquanto).
+· scripts/patch_epilogue_native.py (aplica no bundle e em scripts/source/arctic-prologue.js).
 
 P211.2 — LÍNGUAS NATIVAS COM A MESMA VOZ DA DUBLAGEM
 · Draven (inglês), Kael (inglês), Tharion (tcheco), Valthor (polonês), Arthelia (árabe) e Araí (nheengatu)

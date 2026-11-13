@@ -184,7 +184,13 @@ def main():
                             if old.get("d", {}).get(hid, {}).get(cls) is not None and os.path.exists(f):
                                 man["d"][hid][cls] = old["d"][hid][cls]
                             return
-                        await tts(nat, dict(v, phrased=False), raw)   # Edge: se o corte por frases falhar, gera a fala inteira
+                        try:
+                            await tts(nat, dict(v, phrased=False), raw)   # Edge: se o corte por frases falhar, gera a fala inteira
+                        except Exception as e2:
+                            print(f"  ERRO {cls} {hid}: {e2}")
+                            if old.get("d", {}).get(hid, {}).get(cls) is not None and os.path.exists(f):
+                                man["d"][hid][cls] = old["d"][hid][cls]
+                            return
                     man["d"][hid][cls] = finish(raw, f)
                     man["s"][hid][cls] = sig
                     print(f"  {cls:12s} {man['d'][hid][cls]:4.1f}s  {nat[:50]}")
