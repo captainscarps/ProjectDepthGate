@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p213.1 · cache ded-web-v6.5.1-taverna)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p213.2 · cache ded-web-v6.5.2-taverna-cheia)
+
+P213.2 — TAVERNA CHEIA: HERÓIS E FREGUESES
+· Quatro dos heróis da vila passam o tempo na taverna (os primeiros desta ordem que não são o herói do jogador:
+  Berserker, Ladina, Caçador, Druida, Xamã, Necromante), perto das mesas e do balcão, com a mesma conversa de
+  sempre. Os outros continuam pela vila.
+· Sete fregueses (moradores com as variações de roupa e cabelo da vila: elfos, camponeses, um rapaz, uma moça,
+  um lavrador e um menino) parados nas mesas e no balcão, com conversas soltas em balão de vez em quando.
 
 P213.1 — REFÚGIO: A TAVERNA DO FARIAS E DA MARIA
 · A cabana do curtidor, que vivia trancada, agora é a porta da taverna (TAVERNA — Entrar).

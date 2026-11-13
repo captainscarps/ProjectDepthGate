@@ -7,6 +7,11 @@
    porta e caminho por toque funcionam sozinhos) e a câmera segue o herói dentro do salão; ao sair, volta a forja.
    Arte: scripts/build_taverna.py. */
 const __TV_X = 1184, __TV_Y = 320;
+/* fregueses (moradores do Refúgio, as variações de roupa e cabelo da vila): [sprite, quadros parados, pés x, pés y, virado p/ esquerda] */
+const __TV_PATRONS = [["elf-2-2", 7, 336, 152, 1], ["camp-rapaz-2", 6, 88, 208, 0], ["camp-moca-1", 6, 334, 210, 1], ["peasant-3-3", 7, 244, 143, 1],
+  ["camp-lavrador-1", 6, 176, 194, 0], ["elf-3-0", 7, 178, 143, 0], ["menino-1", 6, 98, 236, 0]];
+/* heróis que passam o tempo na taverna (os primeiros desta lista que não são o herói do jogador): pés x, pés y, olhando */
+const __TV_HEROES = [["BERSERKER", 128, 172, 1], ["ROGUE", 300, 176, -1], ["HUNTER", 256, 194, -1], ["DRUID", 152, 146, 1], ["SHAMAN", 70, 160, 1], ["NECROMANCER", 352, 196, -1]];
 {
   const P0 = bo.prototype.preload;
   bo.prototype.preload = function () {
@@ -15,6 +20,7 @@ const __TV_X = 1184, __TV_Y = 320;
       const L = this.load, op = L.path, T = "assets/pixel-art/hub/taverna/", N = "assets/pixel-art/npc/", ex = k => this.textures.exists(k); L.setPath("");
       ex("tv-base") || L.image("tv-base", T + "base.png"); ex("tv-top") || L.image("tv-top", T + "top.png");
       ex("tv-props") || L.atlas("tv-props", T + "props.png", T + "props.json"); this.cache.json.exists("tv-map") || L.json("tv-map", T + "taverna.json");
+      for (const k of __TV_PATRONS) ex("vkv-" + k[0]) || L.spritesheet("vkv-" + k[0], "assets/pixel-art/valdrak/npc/" + k[0] + ".png", k[0].startsWith("menino") ? { frameWidth: 64, frameHeight: 77 } : { frameWidth: 128, frameHeight: 128 });
       for (const n of ["farias", "maria"]) {
         ex(n) || L.spritesheet(n, N + n + ".png", { frameWidth: 128, frameHeight: 128 });
         for (const e of ["talk", "calm", "smile", "sadness", "aggression", "special"]) ex(`${n}-p-${e}`) || L.image(`${n}-p-${e}`, `${N}${n}-p-${e}.png`);
@@ -40,6 +46,8 @@ const __TV_X = 1184, __TV_Y = 320;
     }
     return r;
   };
+  const HI = Fl.prototype.__heroesInit;   // os heróis da vila nascem depois: só então alguns vão para a taverna
+  if (HI) Fl.prototype.__heroesInit = function () { const r = HI.apply(this, arguments); this.__tvHeroesReady = 1; try { this.__tvMoveHeroes?.() } catch (e) { console.warn("[taverna] heróis", e) } return r };
   const LV = Fl.prototype.__leave;
   Fl.prototype.__leave = function () {
     if (!this.__tv) return LV.apply(this, arguments);
@@ -66,6 +74,8 @@ function __tvMode(H, on) {
   }
 }
 function __tvBuild(H) {
+  const L3 = __L3;
+  H.events.once("shutdown", () => { H.__tvHeroesReady = 0; H.__tvMoveHeroes = null });
   const J = H.cache.json.get("tv-map"), M = H.M, X = __TV_X, Y = __TV_Y, FO = J.feetOff || 0;
   H.__tvI = { x: X, y: Y, w: J.w, h: J.h, coll: J.coll, spawn: [X + J.spawn[0], Y + J.spawn[1]], door: [X + J.door[0], Y + J.door[1]], spots: {}, smith: M.interior.smith };
   H.add.image(X, Y, "tv-base").setOrigin(0).setDepth(-40);
@@ -92,8 +102,34 @@ function __tvBuild(H) {
       onComplete: () => { if (to === C0) { mar.play("maria-idle", !0); H.time.delayedCall(1800 + rnd() * 1500, go) } else { mar.play("maria-serve", !0); mar.once("animationcomplete", () => { mar.play("maria-idle2", !0); H.time.delayedCall(1400 + rnd() * 1600, go) }) } } });
   };
   H.time.delayedCall(1500, go);
+  // fregueses parados conversando nas mesas
+  const PAT = [], H_ = 31;
+  for (const [k, n, fx, fy, left] of __TV_PATRONS) {
+    if (!H.textures.exists("vkv-" + k)) continue;
+    mk("vkv-i-" + k, "vkv-" + k, 0, n - 1, 6);
+    const kid = k.startsWith("menino"), bh = kid ? 74 : 68, s_ = (kid ? 22 : H_) / bh;
+    const sp = H.add.sprite(X + fx, Y + fy, "vkv-" + k, 0).setOrigin(.5, .99).setScale(s_).setFlipX(!!left).setDepth(Y + fy - FO);
+    sp.play({ key: "vkv-i-" + k, startFrame: (rnd() * n) | 0 }); PAT.push(sp);
+  }
+  const CHAT = [L3("…e o dragão nem viu de onde veio a flecha!", "…and the dragon never saw where the arrow came from!", "…¡y el dragón ni vio de dónde vino la flecha!"), L3("Mais uma rodada, Farias!", "Another round, Farias!", "¡Otra ronda, Farias!"),
+    L3("Dizem que o castelo de Valdrak ainda respira.", "They say Valdrak castle still breathes.", "Dicen que el castillo de Valdrak todavía respira."), L3("Essa sopa tem gosto de bota velha… e eu adoro.", "This stew tastes like an old boot… and I love it.", "Esta sopa sabe a bota vieja… y me encanta."),
+    L3("Viu a doca nova? Tem peixe pulando até de dia.", "Seen the new dock? Fish jump even in daylight.", "¿Viste el muelle nuevo? Los peces saltan hasta de día."), L3("Shh! A Maria está vindo.", "Shh! Maria's coming.", "¡Shh! Viene María."),
+    L3("Aposto três moedas que ele não volta do próximo portal.", "Three coins says they don't come back from the next gate.", "Apuesto tres monedas a que no vuelve del próximo portal."), L3("Ha! Essa foi boa!", "Ha! Good one!", "¡Ja! ¡Esa fue buena!")];
+  H.time.addEvent({ delay: 4200, loop: !0, callback: () => { if (!H.__tv || H.__hubDlgO || rnd() < .35 || !PAT.length) return; const p = PAT[(rnd() * PAT.length) | 0]; try { H.__say(p.x, p.y - 30, CHAT[(rnd() * CHAT.length) | 0], 2600, "#f2e6c8") } catch (e) { } } });
+  // heróis na taverna: alguns dos heróis da vila passam a ficar aqui dentro (mesma conversa de sempre)
+  const moveHeroes = () => {
+    if (!H.heroes) return; let n = 0;
+    for (const [id, fx, fy, face] of __TV_HEROES) {
+      if (n >= 4) break; const h = H.heroes.find(q => q.id === id); if (!h) continue; n++;
+      const ox = h.x, oy = h.y; h.x = X + fx; h.y = Y + fy - FO; h.face = { x: face, y: 0 }; h.tv = 1;
+      h.rig.container.setPosition(h.x, h.y).setDepth(h.y);
+      const it = H.inters.find(o => o.id === "hero-" + id); if (it) { it.area = "in"; it.x = h.x; it.y = h.y; it.ay = h.y + 14 }
+      const lb = (H.labels || []).find(o => o.text && Math.abs(o.x - ox) < 2 && Math.abs(o.y - (oy - 34)) < 2); if (lb) { lb.setVisible(!1); H.labels = H.labels.filter(o => o !== lb); lb.destroy() }
+    }
+  };
+  H.__tvMoveHeroes = moveHeroes; if (H.__tvHeroesReady) moveHeroes();
   // conversas (retrato e caixa de fala do Refúgio)
-  const L3 = __L3, FL = [
+  const FL = [
     [{ who: "farias", e: "calm", t: L3("Bem-vindo à taverna do Refúgio. Limpe as botas: aqui dentro quem manda sou eu.", "Welcome to the Refuge tavern. Wipe your boots: in here, I'm the one in charge.", "Bienvenido a la taberna del Refugio. Límpiate las botas: aquí dentro mando yo.") },
      { who: "farias", e: "smile", t: L3("Farias, a seu dispor. A Maria cuida das mesas, eu cuido de tudo o resto.", "Farias, at your service. Maria handles the tables, I handle everything else.", "Farias, a tu servicio. María atiende las mesas, yo me encargo de todo lo demás.") }],
     [{ who: "farias", e: "smile", t: L3("Hah! Voltou inteiro de mais um portal? A próxima caneca é por conta da casa… brincadeira, não é não.", "Hah! Back in one piece from another gate? Next mug's on the house… just kidding, it's not.", "¡Ja! ¿Volviste entero de otro portal? La próxima jarra va por la casa… es broma, no va.") }],
