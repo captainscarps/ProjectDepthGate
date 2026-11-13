@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212.3 · cache ded-web-v6.4.3-valdrak)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212.4 · cache ded-web-v6.4.4-valdrak)
+
+P212.4 — SEM GARÇONETES ANDANDO PELA RUA
+· A garçonete da taberna (a moça com a bandeja) não entra mais na multidão: fica só uma, parada na frente da
+  taberna, e a padeira na barraca. A mãe do Tico e uma das moradoras do resgate usam outras moradoras.
+· Corrigido: o Bram (visual próprio) também aparecia repetido no meio da multidão.
 
 P212.3 — CLIMA E NOITE NA VALDRAK ANTIGA
 · Cada visita sorteia o clima: céu limpo (50%), chuva (25%) ou neve (25%), e 30% de chance de ser noite.
