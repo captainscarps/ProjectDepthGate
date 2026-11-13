@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p213.0 · cache ded-web-v6.5.0-praia)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p213.1 · cache ded-web-v6.5.1-taverna)
+
+P213.1 — REFÚGIO: A TAVERNA DO FARIAS E DA MARIA
+· A cabana do curtidor, que vivia trancada, agora é a porta da taverna (TAVERNA — Entrar).
+· Lá dentro, um salão grande: balcão com barris e prateleira de garrafas, mesas compridas e redondas, sofás,
+  janelas com luz quente (mapa do pacote CraftPix "Tavern", sem os fregueses dele). Móveis com profundidade e
+  colisão; a câmera segue o herói pelo salão; sai pelo capacho da porta de baixo.
+· Farias, o taberneiro: atrás do balcão limpando canecas — careca com cabelo e barba grisalhos, pele morena,
+  óculos redondos e camisa verde-escura. Maria, a garçonete: anda entre as mesas com a bandeja e serve — cabelo
+  castanho ondulado de pontas claras, bandana preta estampada e blusa marrom.
+· Conversa com retrato na caixa de fala do Refúgio, 5 expressões de cada um (os retratos enviados), falas em
+  PT/EN/ES que se revezam. Na primeira visita o Farias dá as boas-vindas.
 
 P213.0 — REFÚGIO: PRAIA DE VERDADE, ENTRADA DA DOCA E ANDAR NO RASO
 · Praia refeita: borda da grama serrilhada com tufinhos, areia seca com grão, areia molhada perto da água, linha
