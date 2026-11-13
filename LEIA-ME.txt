@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212 · cache ded-web-v6.4.0-valdrak)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212.1 · cache ded-web-v6.4.1-valdrak)
+
+P212.1 — VALDRAK ANTIGA COM CENÁRIO ORGÂNICO
+· Caminhos de pedra redesenhados como no pacote da vila: bordas seguindo o contorno de cada pedra, curvas
+  e larguras variadas, praça irregular e tufos de grama nas frestas.
+· Rio sinuoso com margem de terra, pedras e reflexos; lago e canteiros com contorno natural e fileiras tortas.
+· Grama com manchas, tufos, folhas e pedrinhas; mata em grupos com arbustos; paliçada acompanhando a curva
+  ao sul da vila; muralha com torres e o grande portão de madeira (sempre fechado).
 
 P212 — MISSÃO "O REI QUE ABRIU AS PORTAS" (PARTE 1: O PRÍNCIPE DE VALDRAK)
 · Com metade dos selos, ao chegar no Refúgio o herói sonha com a voz do Rei e acorda com um fragmento da

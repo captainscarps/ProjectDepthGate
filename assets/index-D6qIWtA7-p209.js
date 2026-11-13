@@ -21018,7 +21018,6 @@ class __ValdrakAntiga extends j.Scene {
     ex("menino") || L.spritesheet("menino", "assets/pixel-art/npc/menino.png", { frameWidth: 128, frameHeight: 154 });
     ex("vk-raider") || L.spritesheet("vk-raider", "assets/pixel-art/enemies/nf-pyro-ashblade.png", { frameWidth: 75, frameHeight: 98 });
     ex("vk-chief") || L.spritesheet("vk-chief", "assets/pixel-art/enemies/nf-pyro-cultist.png", { frameWidth: 85, frameHeight: 79 });
-    ex("vk-door") || L.spritesheet("vk-door", P + "map/gate.png", { frameWidth: 96, frameHeight: 96 });
   }
   mkAnims() {
     const A = this.anims, mk = (k, t, fr, rep = -1, s = 0, e) => { if (A.exists(k) || !this.textures.exists(t)) return; const n = this.textures.get(t).frameTotal - 1; A.create({ key: k, frames: A.generateFrameNumbers(t, { start: s, end: e ?? n - 1 }), frameRate: fr, repeat: rep }) };
@@ -21029,7 +21028,6 @@ class __ValdrakAntiga extends j.Scene {
     mk("vk-tico-idle", "menino", 6, -1, 0, 4);
     mk("vk-r-idle", "vk-raider", 8, -1, 0, 7); mk("vk-r-walk", "vk-raider", 10, -1, 8, 15); mk("vk-r-atk", "vk-raider", 14, 0, 23, 33); mk("vk-r-die", "vk-raider", 10, 0, 38, 47);
     mk("vk-c-idle", "vk-chief", 8, -1, 0, 7); mk("vk-c-walk", "vk-chief", 10, -1, 8, 23); mk("vk-c-atk", "vk-chief", 14, 0, 24, 38); mk("vk-c-die", "vk-chief", 10, 0, 39, 47);
-    mk("vk-door-close", "vk-door", 8, 0, 0, 3);
   }
   create() {
     if (this.mode === "dream") return this.dream();
@@ -21039,11 +21037,8 @@ class __ValdrakAntiga extends j.Scene {
     S.props = [];
     for (const [k, x, y, f] of M.props) { const im = S.add.image(x, y, "vk-props", k).setOrigin(.5, 1).setDepth(y); f && im.setFlipX(!0); S.props.push(im); if (k === "windmill") S.mill = im }
     if (S.mill) { S.sails = S.add.image(S.mill.x + 2, S.mill.y - S.mill.height + 78, "vk-props", "sails").setDepth(S.mill.y + 1); S.tweens.add({ targets: S.sails, angle: 360, duration: 9000, repeat: -1 }) }
-    S.gate = S.add.sprite(M.gateX, M.wallH, "vk-door", 3).setOrigin(.5, 1).setScale(1.4).setDepth(M.wallH);  // portão aberto no começo (festa)
-    S.gate.setFrame(0);
     // pedras do riacho e tábuas quebradas
-    S.stones = [];
-    for (let r = 0; r < M.coll.length; r++) for (let c = 0; c < M.coll[r].length; c++) if (M.coll[r][c] === "3" && (r % 2 === 0) && (c % 2 === 0)) S.stones.push(S.add.image(c * S.G + 16, r * S.G + 10, "vk-props", "stone").setDepth(r * S.G - 40).setScale(1.3));
+    S.stones = (M.stones || []).map(([x, y]) => S.add.image(x, y + 8, "vk-props", "stone").setDepth(y - 30).setScale(1.5));
     // personagens
     const sp = M.spots;
     S.hero = S.add.sprite(sp.start[0], sp.start[1], "vk-aelric-young-idle", 0).setOrigin(.5, .99).setScale(.9);
@@ -21284,7 +21279,7 @@ class __ValdrakAntiga extends j.Scene {
   toAct2(skipTalk) {
     const S = this, sp = S.M.spots; S.busy = !0; S.state.a1 = 4;
     S.cameras.main.fadeOut(800); S.time.delayedCall(820, () => {
-      S.tweens.add({ targets: S.night, fillAlpha: .55, duration: 10 }); S.gate.setFrame(3);
+      S.tweens.add({ targets: S.night, fillAlpha: .55, duration: 10 });
       for (const id in S.npcs) if (id !== "mira" && id !== "bram") S.npcs[id].setVisible(!1);
       S.npcs.mira.setPosition(sp.festival[0] - 40, sp.festival[1] + 30); S.npcs.bram.setPosition(sp.festival[0] + 50, sp.festival[1] + 30);
       S.hero.setPosition(sp.festival[0], sp.festival[1] + 60);
