@@ -1,0 +1,32 @@
+{
+ "aelric-young": {
+  "idle": 6,
+  "idle2": 6,
+  "walk": 12,
+  "run": 12,
+  "attack1": 4,
+  "attack2": 5,
+  "run-attack": 5,
+  "jump": 10,
+  "hurt": 3,
+  "dead": 5
+ },
+ "aelric-king": {
+  "idle": 7,
+  "walk": 12,
+  "attack": 5,
+  "protection": 3,
+  "special": 4,
+  "dialogue": 7
+ },
+ "elyndra-queen": {
+  "idle": 7,
+  "walk": 12,
+  "attack": 4,
+  "protection": 3,
+  "shield": 6,
+  "charge": 12,
+  "special": 4,
+  "dialogue": 8
+ }
+}
