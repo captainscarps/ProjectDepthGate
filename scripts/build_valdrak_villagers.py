@@ -99,6 +99,10 @@ for key, (f, ri, rm, hair, skin_k, shift, sat) in SPECIAL.items():
     for i, fr in enumerate(move): sheet.paste(Image.fromarray(recolor(fr, hair, skin_k, shift, sat)), (i * 128, fh))
     sheet.save(os.path.join(OUT, key + ".png"), optimize=True)
     meta[key] = {"idle": len(idle), "move": len(move), "walk": False, "cols": sheet.width // 128, "fw": 128, "fh": fh, "kid": False, "special": True}
+# altura do corpo (linhas com 3+ pixels) no 1º quadro parado: a cena usa para todos ficarem na mesma proporção
+for k, f in meta.items():
+    a = np.array(Image.open(os.path.join(OUT, k + ".png")).convert("RGBA"))[:f["fh"], :f.get("fw", 128), 3] > 0
+    rows = np.nonzero(a.sum(1) >= 3)[0]; f["bh"] = int(rows[-1] - rows[0] + 1) if len(rows) else f["fh"]
 json.dump(meta, open(os.path.join(OUT, "villagers.json"), "w"), indent=1)
 # prévia
 keys = list(meta); P = Image.new("RGBA", (len(keys) * 64, 80), (110, 140, 90, 255))

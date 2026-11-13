@@ -344,6 +344,7 @@ function __rfLite(H, save) {
         if (g) inp.padButtons = g.buttons.map((b) => b.pressed || b.value > .5);
       }
       this.__rfWasBlocked = blocked;
+      if (!this.panel && this.__fn) this.__fn = null;   // painel fechado por fora do closePanel (forja): sem foco de controle velho
     } catch (e) {}
     return U0.apply(this, arguments);
   };
@@ -361,11 +362,38 @@ function __rfPanelInput(H) {
      o herói ao lado do cercado/vendedor, abria o mesmo painel de novo (parecia travado no menu dos Pets).
      Se o toque caiu num objeto preso à tela (interface), a cena ignora esse toque. */
   const I = H.input, em = I.emit;
+  /* Rede de segurança dos painéis: se um toque/clique com painel aberto não acertou nenhum botão (só o fundo do
+     painel ou nada), procura o botão do painel que está embaixo do dedo pela caixa dele na tela e aciona.
+     Assim um alvo com área de toque errada (escala do aparelho, filho sem scrollFactor, etc.) não deixa o menu
+     parecer travado. */
+  const rescue = (p, over) => {
+    const o = H.panel; if (!o?.active || !o.visible) return;
+    const hitReal = (over || []).some((g) => g && g.input?.enabled && !(g.type === "Rectangle" && g.width >= _ * .95));
+    if (hitReal) return;
+    const cam = H.cameras.main, z = cam.zoom || 1, wx = p.x / z + cam.width / 2 * (1 - 1 / z), wy = p.y / z + cam.height / 2 * (1 - 1 / z);
+    const all = []; const walk = (c) => { for (const x of c.list || []) { all.push(x); x.list && walk(x) } }; walk(o);
+    let best = null, bd = 1e9;
+    for (const g of all) {
+      if (!g.input?.enabled || !g.active || !g.visible || (g.type === "Rectangle" && g.width >= _ * .95) || !g.getBounds) continue;
+      const b = g.getBounds(), pad = 6;
+      if (wx < b.x - pad || wx > b.right + pad || wy < b.y - pad || wy > b.bottom + pad) continue;
+      const d = Math.hypot(wx - b.centerX, wy - b.centerY) - (all.indexOf(g) * 1e-3);
+      if (d < bd) { bd = d; best = g }
+    }
+    if (best) { H.__rfRescued = (H.__rfRescued || 0) + 1; best.emit("pointerdown", p, 0, 0, { stopPropagation() {} }) }
+  };
   I.emit = function (ev, p, over) {
     if (ev === "pointerdown" && !H.panel && Array.isArray(over) && over.some((g) => g && g.scrollFactorX === 0)) H.__uiTap = !0;
-    return em.apply(this, arguments);
+    const r = em.apply(this, arguments);
+    if (ev === "pointerdown" && H.panel && !H.__rfInRescue) { H.__rfInRescue = 1; try { rescue(p, over) } catch (e) { } H.__rfInRescue = 0 }
+    return r;
   };
   H.events.once("shutdown", () => { I.emit = em });
+}
+
+{
+  const C0 = Fl.prototype.closePanel;
+  Fl.prototype.closePanel = function () { const r = C0.apply(this, arguments); this.__fn = null; return r };
 }
 
 function __rfQuality(H) {

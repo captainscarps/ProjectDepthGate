@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212.6 · cache ded-web-v6.4.6-valdrak)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212.7 · cache ded-web-v6.4.7-paineis)
+
+P212.7 — PAINÉIS DO REFÚGIO À PROVA DE TOQUE PERDIDO + PROPORÇÃO NA VALDRAK ANTIGA
+· Rede de segurança em todos os painéis do Refúgio (Treino de Pets, vendedor, forja, santuário, mural): se um
+  toque ou clique com o painel aberto não acerta nenhum botão (só o fundo), o painel acha o botão que está
+  embaixo do dedo pela caixa dele na tela e aciona. Um alvo com área de toque errada não trava mais o menu.
+· Fechar um painel limpa o foco do controle (antes ficava um foco velho depois do vendedor e da forja).
+· Testado no celular (toque) e no PC (mouse, teclado e controle): abrir pelo botão !, trocar de pet, recrutar,
+  fechar, voltar a andar; vendedor → aba de pets; santuário, mural e forja abrindo e fechando.
+· Valdrak antiga: todos os personagens na mesma proporção (altura do corpo medida em cada desenho): adultos
+  ~70 px, o príncipe adolescente ~67, crianças ~50.
 
 P212.6 — SEM TABERNEIRO NA RUA
 · O taberneiro careca de barba ruiva e avental também saiu da multidão (só o Bram, com o visual dele, fica na

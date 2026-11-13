@@ -6,7 +6,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "peasant-2-1": {
   "idle": 7,
@@ -15,7 +16,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "peasant-2-2": {
   "idle": 7,
@@ -24,7 +26,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "peasant-2-3": {
   "idle": 7,
@@ -33,7 +36,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "peasant-3-0": {
   "idle": 7,
@@ -42,7 +46,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 68
  },
  "peasant-3-1": {
   "idle": 7,
@@ -51,7 +56,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 68
  },
  "peasant-3-2": {
   "idle": 7,
@@ -60,7 +66,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 68
  },
  "peasant-3-3": {
   "idle": 7,
@@ -69,7 +76,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 68
  },
  "peasant-3-4": {
   "idle": 7,
@@ -78,7 +86,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 68
  },
  "peasant-4-0": {
   "idle": 7,
@@ -87,7 +96,8 @@
   "cols": 7,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 71
  },
  "peasant-4-1": {
   "idle": 7,
@@ -96,7 +106,8 @@
   "cols": 7,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 71
  },
  "peasant-4-2": {
   "idle": 7,
@@ -105,7 +116,8 @@
   "cols": 7,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 71
  },
  "elf-1-0": {
   "idle": 6,
@@ -114,7 +126,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "elf-1-1": {
   "idle": 6,
@@ -123,7 +136,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "elf-1-2": {
   "idle": 6,
@@ -132,7 +146,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "elf-2-0": {
   "idle": 7,
@@ -141,7 +156,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 69
  },
  "elf-2-1": {
   "idle": 7,
@@ -150,7 +166,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 69
  },
  "elf-2-2": {
   "idle": 7,
@@ -159,7 +176,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 69
  },
  "elf-2-3": {
   "idle": 7,
@@ -168,7 +186,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 69
  },
  "elf-3-0": {
   "idle": 7,
@@ -177,7 +196,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "elf-3-1": {
   "idle": 7,
@@ -186,7 +206,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "elf-3-2": {
   "idle": 7,
@@ -195,7 +216,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "elf-3-3": {
   "idle": 7,
@@ -204,7 +226,8 @@
   "cols": 12,
   "fw": 128,
   "fh": 128,
-  "kid": false
+  "kid": false,
+  "bh": 67
  },
  "menino-0": {
   "idle": 6,
@@ -213,7 +236,8 @@
   "cols": 12,
   "fw": 64,
   "fh": 77,
-  "kid": true
+  "kid": true,
+  "bh": 74
  },
  "menino-1": {
   "idle": 6,
@@ -222,7 +246,8 @@
   "cols": 12,
   "fw": 64,
   "fh": 77,
-  "kid": true
+  "kid": true,
+  "bh": 74
  },
  "menino-2": {
   "idle": 6,
@@ -231,7 +256,8 @@
   "cols": 12,
   "fw": 64,
   "fh": 77,
-  "kid": true
+  "kid": true,
+  "bh": 74
  },
  "menino-3": {
   "idle": 6,
@@ -240,7 +266,8 @@
   "cols": 12,
   "fw": 64,
   "fh": 77,
-  "kid": true
+  "kid": true,
+  "bh": 74
  },
  "camp-rapaz-0": {
   "idle": 6,
@@ -250,7 +277,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": false
+  "farm": false,
+  "bh": 68
  },
  "camp-rapaz-1": {
   "idle": 6,
@@ -260,7 +288,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": false
+  "farm": false,
+  "bh": 68
  },
  "camp-rapaz-2": {
   "idle": 6,
@@ -270,7 +299,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": false
+  "farm": false,
+  "bh": 68
  },
  "camp-rapaz-3": {
   "idle": 6,
@@ -280,7 +310,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": false
+  "farm": false,
+  "bh": 68
  },
  "camp-moca-0": {
   "idle": 6,
@@ -290,7 +321,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": false
+  "farm": false,
+  "bh": 67
  },
  "camp-moca-1": {
   "idle": 6,
@@ -300,7 +332,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": false
+  "farm": false,
+  "bh": 67
  },
  "camp-moca-2": {
   "idle": 6,
@@ -310,7 +343,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": false
+  "farm": false,
+  "bh": 67
  },
  "camp-moca-3": {
   "idle": 6,
@@ -320,7 +354,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": false
+  "farm": false,
+  "bh": 67
  },
  "camp-lavrador-0": {
   "idle": 6,
@@ -330,7 +365,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": true
+  "farm": true,
+  "bh": 69
  },
  "camp-lavrador-1": {
   "idle": 6,
@@ -340,7 +376,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": true
+  "farm": true,
+  "bh": 69
  },
  "camp-lavrador-2": {
   "idle": 6,
@@ -350,7 +387,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": true
+  "farm": true,
+  "bh": 69
  },
  "camp-lavrador-3": {
   "idle": 6,
@@ -360,7 +398,8 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "farm": true
+  "farm": true,
+  "bh": 69
  },
  "bram": {
   "idle": 7,
@@ -370,6 +409,7 @@
   "fw": 128,
   "fh": 128,
   "kid": false,
-  "special": true
+  "special": true,
+  "bh": 71
  }
 }

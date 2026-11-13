@@ -7,6 +7,11 @@
    Entrada: window.__valdrakNow(classe, aoTerminar) · estado salvo em localStorage "depthgate:valdrak:<slot>". */
 const __VL = /*__VLINES__*/null/*__VLINES_END__*/;
 const __VP = "assets/pixel-art/valdrak/";
+/* proporção: altura do corpo (px) de cada desenho e a altura que ele deve ter no mapa.
+   O príncipe (adolescente) fica com ~67 px; adultos ~70; crianças ~50. */
+const __VH = { adult: 70, kid: 50, prince: 67, king: 72 };
+const __VBODY = { "vk-aelric-young-idle": 74, "vk-aelric-king-idle": 72, "peasant-1": 65, "peasant-2": 67, "peasant-3": 68, "peasant-4": 71, "elf-1": 67, "menino": 74, "vk-raider": 66, "vk-chief": 65 };
+function __vScale(S, tex, kind = "adult") { const f = (S.cache.json.get("vk-vill") || {})[String(tex).replace(/^vkv-/, "")]; const bh = f?.bh || __VBODY[tex] || 67; return __VH[kind] / bh }
 function __vT(a) { try { return __L3(a[0], a[1], a[2]) } catch (e) { return a[0] } }
 function __vKey() { return "depthgate:valdrak:" + (window.__activeSlot || 1) }
 function __vGet() { try { return JSON.parse(localStorage.getItem(__vKey()) || "{}") } catch (e) { return {} } }
@@ -61,11 +66,11 @@ class __ValdrakAntiga extends j.Scene {
     S.stones = (M.stones || []).map(([x, y]) => S.add.image(x, y + 8, "vk-props", "stone").setDepth(y - 30).setScale(1.5));
     // personagens
     const sp = M.spots;
-    S.hero = S.add.sprite(sp.start[0], sp.start[1], "vk-aelric-young-idle", 0).setOrigin(.5, .99).setScale(.9);
+    S.hero = S.add.sprite(sp.start[0], sp.start[1], "vk-aelric-young-idle", 0).setOrigin(.5, .99).setScale(__vScale(S, "vk-aelric-young-idle", "prince"));
     S.hero.play("vk-ay-idle"); S.hShadow = S.add.ellipse(0, 0, 34, 10, 0, .3);
     S.hp = 6; S.maxHp = 6; S.face = 1; S.inv = 0; S.jumpT = 0; S.atkT = 0; S.lastSafe = [sp.start[0], sp.start[1]];
     S.npcs = {};
-    const npc = (id, tex, anim, x, y, sc = .7, flip = !1) => { const s = S.add.sprite(x, y, tex, 0).setOrigin(.5, .99).setScale(sc * 1.25).setFlipX(flip); S.anims.exists(anim) && s.play(anim); s.idA = anim; S.npcs[id] = s; return s };
+    const npc = (id, tex, anim, x, y, sc = .7, flip = !1) => { const s = S.add.sprite(x, y, tex, 0).setOrigin(.5, .99).setScale(__vScale(S, tex, tex === "menino" ? "kid" : "adult")).setFlipX(flip); S.anims.exists(anim) && s.play(anim); s.idA = anim; S.npcs[id] = s; return s };
     npc("mira", "elf-1", "vk-mira-idle", sp.mira[0], sp.mira[1], .68, !0);
     npc("baker", "peasant-2", "vk-p2-idle", sp.baker[0], sp.baker[1], .68);
     npc("smith", "peasant-1", "vk-p1-idle", sp.smith[0], sp.smith[1] - 40, .7, !0);   // o ferreiro na bigorna (sprite com a bigorna desenhada)
@@ -206,7 +211,7 @@ class __ValdrakAntiga extends j.Scene {
     for (const [gx, gy, rad, n, type] of GROUPS) for (let i = 0; i < n; i++) {
       const pool = type === "k" ? kids : type === "f" ? (farmers.length ? farmers : walkers) : type === "s" ? (R() < .6 ? standers : walkers) : walkers, k = pick(pool), f = VM[k];
       let x = gx, y = gy; for (let t = 0; t < 12; t++) { const a = R() * 6.28, d = R() * rad; x = gx + Math.cos(a) * d; y = gy + Math.sin(a) * d * .7; if (S.free(x, y) && S.free(x, y - 10)) break }
-      const sc = f.kid ? .55 + R() * .1 : .8 + R() * .1, s = S.add.sprite(x, y, "vkv-" + k, 0).setOrigin(.5, .99).setScale(sc).setFlipX(R() < .5);
+      const sc = __vScale(S, "vkv-" + k, f.kid ? "kid" : "adult") * (.95 + R() * .1), s = S.add.sprite(x, y, "vkv-" + k, 0).setOrigin(.5, .99).setScale(sc).setFlipX(R() < .5);
       s.play({ key: "vkv-i-" + k, startFrame: Math.floor(R() * Math.max(1, f.idle - 1)) });
       S.vill.push({ s, k, f, home: [gx, gy], rad, type, mob: f.walk && type !== "s", wait: 600 + R() * 4000, tgt: null, talk: 0 });
     }
@@ -306,7 +311,7 @@ class __ValdrakAntiga extends j.Scene {
     if (S.hp <= 0) { S.dead = !0; S.hero.play("vk-ay-dead"); S.time.delayedCall(1300, () => { S.cameras.main.fadeOut(500); S.time.delayedCall(520, () => { S.hint.setText(__vT(__VL.ui.down)); S.restartAct2() }) }) }
   }
   spawnRaider(x, y, chief) {
-    const S = this, s = S.add.sprite(x, y, chief ? "vk-chief" : "vk-raider", 0).setOrigin(.5, .97).setScale(chief ? 1.05 : .95);
+    const S = this, s = S.add.sprite(x, y, chief ? "vk-chief" : "vk-raider", 0).setOrigin(.5, .97).setScale(__vScale(S, chief ? "vk-chief" : "vk-raider") * (chief ? 1.12 : 1));
     chief && s.setTint(0xc8a0a0); s.play(chief ? "vk-c-walk" : "vk-r-walk");
     const e = { s, hp: chief ? 9 : 3, chief, cd: 800 + Math.random() * 600, kx: 0, stun: 0 }; S.enemies.push(e); return e;
   }
@@ -409,7 +414,7 @@ class __ValdrakAntiga extends j.Scene {
     const S = this, sp = S.M.spots; S.state.a2 = 1; S.hp = S.maxHp; S.saved = 0; S.runners = []; S.saidRescue = S.saidRescue || !1;
     S.npcs.mira.setVisible(!1); S.npcs.bram.setVisible(!1);
     const tex = [["vkv-elf-2-1", "vkv-i-elf-2-1"], ["vkv-camp-rapaz-1", "vkv-i-camp-rapaz-1"], ["peasant-3", "vk-p3-idle"], ["menino", "vk-tico-idle"]];
-    S.rescueNpcs = sp.rescue.slice(0, 4).map(([x, y], i) => { const s = S.add.sprite(x, y, tex[i][0], 0).setOrigin(.5, .99).setScale(i === 3 ? .78 : .85); s.play(tex[i][1]); return { s } });
+    S.rescueNpcs = sp.rescue.slice(0, 4).map(([x, y], i) => { const s = S.add.sprite(x, y, tex[i][0], 0).setOrigin(.5, .99).setScale(__vScale(S, tex[i][0], i === 3 ? "kid" : "adult")); s.play(tex[i][1]); return { s } });
     S.setObj("o_rescue", " (0/4)");
     const waves = () => { if (S.state.a2 !== 1) return; const alive = S.enemies.filter(e => !e.dead).length; if (alive < 5) { const [rx, ry] = sp.raidFrom; S.spawnRaider(rx + (Math.random() - .5) * 500, ry - 300 + Math.random() * 200) } S.time.delayedCall(4200, waves) };
     for (let i = 0; i < 3; i++) S.spawnRaider(sp.raidFrom[0] - 300 + i * 220, sp.raidFrom[1] - 420); waves();
@@ -427,7 +432,7 @@ class __ValdrakAntiga extends j.Scene {
     const S = this, sp = S.M.spots; S.state.a2 = 3; S.busy = !0;
     S.cameras.main.fadeOut(700); S.time.delayedCall(720, () => {
       const g = [["elf-1", "vk-mira-idle", .68], ["vkv-peasant-3-2", "vkv-i-peasant-3-2", .66], ["vkv-elf-2-1", "vkv-i-elf-2-1", .64]];
-      S.followers = g.map(([t, a, sc], i) => { const s = S.add.sprite(S.hero.x - 40 * (i + 1), S.hero.y + 10, t, 0).setOrigin(.5, .99).setScale(sc); s.play(a); return s });
+      S.followers = g.map(([t, a, sc], i) => { const s = S.add.sprite(S.hero.x - 40 * (i + 1), S.hero.y + 10, t, 0).setOrigin(.5, .99).setScale(__vScale(S, t)); s.play(a); return s });
       S.cameras.main.fadeIn(600); S.busy = !1; S.titleCard(__vT(__VL.ui.act3), "", () => { S.state.a3 = 1; S.setObj("o_gate") });
       S.spawnRaider(sp.raidFrom[0] - 900, sp.raidFrom[1] - 900);
     });
@@ -437,7 +442,7 @@ class __ValdrakAntiga extends j.Scene {
     for (const e of S.enemies) if (!e.dead) { e.dead = !0; e.s.setVisible(!1) }
     S.auto = [sp.gate[0], S.M.wallH + 70]; S.autoCb = () => {
       S.face = 1; S.busy = !0;
-      const king = S.add.sprite(sp.wallTop[0] + 70, sp.wallTop[1] + 40, "vk-aelric-king-idle", 0).setOrigin(.5, 1).setScale(.8).setTint(0x101018).setDepth(5e3); king.play("vk-k-idle");
+      const king = S.add.sprite(sp.wallTop[0] + 70, sp.wallTop[1] + 40, "vk-aelric-king-idle", 0).setOrigin(.5, 1).setScale(__vScale(S, "vk-aelric-king-idle", "king")).setTint(0x101018).setDepth(5e3); king.play("vk-k-idle");
       S.cameras.main.pan(sp.gate[0], S.M.wallH - 20, 900, "Sine.easeInOut");
       S.time.delayedCall(1000, () => S.say("a3_gates", () => {
         const rope = S.add.rectangle(H.x + 10, S.M.wallH - 150, 3, 10, 0x8a6a3c).setOrigin(.5, 0).setDepth(6e3);
