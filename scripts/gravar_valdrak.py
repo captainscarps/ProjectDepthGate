@@ -32,7 +32,9 @@ VOZES = {  # vozes brasileiras da biblioteca do ElevenLabs (o mesmo timbre lê o
     "conselheiro": "5lrBPYY4YvMbKHTo8kvZ",
     "crianca": "iTvRNZPNPS0EiSgOCQG0",
     "observador": "I5Mp8yDo0fn7upNW3DzQ",    # A Voz (o Observador)
-    "olivia": "iTvRNZPNPS0EiSgOCQG0",        # Graziella (voz brasileira infantil), afinada mais aguda: menina
+    "olivia": "iTvRNZPNPS0EiSgOCQG0",
+    "farias": "Hsrdp9vv51A8JfLqfIH8",        # Jaan — senhor idoso, voz grossa e séria
+    "maria": "OB6x7EbXYlhG4DDTB1XU",         # Michelle — jovem de uns 20 anos, doce e animada        # Graziella (voz brasileira infantil), afinada mais aguda: menina
 }
 PITCH = {"olivia": 1.16}   # sobe o tom sem mudar a duração (ffmpeg asetrate + atempo)
 CLASSES = ["WARRIOR", "BERSERKER", "ARCHER", "HUNTER", "DRUID", "NECROMANCER", "MAGE", "ROGUE", "SHAMAN"]

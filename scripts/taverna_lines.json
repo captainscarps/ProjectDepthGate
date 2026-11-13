@@ -1,0 +1,120 @@
+{
+ "_about": "Falas do Farias (taberneiro, senhor idoso de voz grossa) e da Maria (garçonete, 20 anos) na taverna do Refúgio. Linha: [quem, pt, en, es, expressão]. Voz: scripts/gravar_valdrak.py --linhas scripts/taverna_lines.json",
+ "speakers": {
+  "farias": {
+   "name": [
+    "FARIAS",
+    "FARIAS",
+    "FARIAS"
+   ],
+   "voice": "farias"
+  },
+  "maria": {
+   "name": [
+    "MARIA",
+    "MARIA",
+    "MARIA"
+   ],
+   "voice": "maria"
+  }
+ },
+ "scenes": {
+  "f1": [
+   [
+    "farias",
+    "Bem-vindo à taverna do Refúgio. Limpe as botas: aqui dentro quem manda sou eu.",
+    "Welcome to the Refuge tavern. Wipe your boots: in here, I'm the one in charge.",
+    "Bienvenido a la taberna del Refugio. Límpiate las botas: aquí dentro mando yo.",
+    "calm"
+   ],
+   [
+    "farias",
+    "Farias, a seu dispor. A Maria cuida das mesas, eu cuido de tudo o resto.",
+    "Farias, at your service. Maria handles the tables, I handle everything else.",
+    "Farias, a tu servicio. María atiende las mesas, yo me encargo de todo lo demás.",
+    "smile"
+   ]
+  ],
+  "f2": [
+   [
+    "farias",
+    "Hah! Voltou inteiro de mais um portal? A próxima caneca é por conta da casa… brincadeira, não é não.",
+    "Hah! Back in one piece from another gate? Next mug's on the house… just kidding, it's not.",
+    "¡Ja! ¿Volviste entero de otro portal? La próxima jarra va por la casa… es broma, no va.",
+    "smile"
+   ]
+  ],
+  "f3": [
+   [
+    "farias",
+    "Se for brigar, brigue lá fora. A última mesa quebrada ainda está na minha conta.",
+    "If you're going to fight, do it outside. The last broken table is still on my tab.",
+    "Si vas a pelear, pelea afuera. La última mesa rota todavía está en mi cuenta.",
+    "aggression"
+   ]
+  ],
+  "f4": [
+   [
+    "farias",
+    "Você ouviu isso? …Ah, é só a Maria derrubando outra bandeja.",
+    "Did you hear that? …Oh, it's just Maria dropping another tray.",
+    "¿Oíste eso? …Ah, es solo María tirando otra bandeja.",
+    "special"
+   ]
+  ],
+  "f5": [
+   [
+    "farias",
+    "Antes do Abismo, essas mesas viviam cheias. Um dia vão encher de novo. Eu espero.",
+    "Before the Abyss, these tables were always full. Someday they'll fill up again. I hope.",
+    "Antes del Abismo, estas mesas siempre estaban llenas. Algún día volverán a llenarse. Eso espero.",
+    "sadness"
+   ]
+  ],
+  "m1": [
+   [
+    "maria",
+    "Oi! Senta onde quiser, que eu já trago alguma coisa quente.",
+    "Hi! Sit wherever you like, I'll bring you something warm.",
+    "¡Hola! Siéntate donde quieras, ya te traigo algo caliente.",
+    "smile"
+   ]
+  ],
+  "m2": [
+   [
+    "maria",
+    "O Farias resmunga, mas foi ele que guardou um lugar pra cada herói que passou por aqui.",
+    "Farias grumbles, but he's the one who saved a seat for every hero who came through here.",
+    "Farias refunfuña, pero fue él quien guardó un lugar para cada héroe que pasó por aquí.",
+    "calm"
+   ]
+  ],
+  "m3": [
+   [
+    "maria",
+    "Dizem que um barco chegou na doca cheio de peixe estranho. O Farias jurou que não vai cozinhar nenhum.",
+    "They say a boat reached the dock full of strange fish. Farias swore he won't cook a single one.",
+    "Dicen que llegó un barco al muelle lleno de peces raros. Farias juró que no va a cocinar ninguno.",
+    "special"
+   ]
+  ],
+  "m4": [
+   [
+    "maria",
+    "Às vezes eu fico olhando a porta… esperando quem ainda não voltou.",
+    "Sometimes I just watch the door… waiting for the ones who haven't come back yet.",
+    "A veces me quedo mirando la puerta… esperando a los que todavía no volvieron.",
+    "sadness"
+   ]
+  ],
+  "m5": [
+   [
+    "maria",
+    "Ei! Nada de subir na mesa, viu? Eu acabei de limpar.",
+    "Hey! No climbing on the tables, okay? I just cleaned them.",
+    "¡Oye! Nada de subirse a la mesa, ¿eh? Acabo de limpiarla.",
+    "aggression"
+   ]
+  ]
+ }
+}

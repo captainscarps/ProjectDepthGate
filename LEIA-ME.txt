@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p213.3 · cache ded-web-v6.5.3-olivia)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p213.4 · cache ded-web-v6.5.4-vozes-taverna)
+
+P213.4 — VOZES DO FARIAS E DA MARIA
+· Farias com voz de senhor idoso, grossa e séria (ElevenLabs "Jaan"); Maria com voz de jovem de uns 20 anos,
+  doce e animada (ElevenLabs "Michelle"). 11 falas em PT e EN; tocam na caixa de fala da taverna.
+· As falas da taverna saíram do código para scripts/taverna_lines.json (mesmo formato das outras dublagens).
 
 P213.3 — OLIVIA, A FILHA DO RAFAEL (com a Mussarela e o Fumaça)
 · Olivia vaga pelo Refúgio: um tempo na frente da forja, correndo e pulando com a Mussarela (cachorra branca com
