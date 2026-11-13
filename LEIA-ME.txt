@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p213.2 · cache ded-web-v6.5.2-taverna-cheia)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p213.3 · cache ded-web-v6.5.3-olivia)
+
+P213.3 — OLIVIA, A FILHA DO RAFAEL (com a Mussarela e o Fumaça)
+· Olivia vaga pelo Refúgio: um tempo na frente da forja, correndo e pulando com a Mussarela (cachorra branca com
+  manchas pretas, que corre atrás dela), um tempo dentro da forja brincando com o Fumaça (gato cinza). De tempos
+  em tempos vai até a porta e troca de lugar; a Mussarela espera sentada na porta.
+· Conversa com retrato (5 expressões enviadas): ela conta que o Rafael é o papai dela e que adora brincar com os
+  bichinhos; falas diferentes fora e dentro da forja. Dá para fazer carinho na Mussarela e no Fumaça.
+· Voz de menina no ElevenLabs (PT/EN), 9 falas. Sprite: menina de rabo de cavalo do pacote "Schoolgirls 2",
+  cabelo e pele ajustados ao retrato.
 
 P213.2 — TAVERNA CHEIA: HERÓIS E FREGUESES
 · Quatro dos heróis da vila passam o tempo na taverna (os primeiros desta ordem que não são o herói do jogador:

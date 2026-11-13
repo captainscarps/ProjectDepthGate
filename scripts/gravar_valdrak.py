@@ -12,7 +12,8 @@ import regravar_dublagem_elevenlabs as R
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VOICE = os.path.join(ROOT, "assets", "audio", "voice"); MAN = os.path.join(VOICE, "voice-manifest.json")
-LINES = json.load(open(os.path.join(ROOT, "scripts", "valdrak_lines.json"), encoding="utf-8"))
+_LF = sys.argv[sys.argv.index("--linhas") + 1] if "--linhas" in sys.argv else os.path.join(ROOT, "scripts", "valdrak_lines.json")
+LINES = json.load(open(_LF, encoding="utf-8"))   # --linhas outro.json grava outro conjunto no mesmo formato
 CAST = json.load(open(os.path.join(ROOT, "scripts", "elevenlabs_elenco.json"), encoding="utf-8"))
 VOZES = {  # vozes brasileiras da biblioteca do ElevenLabs (o mesmo timbre lê o inglês)
     "aelric_jovem": "LuQ9eaWO9yCQrR73VQFa",  # Victor Pinho — jovial e enérgico
@@ -31,7 +32,9 @@ VOZES = {  # vozes brasileiras da biblioteca do ElevenLabs (o mesmo timbre lê o
     "conselheiro": "5lrBPYY4YvMbKHTo8kvZ",
     "crianca": "iTvRNZPNPS0EiSgOCQG0",
     "observador": "I5Mp8yDo0fn7upNW3DzQ",    # A Voz (o Observador)
+    "olivia": "iTvRNZPNPS0EiSgOCQG0",        # Graziella (voz brasileira infantil), afinada mais aguda: menina
 }
+PITCH = {"olivia": 1.16}   # sobe o tom sem mudar a duração (ffmpeg asetrate + atempo)
 CLASSES = ["WARRIOR", "BERSERKER", "ARCHER", "HUNTER", "DRUID", "NECROMANCER", "MAGE", "ROGUE", "SHAMAN"]
 
 def H(t):
@@ -42,12 +45,13 @@ def H(t):
 def jobs():
     out = []
     for scene, rows in LINES["scenes"].items():
-        for who, pt, en, es in rows:
+        for row in rows:
+            who, pt, en, es = row[:4]
             v = LINES["speakers"][who]["voice"]; lid = H(pt)
             for lang, text in (("pt", pt), ("en", en)):
                 if v == "hero":
                     for c in (["WARRIOR"] if scene.startswith("dv_") else CLASSES): out.append(dict(id=lid, lang=lang, text=text, voice=CAST[c], cls=c, keys=(pt, en, es)))
-                else: out.append(dict(id=lid, lang=lang, text=text, voice=VOZES[v], cls=None, keys=(pt, en, es)))
+                else: out.append(dict(id=lid, lang=lang, text=text, voice=VOZES[v], cls=None, keys=(pt, en, es), pitch=PITCH.get(v)))
     return out
 
 def main():
@@ -70,6 +74,11 @@ def main():
             if "HTTP 401" in str(e) or "quota" in str(e): break
             continue
         dur = R.save_mp3(mp3, out)
+        if j.get("pitch"):
+            p_ = j["pitch"]; tmp = out + ".tmp.mp3"
+            sr = int(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries", "stream=sample_rate", "-of", "csv=p=0", out], capture_output=True, text=True).stdout.strip() or 44100)
+            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-af", f"asetrate={sr}*{p_},aresample={sr},atempo={1 / p_:.5f}", "-b:a", "96k", tmp], check=True)
+            os.replace(tmp, out)
         d = man["d"].setdefault(j["id"], {}); d["vk"] = 1
         for t in j["keys"]: man["k"][H(t)] = j["id"]
         if j["cls"]:

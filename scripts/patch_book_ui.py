@@ -5,7 +5,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BLOCKS = [("/*__BOOKUI__*/", "book-ui.js"), ("/*__FARMOR__*/", "forge-armor.js"), ("/*__HMODS__*/", "hero-mods.js"), ("/*__DGUARD__*/", "death-guard.js"), ("/*__QUESTS3__*/", "quests3.js"), ("/*__HUDTOUCH__*/", "hud-touch.js"), ("/*__PETS__*/", "pets.js"), ("/*__REFUGIO__*/", "refugio.js"), ("/*__REFUGIO2__*/", "refugio2.js"), ("/*__RFDOCK__*/", "refugio-dock.js"), ("/*__TAVERNA__*/", "taverna.js")]   # menus em livro; armaduras da forja
+BLOCKS = [("/*__BOOKUI__*/", "book-ui.js"), ("/*__FARMOR__*/", "forge-armor.js"), ("/*__HMODS__*/", "hero-mods.js"), ("/*__DGUARD__*/", "death-guard.js"), ("/*__QUESTS3__*/", "quests3.js"), ("/*__HUDTOUCH__*/", "hud-touch.js"), ("/*__PETS__*/", "pets.js"), ("/*__REFUGIO__*/", "refugio.js"), ("/*__REFUGIO2__*/", "refugio2.js"), ("/*__RFDOCK__*/", "refugio-dock.js"), ("/*__TAVERNA__*/", "taverna.js"), ("/*__OLIVIA__*/", "olivia.js")]   # menus em livro; armaduras da forja
 FONT = '    @font-face { font-family: "PixelifySans"; src: url("./assets/fonts/PixelifySans.ttf") format("truetype"); font-display: swap; }\n'
 for base in (ROOT, os.path.join(ROOT, "Projeto atualizado")):
     b = os.path.join(base, "assets", "index-D6qIWtA7-p209.js")
