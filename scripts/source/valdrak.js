@@ -193,17 +193,18 @@ class __ValdrakAntiga extends j.Scene {
   spawnVillagers() {
     const S = this, VM = S.cache.json.get("vk-vill") || {}, keys = Object.keys(VM).filter(k => !VM[k].special && !k.startsWith("peasant-2")), R = Math.random;  // a garçonete da taberna (com bandeja) e o Bram não entram na multidão
     if (!keys.length) return; S.vill = [];
-    const walkers = keys.filter(k => VM[k].walk && !VM[k].kid), standers = keys.filter(k => !VM[k].walk), kids = keys.filter(k => VM[k].kid);
+    const farmers = keys.filter(k => VM[k].farm), walkers = keys.filter(k => VM[k].walk && !VM[k].kid && !VM[k].farm), standers = keys.filter(k => !VM[k].walk), kids = keys.filter(k => VM[k].kid);
     const pick = a => a[Math.floor(R() * a.length)];
     const GROUPS = [  // [x, y, raio, quantos, tipo]  tipo: w = anda · s = parado conversando · k = criança correndo
       [1600, 930, 230, 9, "w"], [1500, 1000, 40, 2, "s"], [1720, 880, 40, 2, "s"], [1600, 960, 200, 3, "k"],
       [1430, 1185, 30, 1, "s"], [1785, 1180, 30, 1, "s"], [1410, 800, 30, 1, "s"], [1800, 800, 40, 2, "s"],
       [600, 1120, 90, 3, "s"], [700, 1090, 140, 2, "w"], [1100, 900, 220, 3, "w"], [2150, 920, 220, 3, "w"],
-      [1600, 450, 160, 3, "w"], [1600, 330, 60, 2, "s"], [1580, 1400, 260, 3, "w"], [380, 1950, 160, 2, "w"],
-      [870, 2000, 140, 2, "w"], [900, 1820, 60, 1, "s"], [1130, 1950, 120, 2, "k"], [2860, 980, 60, 1, "s"],
+      [1600, 450, 160, 3, "w"], [1600, 330, 60, 2, "s"], [1580, 1400, 260, 3, "w"], [380, 1950, 160, 3, "f"],
+      [870, 2000, 140, 2, "f"], [300, 1560, 120, 1, "f"], [1060, 1720, 90, 1, "f"], [1600, 700, 120, 3, "w"], [2450, 940, 90, 2, "w"],
+      [900, 1300, 160, 2, "w"], [2200, 1350, 160, 2, "w"], [900, 1820, 60, 1, "s"], [1130, 1950, 120, 2, "k"], [2860, 980, 60, 1, "s"],
       [2300, 1200, 160, 2, "w"], [1250, 640, 140, 2, "w"], [1950, 640, 140, 2, "w"], [1330, 1600, 130, 2, "w"]];
     for (const [gx, gy, rad, n, type] of GROUPS) for (let i = 0; i < n; i++) {
-      const pool = type === "k" ? kids : type === "s" ? (R() < .6 ? standers : walkers) : walkers, k = pick(pool), f = VM[k];
+      const pool = type === "k" ? kids : type === "f" ? (farmers.length ? farmers : walkers) : type === "s" ? (R() < .6 ? standers : walkers) : walkers, k = pick(pool), f = VM[k];
       let x = gx, y = gy; for (let t = 0; t < 12; t++) { const a = R() * 6.28, d = R() * rad; x = gx + Math.cos(a) * d; y = gy + Math.sin(a) * d * .7; if (S.free(x, y) && S.free(x, y - 10)) break }
       const sc = f.kid ? .55 + R() * .1 : .8 + R() * .1, s = S.add.sprite(x, y, "vkv-" + k, 0).setOrigin(.5, .99).setScale(sc).setFlipX(R() < .5);
       s.play({ key: "vkv-i-" + k, startFrame: Math.floor(R() * Math.max(1, f.idle - 1)) });

@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212.4 · cache ded-web-v6.4.4-valdrak)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212.5 · cache ded-web-v6.4.5-valdrak)
+
+P212.5 — MAIS MORADORES (PACOTE "PEASANTS")
+· 3 camponeses novos do pacote Peasants da craftpix — um rapaz, uma camponesa com a cesta e um lavrador com
+  a enxada no ombro —, cada um em 4 versões (original + 3 com outro cabelo, roupa e pele): 40 variações ao todo.
+· Os lavradores trabalham nas plantações; mais grupos andando pela estrada do portão, pelo caminho do riacho
+  e entre as casas. scripts/build_valdrak_villagers.py <pasta do pacote Peasants>.
 
 P212.4 — SEM GARÇONETES ANDANDO PELA RUA
 · A garçonete da taberna (a moça com a bandeja) não entra mais na multidão: fica só uma, parada na frente da

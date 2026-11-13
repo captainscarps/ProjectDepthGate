@@ -242,6 +242,126 @@
   "fh": 77,
   "kid": true
  },
+ "camp-rapaz-0": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": false
+ },
+ "camp-rapaz-1": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": false
+ },
+ "camp-rapaz-2": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": false
+ },
+ "camp-rapaz-3": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": false
+ },
+ "camp-moca-0": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": false
+ },
+ "camp-moca-1": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": false
+ },
+ "camp-moca-2": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": false
+ },
+ "camp-moca-3": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": false
+ },
+ "camp-lavrador-0": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": true
+ },
+ "camp-lavrador-1": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": true
+ },
+ "camp-lavrador-2": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": true
+ },
+ "camp-lavrador-3": {
+  "idle": 6,
+  "move": 10,
+  "walk": true,
+  "cols": 10,
+  "fw": 128,
+  "fh": 128,
+  "kid": false,
+  "farm": true
+ },
  "bram": {
   "idle": 7,
   "move": 7,

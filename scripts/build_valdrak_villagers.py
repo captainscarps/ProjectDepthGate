@@ -3,7 +3,8 @@ Moradores da Valdrak antiga: variações dos NPCs que o jogo já tem (camponeses
 cor de cabelo, de roupa e de tom de pele. Cada variação guarda só duas fileiras de 128 px:
   linha 0 = parado, linha 1 = andando (ou falando, para quem não anda).
 Saída: assets/pixel-art/valdrak/npc/<base>-<n>.png e villagers.json {chave: {idle, move, walk}}
-Uso: python3 scripts/build_valdrak_villagers.py
+Uso: python3 scripts/build_valdrak_villagers.py [pasta do pacote "Peasants" da craftpix]
+(com o pacote: mais 3 camponeses — rapaz, camponesa e lavrador com a enxada — e suas variações)
 """
 import colorsys, json, os, random
 import numpy as np
@@ -73,6 +74,21 @@ for base, (f, ri, rm, walks, fh, nv) in BASES.items():
         for i, fr in enumerate(move): sheet.paste(Image.fromarray(recolor(fr, hair, skin_k, shift, sat)), (i * fw, fh))
         key = f"{base}-{n}"; sheet.save(os.path.join(OUT, key + ".png"), optimize=True)
         meta[key] = {"idle": len(idle), "move": len(move), "walk": walks, "cols": sheet.width // fw, "fw": fw, "fh": fh, "kid": base == "menino"}
+# pacote "Peasants" (craftpix): faixas Idle.png / Walk.png por personagem
+import sys
+if len(sys.argv) > 1:
+    PK = sys.argv[1]
+    for base, folder, nv in (("camp-rapaz", "Peasants_1", 4), ("camp-moca", "Peasants_2", 4), ("camp-lavrador", "Peasants_3", 4)):
+        strip = lambda n: [x for x in (lambda a: [a[:, c * 128:(c + 1) * 128] for c in range(a.shape[1] // 128)])(np.array(Image.open(os.path.join(PK, folder, n + ".png")).convert("RGBA"))) if x[:, :, 3].max() > 0]
+        idle, move = strip("Idle"), strip("Walk")
+        for n in range(nv):
+            hair = HAIR[(n * 3 + len(base)) % len(HAIR)]; skin_k = 1.0 if base == "camp-moca" else SKIN[(n * 3 + len(folder)) % len(SKIN)]   # a blusa bege da camponesa parece pele para o filtro: não mexe no tom
+            shift, sat = (0.0, 1.0) if n == 0 else (rnd.uniform(.1, .9), rnd.uniform(.75, 1.15))
+            sheet = Image.new("RGBA", (128 * max(len(idle), len(move)), 256))
+            for i, fr in enumerate(idle): sheet.paste(Image.fromarray(fr if n == 0 else recolor(fr, hair, skin_k, shift, sat)), (i * 128, 0))
+            for i, fr in enumerate(move): sheet.paste(Image.fromarray(fr if n == 0 else recolor(fr, hair, skin_k, shift, sat)), (i * 128, 128))
+            key = f"{base}-{n}"; sheet.save(os.path.join(OUT, key + ".png"), optimize=True)
+            meta[key] = {"idle": len(idle), "move": len(move), "walk": True, "cols": sheet.width // 128, "fw": 128, "fh": 128, "kid": False, "farm": base == "camp-lavrador"}
 # personagens da história com visual próprio (não entram na multidão)
 SPECIAL = {"bram": ("peasant-4", 0, 3, ("grisalho", .08, .06, 1.3), 1.0, 0.0, .75)}
 for key, (f, ri, rm, hair, skin_k, shift, sat) in SPECIAL.items():
