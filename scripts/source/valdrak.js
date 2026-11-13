@@ -15,11 +15,15 @@ window.__valdrakState = __vGet; window.__valdrakSet = __vSet;
 
 class __ValdrakAntiga extends j.Scene {
   constructor() { super("ValdrakAntiga") }
-  init(d) { this.cls = String(d?.classId || window.__heroCls || "WARRIOR").toUpperCase(); this.onDone = d?.onDone || null; this.startAct = d?.act || 1; this.mode = d?.mode || "prince" }
+  init(d) { this.cls = String(d?.classId || window.__heroCls || "WARRIOR").toUpperCase(); this.onDone = d?.onDone || null; this.startAct = d?.act || 1; this.mode = d?.mode || "prince";
+    const r = Math.random(); this.weather = d?.weather || window.__vkWeather || (r < .5 ? "clear" : r < .75 ? "rain" : "snow");
+    this.isNight = d?.night ?? window.__vkNight ?? (Math.random() < .3) }
   preload() {
     const L = this.load, P = __VP, ex = k => this.textures.exists(k);
     ex("vk-ground") || L.image("vk-ground", P + "map/ground.png");
     ex("vk-props") || L.atlas("vk-props", P + "map/props.png", P + "map/props.json");
+    if (this.weather === "snow") { ex("vk-props-snow") || L.atlas("vk-props-snow", P + "map/props-snow.png", P + "map/props.json"); ex("vk-gsnow") || L.image("vk-gsnow", P + "map/ground-snow.png") }
+    this.cache.json.exists("vk-lights") || L.json("vk-lights", P + "map/lights.json");
     this.cache.json.exists("vk-map") || L.json("vk-map", P + "map/map.json");
     const sp = { "aelric-young": ["idle", "idle2", "walk", "run", "attack1", "attack2", "jump", "hurt", "dead"], "aelric-king": ["idle", "dialogue"] };
     for (const who in sp) for (const a of sp[who]) ex(`vk-${who}-${a}`) || L.spritesheet(`vk-${who}-${a}`, `${P}${who}-${a}.png`, { frameWidth: 128, frameHeight: 128 });
@@ -48,9 +52,11 @@ class __ValdrakAntiga extends j.Scene {
     const S = this, M = S.M = S.cache.json.get("vk-map"), cam = S.cameras.main;
     S.mkAnims(); S.W = M.w; S.H = M.h; S.G = M.g; S.coll = M.coll; S.lt = __vT;
     S.add.image(0, 0, "vk-ground").setOrigin(0).setDepth(-1e4);
+    const snow = S.weather === "snow" && S.textures.exists("vk-props-snow"), PT = snow ? "vk-props-snow" : "vk-props";
+    snow && S.textures.exists("vk-gsnow") && S.add.image(0, 0, "vk-gsnow").setOrigin(0).setDepth(-9999);
     S.props = [];
-    for (const [k, x, y, f] of M.props) { const im = S.add.image(x, y, "vk-props", k).setOrigin(.5, 1).setDepth(y); f && im.setFlipX(!0); S.props.push(im); if (k === "windmill") S.mill = im }
-    if (S.mill) { S.sails = S.add.image(S.mill.x + 2, S.mill.y - S.mill.height + 78, "vk-props", "sails").setDepth(S.mill.y + 1); S.tweens.add({ targets: S.sails, angle: 360, duration: 9000, repeat: -1 }) }
+    for (const [k, x, y, f] of M.props) { const im = S.add.image(x, y, PT, k).setOrigin(.5, 1).setDepth(y); f && im.setFlipX(!0); S.props.push(im); if (k === "windmill") S.mill = im }
+    if (S.mill) { S.sails = S.add.image(S.mill.x + 2, S.mill.y - S.mill.height + 78, PT, "sails").setDepth(S.mill.y + 1); S.tweens.add({ targets: S.sails, angle: 360, duration: 9000, repeat: -1 }) }
     // pedras do riacho e tábuas quebradas
     S.stones = (M.stones || []).map(([x, y]) => S.add.image(x, y + 8, "vk-props", "stone").setDepth(y - 30).setScale(1.5));
     // personagens
@@ -81,6 +87,7 @@ class __ValdrakAntiga extends j.Scene {
     S.hint = S.add.text(cam.width / 2, cam.height - 18, "", { fontFamily: "Georgia, serif", fontSize: "12px", color: "#ece2cc", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5, 1);
     S.prompt = S.add.text(0, 0, "", { fontFamily: "Georgia, serif", fontSize: "11px", color: "#fff3c8", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5, 1).setDepth(19000);
     S.ui.add([S.objT, S.hpT, S.hint]);
+    S.setupWeather(); S.isNight && S.setNight(!0);
     S.setupInput(); S.setupTouch();
     S.dlgBox(); S.state = {}; S.busy = !1;
     S.game.audioEngine?.music?.("hub-theme"); S.game.audioEngine?.startAmbience?.("hub");
@@ -205,7 +212,7 @@ class __ValdrakAntiga extends j.Scene {
     S.time.addEvent({ delay: 1600, loop: !0, callback: () => { for (const v of S.vill) if (!v.mob && v.s.visible && R() < .35) { const tk = v.f.walk ? "vkv-i-" + v.k : (v.s.anims.currentAnim?.key === "vkv-m-" + v.k ? "vkv-i-" + v.k : "vkv-m-" + v.k); v.s.play(tk, !0) } } });
   }
   updVillagers(dtMs, dt) {
-    const S = this; if (!S.vill) return; const H = S.hero, CH = __VL.chatter; S.bubCd = (S.bubCd || 0) - dtMs;
+    const S = this; if (!S.vill) return; const H = S.hero, CH = S.chatter || (S.chatter = [].concat(__VL.chatter || [], S.weather === "rain" ? __VL.chatter_rain || [] : [], S.weather === "snow" ? __VL.chatter_snow || [] : [], S.isNight ? __VL.chatter_night || [] : [])); S.bubCd = (S.bubCd || 0) - dtMs;
     for (const v of S.vill) {
       const s = v.s; if (!s.visible) continue; s.setDepth(s.y);
       if (v.bub) { v.bub.setPosition(s.x, s.y - s.displayHeight - 6); v.bubT -= dtMs; if (v.bubT <= 0) { v.bub.destroy(); v.bub = null } }
@@ -224,6 +231,54 @@ class __ValdrakAntiga extends j.Scene {
     }
   }
   hideVillagers() { for (const v of S_VILL(this)) { v.s.setVisible(!1); v.bub?.destroy(); v.bub = null } }
+  // ── clima: chuva, neve e noite ─────────────────────────────────────────────────────────────────
+  setNight(on) {
+    const S = this; S.night.fillAlpha = on ? (S.weather === "rain" ? .64 : .6) : (S.weather === "rain" ? .16 : S.weather === "snow" ? .05 : 0);
+    S.night.fillColor = S.weather === "snow" && !on ? 0xc8d8ff : 0x0a0a28;
+    if (!on || S.nightLights) return; S.nightLights = [];
+    const L = (S.cache.json.get("vk-lights") || {}).lights || [];
+    for (const [x, y, t] of L) {
+      const lamp = t === "lamp", g = S.add.image(x, y, "light").setBlendMode(j.BlendModes.ADD).setTint(lamp ? 0xffb860 : 0xffa848).setScale(lamp ? .62 : .42).setAlpha(lamp ? .5 : .34).setDepth(9003);
+      S.tweens.add({ targets: g, alpha: { from: g.alpha * .75, to: g.alpha }, duration: 180 + Math.random() * 220, yoyo: !0, repeat: -1 }); S.nightLights.push(g);
+    }
+    S.heroGlow = S.add.image(0, 0, "light").setBlendMode(j.BlendModes.ADD).setTint(0xffe2b0).setScale(.55).setAlpha(.18).setDepth(9004);
+  }
+  setupWeather() {
+    const S = this, cam = S.cameras.main, w = cam.width, h = cam.height, R = Math.random;
+    S.setNight(!1);
+    if (S.weather === "clear") return;
+    const g = S.wxG = S.add.graphics(); S.ui.addAt(g, 0); S.wx = [];
+    const n = S.weather === "rain" ? 260 : 190;
+    for (let i = 0; i < n; i++) S.wx.push({ x: R() * w, y: R() * h, v: S.weather === "rain" ? 520 + R() * 300 : 30 + R() * 45, l: S.weather === "rain" ? 8 + R() * 10 : 1 + Math.floor(R() * 3), ph: R() * 6 });
+    // som: chuva sintetizada (ruído filtrado) ou o vento da neve do jogo
+    try {
+      const E = S.game.audioEngine, C = E?.ctx; if (!C) return; const out = C.createGain(); out.gain.value = 0; out.connect(C.destination); S.wxOut = out;
+      out.gain.linearRampToValueAtTime(S.weather === "rain" ? .16 : .22, C.currentTime + 2);
+      if (S.weather === "rain") {
+        const buf = C.createBuffer(1, C.sampleRate * 2, C.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        const src = C.createBufferSource(); src.buffer = buf; src.loop = !0; const bp = C.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1400; bp.Q.value = .6;
+        const lp = C.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5200; src.connect(bp); bp.connect(lp); lp.connect(out); src.start(); S.wxSrc = src;
+      } else {
+        const go = buf => { if (!S.sys?.isActive?.() || !S.wxOut) return; const src = C.createBufferSource(); src.buffer = buf; src.loop = !0; src.connect(out); src.start(); S.wxSrc = src };
+        if (window.__gsWindBuf) go(window.__gsWindBuf); else { const ogg = (new Audio).canPlayType("audio/ogg; codecs=vorbis"); fetch("assets/audio/ambient/snow-wind." + (ogg ? "ogg" : "mp3")).then(r => r.arrayBuffer()).then(b => C.decodeAudioData(b)).then(b => { window.__gsWindBuf = b; go(b) }).catch(() => { }) }
+      }
+      S.events.once("shutdown", () => { try { S.wxSrc?.stop() } catch (e) { } try { S.wxOut?.disconnect() } catch (e) { } S.wxOut = null });
+    } catch (e) { }
+  }
+  updWeather(dtMs) {
+    const S = this, g = S.wxG; S.heroGlow?.setPosition(S.hero.x, S.hero.y - 30);
+    if (!g) return; const cam = S.cameras.main, w = cam.width, h = cam.height, dt = dtMs / 1000, t = S.time.now / 1000; g.clear();
+    if (S.weather === "rain") {
+      g.lineStyle(1, 0xb8d0ff, .55);
+      for (const p of S.wx) { p.y += p.v * dt; p.x -= p.v * .22 * dt; if (p.y > h) { p.y = -20; p.x = Math.random() * (w + 80) } if (p.x < -20) p.x += w + 40; g.lineBetween(p.x, p.y, p.x + p.l * .22, p.y - p.l) }
+      // respingos no chão perto do herói
+      if (Math.random() < .6) { const wv = cam.worldView, x = wv.x + Math.random() * wv.width, y = wv.y + Math.random() * wv.height, r = S.add.ellipse(x, y, 4, 2).setStrokeStyle(1, 0xd0e0ff, .6).setDepth(y); S.tweens.add({ targets: r, scaleX: 3, scaleY: 3, alpha: 0, duration: 380, onComplete: () => r.destroy() }) }
+      if (S.isNight || S.state?.a2) { S.thT = (S.thT ?? 6000 + Math.random() * 9000) - dtMs; if (S.thT <= 0) { S.thT = 8000 + Math.random() * 12000; cam.flash(160, 210, 220, 255); S.time.delayedCall(220, () => cam.flash(90, 180, 190, 230)) } }
+    } else {
+      g.fillStyle(0xffffff, .9);
+      for (const p of S.wx) { p.y += p.v * dt; p.x += Math.sin(t * 1.2 + p.ph) * 14 * dt - 6 * dt; if (p.y > h) { p.y = -6; p.x = Math.random() * w } if (p.x < -6) p.x += w + 12; if (p.x > w + 6) p.x -= w + 12; g.fillRect(p.x, p.y, p.l, p.l) }
+    }
+  }
   // ── mundo ──────────────────────────────────────────────────────────────────────────────────────
   cell(x, y) { const r = this.coll[Math.floor(y / this.G)]; return r ? r[Math.floor(x / this.G)] ?? "1" : "1" }
   free(x, y, air) { const c = this.cell(x, y); return c === "0" || c === "3" || (air && c === "2") }
@@ -290,7 +345,7 @@ class __ValdrakAntiga extends j.Scene {
     for (const id in S.npcs) { const n = S.npcs[id]; n.setDepth(n.y) }
     // seguidores (Ato III)
     let prev = H; for (const f of S.followers) { const dx = prev.x - f.x, dy = prev.y - f.y, d = Math.hypot(dx, dy); if (d > 46) { f.x += dx / d * (d - 46) * Math.min(1, dt * 6); f.y += dy / d * (d - 46) * Math.min(1, dt * 6) } f.setFlipX(dx < 0); f.setDepth(f.y); prev = f }
-    S.updEnemies(dtMs, dt); S.updRunners(dt); S.updVillagers(dtMs, dt); S.triggers();
+    S.updEnemies(dtMs, dt); S.updRunners(dt); S.updVillagers(dtMs, dt); S.updWeather(dtMs); S.triggers();
   }
   updEnemies(dtMs, dt) {
     const S = this, H = S.hero;
@@ -337,7 +392,7 @@ class __ValdrakAntiga extends j.Scene {
   toAct2(skipTalk) {
     const S = this, sp = S.M.spots; S.busy = !0; S.state.a1 = 4;
     S.cameras.main.fadeOut(800); S.time.delayedCall(820, () => {
-      S.tweens.add({ targets: S.night, fillAlpha: .55, duration: 10 });
+      S.setNight(!0);
       for (const id in S.npcs) if (id !== "mira" && id !== "bram") S.npcs[id].setVisible(!1);
       S.hideVillagers();
       S.npcs.mira.setPosition(sp.festival[0] - 40, sp.festival[1] + 30); S.npcs.bram.setPosition(sp.festival[0] + 50, sp.festival[1] + 30);

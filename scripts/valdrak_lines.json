@@ -587,5 +587,51 @@
    "Catch me! Nobody can catch me!",
    "¡Atrápame! ¡Nadie me alcanza!"
   ]
+ ],
+ "chatter_rain": [
+  [
+   "Festa com chuva dá sorte, dizia minha avó.",
+   "Rain on a feast day is good luck, my grandmother used to say.",
+   "Fiesta con lluvia da suerte, decía mi abuela."
+  ],
+  [
+   "Vou ficar encharcado antes da dança!",
+   "I'll be soaked before the dance!",
+   "¡Voy a quedar empapado antes del baile!"
+  ],
+  [
+   "Pelo menos as plantações vão agradecer.",
+   "At least the crops will be grateful.",
+   "Por lo menos los cultivos lo agradecerán."
+  ]
+ ],
+ "chatter_snow": [
+  [
+   "Neve na Festa da Colheita? Nunca vi isso.",
+   "Snow on the Harvest Feast? Never seen that.",
+   "¿Nieve en la Fiesta de la Cosecha? Nunca vi eso."
+  ],
+  [
+   "Alteza, sem camisa nesse frio?!",
+   "Your Highness, shirtless in this cold?!",
+   "¡Alteza, sin camisa con este frío!"
+  ],
+  [
+   "As crianças já estão fazendo bonecos de neve.",
+   "The kids are already building snowmen.",
+   "Los niños ya están haciendo muñecos de nieve."
+  ]
+ ],
+ "chatter_night": [
+  [
+   "As lanternas ficam lindas à noite.",
+   "The lanterns look lovely at night.",
+   "Los faroles se ven preciosos de noche."
+  ],
+  [
+   "Não vá longe da praça no escuro, Alteza.",
+   "Don't stray far from the square in the dark, Highness.",
+   "No se aleje de la plaza en la oscuridad, Alteza."
+  ]
  ]
 }

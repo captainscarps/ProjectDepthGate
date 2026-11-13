@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p212.2 · cache ded-web-v6.4.2-valdrak)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p212.3 · cache ded-web-v6.4.3-valdrak)
+
+P212.3 — CLIMA E NOITE NA VALDRAK ANTIGA
+· Cada visita sorteia o clima: céu limpo (50%), chuva (25%) ou neve (25%), e 30% de chance de ser noite.
+· Neve: telhados, barracas, árvores, cercas e lanternas cobertos (atlas props-snow.png), manchas de neve no
+  chão (ground-snow.png), flocos caindo e o vento da Cidadela Glacial ao fundo.
+· Chuva: gotas inclinadas, respingos no chão, céu mais escuro, som de chuva e trovões à noite e no cerco.
+· Noite: lanternas e janelas acesas com brilho tremendo e uma luz suave em volta do príncipe. O cerco (Ato II)
+  é sempre à noite e mantém o clima sorteado.
+· Moradores comentam a chuva, a neve e a noite. Para testar: window.__vkWeather = "rain"/"snow"/"clear",
+  window.__vkNight = true/false antes de entrar no portal.
 
 P212.2 — VALDRAK ANTIGA CHEIA DE GENTE
 · 27 variações dos NPCs do jogo (camponeses, elfas e o menino) com outras cores de cabelo (preto, castanho,

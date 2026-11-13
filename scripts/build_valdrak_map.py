@@ -306,10 +306,61 @@ AT = Image.new("RGBA", (AW, y + rowh))
 for k, f in frames.items(): AT.paste(atlas[k], (f["frame"]["x"], f["frame"]["y"]))
 AT.save(os.path.join(OUT, "props.png"), optimize=True)
 json.dump({"frames": frames, "meta": {"image": "props.png", "size": {"w": AT.width, "h": AT.height}, "scale": 1}}, open(os.path.join(OUT, "props.json"), "w"))
+# ── neve: telhados e topos brancos (atlas paralelo) e manchas de neve no chão (camada por cima) ───────
+SNOW_W, SNOW_L, SNOW_S = np.array([242, 247, 255]), np.array([212, 224, 242]), np.array([172, 188, 216])
+ROOF_BLUE = {"house1", "house2", "house3", "house4", "farmhouse", "barn", "coop", "hayshed", "windmill", "well"}
+ROOF_RED = {"tavern", "tent1", "tent2", "tent3", "tent4"}
+def snowify(key, im):
+    a = np.array(im).astype(np.int16); A_ = a[:, :, 3] > 0; h, w = A_.shape
+    r, g, b = a[:, :, 0], a[:, :, 1], a[:, :, 2]; mx = np.maximum(np.maximum(r, g), b); mn = np.minimum(np.minimum(r, g), b)
+    v = mx / 255; sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1), 0); rel = np.arange(h)[:, None] / h
+    roof = np.zeros_like(A_)
+    if key in ROOF_BLUE: roof = A_ & (b > r + 5) & (b >= g - 4) & (sat > .07) & (v > .2) & (rel < (.62 if key != "windmill" else .45))
+    if key in ROOF_RED: roof = A_ & (r > g + 50) & (r > b + 20) & (v > .25) & (rel < (.55 if key == "tavern" else .5))
+    out = a.copy(); lum = (r * .3 + g * .59 + b * .11) / 255
+    for m, c in ((roof & (lum > .5), SNOW_W), (roof & (lum <= .5) & (lum > .33), SNOW_L), (roof & (lum <= .33) & (v > .17), SNOW_S)):
+        out[m, :3] = c
+    # capa de neve no topo de tudo (2 a 5 px abaixo do contorno de cima de cada coluna)
+    rr = random.Random(hash(key) & 0xffff)
+    for x in range(w):
+        col = np.nonzero(A_[:, x])[0]
+        if not len(col): continue
+        y0 = col[0]; th = rr.randint(2, 5) * (2 if key in ROOF_BLUE or key in ROOF_RED or key in TREES or key.startswith("bush") or key.startswith("fence") else 1)
+        seg = [y for y in range(y0 + 1, min(h, y0 + 1 + th)) if A_[y, x]]
+        for y in seg: out[y, x, :3] = SNOW_W if y < y0 + th - 1 else SNOW_L
+    return Image.fromarray(out.clip(0, 255).astype(np.uint8), "RGBA")
+ATS = Image.new("RGBA", AT.size)
+for k, f in frames.items(): ATS.paste(snowify(k, atlas[k]), (f["frame"]["x"], f["frame"]["y"]))
+ATS.save(os.path.join(OUT, "props-snow.png"), optimize=True)
+# chão: manchas de neve na grama (contorno irregular), poeira de neve nas pedras do caminho, água livre
+sn = value_noise(W // 2, H // 2, 70, 31) * .6 + value_noise(W // 2, H // 2, 18, 32) * .4
+R2, W2_ = ROAD[::2, ::2], WATER[::2, ::2]
+cover = (sn > .5) & ~W2_ & ~ndimage.binary_dilation(W2_, iterations=3)
+cover &= ~R2 | (sn > .66)                       # no caminho só onde a neve acumula mais
+cover = ndimage.binary_opening(cover, iterations=1)
+edge = cover & ~ndimage.binary_erosion(cover, iterations=1)
+SO = np.zeros((H // 2, W // 2, 4), np.uint8)
+SO[cover] = (238, 244, 252, 255); SO[edge] = (200, 214, 236, 255)
+tex = cover & (value_noise(W // 2, H // 2, 6, 33) > .72); SO[tex] = (222, 232, 248, 255)   # textura leve dentro da neve
+shadow = cover & ~np.roll(cover, -1, 0); SO[shadow] = (186, 202, 228, 255)
+for _ in range(9000):   # flocos soltos fora das manchas
+    yy, xx = rnd.randrange(0, H // 2), rnd.randrange(0, W // 2)
+    if not cover[yy, xx] and not W2_[yy, xx]: SO[yy, xx] = (236, 242, 252, 220)
+Image.fromarray(SO, "RGBA").resize((W, H), Image.NEAREST).save(os.path.join(OUT, "ground-snow.png"), optimize=True)
+# janelas e lanternas para a noite (pontos de luz)
+LIGHTS = [[x, y - 40, "lamp"] for k, x, y, *f in props if k in ("lamp", "lamp2")]
+for k, x, y, *f in props:
+    if k.startswith("house") or k in ("tavern", "farmhouse"): LIGHTS.append([x, y - atlas[k].height * .45, "win"])
+json.dump({"lights": LIGHTS}, open(os.path.join(OUT, "lights.json"), "w"))
 gq = ground.convert("RGB").quantize(colors=255, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
 gq.save(os.path.join(OUT, "ground.png"), optimize=True)
 P = ground.copy()
 for k, x, y, *f in sorted(props, key=lambda p: p[2]):
     im = atlas[k].transpose(Image.FLIP_LEFT_RIGHT) if f else atlas[k]; P.alpha_composite(im, (x - im.width // 2, y - im.height))
 P.save("/tmp/valdrak_full.png"); P.resize((W // 4, H // 4), Image.LANCZOS).save("/tmp/valdrak_preview.png")
+PS = ground.copy(); PS.alpha_composite(Image.open(os.path.join(OUT, "ground-snow.png")))
+for k, x, y, *f in sorted(props, key=lambda p: p[2]):
+    fr = frames[k]["frame"]; im = ATS.crop((fr["x"], fr["y"], fr["x"] + fr["w"], fr["y"] + fr["h"]))
+    im = im.transpose(Image.FLIP_LEFT_RIGHT) if f else im; PS.alpha_composite(im, (x - im.width // 2, y - im.height))
+PS.save("/tmp/valdrak_snow.png")
 print("mapa", W, H, "objetos", len(props), "atlas", AT.size, "chão KB", os.path.getsize(os.path.join(OUT, "ground.png")) // 1024)
