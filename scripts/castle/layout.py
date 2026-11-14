@@ -125,11 +125,11 @@ FLOORS["f0"] = {
         P("halberds", 4.4, 31.3), P("rack", 8.4, 31.3), P("axeblock", 10.4, 38.6), P("rubble-s", 2.8, 39.4),
         P("shield-pole", 3.1, 30, wall=1), P("swords", 6.4, 29.5, wall=1), P("kite", 10.6, 29.6, wall=1), P("kite-b", 11.4, 29.6, wall=1),
         # Galeria dos Heróis: estátuas em fila sob estandartes
-        P("knight", 47.6, 31.5), P("knight", 50.4, 31.5), P("angel", 47.8, 39.6), P("gargoyle", 55, 39.6),
+        P("knight", 47.6, 31.5), P("knight", 47.6, 35.4), P("angel", 47.8, 39.6), P("gargoyle", 55, 39.6),
         P("banner", 47.6, 30, wall=1), P("banner", 50.4, 30, wall=1), P("swords2", 53.6, 29.5, wall=1),
         # Capela: altar, velas, anjos e bancos de pedra
         P("altar", 8, 15.5), P("candles", 5.4, 15.4), P("candles", 10.6, 15.4), P("angel", 3.4, 16.4), P("angel", 12.6, 16.4),
-        P("candles", 5.2, 19.6), P("candles", 10.8, 19.6), P("urns", 3.4, 22.6), P("cross", 12.4, 22.6),
+        P("candles", 5.2, 19.6), P("candles", 10.8, 19.6), P("urns", 12.4, 20.3), P("cross", 12.4, 22.6),
         P("win-tall", 4.5, 14, wall=1), P("gem-arch", 8, 14, wall=1), P("win-tall", 11.5, 14, wall=1),
         # Biblioteca
         P("bookshelf", 46, 15.3), P("bookshelf", 48.9, 15.3), P("bookshelf", 51.8, 15.3), P("bookshelf", 54.6, 15.3),

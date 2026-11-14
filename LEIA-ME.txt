@@ -1,4 +1,19 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p214.5 · cache ded-web-v6.6.5-templo)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.6 · cache ded-web-v6.6.6-castelo)
+
+P214.6 — CASTELO DE VALDRAK: FÍSICA E NATURALIDADE DO CENÁRIO
+· Guarita do portão: as torres pintadas invadiam as bordas do corredor e o herói andava por cima das ameias.
+  Agora há barreiras do tamanho da passagem de verdade. O fundo do portal do castelo também bloqueia: o herói
+  para na soleira em vez de entrar na parede.
+· Adereços (colunas, estátuas, mesas, túmulos, obelisco, armários…): colisão do tamanho da base do desenho
+  (antes era bem menor e os personagens entravam dentro deles) e sombra de contato no chão, para não
+  parecerem flutuar.
+· Mata dos arredores: as copas das árvores viraram uma camada da frente: o herói passa por baixo delas em
+  vez de andar por cima; cada pedaço de copa tem a profundidade da borda de baixo, então quem está ao sul
+  fica na frente da árvore. Células quase tomadas por copa viraram parede.
+· Adereços de parede que flutuavam na boca dos corredores (espadas cruzadas no Arsenal, estandarte na
+  Galeria) foram apagados; a estátua que fechava o corredor da Galeria foi para a parede; as urnas da Capela
+  saíram de cima da escada.
+· Script: scripts/castle/fix_castle_scene.py (não precisa do pacote original; originais em art-src/castle2-orig).
 
 P214.5 — TEMPLO DOS IRMÃOS MAIS ORGÂNICO, PORTAS ENCAIXADAS E IRMÃO NO TAMANHO CERTO
 · Portas laterais (câmara secreta e portão do santuário): antes ficavam soltas no meio do corredor. Agora a

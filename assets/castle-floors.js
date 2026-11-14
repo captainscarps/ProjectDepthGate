@@ -90,7 +90,7 @@
       setTimeout(go, 0);
     };
     d.__c2drawn = false;
-    ensure(d, [...chunkKeys(F), ...CF, ...(DATA.props || [])], draw);
+    ensure(d, [...chunkKeys(F), ...CF, ...(DATA.props || []), ...(F.fg ? [F.fg.tex] : [])], draw);
     // os outros andares vêm em segundo plano
     setTimeout(() => { if (d.sys?.isActive?.()) for (const id of Object.keys(DATA.floors)) if (id !== F.id) ensure(d, chunkKeys(DATA.floors[id]), () => {}); }, 4000);
     return true;
@@ -163,14 +163,30 @@
         g.__c2.items.push({ id: it.id, gl });
       } catch (e) {}
     }
-    // adereços do andar (mesas, estátuas, colunas…): profundidade pela base e colisão só no pé
+    // adereços do andar (mesas, estátuas, colunas…): profundidade pela base, sombra de contato no chão
+    // (sem ela pareciam flutuar) e colisão do tamanho da base do desenho (antes era bem menor e os
+    // personagens entravam dentro das colunas e estátuas)
+    const solid = (x, y, w, h) => { const b = D.solids.create(x, y, "light").setVisible(false).setDisplaySize(w, h); b.refreshBody?.(); return b; };
     for (const p of F.props || []) {
       if (!g.textures.exists(p.t)) continue;
       const im = g.add.image(p.x, p.y, p.t).setOrigin(.5, 1).setDepth(p.y);
-      if (p.b) {
-        const b = D.solids.create(p.x, p.y - p.b[1] / 2, "light").setVisible(false).setDisplaySize(p.b[0], p.b[1]);
-        b.refreshBody?.();
-      }
+      if (!p.b) continue;
+      const w = im.width, h = im.height;
+      const bw = Math.max(p.b[0], Math.round(w * .8)), bh = Math.max(p.b[1], Math.min(22, Math.round(h * .16)));
+      g.add.ellipse(p.x, p.y - 3, Math.min(w * .95, bw + 14), Math.max(7, Math.min(16, bh * .8)), 0x05040a, .38).setDepth(.5);
+      g.add.ellipse(p.x, p.y - 2, Math.min(w * .7, bw), Math.max(4, Math.min(9, bh * .45)), 0x05040a, .3).setDepth(.51);
+      solid(p.x, p.y - bh / 2, bw, bh);
+    }
+    // barreiras onde a arte não bate com a grade (torres da guarita, fundo do portal, mata fechada)
+    for (const [x, y, w, h] of F.blk || []) solid(x + w / 2, y + h / 2, w, h);
+    // copas das árvores na frente: cada pedaço tem a profundidade da borda de baixo da copa
+    if (F.fg && g.textures.exists(F.fg.tex)) {
+      const TX = g.textures.get(F.fg.tex);
+      F.fg.pieces.forEach((q, i) => {
+        const k = "p" + i;
+        TX.has(k) || TX.add(k, 0, q.sx, q.sy, q.w, q.h);
+        g.add.image(q.x, q.y, F.fg.tex, k).setOrigin(0).setDepth(q.d);
+      });
     }
     // livros de registro: salvar e descansar
     for (const sv of F.saves) {
