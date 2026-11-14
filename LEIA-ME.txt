@@ -1,4 +1,20 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p214.4 · cache ded-web-v6.6.4-antitrava)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.5 · cache ded-web-v6.6.5-templo)
+
+P214.5 — TEMPLO DOS IRMÃOS MAIS ORGÂNICO, PORTAS ENCAIXADAS E IRMÃO NO TAMANHO CERTO
+· Portas laterais (câmara secreta e portão do santuário): antes ficavam soltas no meio do corredor. Agora a
+  fileira de cima vira uma verga de pedra com arco e pedra-chave, presa numa pilastra que sobe até o topo da
+  parede, com batentes de pedra dos dois lados e sombra no chão.
+· Paredes sem "portas para lugar nenhum": as portas de madeira e arcos falsos sorteados nas paredes saíram;
+  ficam nichos com vela e janelas gradeadas.
+· Piso e paredes trabalhados: lajes irregulares com juntas, tom próprio de cada pedra, desgaste, cantos e pé
+  das paredes escurecidos, sujeira, musgo com borda pontilhada (mais perto da água e das paredes), escorridos
+  de umidade nas paredes, teias nos cantos, ossos, crânios, cacos e poças rasas. Templo um pouco mais escuro,
+  com as chamas desenhando a luz.
+· Peças do templo: colunas quebradas, sarcófagos, caixão com esqueleto, urnas e a estátua alada atrás do
+  braseiro do santuário do Tengu (com brilho frio).
+· O irmão da missão "Laço dos Irmãos" estava com 62% do tamanho do herói. Agora tem o mesmo tamanho e anda
+  com a animação do corpo, em vez de deslizar parado.
+· Código: scripts/source/temple.js (__tpGrime, __tpDoors, __TP_PROPS) e scripts/source/quests.js.
 
 P214.4 — ANTI-TRAVA: TELA PRETA E HERÓI PRESO EM DIÁLOGO
 · Tela preta congelada ao trocar de lugar: se o escurecimento terminou e a próxima cena não seguiu, o aviso é

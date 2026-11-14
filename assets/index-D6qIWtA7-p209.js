@@ -16293,6 +16293,16 @@ const __TP = {
   };
   __tpOrganic(ki.templo);
 }
+/* peças grandes do templo por sala: [nome, coluna, linha, opções] */
+const __TP_PROPS = {
+  "tp-entrada": [["column-broken", 5, 33], ["urns", 14, 35]],
+  "tp-salao": [["urns", 37, 34]],
+  "tp-cisterna": [["column-broken", 45, 35], ["column-intact", 58, 36]],
+  "tp-arquivo": [["sarcophagus-effigy", 24, 15], ["coffin-skeleton", 31, 14], ["urns", 30, 18]],
+  "tp-tesouro": [["sarcophagus-effigy", 6, 13], ["sarcophagus-effigy", 11, 13, { flip: !0 }]],
+  "tp-altar": [["column-intact", 42, 12], ["column-intact", 51, 12], ["urns", 47, 18]],
+  "tp-santuario": [["winged-idol", 71, 8, { back: !0, dy: 6, glow: !0 }], ["column-broken", 64, 18], ["column-broken", 78, 18, { flip: !0 }], ["column-intact", 67, 26], ["column-intact", 76, 26]],
+};
 /* sem lados retos: cantos das salas desmoronados em degraus, mordidas nas bordas e corredores com
    paredes irregulares (sempre longe das entradas, portas, inimigos e objetos) */
 function __tpOrganic(L) {
@@ -16362,6 +16372,15 @@ function __tpOrganic(L) {
   }
   // paredes dos corredores entram como paredes da sala mais próxima (o mapa só lê paredes de salas)
   if (L.__cw) L.rooms[0].walls.push(...L.__cw);
+  // porta lateral num corredor de 3 de altura: a fileira de cima vira parede (verga), para a porta ficar
+  // encaixada numa parede de verdade em vez de solta no meio do corredor
+  for (const d of L.doors || []) {
+    if (d.orientation !== "v") continue;
+    const c = L.corridors.find((q) => d.col >= q.x && d.col < q.x + q.w && d.row >= q.y && d.row < q.y + q.h);
+    if (c && c.h === 3 && d.row === c.y + 1) L.rooms[0].walls.push({ x: d.col, y: c.y, w: 1, h: 1, doorHead: !0 });
+  }
+  // templo mais escuro: as chamas e velas passam a desenhar a luz
+  for (const r of L.rooms) r.ambient = +(r.ambient * .8).toFixed(2);
 }
 /* ─── pintura do mapa com os ladrilhos do pack (cada célula do jogo = 1 ladrilho de 16 px em 2x) ─── */
 let __tpN = 0;
@@ -16394,6 +16413,7 @@ function __tpBake(B) {
     else if (W(c, r + 1) && W(c, r + 2) && F(c, r + 3)) face[r * C + c] = 3;
   }
   const fc = (c, r) => c >= 0 && r >= 0 && c < C && r < R ? face[r * C + c] : 0;
+  const DH = new Set(); for (const rm of rooms) for (const w of rm.walls || []) if (w.doorHead) DH.add(w.x + "," + w.y);
   g.fillStyle = "rgb(29,28,43)"; g.fillRect(0, 0, C * T, R * T);
   for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
     const sp = SP(c, r);
@@ -16414,6 +16434,21 @@ function __tpBake(B) {
     const f = face[r * C + c];
     if (f) {
       const L = fc(c - 1, r) === f, Rt = fc(c + 1, r) === f;
+      // verga da porta e a pilastra que sobe dela até o topo da parede
+      if (DH.has(c + "," + r) || DH.has(c + "," + (r + 1)) || DH.has(c + "," + (r + 2))) {
+        const head = DH.has(c + "," + r);
+        tile((head ? 52 : f === 2 ? 39 : 26) + 1, c, r);
+        g.fillStyle = "rgb(29,28,43)"; g.fillRect(c * T, r * T, 2, T); g.fillRect(c * T + T - 2, r * T, 2, T);
+        g.fillStyle = "rgba(10,8,20,.35)"; g.fillRect(c * T + 2, r * T, 4, T); g.fillRect(c * T + T - 6, r * T, 4, T);
+        if (head) {
+          // arco de pedra com pedra-chave e o vão escuro em cima da porta
+          g.fillStyle = "rgb(24,22,36)"; g.fillRect(c * T + 4, r * T + 24, T - 8, 8);
+          const st = [[4, 18, 6], [10, 15, 6], [16, 14, 6], [22, 15, 6]];
+          for (const [x, y, w] of st) { g.fillStyle = "rgb(96,94,124)"; g.fillRect(c * T + x, r * T + y, w, 32 - y - 8); g.fillStyle = "rgb(138,138,170)"; g.fillRect(c * T + x, r * T + y, w, 2); g.fillStyle = "rgb(29,28,43)"; g.fillRect(c * T + x + w - 1, r * T + y, 1, 32 - y - 8) }
+          g.fillStyle = "rgb(150,150,182)"; g.fillRect(c * T + 13, r * T + 12, 6, 4);
+        }
+        continue;
+      }
       // parede de uma célula de largura com piso dos dois lados: coluna fina de pedra (como no pack)
       if (F(c - 1, r) && F(c + 1, r) || (F(c - 1, r + (f === 1 ? 0 : 1)) && F(c + 1, r + (f === 1 ? 0 : 1)))) {
         tile(79, c, r);
@@ -16561,9 +16596,9 @@ function __tpBake(B) {
         const c0 = c - run;
         for (let x = c0 + 1 + (rnd() * 2 | 0); x + 1 < c - 1; x += 4 + (rnd() * 4 | 0)) {
           if (rnd() < .3) continue;
-          const kind = pick([276, 276, 278, 280, 282, 282, 250, 254]);
+          const kind = pick([278, 282, 282, 282]);
           tile(kind, x, r - 1); tile(kind + 1, x + 1, r - 1); tile(kind + 13, x, r); tile(kind + 14, x + 1, r);
-          if (kind === 282 || kind === 250) niches.push([(x + 1) * T, r * T + T - 6]);
+          if (kind === 282) niches.push([(x + 1) * T, r * T + T - 6]);
         }
       }
       run = 0;
@@ -16582,6 +16617,13 @@ function __tpBake(B) {
       for (let k = 0; k < n; k++) { const s2 = 2 + (rnd() * 3 | 0) * 2, x = c * T + rnd() * 28, y = y0 + 2 + rnd() * 8; g.fillStyle = rnd() < .5 ? "rgb(92,90,118)" : "rgb(66,64,88)"; g.fillRect(x | 0, y | 0, s2, s2 - 2); g.fillStyle = "rgb(128,128,160)"; g.fillRect(x | 0, y | 0, s2, 2) }
     }
   }
+  try {
+    const keep = new Set();
+    const mk = (x, y, rad = 1) => { for (let dy = -rad; dy <= rad; dy++) for (let dx = -rad; dx <= rad; dx++) keep.add((x + dx) + "," + (y + dy)) };
+    for (const rm of rooms) { for (const t of rm.tp || []) mk(t[1], t[2]); for (const d of rm.decor || []) mk(d.col, d.row); for (const e of rm.enemies || []) mk(e.col, e.row, 0); for (const pp of __TP_PROPS[rm.id] || []) mk(pp[1], pp[2], 2) }
+    for (const d of B.level.doors || []) mk(d.col, d.row, 2);
+    __tpGrime({ g, C, R, F, SP, fc, rooms, keep });
+  } catch (e) { console.warn("[templo] acabamento", e) }
   tx.refresh();
   S.add.image(0, 0, key).setOrigin(0).setDepth(-2);
   // névoa densa e fria correndo pelo chão do templo
@@ -16691,13 +16733,44 @@ function __tpProps(S, B, M, niches, special) {
     }
   }
   // baús do jogo com a arte do pack (os objetos são criados depois das paredes)
-  S.events.once("update", () => { const G = B.solids || S.dungeon?.solids; if (G) for (const [x, y, w, h] of SQ) { const b = G.create(x, y, "rock"); b.setVisible(!1).setDisplaySize(w, h); b.refreshBody?.() } __tpChests(S, B) });
+  // estátuas, colunas e sarcófagos do templo (pacote props-temple), na mesma escala 2x do piso
+  for (const rm of B.level.rooms || []) for (const [k, c, r, o = {}] of __TP_PROPS[rm.id] || []) {
+    const key = "ptp-" + k; if (!S.textures.exists(key)) continue;
+    const PAD = { "column-broken": 10, "column-intact": 11 }, TN = { "column-broken": 0xa4a9cc, "column-intact": 0xa4a9cc, "sarcophagus-effigy": 0xc4c8de, "coffin-skeleton": 0xc4c8de, "urns": 0xd8ccc4, "winged-idol": 0xb4b8d6 };
+    const fr = S.textures.get(key).getSourceImage(), sc = k === "urns" ? 1.5 : 2;
+    const x = c * T + 16 + (o.dx || 0), y = (r + 1) * T + (o.dy || 0), im = S.add.image(x, y, key).setOrigin(.5, 1 - (PAD[k] || 0) / fr.height).setScale(sc).setDepth(o.back ? .96 : y).setFlipX(!!o.flip);
+    TN[k] && im.setTint(TN[k]);
+    const sh = S.add.ellipse(x, y - 3, im.displayWidth * .8, 10, 0x0a0814, .4).setDepth(.958);
+    o.back || o.walk || solid(x, y - 10, Math.min(im.displayWidth - 8, 44), 18);
+    if (o.glow) { S.lighting?.addLight?.({ x, y: y - im.displayHeight * .5, radius: 170, flicker: .12, color: 0x9fb2ff }); const gl = S.add.image(x, y - im.displayHeight * .55, "light").setBlendMode(j.BlendModes.ADD).setTint(0x8f9cff).setScale(.5).setAlpha(.22).setDepth(y + 1); S.tweens.add({ targets: gl, alpha: .1, duration: 2400, yoyo: !0, repeat: -1 }) }
+  }
+  S.events.once("update", () => { const G = B.solids || S.dungeon?.solids; if (G) for (const [x, y, w, h] of SQ) { const b = G.create(x, y, "rock"); b.setVisible(!1).setDisplaySize(w, h); b.refreshBody?.() } __tpChests(S, B); __tpDoors(S, B) });
+}
+/* portas laterais: batentes de pedra dos dois lados, presos na verga, e sombra no chão */
+function __tpDoors(S, B) {
+  const T = dt, G = B.solids || S.dungeon?.solids;
+  const ds = S.children.list.filter((o) => o?.texture && /^door/.test(o.texture.key) && o.displayHeight >= 48 && o.displayWidth <= 40);
+  for (const o of ds) {
+    const x = o.x, top = o.y - o.displayHeight / 2, bot = o.y + o.displayHeight / 2, gfx = S.add.graphics().setDepth(bot + 1);
+    for (const sx of [-1, 1]) {
+      const X = x + sx * (T / 2 + 3) - 5;
+      gfx.fillStyle(0x1d1c2b, 1).fillRect(X - 1, top - 4, 12, bot - top + 6);
+      gfx.fillStyle(0x5e5c7a, 1).fillRect(X, top - 4, 10, bot - top + 4);
+      for (let y = top; y < bot - 6; y += 12) { gfx.fillStyle(0x7c7aa0, 1).fillRect(X, y, 10, 2); gfx.fillStyle(0x45445e, 1).fillRect(X, y + 10, 10, 2) }
+      gfx.fillStyle(0x8a8aaa, 1).fillRect(X + (sx < 0 ? 0 : 8), top - 4, 2, bot - top + 4);
+      gfx.fillStyle(0x3a394f, 1).fillRect(X - 2, bot - 4, 14, 6);
+      if (G) { const b = G.create(X + 5, bot - 8, "rock"); b.setVisible(!1).setDisplaySize(10, 14); b.refreshBody?.() }
+    }
+    S.add.ellipse(x, bot + 2, T + 16, 8, 0x0a0814, .45).setDepth(.958);
+  }
 }
 function __tpChests(S, B) {
   const chests = (B.objects || S.dungeon?.objects || []).filter((o) => o?.texture && /^chest/.test(o.texture.key));
   for (const o of chests) {
     const a = S.add.sprite(o.x, o.y + o.displayHeight / 2, "tpd-atlas", "chest-0").setOrigin(.5, 1).setScale(2).setDepth(o.depth + .1);
     o.setAlpha(0.001);
+    // a sombra do baú original ficava solta embaixo: encosta ela no pé do baú novo
+    for (const sh of S.children.list) if (sh !== o && sh.texture?.key === "shadow" && Math.abs(sh.x - o.x) < 20 && sh.y > o.y && sh.y - o.y < 90) sh.setPosition(a.x, a.y - 3).setScale(.9, .7);
     let was = !!o.opened; if (was) a.setFrame("chest-4");
     const U = () => { if (!o.scene || !a.active) { S.events.off("update", U); return } if (o.opened && !was) { was = !0; a.play("tp-chest-open") } };
     S.events.on("update", U); S.events.once("shutdown", () => S.events.off("update", U));
@@ -16712,7 +16785,9 @@ function __tpChests(S, B) {
   const P0 = bo.prototype.preload;
   bo.prototype.preload = function () {
     const r = P0.apply(this, arguments);
-    try { const L = this.load, op = L.path; L.setPath(""); this.textures.exists("tpd-atlas") || L.image("tpd-atlas", "assets/pixel-art/temple/tpd-atlas.png"); L.json("tpd-atlas", "assets/pixel-art/temple/tpd-atlas.json"); L.setPath(op) } catch (e) {}
+    try { const L = this.load, op = L.path; L.setPath(""); this.textures.exists("tpd-atlas") || L.image("tpd-atlas", "assets/pixel-art/temple/tpd-atlas.png"); L.json("tpd-atlas", "assets/pixel-art/temple/tpd-atlas.json");
+      for (const k of ["column-broken", "column-intact", "sarcophagus-effigy", "coffin-skeleton", "urns", "winged-idol", "banner"]) this.textures.exists("ptp-" + k) || L.image("ptp-" + k, "assets/pixel-art/props-temple/temple-" + k + ".png");
+      L.setPath(op) } catch (e) {}
     return r;
   };
   // vencido o Tengu, a Guardiã traz o herói de volta
@@ -16730,6 +16805,124 @@ function __tpChests(S, B) {
     return r;
   };
 }
+/* ─── acabamento orgânico: pedras irregulares, sujeira, musgo, cantos escuros, teias, ossos e poças ───
+   Tudo desenhado na resolução da arte (1 px = 2 px do jogo), por cima dos ladrilhos do pack. */
+function __tpGrime(o) {
+  const { g, C, R, F, SP, fc, rooms, keep } = o;
+  const PW = C * 16, PH = R * 16, N = PW * PH;
+  let sd = 77031; const rnd = () => (sd = sd * 1664525 + 1013904223 >>> 0) / 4294967296;
+  const h2 = (x, y) => { let n = (x * 374761393 + y * 668265263) | 0; n = (n ^ (n >>> 13)) * 1274126177 | 0; return ((n ^ (n >>> 16)) >>> 0) / 4294967296 };
+  const vn = (x, y, s) => { const X = x / s, Y = y / s, xi = Math.floor(X), yi = Math.floor(Y), xf = X - xi, yf = Y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf); const a = h2(xi, yi), b = h2(xi + 1, yi), c = h2(xi, yi + 1), d = h2(xi + 1, yi + 1); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v };
+  const BY = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  const by = (x, y) => (BY[(y & 3) * 4 + (x & 3)] + .5) / 16;
+  // tipo de cada pixel: 1 piso, 2 parede de frente, 0 vazio/água
+  const kind = new Uint8Array(N);
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+    const sp = SP(c, r), k = (F(c, r) && sp !== "water") || sp === "plat" ? 1 : fc(c, r) ? 2 : 0;
+    if (!k) continue;
+    for (let y = 0; y < 16; y++) kind.fill(k, (r * 16 + y) * PW + c * 16, (r * 16 + y) * PW + c * 16 + 16);
+  }
+  // distância (px) de cada piso até a parede/vazio mais próximo: chanfro em duas passadas
+  const D = new Float32Array(N); for (let i = 0; i < N; i++) D[i] = kind[i] === 1 ? 999 : 0;
+  for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) { const i = y * PW + x; if (!D[i]) continue; let m = D[i]; if (x) m = Math.min(m, D[i - 1] + 1); if (y) { m = Math.min(m, D[i - PW] + 1); if (x) m = Math.min(m, D[i - PW - 1] + 1.41); if (x < PW - 1) m = Math.min(m, D[i - PW + 1] + 1.41) } D[i] = m }
+  for (let y = PH - 1; y >= 0; y--) for (let x = PW - 1; x >= 0; x--) { const i = y * PW + x; if (!D[i]) continue; let m = D[i]; if (x < PW - 1) m = Math.min(m, D[i + 1] + 1); if (y < PH - 1) { m = Math.min(m, D[i + PW] + 1); if (x < PW - 1) m = Math.min(m, D[i + PW + 1] + 1.41); if (x) m = Math.min(m, D[i + PW - 1] + 1.41) } D[i] = m }
+  // perto d'água (para o musgo e a umidade)
+  const wet = new Uint8Array(C * R);
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (SP(c, r) === "water") for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const x = c + dx, y = r + dy; if (x >= 0 && y >= 0 && x < C && y < R) wet[y * C + x] = 1 }
+  const mul = new Uint8ClampedArray(N * 4), ov = new Uint8ClampedArray(N * 4);
+  const put = (A, i, r, g_, b, a) => { A[i * 4] = r; A[i * 4 + 1] = g_; A[i * 4 + 2] = b; A[i * 4 + 3] = a };
+  const CELL = 13;
+  for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) {
+    const i = y * PW + x, k = kind[i];
+    if (!k) { put(mul, i, 255, 255, 255, 255); continue }
+    if (k === 1) {
+      // lajes irregulares (Voronoi): junta mais escura e tom próprio de cada pedra
+      const gx = Math.floor(x / CELL), gy = Math.floor(y / CELL); let d1 = 1e9, d2 = 1e9, s1 = 0;
+      for (let j = -1; j <= 1; j++) for (let q = -1; q <= 1; q++) { const cx = gx + q, cy = gy + j, px = (cx + .15 + h2(cx, cy) * .7) * CELL, py = (cy + .15 + h2(cy + 91, cx - 37) * .7) * CELL, d = Math.hypot(x - px, y - py); if (d < d1) { d2 = d1; d1 = d; s1 = h2(cx * 7 + 3, cy * 5 - 11) } else if (d < d2) d2 = d }
+      let v = .93 + s1 * .1;
+      const seam = d2 - d1;
+      if (seam < 1.1) v *= .84; else if (seam < 2.1) v *= .95;
+      const n = vn(x, y, 36) * .6 + vn(x + 311, y - 97, 10) * .4;
+      v *= .84 + n * .18;
+      const d = D[i]; if (d < 28) v *= 1 - .46 * Math.pow(1 - d / 28, 1.6);
+      v = Math.round(Math.min(1, v) * 28) / 28;
+      put(mul, i, v * 246 | 0, v * 250 | 0, v * 255 | 0, 255);
+      // sujeira, umidade e musgo (por cima, com borda pontilhada)
+      const cw = wet[(y >> 4) * C + (x >> 4)];
+      const m = vn(x + 500, y + 40, 24) * .7 + vn(x - 80, y + 700, 7) * .3, mt = (cw ? .56 : d < 16 ? .68 : .8) - by(x, y) * .07;
+      if (m > mt) { const t = m - mt; put(ov, i, t > .1 ? 88 : t > .05 ? 72 : 58, t > .1 ? 112 : t > .05 ? 96 : 78, t > .1 ? 80 : t > .05 ? 70 : 62, t > .1 ? 96 : 112) }
+      else {
+        const dd = vn(x + 900, y + 300, 44) * .75 + vn(x, y, 6) * .25;
+        if (dd > .68 - by(x, y) * .06) put(ov, i, 64, 56, 52, 52);
+        else if (h2(x * 3 + 1, y * 5 + 7) < .006) { const lt = h2(x, y + 1) < .5; put(ov, i, lt ? 150 : 40, lt ? 150 : 40, lt ? 176 : 54, 150) }
+      }
+    } else {
+      // parede: escorridos verticais de umidade e base encardida
+      const s = vn(x * 1.0, y * .12, 5) * .65 + vn(x, y, 3) * .35, base = (y & 15) > 11 && kind[Math.min(N - 1, i + PW * (16 - (y & 15)))] === 1;
+      let v = .86 + s * .16; if (base) v *= .86;
+      v = Math.round(Math.min(1, v) * 24) / 24;
+      put(mul, i, v * 248 | 0, v * 250 | 0, v * 255 | 0, 255);
+      const drip = vn(x, 0, 7), top = kind[i - PW * 3] !== 2;
+      if (drip > .76 && vn(x, y, 9) > .5 && !top) put(ov, i, 64, 88, 66, 50 + (drip - .76) * 260);
+    }
+  }
+  const mk = (A) => { const cv = document.createElement("canvas"); cv.width = PW; cv.height = PH; cv.getContext("2d").putImageData(new ImageData(A, PW, PH), 0, 0); return cv };
+  const big = (cv) => { g.save(); g.imageSmoothingEnabled = !1; g.drawImage(cv, 0, 0, PW, PH, 0, 0, PW * 2, PH * 2); g.restore() };
+  g.save(); g.globalCompositeOperation = "multiply"; big(mk(mul)); g.restore();
+  big(mk(ov));
+  // detalhes desenhados à mão: teias nos cantos, ossos, crânios, cacos e poças rasas
+  const art = document.createElement("canvas"); art.width = PW; art.height = PH; const a = art.getContext("2d");
+  const P = (x, y, col, w = 1, h = 1) => { a.fillStyle = col; a.fillRect(x | 0, y | 0, w, h) };
+  const free = (x, y) => { const c = x >> 4, r = y >> 4; return kind[(y | 0) * PW + (x | 0)] === 1 && !keep.has(c + "," + r) };
+  const web = (x0, y0, sx, sz) => {
+    const col = "rgba(214,218,232,.42)";
+    for (let k = 0; k < 4; k++) { const ang = (k / 3) * Math.PI / 2; for (let t = 0; t < sz; t++) P(x0 + sx * Math.cos(ang) * t, y0 + Math.sin(ang) * t, col) }
+    for (let ring = 4; ring < sz; ring += 4) for (let t = 0; t <= 12; t++) { const ang = t / 12 * Math.PI / 2, rr = ring + Math.sin(t * 1.7) * .8; P(x0 + sx * Math.cos(ang) * rr, y0 + Math.sin(ang) * rr, "rgba(214,218,232,.3)") }
+  };
+  for (const rm of rooms) {
+    const q = rm.rect; if (!q) continue;
+    // primeira fileira de piso logo abaixo da parede de cima, nos dois cantos
+    const yTop = (q.y) * 16, xl = q.x * 16, xr = (q.x + q.w) * 16 - 1;
+    if (rnd() < .8 && kind[(yTop + 2) * PW + xl + 2] === 1) web(xl, yTop, 1, 12 + (rnd() * 8 | 0));
+    if (rnd() < .8 && kind[(yTop + 2) * PW + xr - 2] === 1) web(xr, yTop, -1, 12 + (rnd() * 8 | 0));
+    if (rm.boss) continue;
+    // ossos e crânios espalhados
+    for (let n = 0, t = 0; n < 2 + (rnd() * 3 | 0) && t < 60; t++) {
+      const x = (q.x + 1 + rnd() * (q.w - 2)) * 16 | 0, y = (q.y + 1 + rnd() * (q.h - 2)) * 16 | 0;
+      if (!free(x, y) || !free(x + 10, y + 6)) continue; n++;
+      if (rnd() < .4) { // crânio
+        P(x + 1, y, "#cfc9b8", 5, 1); P(x, y + 1, "#e4dfcf", 7, 3); P(x + 1, y + 4, "#bdb6a3", 5, 1); P(x + 2, y + 5, "#a8a08c", 3, 1);
+        P(x + 1, y + 2, "#3a3446", 2, 1); P(x + 4, y + 2, "#3a3446", 2, 1); P(x + 3, y + 3, "#5a5262"); P(x, y + 4, "rgba(20,16,30,.35)", 7, 2);
+      } else { // osso solto
+        const L = 6 + (rnd() * 4 | 0), d = rnd() < .5;
+        for (let s = 0; s < L; s++) P(x + s, y + (d ? s >> 2 : 0) + 1, "#d8d2c2");
+        P(x - 1, y, "#e8e3d4", 2, 3); P(x + L - 1, y + (d ? (L - 1) >> 2 : 0), "#e8e3d4", 2, 3);
+        for (let s = 0; s < L; s++) P(x + s, y + (d ? s >> 2 : 0) + 2, "rgba(20,16,30,.3)");
+      }
+    }
+    // cacos de pedra e lascas
+    for (let n = 0; n < 6; n++) { const x = (q.x + rnd() * q.w) * 16 | 0, y = (q.y + rnd() * q.h) * 16 | 0; if (!free(x, y)) continue; P(x, y, "#8a8aa6", 2, 1); P(x, y + 1, "#5c5c78", 2, 1); P(x + 2, y + 1, "rgba(20,16,30,.3)") }
+    // poça rasa num canto úmido de algumas salas
+    if (!rm.walls?.some((w) => w.water) && rnd() < .55) {
+      for (let t = 0; t < 30; t++) {
+        const cx = (q.x + 1.5 + rnd() * (q.w - 3)) * 16, cy = (q.y + 1.5 + rnd() * (q.h - 3)) * 16, rx = 9 + rnd() * 9, ry = 4 + rnd() * 4;
+        let ok = !0; for (let yy = -ry; yy <= ry && ok; yy += 2) for (let xx = -rx; xx <= rx; xx += 2) if (!free(cx + xx, cy + yy)) { ok = !1; break }
+        if (!ok) continue;
+        const lob = [[0, 0, rx, ry], [rx * .55, ry * .4, rx * .5, ry * .7], [-rx * .5, -ry * .3, rx * .45, ry * .6]];
+        const inP = (x, y) => lob.some(([ox, oy, a1, b1]) => ((x - ox) / a1) ** 2 + ((y - oy) / b1) ** 2 < 1);
+        for (let yy = -ry * 2; yy <= ry * 2; yy++) for (let xx = -rx * 2; xx <= rx * 2; xx++) {
+          if (!inP(xx, yy)) continue;
+          const edge = !inP(xx, yy - 1), edgeB = !inP(xx, yy + 1);
+          P(cx + xx, cy + yy, edge ? "rgba(150,176,206,.55)" : edgeB ? "rgba(26,30,46,.35)" : "rgba(44,58,84,.42)");
+        }
+        P(cx - rx * .3, cy - 1, "rgba(200,225,245,.5)", 3, 1);
+        break;
+      }
+    }
+  }
+  big(art);
+}
+
 window.__dgTP = __TP;
 
 /* ══ Missões secundárias da campanha + contratos do modo infinito + Diário ══
@@ -16884,10 +17077,13 @@ function __qTemplo(S) {
   // o irmão espera na porta do santuário
   const x = 52 * dt + 16, y = 14 * dt + 24; // no Altar, diante da porta do santuário
   let rig = null, cont = null;
-  try { rig = new Qe(S, pe[bro], { x, y, scale: .62, isPreview: !0 }); cont = rig.container; cont.setDepth(y) } catch (e) {
+  // mesmo tamanho do herói (antes .62 deixava o irmão bem menor que o jogador)
+  const HS_ = S.playerVisual?.container?.scaleX || 1;
+  try { rig = new Qe(S, pe[bro], { x, y, scale: HS_, isPreview: !0 }); cont = rig.container; cont.setDepth(y) } catch (e) {
     cont = S.add.image(x, y, "hero-" + bro.toLowerCase() + "-hud").setScale(.5).setDepth(y);
   }
   let met = !1, help = null;
+  const fk = { x, y: y + 2, dead: !1, invuln: 0, moveRatio: 0, facing: { x: 1, y: 0 }, body: { velocity: { x: 0, y: 0 } } };
   const U = (t, ms) => {
     if (!cont?.active || !S.player) return;
     const P = S.player, d = Math.hypot(P.x - cont.x, P.y - cont.y);
@@ -16900,11 +17096,19 @@ function __qTemplo(S) {
         { who, expr: "aggression", name: bn, text: "Juntos, como no dojo. Eu cubro as suas costas." },
       ]);
     }
+    let vx = 0, vy = 0;
     if (met) { // segue o herói um pouco atrás
       const tx = P.x - 34, ty = P.y + 10, dx = tx - cont.x, dy = ty - cont.y, dd = Math.hypot(dx, dy);
-      if (dd > 24) { const sp = Math.min(dd * 3, 170) * ms / 1000; cont.x += dx / dd * sp; cont.y += dy / dd * sp }
-      cont.setDepth(cont.y); rig?.setFlip?.(dx < 0);
+      if (dd > 24) { const sp = Math.min(dd * 3, 170) * ms / 1000; vx = dx / dd * sp; vy = dy / dd * sp; cont.x += vx; cont.y += vy; rig?.setFlip?.(dx < 0) }
     }
+    // o corpo anda e respira como o do herói (o boneco usa os mesmos campos do jogador)
+    if (rig?.update) {
+      const k = ms ? 1000 / ms : 0, mv = Math.min(1, Math.hypot(vx, vy) * k / 140);
+      fk.x = cont.x; fk.y = cont.y + 2; fk.moveRatio = mv; fk.body.velocity.x = vx * k; fk.body.velocity.y = vy * k;
+      if (mv > .05) { fk.facing.x = Math.sign(vx) || fk.facing.x; fk.facing.y = Math.abs(vy) > Math.abs(vx) ? Math.sign(vy) : 0 }
+      try { rig.update(ms / 1000, fk) } catch (e) {}
+    }
+    cont.setDepth(cont.y);
     // ataque do irmão contra o chefe
     const b = S.boss;
     if (met && b?.active && !b.dead && b.typeKey === "RIVER_TENGU") {

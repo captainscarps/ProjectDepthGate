@@ -150,10 +150,13 @@ function __qTemplo(S) {
   // o irmão espera na porta do santuário
   const x = 52 * dt + 16, y = 14 * dt + 24; // no Altar, diante da porta do santuário
   let rig = null, cont = null;
-  try { rig = new Qe(S, pe[bro], { x, y, scale: .62, isPreview: !0 }); cont = rig.container; cont.setDepth(y) } catch (e) {
+  // mesmo tamanho do herói (antes .62 deixava o irmão bem menor que o jogador)
+  const HS_ = S.playerVisual?.container?.scaleX || 1;
+  try { rig = new Qe(S, pe[bro], { x, y, scale: HS_, isPreview: !0 }); cont = rig.container; cont.setDepth(y) } catch (e) {
     cont = S.add.image(x, y, "hero-" + bro.toLowerCase() + "-hud").setScale(.5).setDepth(y);
   }
   let met = !1, help = null;
+  const fk = { x, y: y + 2, dead: !1, invuln: 0, moveRatio: 0, facing: { x: 1, y: 0 }, body: { velocity: { x: 0, y: 0 } } };
   const U = (t, ms) => {
     if (!cont?.active || !S.player) return;
     const P = S.player, d = Math.hypot(P.x - cont.x, P.y - cont.y);
@@ -166,11 +169,19 @@ function __qTemplo(S) {
         { who, expr: "aggression", name: bn, text: "Juntos, como no dojo. Eu cubro as suas costas." },
       ]);
     }
+    let vx = 0, vy = 0;
     if (met) { // segue o herói um pouco atrás
       const tx = P.x - 34, ty = P.y + 10, dx = tx - cont.x, dy = ty - cont.y, dd = Math.hypot(dx, dy);
-      if (dd > 24) { const sp = Math.min(dd * 3, 170) * ms / 1000; cont.x += dx / dd * sp; cont.y += dy / dd * sp }
-      cont.setDepth(cont.y); rig?.setFlip?.(dx < 0);
+      if (dd > 24) { const sp = Math.min(dd * 3, 170) * ms / 1000; vx = dx / dd * sp; vy = dy / dd * sp; cont.x += vx; cont.y += vy; rig?.setFlip?.(dx < 0) }
     }
+    // o corpo anda e respira como o do herói (o boneco usa os mesmos campos do jogador)
+    if (rig?.update) {
+      const k = ms ? 1000 / ms : 0, mv = Math.min(1, Math.hypot(vx, vy) * k / 140);
+      fk.x = cont.x; fk.y = cont.y + 2; fk.moveRatio = mv; fk.body.velocity.x = vx * k; fk.body.velocity.y = vy * k;
+      if (mv > .05) { fk.facing.x = Math.sign(vx) || fk.facing.x; fk.facing.y = Math.abs(vy) > Math.abs(vx) ? Math.sign(vy) : 0 }
+      try { rig.update(ms / 1000, fk) } catch (e) {}
+    }
+    cont.setDepth(cont.y);
     // ataque do irmão contra o chefe
     const b = S.boss;
     if (met && b?.active && !b.dead && b.typeKey === "RIVER_TENGU") {
