@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p214.6 · cache ded-web-v6.6.6-castelo)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.7 · cache ded-web-v6.6.7-pocao-vozes)
+
+P214.7 — POÇÕES PARA QUEM VOCÊ ESCOLTA E FALAS QUE ESTAVAM SEM VOZ
+· Escoltas (o menino da "Criança Perdida" e o Brokk nas Cavernas Dorf): quando estão feridos aparece
+  "Dar uma poção" perto deles. A poção sai do cinto do herói — ele fica sem ela — e cura metade da vida de
+  quem recebe. Sem poções, o aviso mostra que você não tem nenhuma. (scripts/source/quests.js __escortPotion)
+· Auditoria das falas: 43 falas faladas estavam sem voz e foram gravadas no ElevenLabs em PT e EN (230
+  arquivos): resgate do Brokk na caverna e o Brokk na forja; menino, pajé, irmã e Durgan no Refúgio; a
+  apresentação dos 9 heróis da vila (cada um com a própria voz); falas do herói na missão da Alline, a voz do
+  rio, o espião do Observador e a volta para casa; Olivia; a carta do irmão (narrador, agora também em inglês).
+· A fala do herói sobre a fruta da bruxa tinha mudado uma palavra e perdeu a voz e a tradução; voltou ao texto
+  gravado. Lista: scripts/falas_sem_voz_lines.json. Ficaram sem voz de propósito: avisos, dicas, nomes de
+  itens, textos de placas/lápides e a conversa de fundo dos fregueses da taverna.
 
 P214.6 — CASTELO DE VALDRAK: FÍSICA E NATURALIDADE DO CENÁRIO
 · Guarita do portão: as torres pintadas invadiam as bordas do corredor e o herói andava por cima das ameias.

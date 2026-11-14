@@ -35,9 +35,10 @@ VOZES = {  # vozes brasileiras da biblioteca do ElevenLabs (o mesmo timbre lê o
     "olivia": "iTvRNZPNPS0EiSgOCQG0",
     "farias": "Hsrdp9vv51A8JfLqfIH8",        # Jaan — senhor idoso, voz grossa e séria
     "maria": "OB6x7EbXYlhG4DDTB1XU",
+    "menino_v": "4dlXQwYXFHlCAUmQAu9j",      # Zozo um pouco mais agudo: o menino da "Criança Perdida" no Refúgio
     "alline": "MPDBOuBk4rkLBByX9RF4",        # Keren — moça brasileira de voz doce e natural (a dona dos gatos)         # Michelle — jovem de uns 20 anos, doce e animada        # Graziella (voz brasileira infantil), afinada mais aguda: menina
 }
-PITCH = {"olivia": 1.16}   # sobe o tom sem mudar a duração (ffmpeg asetrate + atempo)
+PITCH = {"olivia": 1.16, "menino_v": 1.1}   # sobe o tom sem mudar a duração (ffmpeg asetrate + atempo)
 CLASSES = ["WARRIOR", "BERSERKER", "ARCHER", "HUNTER", "DRUID", "NECROMANCER", "MAGE", "ROGUE", "SHAMAN"]
 
 def H(t):
@@ -54,7 +55,7 @@ def jobs():
             for lang, text in (("pt", pt), ("en", en)):
                 if v == "hero":
                     for c in (["WARRIOR"] if scene.startswith("dv_") else CLASSES): out.append(dict(id=lid, lang=lang, text=text, voice=CAST[c], cls=c, keys=(pt, en, es)))
-                else: out.append(dict(id=lid, lang=lang, text=text, voice=VOZES[v], cls=None, keys=(pt, en, es), pitch=PITCH.get(v)))
+                else: out.append(dict(id=lid, lang=lang, text=text, voice=(CAST[v[4:]] if v.startswith("cls:") else VOZES[v]), cls=None, keys=(pt, en, es), pitch=PITCH.get(v)))
     return out
 
 def main():

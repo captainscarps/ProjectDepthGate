@@ -140,7 +140,7 @@ function __qIrmStart(S) {
   __dlg(S, [
     __Q.G("Espere. Uma carta atravessou um dos portais. Está selada com um brasão que você conhece."),
     __Q.H(S, `É a letra do ${bn === "AKIHIRO" ? "meu irmão mais velho" : "meu irmão"}… ${bn}.`, "special"),
-    { name: "CARTA DE " + bn, text: `"Encontrei um templo nas Profundezas com o símbolo do nosso clã. Algo vive no santuário. Não consigo sozinho. Venha."` },
+    { name: "CARTA DE " + bn, text: __L3(`"Encontrei um templo nas Profundezas com o símbolo do nosso clã. Algo vive no santuário. Não consigo sozinho. Venha."`, `"I found a temple in the Depths bearing our clan's symbol. Something lives in the sanctuary. I can't do it alone. Come."`, `"Encontré un templo en las Profundidades con el símbolo de nuestro clan. Algo vive en el santuario. No puedo solo. Ven."`) },
     __Q.G("O templo fica além do último selo que você fechou. Vou abrir o caminho. Tragam um ao outro de volta.", "calm"),
   ], () => { __Q.set(S, "irm", 1); S.requestSave?.(10); __qGo(S, "templo") });
 }
@@ -406,15 +406,49 @@ function __qMercGuard(S) {
     }));
 }
 /* ═════ 5. A Criança Perdida ═════ */
+/* Dar poção a quem o herói escolta (o menino, o Brokk): aparece "Dar uma poção" perto dele quando está ferido.
+   A poção sai do cinto do herói (ele fica sem ela) e cura metade da vida de quem recebe. */
+function __escortPotion(S, spr, o) {
+  const L3 = typeof __L3 === "function" ? __L3 : (pt) => pt;
+  let cd = 0;
+  const z = {};
+  Object.defineProperty(z, "x", { get: () => spr.x, configurable: !0 });
+  Object.defineProperty(z, "y", { get: () => spr.y + 4, configurable: !0 });
+  Object.defineProperty(z, "interactLabel", { configurable: !0, get: () => {
+    if (!spr.active || !o.alive() || o.hp() >= o.max) return null;
+    const n = S.potions?.count ?? 0;
+    return n > 0 ? L3(`Dar uma poção a ${o.name} (sobram ${n - 1})`, `Give ${o.nameEn || o.name} a potion (${n - 1} left)`, `Dar una poción a ${o.name} (quedan ${n - 1})`)
+      : L3(`${o.name} está ferido — você não tem poções`, `${o.nameEn || o.name} is hurt — you have no potions`, `${o.name} está herido — no tienes pociones`);
+  } });
+  z.interact = () => {
+    if (!spr.active || !o.alive() || o.hp() >= o.max || S.time.now < cd) return;
+    cd = S.time.now + 500;
+    if ((S.potions?.count ?? 0) <= 0) { S.effects?.floatText?.(S.player.x, S.player.y - 30, L3("Sem poções", "No potions", "Sin pociones"), "#d84040", 9); return }
+    S.potions.count--;
+    S.game.events.emit("hud:potions", S.potions.count, S.potions.max);
+    const before = o.hp(), heal = Math.max(2, Math.ceil(o.max * .5));
+    o.heal(heal);
+    const got = Math.round(o.hp() - before);
+    try { S.audio?.play?.(Ct.POTION_USE) } catch (e) {}
+    S.effects?.burstTinted?.(spr.x, spr.y - 14, 0xd84b6a, 12);
+    S.effects?.floatText?.(spr.x, spr.y - 40, "+" + got, "#8ae08a", 10);
+    o.onHeal?.();
+  };
+  S.dungeon.objects.push(z);
+  const off = () => { const i = S.dungeon?.objects?.indexOf(z) ?? -1; i >= 0 && S.dungeon.objects.splice(i, 1) };
+  S.events.once("shutdown", off);
+  return off;
+}
 function __qKidLevel(S) {
   if (__Q.get(S, "ck") !== 0 || __Q.n(S) < 6 || !__HUBD.includes(S.levelId)) return;
   const sp = S.dungeon.level.playerSpawn, x = sp.col * dt + 70, y = sp.row * dt + 10;
   const K = (t, e = "talk") => __Q.N("menino", "MENINO", t, e);
-  let hp = 6, follow = !1, hurtCd = 0;
+  let hp = 6, follow = !1, hurtCd = 0, kidPot = null;
   const npc = __qNpc(S, "menino", x, y, { scale: .5, label: "Falar com o menino", onTalk: () => {
     if (follow) return;
     __dlg(S, [K("(soluçando) Eu… eu me perdi. Entrei atrás do meu cachorro e a porta sumiu.", "sadness"), __Q.H(S, "Fique perto de mim. Vou te tirar daqui."), K("Promete?", "special")], () => {
       follow = !0; __Q.set(S, "ck", 1); S.requestSave?.(10); S.game.events.emit("ui:banner", "ESCOLTA: MANTENHA O MENINO VIVO ATÉ O CHEFE CAIR", "#ffd27a");
+      kidPot = __escortPotion(S, s, { name: "o menino", nameEn: "the boy", max: 6, hp: () => hp, alive: () => follow && hp > 0, heal: (n) => { hp = Math.min(6, hp + n) } });
       const i = S.dungeon.objects.indexOf(npc.zone); i >= 0 && S.dungeon.objects.splice(i, 1);
     });
   } });
@@ -435,7 +469,7 @@ function __qKidLevel(S) {
     if (hurtCd <= 0) for (const e of S.enemies?.getChildren?.() ?? []) if (e.active && !e.dead && Math.hypot(e.x - s.x, e.y - s.y) < 26) { hp--; hurtCd = 900; s.setTint(0xff6060); S.time.delayedCall(150, () => s.active && s.clearTint()); S.effects?.floatText?.(s.x, s.y - 34, "-1", "#ff8080", 9); break }
     bar.fillStyle(0x000000, .6).fillRect(s.x - 13, s.y - 44, 26, 4); bar.fillStyle(0x8ae08a, 1).fillRect(s.x - 12, s.y - 43, 24 * hp / 6, 2);
     if (hp <= 0) {
-      follow = !1; __Q.set(S, "ck", 2); S.requestSave?.(10); S.events.off("update", U); bar.destroy();
+      follow = !1; __Q.set(S, "ck", 2); S.requestSave?.(10); S.events.off("update", U); bar.destroy(); kidPot?.();
       s.play("menino-hurt"); S.tweens.add({ targets: [s, npc.sh], alpha: 0, duration: 1400, delay: 400, onComplete: () => npc.destroy() });
       S.game.events.emit("ui:banner", "O MENINO CAIU…", "#e05a4a");
     }

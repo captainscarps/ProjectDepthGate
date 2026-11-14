@@ -567,7 +567,7 @@ function __wqReveal(S, forced) {
     S.time.delayedCall(900, () => S.scene.isActive() && __dlg(S, [
       A.G("Isto é um envenenamento mágico. Ele se agarra à sua vida e a consome a cada selo.", "sadness"),
       A.G("Você aceitou algo de algum estranho?"),
-      A.H(S, "Uma senhora… na Floresta da Cripta. Ela me deu uma fruta e insistiu que eu comesse ali mesmo.", "talk"),
+      A.H(S, "Uma senhora… na Floresta da Cripta. Ela me deu uma fruta e insistiu que eu comesse.", "talk"),
       A.G("Na Floresta da Cripta, além dos mortos, só vive uma bruxa. Foi ela que te envenenou.", "aggression"),
       A.G("Vou tentar desfazer o feitiço."),
     ], () => {

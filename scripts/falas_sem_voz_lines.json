@@ -1,0 +1,403 @@
+{
+ "_about": "Falas que estavam sem voz (auditoria de 14/11/2026). Texto idêntico ao do jogo. Gravar: python3 scripts/gravar_valdrak.py --linhas scripts/falas_sem_voz_lines.json --executar",
+ "speakers": {
+  "hero": {
+   "name": [
+    "HERÓI",
+    "HERO",
+    "HÉROE"
+   ],
+   "voice": "hero"
+  },
+  "brokk": {
+   "name": [
+    "BROKK",
+    "BROKK",
+    "BROKK"
+   ],
+   "voice": "aelric_jovem"
+  },
+  "paje": {
+   "name": [
+    "PAJÉ",
+    "SHAMAN ELDER",
+    "CHAMÁN"
+   ],
+   "voice": "bram"
+  },
+  "freira": {
+   "name": [
+    "IRMÃ",
+    "SISTER",
+    "HERMANA"
+   ],
+   "voice": "mae"
+  },
+  "menino": {
+   "name": [
+    "MENINO",
+    "BOY",
+    "NIÑO"
+   ],
+   "voice": "menino_v"
+  },
+  "durgan": {
+   "name": [
+    "DURGAN",
+    "DURGAN",
+    "DURGAN"
+   ],
+   "voice": "ferreiro_v"
+  },
+  "olivia": {
+   "name": [
+    "OLIVIA",
+    "OLIVIA",
+    "OLIVIA"
+   ],
+   "voice": "olivia"
+  },
+  "narrador": {
+   "name": [
+    "CARTA",
+    "LETTER",
+    "CARTA"
+   ],
+   "voice": "narrador"
+  },
+  "cls_WARRIOR": {
+   "name": [
+    "WARRIOR",
+    "WARRIOR",
+    "WARRIOR"
+   ],
+   "voice": "cls:WARRIOR"
+  },
+  "cls_BERSERKER": {
+   "name": [
+    "BERSERKER",
+    "BERSERKER",
+    "BERSERKER"
+   ],
+   "voice": "cls:BERSERKER"
+  },
+  "cls_ARCHER": {
+   "name": [
+    "ARCHER",
+    "ARCHER",
+    "ARCHER"
+   ],
+   "voice": "cls:ARCHER"
+  },
+  "cls_ROGUE": {
+   "name": [
+    "ROGUE",
+    "ROGUE",
+    "ROGUE"
+   ],
+   "voice": "cls:ROGUE"
+  },
+  "cls_MAGE": {
+   "name": [
+    "MAGE",
+    "MAGE",
+    "MAGE"
+   ],
+   "voice": "cls:MAGE"
+  },
+  "cls_DRUID": {
+   "name": [
+    "DRUID",
+    "DRUID",
+    "DRUID"
+   ],
+   "voice": "cls:DRUID"
+  },
+  "cls_SHAMAN": {
+   "name": [
+    "SHAMAN",
+    "SHAMAN",
+    "SHAMAN"
+   ],
+   "voice": "cls:SHAMAN"
+  },
+  "cls_NECROMANCER": {
+   "name": [
+    "NECROMANCER",
+    "NECROMANCER",
+    "NECROMANCER"
+   ],
+   "voice": "cls:NECROMANCER"
+  },
+  "cls_HUNTER": {
+   "name": [
+    "HUNTER",
+    "HUNTER",
+    "HUNTER"
+   ],
+   "voice": "cls:HUNTER"
+  }
+ },
+ "scenes": {
+  "sv": [
+   [
+    "hero",
+    "O Rafael, o ferreiro, me mandou te buscar. Consegue andar?",
+    "Rafael, the blacksmith, sent me to get you. Can you walk?",
+    "Rafael, el herrero, me envió a buscarte. ¿Puedes caminar?"
+   ],
+   [
+    "brokk",
+    "Ei! Aqui! Pelas barbas do meu avô… achei que ninguém ia descer atrás de mim.",
+    "Hey! Over here! By my grandfather's beard… I thought nobody would come down for me.",
+    "¡Eh! ¡Aquí! Por las barbas de mi abuelo… creí que nadie bajaría a buscarme."
+   ],
+   [
+    "brokk",
+    "Consigo. Mas aquele monstro não me deixa sair do salão. Fico atrás de você até um portal branco.",
+    "I can. But that monster won't let me leave the hall. I'll stay behind you until a white portal.",
+    "Puedo. Pero ese monstruo no me deja salir del salón. Me quedo detrás de ti hasta un portal blanco."
+   ],
+   [
+    "brokk",
+    "Ainda sonho com aquele salão. Obrigado por descer até lá.",
+    "I still dream about that hall. Thank you for coming down.",
+    "Aún sueño con ese salón. Gracias por bajar hasta allí."
+   ],
+   [
+    "brokk",
+    "As runas do martelo fui eu que gravei. O mestre só esquentou o ferro!",
+    "I carved the runes on the hammer. The master just heated the iron!",
+    "Las runas del martillo las grabé yo. ¡El maestro solo calentó el hierro!"
+   ],
+   [
+    "brokk",
+    "Achei um veio azul tão puro lá embaixo… mas desta vez fico na forja.",
+    "I found such a pure blue vein down there… but this time I'm staying at the forge.",
+    "Encontré una veta azul tan pura allá abajo… pero esta vez me quedo en la forja."
+   ],
+   [
+    "hero",
+    "Vou trazer todos de volta. Prometo.",
+    "I'll bring them all back. I promise.",
+    "Los traeré a todos de vuelta. Lo prometo."
+   ],
+   [
+    "hero",
+    "Vamos, Ollie. Temos selos para fechar.",
+    "Come on, Ollie. We have seals to close.",
+    "Vamos, Ollie. Tenemos sellos que cerrar."
+   ],
+   [
+    "hero",
+    "Aquela voz no rio… disse que estaria me esperando. Mas quem é ela?",
+    "That voice on the river… it said it would be waiting for me. But who is she?",
+    "Esa voz en el río… dijo que me estaría esperando. ¿Pero quién es?"
+   ],
+   [
+    "hero",
+    "Sinto que alguém está me guiando… ou me observando.",
+    "I feel like someone is guiding me… or watching me.",
+    "Siento que alguien me guía… o me observa."
+   ],
+   [
+    "hero",
+    "Voz… se você está aí, mostre-se!",
+    "Voice… if you're out there, show yourself!",
+    "Voz… si estás ahí, ¡muéstrate!"
+   ],
+   [
+    "hero",
+    "…O que é aquilo?!",
+    "…What is that?!",
+    "…¿¡Qué es eso!?"
+   ],
+   [
+    "hero",
+    "De novo essa voz… quem é você, afinal?",
+    "That voice again… who are you, really?",
+    "Otra vez esa voz… ¿quién eres, en realidad?"
+   ],
+   [
+    "paje",
+    "O fogo daqui é manso. Lembra o igapó antes da sombra.",
+    "The fire here is gentle. It reminds me of the igapó before the shadow.",
+    "El fuego aquí es manso. Recuerda al igapó antes de la sombra."
+   ],
+   [
+    "paje",
+    "Senta, curumim. Uma história curta antes da próxima viagem.",
+    "Sit, young one. A short story before your next journey.",
+    "Siéntate, pequeño. Una historia corta antes del próximo viaje."
+   ],
+   [
+    "freira",
+    "Eu acendo uma vela no santuário para cada herói que volta.",
+    "I light a candle at the shrine for every hero who returns.",
+    "Enciendo una vela en el santuario por cada héroe que vuelve."
+   ],
+   [
+    "freira",
+    "O olho bordado no manto… nunca mais. Aqui só há luz.",
+    "The eye stitched on the robe… never again. Here there is only light.",
+    "El ojo bordado en el manto… nunca más. Aquí solo hay luz."
+   ],
+   [
+    "menino",
+    "O Caramelo deixa eu fazer carinho! O lobo ainda não…",
+    "Caramelo lets me pet him! The wolf, not yet…",
+    "¡Caramelo me deja acariciarlo! El lobo, todavía no…"
+   ],
+   [
+    "menino",
+    "Quando eu crescer, vou cuidar dos pets do Refúgio.",
+    "When I grow up, I'll take care of the Refuge's pets.",
+    "Cuando crezca, cuidaré de las mascotas del Refugio."
+   ],
+   [
+    "durgan",
+    "Corrente nenhuma me prende mais. Agora eu ajudo o ferreiro a forjar as dele.",
+    "No chain holds me now. I help the smith forge his own.",
+    "Ninguna cadena me ata ya. Ahora ayudo al herrero a forjar las suyas."
+   ],
+   [
+    "durgan",
+    "Se o dragão acordar de novo, me chame. Eu sei onde ficam as fechaduras.",
+    "If the dragon wakes again, call me. I know where the locks are.",
+    "Si el dragón despierta otra vez, llámame. Sé dónde están las cerraduras."
+   ],
+   [
+    "olivia",
+    "Hihi! Pega, Mussarela!",
+    "Hehe! Fetch, Mussarela!",
+    "¡Jiji! ¡Atrapa, Mussarela!"
+   ],
+   [
+    "olivia",
+    "Vem, Fumaça!",
+    "Come here, Fumaça!",
+    "¡Ven, Fumaça!"
+   ],
+   [
+    "cls_WARRIOR",
+    "Sou Draven, descendente do Rei de Valdrak. Um dia volto ao castelo dos meus ancestrais — e fecho as portas que ele abriu.",
+    "I'm Draven, a descendant of the King of Valdrak. One day I'll return to my ancestors' castle — and shut the gates he opened.",
+    "Soy Draven, descendiente del Rey de Valdrak. Algún día volveré al castillo de mis antepasados y cerraré las puertas que él abrió."
+   ],
+   [
+    "cls_WARRIOR",
+    "Você entrou no Castelo de Valdrak… viu o trono? Obrigado por levar um pouco de luz para a minha casa.",
+    "You entered Valdrak Castle… did you see the throne? Thank you for bringing some light into my home.",
+    "Entraste en el Castillo de Valdrak… ¿viste el trono? Gracias por llevar algo de luz a mi hogar."
+   ],
+   [
+    "cls_BERSERKER",
+    "Akihiro, de Sakurajima, irmão mais velho de Hayato. Minha katana foi temperada na cinza do vulcão da minha terra.",
+    "Akihiro, of Sakurajima, Hayato's elder brother. My katana was tempered in the ash of my homeland's volcano.",
+    "Akihiro, de Sakurajima, hermano mayor de Hayato. Mi katana fue templada en la ceniza del volcán de mi tierra."
+   ],
+   [
+    "cls_BERSERKER",
+    "Você cruzou o Vulcão de Cinzas. Agora entende por que meu clã jurou guardar aquelas forjas.",
+    "You crossed the Ash Volcano. Now you understand why my clan swore to guard those forges.",
+    "Cruzaste el Volcán de Cenizas. Ahora entiendes por qué mi clan juró guardar esas forjas."
+   ],
+   [
+    "cls_ARCHER",
+    "Hayato, irmão de Akihiro. Treinei o arco no alto de Sakurajima, contra o vento de cinzas. Aqui o ar é calmo demais.",
+    "Hayato, Akihiro's brother. I trained the bow atop Sakurajima, against the ash wind. The air here is too calm.",
+    "Hayato, hermano de Akihiro. Entrené el arco en lo alto de Sakurajima, contra el viento de ceniza. Aquí el aire es demasiado tranquilo."
+   ],
+   [
+    "cls_ARCHER",
+    "Você enfrentou o Dragão Pálido? Minhas flechas ainda tremem só de lembrar daquela cratera.",
+    "You faced the Pale Dragon? My arrows still tremble just remembering that crater.",
+    "¿Enfrentaste al Dragón Pálido? Mis flechas aún tiemblan al recordar ese cráter."
+   ],
+   [
+    "cls_ROGUE",
+    "Seris. Cresci entre contrabandistas nas Ilhas — e conheço o preço de cada segredo.",
+    "Seris. I grew up among smugglers on the Isles — and I know the price of every secret.",
+    "Seris. Crecí entre contrabandistas en las Islas — y conozco el precio de cada secreto."
+   ],
+   [
+    "cls_ROGUE",
+    "Você passou pelas Ilhas. Viu os barcos sem bandeira? É dinheiro da Ordem do Limiar.",
+    "You went through the Isles. Saw the flagless boats? That's Order of the Threshold money.",
+    "Pasaste por las Islas. ¿Viste los barcos sin bandera? Es dinero de la Orden del Umbral."
+   ],
+   [
+    "cls_MAGE",
+    "Arthelia, da Academia de Dal-Vor, nas dunas de Ra-Khem. Os espelhos do templo me ensinaram a ler a luz.",
+    "Arthelia, of the Dal-Vor Academy, in the dunes of Ra-Khem. The temple mirrors taught me to read the light.",
+    "Arthelia, de la Academia de Dal-Vor, en las dunas de Ra-Khem. Los espejos del templo me enseñaron a leer la luz."
+   ],
+   [
+    "cls_MAGE",
+    "Você esteve no Deserto Esquecido. O templo não era santuário… era uma cela. E você a abriu.",
+    "You were in the Forgotten Desert. The temple was no sanctuary… it was a cell. And you opened it.",
+    "Estuviste en el Desierto Olvidado. El templo no era un santuario… era una celda. Y la abriste."
+   ],
+   [
+    "cls_DRUID",
+    "Tharion, da Boêmia. As pedras das Ruínas têm os símbolos que meus ancestrais boios gravavam em Závist; ainda ouço as raízes debaixo do mármore.",
+    "Tharion, of Bohemia. The stones of the Ruins bear the signs my Boii ancestors carved at Závist; I still hear the roots beneath the marble.",
+    "Tharion, de Bohemia. Las piedras de las Ruinas tienen los signos que mis antepasados boyos tallaban en Závist; aún oigo las raíces bajo el mármol."
+   ],
+   [
+    "cls_DRUID",
+    "Você pisou nas Ruínas Antigas. As raízes ficaram calmas desde então. Obrigado.",
+    "You walked the Ancient Ruins. The roots have been calm ever since. Thank you.",
+    "Pisaste las Ruinas Antiguas. Las raíces están tranquilas desde entonces. Gracias."
+   ],
+   [
+    "cls_SHAMAN",
+    "Araí, do Rio Negro. A mata dos meus avós está doente, e eu vou curá-la nem que leve a vida inteira.",
+    "Araí, of the Rio Negro. My grandparents' forest is sick, and I'll heal it even if it takes a lifetime.",
+    "Araí, del río Negro. El bosque de mis abuelos está enfermo, y lo curaré aunque me lleve toda la vida."
+   ],
+   [
+    "cls_SHAMAN",
+    "Você libertou o Anhangá. Os espíritos do Bosque falam o seu nome com carinho agora.",
+    "You freed the Anhangá. The spirits of the Grove speak your name kindly now.",
+    "Liberaste al Anhangá. Los espíritus del Bosque dicen tu nombre con cariño ahora."
+   ],
+   [
+    "cls_NECROMANCER",
+    "Valthor, da Floresta de Białowieża. Os mortos me contam segredos que os vivos preferiram esquecer.",
+    "Valthor, of the Białowieża Forest. The dead tell me secrets the living chose to forget.",
+    "Valthor, del bosque de Białowieża. Los muertos me cuentan secretos que los vivos prefirieron olvidar."
+   ],
+   [
+    "cls_NECROMANCER",
+    "Você atravessou a Floresta Morta. Os sussurros diminuíram… por enquanto.",
+    "You crossed the Dead Forest. The whispers have quieted… for now.",
+    "Cruzaste el Bosque Muerto. Los susurros se calmaron… por ahora."
+   ],
+   [
+    "cls_HUNTER",
+    "Kael, do Yukon, nas terras geladas do norte. Meu lobo sente falta da neve.",
+    "Kael, of the Yukon, in the frozen north. My wolf misses the snow.",
+    "Kael, del Yukón, en las tierras heladas del norte. Mi lobo extraña la nieve."
+   ],
+   [
+    "cls_HUNTER",
+    "Você derrubou o Golem de Gelo. Os lobos do norte voltaram a uivar — eu ouvi daqui.",
+    "You toppled the Ice Golem. The northern wolves howl again — I heard it from here.",
+    "Derribaste al Gólem de Hielo. Los lobos del norte volvieron a aullar — lo oí desde aquí."
+   ],
+   [
+    "hero",
+    "Espera… essa é a minha língua. A magia da Guardiã se foi.",
+    "Wait… this is my own language. The Guardian's magic is gone.",
+    "Espera… esta es mi lengua. La magia de la Guardiana se ha ido."
+   ],
+   [
+    "narrador",
+    "\"Encontrei um templo nas Profundezas com o símbolo do nosso clã. Algo vive no santuário. Não consigo sozinho. Venha.\"",
+    "\"I found a temple in the Depths bearing our clan's symbol. Something lives in the sanctuary. I can't do it alone. Come.\"",
+    "\"Encontré un templo en las Profundidades con el símbolo de nuestro clan. Algo vive en el santuario. No puedo solo. Ven.\""
+   ]
+  ]
+ }
+}

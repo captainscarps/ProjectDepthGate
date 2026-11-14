@@ -297,6 +297,8 @@ function __apzCave(S, B) {
     ], () => {
       a.follow = !0;
       const i = S.dungeon.objects.indexOf(z); i >= 0 && S.dungeon.objects.splice(i, 1);
+      // o herói pode dar as próprias poções ao Brokk (ele fica sem elas)
+      if (typeof __escortPotion === "function") a.pot = __escortPotion(S, s, { name: "o Brokk", nameEn: "Brokk", max: a.max, hp: () => a.hp, alive: () => a.follow && !a.dead && a.hp > 0, heal: (n) => { a.hp = Math.min(a.max, a.hp + n) } });
       S.game.events.emit("ui:banner", L3("ESCOLTA: LEVE O BROKK VIVO ATÉ UM PORTAL BRANCO", "ESCORT: BRING BROKK ALIVE TO A WHITE PORTAL", "ESCOLTA: LLEVA A BROKK CON VIDA HASTA UN PORTAL BLANCO"), "#9cc2ff");
     });
   };
@@ -322,7 +324,7 @@ function __apzCave(S, B) {
     }
     bar.fillStyle(0x000000, .6).fillRect(s.x - 14, s.y - 46, 28, 4); bar.fillStyle(0x7fb2ff, 1).fillRect(s.x - 13, s.y - 45, 26 * Math.max(0, a.hp) / a.max, 2);
     if (a.hp <= 0) {
-      a.dead = !0; a.follow = !1; bar.clear();
+      a.dead = !0; a.follow = !1; bar.clear(); a.pot?.();
       __apzSet(S, { ...__apzGet(S), s: 4, mourn: 1, thanks: 0 });
       S.anims.exists("aprendiz-dead") && s.play("aprendiz-dead");
       S.tweens.add({ targets: [s, sh], alpha: 0, duration: 1600, delay: 900, onComplete: () => { s.destroy(); sh.destroy() } });
