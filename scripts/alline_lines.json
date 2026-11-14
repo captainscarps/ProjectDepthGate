@@ -1,0 +1,135 @@
+{
+ "_about": "Falas da Alline (a dona dos gatos) para a dublagem no ElevenLabs: voz doce e natural de moça jovem. Texto idêntico ao do jogo (quests2.js e hub-village.js). Gravar: python3 scripts/gravar_valdrak.py --linhas scripts/alline_lines.json --executar --refazer",
+ "speakers": {
+  "alline": {
+   "name": [
+    "ALLINE",
+    "ALLINE",
+    "ALLINE"
+   ],
+   "voice": "alline"
+  }
+ },
+ "scenes": {
+  "a01": [
+   [
+    "alline",
+    "Ei, você aí! Espera! Você é o viajante de quem a Guardiã tanto fala, não é?",
+    "Hey, you there! Wait! You're the traveler the Guardian keeps talking about, right?",
+    "¡Eh, tú! ¡Espera! Eres el viajero del que tanto habla la Guardiana, ¿verdad?"
+   ]
+  ],
+  "a02": [
+   [
+    "alline",
+    "Meus gatos fugiram pelos portais correndo atrás dos ratos das Profundezas. São três, e cada um se meteu numa terra diferente.",
+    "My cats ran through the portals chasing the rats of the Depths. There are three, and each one slipped into a different land.",
+    "Mis gatos huyeron por los portales persiguiendo a las ratas de las Profundidades. Son tres, y cada uno se metió en una tierra distinta."
+   ]
+  ],
+  "a03": [
+   [
+    "alline",
+    "Eles vão fugir de você. Deixe que cansem, chegue perto e pegue no colo.",
+    "They'll run from you. Let them tire out, get close and scoop them up.",
+    "Van a huir de ti. Deja que se cansen, acércate y tómalos en brazos."
+   ]
+  ],
+  "a04": [
+   [
+    "alline",
+    "Todos eles! Olha só, a Mel até voltou mais gordinha.",
+    "All of them! Look, Mel even came back a little chubbier.",
+    "¡Todos! Mira, Mel hasta volvió más gordita."
+   ]
+  ],
+  "a05": [
+   [
+    "alline",
+    "O Ollie não sai do seu pé… acho que ele te escolheu. Leve ele junto: nariz de gato acha ouro onde ninguém procura.",
+    "Ollie won't leave your side… I think he chose you. Take him along: a cat's nose finds gold where nobody looks.",
+    "Ollie no se separa de ti… creo que te eligió. Llévalo contigo: la nariz de un gato encuentra oro donde nadie busca."
+   ]
+  ],
+  "a06": [
+   [
+    "alline",
+    "A casa nunca esteve tão cheia de pelo. E de felicidade.",
+    "The house has never been this full of fur. Or of happiness.",
+    "La casa nunca estuvo tan llena de pelo. Ni de felicidad."
+   ]
+  ],
+  "a07": [
+   [
+    "alline",
+    "Cuide bem do Ollie. Ele gosta de peixe e de ouro, nessa ordem.",
+    "Take good care of Ollie. He likes fish and gold, in that order.",
+    "Cuida bien a Ollie. Le gustan el pescado y el oro, en ese orden."
+   ]
+  ],
+  "a08": [
+   [
+    "alline",
+    "E tem mais: o ferreiro do Refúgio, o Rafael, é o meu marido. Vou pedir pra ele te dar um desconto na próxima compra.",
+    "And there's more: the Refuge blacksmith, Rafael, is my husband. I'll ask him to give you a discount on your next purchase.",
+    "Y hay más: el herrero del Refugio, Rafael, es mi marido. Le pediré que te haga un descuento en tu próxima compra."
+   ]
+  ],
+  "a09": [
+   [
+    "alline",
+    "Agora que os gatos voltaram, vamos morar com ele no Refúgio. Passa lá na forja pra nos ver!",
+    "Now that the cats are back, we're moving in with him at the Refuge. Drop by the forge to see us!",
+    "Ahora que los gatos volvieron, nos mudamos con él al Refugio. ¡Pasa por la forja a vernos!"
+   ]
+  ],
+  "a10": [
+   [
+    "alline",
+    "Nenhum voltou ainda… O diário mostra em quais terras eles estão.",
+    "None of them are back yet… The journal shows which lands they're in.",
+    "Ninguno ha vuelto todavía… El diario muestra en qué tierras están."
+   ]
+  ],
+  "a11": [
+   [
+    "alline",
+    "A Mel já está em casa! Ainda faltam dois. Veja no diário onde procurar.",
+    "Mel is already home! Two more to go. Check the journal for where to look.",
+    "¡Mel ya está en casa! Faltan dos. Mira en el diario dónde buscar."
+   ]
+  ],
+  "a12": [
+   [
+    "alline",
+    "Só falta um! Veja no diário onde ele se escondeu.",
+    "Just one left! Check the journal for where he's hiding.",
+    "¡Solo falta uno! Mira en el diario dónde se escondió."
+   ]
+  ],
+  "a13": [
+   [
+    "alline",
+    "Os gatos adoraram o Refúgio. O Carvão já dorme em cima da bigorna quando ela esfria.",
+    "The cats love the Refuge. Carvão already sleeps on the anvil once it cools down.",
+    "A los gatos les encanta el Refugio. Carvão ya duerme sobre el yunque cuando se enfría."
+   ]
+  ],
+  "a14": [
+   [
+    "alline",
+    "O Rafael finge que é durão, mas é ele quem dá peixe escondido pros gatos.",
+    "Rafael pretends to be tough, but he's the one sneaking fish to the cats.",
+    "Rafael finge ser duro, pero es él quien les da pescado a escondidas a los gatos."
+   ]
+  ],
+  "a15": [
+   [
+    "alline",
+    "Cuida bem do Ollie lá fora. E volta inteiro, viu?",
+    "Take good care of Ollie out there. And come back in one piece, okay?",
+    "Cuida bien a Ollie allá afuera. Y vuelve entero, ¿sí?"
+   ]
+  ]
+ }
+}

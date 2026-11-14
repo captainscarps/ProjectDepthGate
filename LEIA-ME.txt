@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p214.1 · cache ded-web-v6.6.1-vara)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.2 · cache ded-web-v6.6.2-alline)
+
+P214.2 — NOVA VOZ DA ALLINE
+· As 15 falas da Alline (missão dos gatos e conversas na forja) regravadas no ElevenLabs com uma voz brasileira
+  doce e natural de moça jovem ("Keren"), em PT e EN — antes era Gemini/Kokoro com o tom ajustado à força.
+· Falas em scripts/alline_lines.json (gravar: scripts/gravar_valdrak.py --linhas scripts/alline_lines.json).
 
 P214.1 — VARA DE PESCAR ANIMADA
 · O herói segura uma vara de verdade ao pescar: cabo de cortiça, molinete, vara de madeira que afina na ponta e
