@@ -35,6 +35,7 @@ VOZES = {  # vozes brasileiras da biblioteca do ElevenLabs (o mesmo timbre lê o
     "olivia": "iTvRNZPNPS0EiSgOCQG0",
     "farias": "Hsrdp9vv51A8JfLqfIH8",        # Jaan — senhor idoso, voz grossa e séria
     "maria": "OB6x7EbXYlhG4DDTB1XU",
+    "bruxa": "HReOQZPV9tH5iTEnSbGo",          # Bianca — idosa, rouca e travessa: a Bruxa das Sepulturas
     "menino_v": "4dlXQwYXFHlCAUmQAu9j",      # Zozo um pouco mais agudo: o menino da "Criança Perdida" no Refúgio
     "alline": "MPDBOuBk4rkLBByX9RF4",        # Keren — moça brasileira de voz doce e natural (a dona dos gatos)         # Michelle — jovem de uns 20 anos, doce e animada        # Graziella (voz brasileira infantil), afinada mais aguda: menina
 }

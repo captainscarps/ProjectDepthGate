@@ -15880,7 +15880,7 @@ function __wqTransform(S, lady) {
     try { b.__fxAura = __FX.follow(S, b, "poison", { size: 1.7, oy: -b.displayHeight * .3, zone: { w: b.displayWidth * .45, h: b.displayHeight * .55 }, lightScale: .45, lightAlpha: .24 }) } catch (e) {}
     S.game.events.emit("boss:spawned", b.data_.name, b.data_.subtitle);
     S.game.events.emit("ui:banner", "A BRUXA DAS SEPULTURAS DESPERTA!", "#9aff4a");
-    __say(S, b.x, b.y - b.displayHeight * .85, "Agora você vai ver de onde vem a minha juventude!", "#c8ff9a", 3400, b);
+    __say(S, b.x, b.y - b.displayHeight * .85, __L3("Agora você vai ver de onde vem a minha juventude!", "Now you'll see where my youth comes from!", "¡Ahora verás de dónde viene mi juventud!"), "#c8ff9a", 3400, b);
     __wqWitchAI(S, b);
     S.time.delayedCall(900, () => {
       if (!live()) return;

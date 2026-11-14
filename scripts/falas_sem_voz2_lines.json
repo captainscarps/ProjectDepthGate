@@ -1,0 +1,129 @@
+{
+ "_about": "Segunda leva de falas sem voz: conversa dos fregueses da taverna (4 vozes alternadas), frases do herói na pesca e o grito da bruxa ao despertar. Gravar: python3 scripts/gravar_valdrak.py --linhas scripts/falas_sem_voz2_lines.json --executar",
+ "speakers": {
+  "hero": {
+   "name": [
+    "HERÓI",
+    "HERO",
+    "HÉROE"
+   ],
+   "voice": "hero"
+  },
+  "bruxa": {
+   "name": [
+    "A BRUXA",
+    "THE WITCH",
+    "LA BRUJA"
+   ],
+   "voice": "bruxa"
+  },
+  "freg1": {
+   "name": [
+    "FREGUÊS",
+    "FREGUÊS",
+    "FREGUÊS"
+   ],
+   "voice": "morador"
+  },
+  "freg2": {
+   "name": [
+    "FREGUESA",
+    "FREGUESA",
+    "FREGUESA"
+   ],
+   "voice": "padeira"
+  },
+  "freg3": {
+   "name": [
+    "FREGUÊS",
+    "FREGUÊS",
+    "FREGUÊS"
+   ],
+   "voice": "halvard"
+  },
+  "freg4": {
+   "name": [
+    "FREGUESA",
+    "FREGUESA",
+    "FREGUESA"
+   ],
+   "voice": "mira"
+  }
+ },
+ "scenes": {
+  "sv2": [
+   [
+    "freg1",
+    "…e o dragão nem viu de onde veio a flecha!",
+    "…and the dragon never saw where the arrow came from!",
+    "…¡y el dragón ni vio de dónde vino la flecha!"
+   ],
+   [
+    "freg2",
+    "Mais uma rodada, Farias!",
+    "Another round, Farias!",
+    "¡Otra ronda, Farias!"
+   ],
+   [
+    "freg3",
+    "Dizem que o castelo de Valdrak ainda respira.",
+    "They say Valdrak castle still breathes.",
+    "Dicen que el castillo de Valdrak todavía respira."
+   ],
+   [
+    "freg4",
+    "Essa sopa tem gosto de bota velha… e eu adoro.",
+    "This stew tastes like an old boot… and I love it.",
+    "Esta sopa sabe a bota vieja… y me encanta."
+   ],
+   [
+    "freg1",
+    "Viu a doca nova? Tem peixe pulando até de dia.",
+    "Seen the new dock? Fish jump even in daylight.",
+    "¿Viste el muelle nuevo? Los peces saltan hasta de día."
+   ],
+   [
+    "freg2",
+    "Shh! A Maria está vindo.",
+    "Shh! Maria's coming.",
+    "¡Shh! Viene María."
+   ],
+   [
+    "freg3",
+    "Aposto três moedas que ele não volta do próximo portal.",
+    "Three coins says they don't come back from the next gate.",
+    "Apuesto tres monedas a que no vuelve del próximo portal."
+   ],
+   [
+    "freg4",
+    "Ha! Essa foi boa!",
+    "Ha! Good one!",
+    "¡Ja! ¡Esa fue buena!"
+   ],
+   [
+    "hero",
+    "A linha arrebentou… ele era forte!",
+    "The line snapped… it was strong!",
+    "Se rompió el sedal… ¡era fuerte!"
+   ],
+   [
+    "hero",
+    "Que monstro! Ninguém vai acreditar nisso.",
+    "What a monster! Nobody will believe this.",
+    "¡Qué monstruo! Nadie lo va a creer."
+   ],
+   [
+    "hero",
+    "Esse é dos bons!",
+    "Now that's a good one!",
+    "¡Este es de los buenos!"
+   ],
+   [
+    "bruxa",
+    "Agora você vai ver de onde vem a minha juventude!",
+    "Now you'll see where my youth comes from!",
+    "¡Ahora verás de dónde viene mi juventud!"
+   ]
+  ]
+ }
+}

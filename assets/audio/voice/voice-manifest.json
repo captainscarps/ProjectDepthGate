@@ -1772,7 +1772,43 @@
     "6d8fd703": "67816ab2",
     "ffc0b178": "ffc0b178",
     "71a7bd10": "ffc0b178",
-    "d7fc78be": "ffc0b178"
+    "d7fc78be": "ffc0b178",
+    "66a84cc6": "66a84cc6",
+    "c822cb1b": "66a84cc6",
+    "7ba62032": "66a84cc6",
+    "ed4b12d4": "ed4b12d4",
+    "d0f0bdab": "ed4b12d4",
+    "f2eb411d": "ed4b12d4",
+    "91b6bfe4": "91b6bfe4",
+    "01280755": "91b6bfe4",
+    "1859156f": "91b6bfe4",
+    "3c63256b": "3c63256b",
+    "1c4382e4": "3c63256b",
+    "a9fa7495": "3c63256b",
+    "632e19cb": "632e19cb",
+    "c6eb52ee": "632e19cb",
+    "526be18b": "632e19cb",
+    "86997f87": "86997f87",
+    "47b73d5e": "86997f87",
+    "7686c5ff": "86997f87",
+    "af70ed27": "af70ed27",
+    "b9782d85": "af70ed27",
+    "a4f6241c": "af70ed27",
+    "06cca9ae": "06cca9ae",
+    "a2e25235": "06cca9ae",
+    "534da782": "06cca9ae",
+    "9ba7360e": "9ba7360e",
+    "198b415b": "9ba7360e",
+    "afe3ef92": "9ba7360e",
+    "b7a77be9": "b7a77be9",
+    "088091fa": "b7a77be9",
+    "450d28b4": "b7a77be9",
+    "157c7393": "157c7393",
+    "7b3d6055": "157c7393",
+    "59fba06d": "157c7393",
+    "68004806": "68004806",
+    "a154acc8": "68004806",
+    "55a7cdf2": "68004806"
   },
   "d": {
     "fc33ba0d": {
@@ -8215,6 +8251,138 @@
       "vk": 1,
       "pt": 7.99,
       "en": 7.63
+    },
+    "66a84cc6": {
+      "vk": 1,
+      "pt": 2.71,
+      "en": 2.98
+    },
+    "ed4b12d4": {
+      "vk": 1,
+      "pt": 1.75,
+      "en": 1.73
+    },
+    "91b6bfe4": {
+      "vk": 1,
+      "pt": 3.22,
+      "en": 2.76
+    },
+    "3c63256b": {
+      "vk": 1,
+      "pt": 4.1,
+      "en": 3.84
+    },
+    "632e19cb": {
+      "vk": 1,
+      "pt": 3.05,
+      "en": 3.0
+    },
+    "86997f87": {
+      "vk": 1,
+      "pt": 1.85,
+      "en": 1.58
+    },
+    "af70ed27": {
+      "vk": 1,
+      "pt": 3.58,
+      "en": 3.0
+    },
+    "06cca9ae": {
+      "vk": 1,
+      "pt": 1.87,
+      "en": 1.42
+    },
+    "9ba7360e": {
+      "vk": 1,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.07,
+          "BERSERKER": 2.95,
+          "ARCHER": 2.88,
+          "HUNTER": 3.0,
+          "DRUID": 3.0,
+          "NECROMANCER": 2.66,
+          "MAGE": 2.9,
+          "ROGUE": 3.02,
+          "SHAMAN": 3.02
+        },
+        "en": {
+          "WARRIOR": 2.69,
+          "BERSERKER": 2.52,
+          "ARCHER": 2.64,
+          "HUNTER": 2.74,
+          "DRUID": 2.62,
+          "NECROMANCER": 2.54,
+          "MAGE": 2.57,
+          "ROGUE": 2.64,
+          "SHAMAN": 2.74
+        }
+      },
+      "pt": 3.07,
+      "en": 2.69
+    },
+    "b7a77be9": {
+      "vk": 1,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 3.17,
+          "BERSERKER": 2.9,
+          "ARCHER": 2.9,
+          "HUNTER": 3.14,
+          "DRUID": 3.0,
+          "NECROMANCER": 2.74,
+          "MAGE": 2.93,
+          "ROGUE": 2.95,
+          "SHAMAN": 3.19
+        },
+        "en": {
+          "WARRIOR": 3.17,
+          "BERSERKER": 3.19,
+          "ARCHER": 3.17,
+          "HUNTER": 3.19,
+          "DRUID": 3.17,
+          "NECROMANCER": 3.14,
+          "MAGE": 3.05,
+          "ROGUE": 3.22,
+          "SHAMAN": 3.24
+        }
+      },
+      "pt": 3.17,
+      "en": 3.17
+    },
+    "157c7393": {
+      "vk": 1,
+      "byClass": {
+        "pt": {
+          "WARRIOR": 1.51,
+          "BERSERKER": 1.66,
+          "ARCHER": 1.51,
+          "HUNTER": 1.58,
+          "DRUID": 1.46,
+          "NECROMANCER": 1.37,
+          "MAGE": 1.44,
+          "ROGUE": 1.49,
+          "SHAMAN": 1.78
+        },
+        "en": {
+          "WARRIOR": 1.56,
+          "BERSERKER": 1.66,
+          "ARCHER": 1.66,
+          "HUNTER": 1.61,
+          "DRUID": 1.51,
+          "NECROMANCER": 1.54,
+          "MAGE": 1.68,
+          "ROGUE": 1.68,
+          "SHAMAN": 1.7
+        }
+      },
+      "pt": 1.51,
+      "en": 1.56
+    },
+    "68004806": {
+      "vk": 1,
+      "pt": 3.43,
+      "en": 2.26
     }
   },
   "s": {

@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p214.7 · cache ded-web-v6.6.7-pocao-vozes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.8 · cache ded-web-v6.6.8-vozes2)
+
+P214.8 — ÚLTIMAS FALAS COM VOZ E TESTE GERAL 19/19
+· Vozes novas (ElevenLabs, PT e EN): o grito da Bruxa das Sepulturas ao despertar (voz "Bianca", idosa, rouca
+  e travessa; a fala agora também aparece em inglês), a conversa dos fregueses da taverna (4 vozes que se
+  alternam) e as frases do herói na pesca ("A linha arrebentou…", "Que monstro!…", "Esse é dos bons!").
+  Lista: scripts/falas_sem_voz2_lines.json.
+· Teste geral (scripts/verify_game_start.cjs): passa nas 19 etapas. A etapa 3 procurava o título "P A U S A"
+  e falhava com o navegador em inglês ("P A U S E D"); agora pega o título em qualquer idioma. A etapa 17
+  esperava um tempo fixo pela armadilha e falhava em máquina mais lenta; agora observa a animação. O teste
+  também roda fora do Windows (CHROME_PATH / AUDIT_DIR opcionais).
 
 P214.7 — POÇÕES PARA QUEM VOCÊ ESCOLTA E FALAS QUE ESTAVAM SEM VOZ
 · Escoltas (o menino da "Criança Perdida" e o Brokk nas Cavernas Dorf): quando estão feridos aparece

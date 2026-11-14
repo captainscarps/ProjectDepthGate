@@ -38,7 +38,8 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', async () => {
-  const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+  // Windows por padrão; em outro sistema usa CHROME_PATH ou o Chrome do Linux
+  const chromePath = process.env.CHROME_PATH || (process.platform === 'win32' ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' : '/usr/bin/google-chrome');
   const userData = path.join(__dirname, 'chrome_test_profile_verify');
   
   const chrome = spawn(chromePath, [
@@ -167,7 +168,9 @@ server.listen(PORT, '127.0.0.1', async () => {
 
               let titleY = null;
               if (pm?.root?.list) {
-                const tObj = pm.root.list.find(o => o.text && o.text.includes("P A U S A"));
+                // título = o texto não vazio mais alto do menu (vale para qualquer idioma: "P A U S A", "P A U S E D"…)
+                const texts = pm.root.list.filter(o => typeof o.text === "string" && o.text.trim() && o.visible !== false).sort((a, b) => a.y - b.y);
+                const tObj = texts[0];
                 if (tObj) titleY = tObj.y;
               }
               const firstBtnY = pm?.buttons?.[0]?.t?.y;
@@ -768,13 +771,16 @@ server.listen(PORT, '127.0.0.1', async () => {
               trap.trigger(dummyHero);
               const armingTex = trap.spikes?.texture?.key;
 
-              // Aguarda o tween de armacao (190ms yoyo = 380ms) disparar para 'out'
-              await new Promise(r => setTimeout(r, 420));
+              // espera o disparo (tween de armação 190 ms ida e volta) sem depender da velocidade da máquina:
+              // observa a textura a cada 15 ms até 900 ms
+              const until = async (ok, ms) => { const t0 = performance.now(); while (performance.now() - t0 < ms) { if (ok()) return true; await new Promise(r => setTimeout(r, 15)); } return ok(); };
+              await until(() => trap.spikes?.texture?.key === 'trap-spikes-out', 900);
               const outTex = trap.spikes?.texture?.key;
+              await until(() => dummyHero.hp === 9, 300);
               const damageApplied = (dummyHero.hp === 9);
 
-              // Aguarda retracao completa para 'trap-spikes' (520ms apos disparo)
-              await new Promise(r => setTimeout(r, 580));
+              // e a retração completa para 'trap-spikes' (até 1,5 s)
+              await until(() => trap.spikes?.texture?.key === 'trap-spikes', 1500);
               const retractedTex = trap.spikes?.texture?.key;
               trap.destroy();
 
@@ -943,7 +949,7 @@ server.listen(PORT, '127.0.0.1', async () => {
 
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    const artDir = 'C:\\Users\\rafaelscarpille\\.gemini\\antigravity\\brain\\b413688e-2beb-42e0-9d5c-24c0349908a1';
+    const artDir = process.env.AUDIT_DIR || (process.platform === 'win32' ? 'C:\\Users\\rafaelscarpille\\.gemini\\antigravity\\brain\\b413688e-2beb-42e0-9d5c-24c0349908a1' : require('os').tmpdir());
     if (data.id === 111 && data.result?.data) {
       fs.writeFileSync(path.join(artDir, 'audit_touch_hud_layout.png'), Buffer.from(data.result.data, 'base64'));
       console.log('📸 [CAPTURA]: Salvo audit_touch_hud_layout.png');
