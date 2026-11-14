@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p214.2 · cache ded-web-v6.6.2-alline)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.3 · cache ded-web-v6.6.3-menino)
+
+P214.3 — VOZ DO MENINO DA "CRIANÇA PERDIDA" (PT)
+· As 5 falas em português do menino (e do fantasma dele) regravadas no ElevenLabs com voz de personagem infantil
+  brasileira ("Zozo"), com o tom de cada fala medido e levado para a faixa de um menino de ~10 anos (~230-260 Hz;
+  as falas tristes ficam um pouco mais graves). Choro, esperança e alegria marcados na interpretação.
+· O inglês continua como estava. Script: scripts/gravar_menino.py.
 
 P214.2 — NOVA VOZ DA ALLINE
 · As 15 falas da Alline (missão dos gatos e conversas na forja) regravadas no ElevenLabs com uma voz brasileira
