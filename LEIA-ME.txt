@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p214.3 · cache ded-web-v6.6.3-menino)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.4 · cache ded-web-v6.6.4-antitrava)
+
+P214.4 — ANTI-TRAVA: TELA PRETA E HERÓI PRESO EM DIÁLOGO
+· Tela preta congelada ao trocar de lugar: se o escurecimento terminou e a próxima cena não seguiu, o aviso é
+  repetido após 1,5 s; se nada acontecer, a tela clareia sozinha em 4,5 s (antes só funcionava fora de diálogos
+  e menus). Clareamento parado também é destravado, cenas pausadas/dormindo sem motivo voltam a rodar e o laço
+  do jogo é reacordado quando a aba está visível. Não é mais preciso apertar START.
+· Diálogos: ao fechar a fala, se nenhuma outra janela está aberta, o herói é solto em ~0,6 s (antes ficava preso
+  quando a fala abria com a interface já marcada como aberta). Rede de segurança de 6 s para qualquer outro caso;
+  no Refúgio, "ocupado" sem nada aberto é liberado em 4 s.
+· Código: scripts/source/death-guard.js.
 
 P214.3 — VOZ DO MENINO DA "CRIANÇA PERDIDA" (PT)
 · As 5 falas em português do menino (e do fantasma dele) regravadas no ElevenLabs com voz de personagem infantil

@@ -19115,13 +19115,80 @@ function __capeDraw(g, P, D, cols, u, tail) {
       } catch (e) {}
     }
   };
+  /* ── v2: casos que o vigia de cima não pegava (a tela preta continuava até apertar START) ──
+     • esmaecimento preso mesmo com a cena "ocupada": o fim do escurecimento aconteceu, mas quem esperava por ele
+       (camerafadeoutcomplete) não ouviu — depois de 1,5 s o aviso é repetido; depois de 4,5 s a cena volta a aparecer;
+     • clareamento parado (fadeIn que não anda) → termina na hora;
+     • Refúgio/fase pausados ou dormindo sem nenhuma tela por cima (livros, viagem de volta, Valdrak) → retomados;
+     • laço do jogo dormindo com a página visível → acordado (relógio do navegador, fora do laço). */
+  const OVER = ["ValdrakAntiga", "BestiaryBook", "CollectiblesBook", "CodexBook", "ReturnJourney", "ArcticPrologue", "Traversal"];
+  const tick2 = (G, dt) => {
+    const over = OVER.some(k => G.scene.isActive(k));
+    for (const k of KEYS) {
+      const s = G.scene.getScene(k); if (!s?.sys) continue;
+      const W = s.__bkW2 || (s.__bkW2 = { fl: 0, hard: 0, fin: 0, finP: -1, held: 0 });
+      try {
+        // pausada ou dormindo sem motivo
+        const off = (s.sys.isPaused?.() || s.sys.isSleeping?.()) && !over && !(k === "Game" && s.state === "paused");
+        W.held = off ? W.held + dt : 0;
+        if (W.held > 3000) { W.held = 0; s.sys.isSleeping?.() ? G.scene.wake(k) : G.scene.resume(k); console.warn("[anti-trava] cena retomada", k) }
+        if (!s.sys.isActive?.()) { W.fl = W.hard = W.fin = 0; continue }
+        const cam = s.cameras?.main, fe = cam?.fadeEffect; if (!fe) continue;
+        const black = !fe.isRunning && fe.direction === !0 && fe.alpha >= .95;
+        W.fl = black ? W.fl + dt : 0; W.hard = black ? W.hard + dt : 0;
+        if (W.fl > 1500 && cam.listenerCount?.("camerafadeoutcomplete")) { W.fl = 0; cam.emit("camerafadeoutcomplete", cam, fe); console.warn("[anti-trava] aviso de escurecimento repetido em", k) }
+        if (W.hard > 4500) { W.hard = 0; try { fe.reset() } catch (e) {} cam.resetFX?.(); cam.fadeIn(300, 0, 0, 0); console.warn("[anti-trava] tela preta destravada (cena ocupada) em", k) }
+        if (fe.isRunning && fe.direction === !1) { W.fin = fe.progress === W.finP ? W.fin + dt : 0; W.finP = fe.progress; if (W.fin > 2000) { W.fin = 0; try { fe.reset() } catch (e) {} cam.resetFX?.(); console.warn("[anti-trava] clareamento parado terminado em", k) } } else W.fin = 0;
+      } catch (e) {}
+    }
+  };
   const C0 = bo.prototype.create;
   bo.prototype.create = function () {
     const r = C0.apply(this, arguments);
     try {
       const G = this.game;
-      if (!G.__bkWatch) { G.__bkWatch = 1; let last = performance.now(); G.events.on("poststep", () => { const n = performance.now(), dt = Math.min(250, n - last); last = n; tick(G, dt) }) }
+      if (!G.__bkWatch) { G.__bkWatch = 1; let last = performance.now(); G.events.on("poststep", () => { const n = performance.now(), dt = Math.min(250, n - last); last = n; tick(G, dt); tick2(G, dt) }) }
+      if (!G.__bkLoop) { G.__bkLoop = setInterval(() => { try { const L = G.loop; if (!document.hidden && L && (L.sleeping || L.running === !1)) { (L.wake || L.resume)?.call(L); console.warn("[anti-trava] laço do jogo acordado") } } catch (e) {} }, 1000) }
     } catch (e) {}
+    return r;
+  };
+}
+/* ═══ Herói preso em diálogo ═══
+   Às vezes um diálogo terminava mas o herói continuava parado (a fala abriu com a cena já marcada como ocupada e,
+   ao fechar, ninguém desmarcava; ou o Refúgio ficava "ocupado" sem nada aberto). Vigia a cada quadro:
+   • fase: "interface aberta" sem nenhuma janela de verdade na tela (diálogo, painel com fundo escurecido, modais
+     de portal/fenda/evento) por 6 s (as cenas de câmera duram menos) — ou 0,6 s logo depois que uma fala fecha → solta o herói e o mundo (física e relógio voltam);
+   • Refúgio: "ocupado" sem painel, sem diálogo, sem pesca/diário e sem a câmera trocando de lugar por 4 s → solta;
+     a caixa de fala sumida mas ainda registrada é esquecida. */
+{
+  const bigOpen = (sc, W_, H_) => {
+    if (!sc?.sys) return !1;
+    const walk = (list) => { for (const o of list) { if (!o?.visible || o.alpha === 0) continue; if (o.type === "Rectangle" && o.input?.enabled && o.width * (o.scaleX || 1) >= W_ * .6 && o.height * (o.scaleY || 1) >= H_ * .6) return !0; if (o.type === "Container" && o.list?.length && walk(o.list)) return !0 } return !1 };
+    return walk(sc.children?.list || []);
+  };
+  const tick = (G, dt) => {
+    const W_ = typeof _ !== "undefined" ? _ : 480, H_ = typeof st !== "undefined" ? st : 270;
+    const S = G.scene.getScene("Game");
+    if (S?.sys?.isActive?.() && S.uiOpen && S.state === "playing" && !S.transitioning && !S.finished) {
+      const ui = G.scene.getScene("UI"), open = ui?.__dlgOpen || S.__portalModalOpen || S.__riftModalOpen || S.pendingEvent || S.__ppGoing || bigOpen(ui, W_, H_) || bigOpen(S, W_, H_);
+      if (ui) { if (ui.__dlgOpen) ui.__dgWasDlg = 1; else if (ui.__dgWasDlg) { ui.__dgWasDlg = 0; S.__dgFast = 1 } }
+      S.__dgUi = open ? 0 : (S.__dgUi || 0) + dt;
+      if (open) S.__dgFast = 0;
+      if (S.__dgUi > (S.__dgFast ? 600 : 6000)) { S.__dgUi = 0; S.__dgFast = 0; S.uiOpen = !1; try { S.physics?.resume?.(); S.time.paused = !1 } catch (e) {} console.warn("[anti-trava] herói solto (interface sem janela)") }
+    } else if (S) S.__dgUi = 0;
+    const Hb = G.scene.getScene("Hub");
+    if (Hb?.sys?.isActive?.()) {
+      if (Hb.__hubDlgO && !Hb.__hubDlgO.scene) Hb.__hubDlgO = null;
+      const fe = Hb.cameras?.main?.fadeEffect, moving = fe?.isRunning || (fe && fe.direction === !0 && fe.alpha > .5);
+      const stuck = Hb.__busy && !Hb.panel && !Hb.__hubDlgO && !Hb.__pqReel && !Hb.__pqJ && !moving;
+      Hb.__dgBusy = stuck ? (Hb.__dgBusy || 0) + dt : 0;
+      if (Hb.__dgBusy > 4000) { Hb.__dgBusy = 0; Hb.__busy = !1; console.warn("[anti-trava] Refúgio destravado (ocupado sem nada aberto)") }
+    }
+  };
+  const C0 = bo.prototype.create;
+  bo.prototype.create = function () {
+    const r = C0.apply(this, arguments);
+    try { const G = this.game; if (!G.__dgDlgWatch) { G.__dgDlgWatch = 1; let last = performance.now(); G.events.on("poststep", () => { const n = performance.now(), dt = Math.min(250, n - last); last = n; tick(G, dt) }) } } catch (e) {}
     return r;
   };
 }
