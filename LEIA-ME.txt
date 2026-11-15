@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.2 · cache ded-web-v6.8.2-nuvem)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.3 · cache ded-web-v6.8.3-amigos)
+
+P216.3 — AMIGOS DE VERDADE + ECOS REAIS, ETAPA 5 (assets/friends.js)
+· CONTA E AMIGOS (menu principal e Start do Refúgio): seção AMIGOS — adicionar por código (DG-XXXXXX) ou nome,
+  aceitar/recusar pedidos, remover (pede confirmação), ver o herói de cada amigo (nível, profundidade, ★ se tiver
+  lendária/peça do ferreiro).
+· Vitrine = o AUGE de cada herói do Infinito: o equipamento mais forte que ele já vestiu, o maior nível e a maior
+  profundidade (no Infinito a morte zera a run; a vitrine guarda o melhor momento). Publicada em dg_showcases.
+· Ecos no Refúgio agora vêm dos amigos aceitos (cache local: aparecem mesmo offline). Se a lista chega depois de o
+  Refúgio abrir, os ecos entram na hora. SAUDAR grava em dg_greetings; quem recebe resgata ao entrar no Refúgio
+  (+5 fragmentos por saudação, com aviso "Fulano te saudou no Refúgio").
+· Hall da Fama do mural: abas MINHAS RUNS e AMIGOS (ranking dos amigos + você, pela vitrine).
+· ?ecos=teste continua mostrando os 4 amigos de teste quando não há amigos reais.
 
 P216.2 — SAVES NA NUVEM, ETAPA 4 (assets/cloud-save.js)
 · Todo o progresso (chaves "dungeon-crawler:" e "depthgate:" do localStorage: campanha c1..c3, Modo Infinito

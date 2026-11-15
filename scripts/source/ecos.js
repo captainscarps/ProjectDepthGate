@@ -140,6 +140,7 @@ function __ecoActs(H) {
   Fl.prototype.create = function () {
     const r = C0.apply(this, arguments);
     try { this.__ecosInit() } catch (e) { console.warn("[ecos]", e) }
+    try { this.__ecoSocial() } catch (e) { console.warn("[ecos] social", e) }
     return r;
   };
   const U0 = Fl.prototype.update;
@@ -155,6 +156,7 @@ Fl.prototype.__ecosInit = function () {
   if (this.fromForest) return;                       // só no Refúgio do Modo Infinito
   const me = this.classDef?.id || "WARRIOR", list = __ecoList(this, me);
   if (!list.length) return;
+  this.__ecoPlanned = list.length;
   const S = this.M.spots, L = new Bh(this);
   list.forEach((d, k) => this.time.delayedCall(900 + k * 1400, () => { try { this.__ecoSpawn(d, k, L) } catch (e) { console.warn("[ecos] spawn", e) } }));
   // o herói da história com a mesma classe de um eco sai de cena (não ficam dois Dravens)
@@ -167,6 +169,29 @@ Fl.prototype.__ecosInit = function () {
     this.inters = this.inters.filter(o => o.id !== "hero-" + h.id);
   }
 };
+
+/* amigos de verdade: resgata saudações recebidas, publica a vitrine e atualiza a lista em segundo plano */
+Fl.prototype.__ecoSocial = function () {
+  if (this.fromForest) return;
+  const F = window.DGFriends; if (!F) return;
+  try { F.trackBest(); F.publish?.().catch(() => {}) } catch (e) {}
+  F.claimGreetings?.().then(list => {
+    if (!list?.length || !this.sys?.isActive?.()) return;
+    const n = list.reduce((s, x) => s + (x.n || 0), 0); if (!n) return;
+    try { const m = Xe(); m.fragments = (m.fragments || 0) + 5 * n; m.totalEarned = (m.totalEarned || 0) + 5 * n; tr(m); this.meta = m; this.fragText?.setText?.(`◆ ${m.fragments}`) } catch (e) {}
+    const who = list.map(x => x.from_name).slice(0, 3).join(", ") + (list.length > 3 ? "…" : "");
+    this.time.delayedCall(1200, () => this.__ecoBanner(__L3(`${who} te saudou no Refúgio · +${5 * n} fragmentos`, `${who} greeted you at the Refuge · +${5 * n} fragments`, `${who} te saludó en el Refugio · +${5 * n} fragmentos`)));
+    this.game.audioEngine?.sfx?.("sfx-chest-open");
+  }).catch(() => {});
+  F.refresh?.().catch(() => {});
+};
+/* a lista de amigos chegou depois do Refúgio abrir: os ecos entram agora */
+window.addEventListener("depthgate:friends", () => {
+  try {
+    const H = window.__DED_GAME?.scene?.getScene("Hub");
+    if (H?.sys?.isActive?.() && !H.fromForest && !(H.ecos || []).length && !H.__ecoPlanned) H.__ecosInit();
+  } catch (e) {}
+});
 
 Fl.prototype.__ecoSpawn = function (d, k, L) {
   if (!this.sys?.isActive?.()) return;
