@@ -15,6 +15,9 @@ Supabase → **Authentication** → **Sign In / Providers** (ou **Providers**):
 1. **Anonymous Sign-Ins** → ligar (jogar sem cadastro e vincular depois).
 2. **Email** → ligado. Em "Confirm email" pode deixar ligado (o jogador confirma pelo link).
 3. **Google** → ligar depois do passo 4 (precisa do Client ID e Secret).
+4. **Allow manual linking** (Authentication → Sign In / Providers, seção "User Signups" ou "Advanced") → ligar.
+   É o que deixa o convidado vincular o Google à MESMA conta (progresso e amigos continuam). Sem isso, entrar com o
+   Google cria outra conta e o jogo pergunta qual progresso manter.
 
 Supabase → **Authentication** → **URL Configuration**:
 - **Site URL**: `https://captainscarps.github.io/ProjectDepthGate/`

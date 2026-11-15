@@ -19,7 +19,7 @@ for mode in ['kb','pad','touch']:
         if mode=='touch':
             q.start('MainMenu',{}); time.sleep(4)
             MS="window.__DED_GAME.scene.getScene('MainMenu')"
-            q.tap(46*2+40,236*2); time.sleep(1); o=q.ev(f"()=>!!{MS}.settingsPanel?.open")
+            q.tap(46*2+40,258*2); time.sleep(1); o=q.ev(f"()=>!!{MS}.settingsPanel?.open")
             q.tap(1212,60); time.sleep(1); c=q.ev(f"()=>!!{MS}.settingsPanel?.open")
             q.tap(46*2+40,170*2); time.sleep(2); bs=q.scenes()
             print(('OK  ' if o and not c and 'BestiaryBook' in bs else 'FAIL'),'menu principal em toque: configurações abre/fecha, bestiário abre', o, c, bs)
