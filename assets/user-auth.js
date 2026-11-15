@@ -73,6 +73,7 @@
       this._avatarCache = new Map();
       this._paused = [];
       this.ready = this.init().catch(e => { console.warn("[conta]", e); });
+      window.addEventListener("depthgate:cloud_sync", () => this.refreshViews());
       const ui = () => { this.injectStyles(); };
       document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", ui) : ui();
     }
@@ -146,6 +147,7 @@
       }
       if (this.cloud) this.saveProfile({ username: this.cloud.username, avatarHero: this.cloud.avatar_hero, avatarType: "hero", friendCode: this.cloud.friend_code, email: this.user.email || null, isRegistered: !this.isAnonymous() });
       this.refreshViews();
+      if (this.cloud) this.emitAuth();
       return this.cloud;
     }
 
@@ -280,7 +282,8 @@
   <button class="x" data-a="close" aria-label="Fechar">&times;</button>
   <h2>${L3("CONTA", "ACCOUNT", "CUENTA")}</h2>
   <div class="head"><img src="${this.getAvatarUrl()}" alt=""><div><div class="nm">${esc(p.username || "Aventureiro")}</div><span class="tag ${anon ? "" : "on"}">${status}</span>
-    ${!anon && this.user?.email ? `<div class="hint" style="margin:3px 0 0">${esc(this.user.email)}</div>` : ""}</div>
+    ${!anon && this.user?.email ? `<div class="hint" style="margin:3px 0 0">${esc(this.user.email)}</div>` : ""}
+    ${window.DGSave?.lastSync ? `<div class="hint" style="margin:3px 0 0;color:#8ae0b0">☁ ${L3("Progresso salvo na nuvem às", "Progress saved to the cloud at", "Progreso guardado en la nube a las")} ${new Date(window.DGSave.lastSync).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>` : ""}</div>
     ${code ? `<div class="code">${L3("Seu código de amigo", "Your friend code", "Tu código de amigo")}<b>${esc(code)}</b><button class="link" data-a="copy">${L3("copiar", "copy", "copiar")}</button></div>` : ""}</div>
   <div class="sec"><div class="lbl">${L3("NOME NO JOGO", "IN-GAME NAME", "NOMBRE EN EL JUEGO")}</div>
     <input id="dg-acc-name" maxlength="16" value="${esc(p.username || "")}" autocomplete="nickname">

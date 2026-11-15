@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.1 · cache ded-web-v6.8.1-conta)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.2 · cache ded-web-v6.8.2-nuvem)
+
+P216.2 — SAVES NA NUVEM, ETAPA 4 (assets/cloud-save.js)
+· Todo o progresso (chaves "dungeon-crawler:" e "depthgate:" do localStorage: campanha c1..c3, Modo Infinito
+  e1..e3, Refúgio/meta, portais, forja, pets, pesca, coleção…) vai para dg_saves (key "snapshot") da conta logada.
+  Fica de fora o que é do aparelho: sessão, perfil local, configurações, flags de teste.
+· Ao abrir/entrar: nuvem mais nova e aparelho sem mudanças → baixa; aparelho mudou → envia; os dois mudaram →
+  tela "QUAL PROGRESSO MANTER?" com o resumo dos dois lados (campanha, Infinito, fragmentos, aparelho e data).
+· Jogando: cada save local envia em até ~10 s (na hora ao minimizar/fechar). Baixar só no menu principal — a partida
+  em andamento nunca é trocada. Envio com revisão (rev): se outro aparelho enviou antes, a sincronia recomeça.
+· A janela CONTA mostra "☁ Progresso salvo na nuvem às HH:MM". Offline: continua salvando no aparelho.
 
 P216.1 — CONTA NOVA (SUPABASE AUTH), ETAPA 3
 · O login antigo (resumo de senha numa tabela pública e senhas no navegador) foi substituído pelo Supabase Auth:
