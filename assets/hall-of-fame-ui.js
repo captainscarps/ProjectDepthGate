@@ -37,20 +37,16 @@
     }
 
     loadRecords() {
-      try {
-        const raw = localStorage.getItem("dungeon-crawler:hall_of_fame");
-        this.records = raw ? JSON.parse(raw) : [];
-      } catch(e) {
-        this.records = [];
-      }
-      // If empty, supply placeholder legendary runs
-      if (!this.records || this.records.length === 0) {
-        this.records = [
-          { date: "27/10/2026", hero: "Draven", tree: "Guarda de Valdrak (Defesa)", depth: 42, nightmare: 3, kills: 384 },
-          { date: "26/10/2026", hero: "Akihiro", tree: "Corte Único (Ataque)", depth: 36, nightmare: 2, kills: 295 },
-          { date: "25/10/2026", hero: "Hayato", tree: "Flecha Certeira (Ataque)", depth: 28, nightmare: 1, kills: 210 }
-        ];
-      }
+      // ranking real do Modo Infinito (o jogo grava em dungeon-crawler:endless-ranking a cada queda)
+      let list = [];
+      try { list = JSON.parse(localStorage.getItem("dungeon-crawler:endless-ranking") || "[]") || []; } catch (e) { list = []; }
+      if (!Array.isArray(list)) list = [];
+      const cls = id => { try { return window.__className ? window.__className(id) : String(id || "?"); } catch (e) { return String(id || "?"); } };
+      const hero = id => { try { return window.__heroNames?.[id] || cls(id); } catch (e) { return cls(id); } };
+      this.records = list.filter(r => r && typeof r === "object")
+        .sort((a, b) => (b.score || 0) - (a.score || 0) || (b.depth || 0) - (a.depth || 0))
+        .slice(0, 10)
+        .map(r => ({ hero: `${hero(r.classId)} · ${String(r.playerName || "PLAYER").slice(0, 12)}`, tree: `${cls(r.classId)} · Nv ${r.maxLevel ?? "—"}`, depth: r.maxDepth ?? r.depth ?? 1, nightmare: 0, kills: r.enemiesKilled ?? 0 }));
     }
 
     build() {
@@ -161,8 +157,8 @@
       this.entriesContainer.add([
         this.ui.add.text(colRank, by + 11, "POS", thStyle).setOrigin(0.5, 0),
         this.ui.add.text(colHero, by + 11, "HERÓI", thStyle),
-        this.ui.add.text(colTree, by + 11, "CAMINHO / ÁRVORE", thStyle),
-        this.ui.add.text(colDepth, by + 11, "ANDAR / PESADELO", thStyle),
+        this.ui.add.text(colTree, by + 11, "CLASSE", thStyle),
+        this.ui.add.text(colDepth, by + 11, "ANDAR", thStyle),
         this.ui.add.text(colKills, by + 11, "ABATES", thStyle)
       ]);
 
@@ -172,6 +168,9 @@
 
       this.highlightG.clear();
 
+      if (!this.records.length) {
+        this.entriesContainer.add(this.ui.add.text(w / 2, by + 120, "Nenhuma expedição registrada ainda.\nCada queda nas Profundezas entra para o Hall da Fama.", { fontFamily: "sans-serif", fontSize: "10px", color: "#b0a088", align: "center", lineSpacing: 4 }).setOrigin(0.5));
+      }
       for (let idx = 0; idx < Math.min(7, this.records.length); idx++) {
         const r = this.records[idx];
         const rowY = startY + idx * rowH;

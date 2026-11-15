@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p215.2 · cache ded-web-v6.7.2-dialogo)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p215.3 · cache ded-web-v6.7.3-hall)
+
+P215.3 — HALL DA FAMA NO MURAL DO REFÚGIO (MODO INFINITO)
+· No Refúgio do Modo Infinito o MURAL vira o HALL DA FAMA: as 10 maiores expedições (herói, jogador, profundidade,
+  nível, abates, pontos e data), com medalhas para o pódio. Na campanha o mural continua com os avisos.
+· O Hall da Fama do menu de pausa mostrava 3 recordes inventados (Draven andar 42…): agora lê o mesmo ranking real.
 
 P215.2 — DIÁLOGO TRAVADO NAS PRIMEIRAS LETRAS (CELULAR)
 · Com o celular no silencioso (ou o áudio suspenso / app em segundo plano), a fala dublada "começava" mas o relógio
