@@ -172,3 +172,49 @@
     return r;
   };
 }
+/* gancho de teste: abrir um diálogo pelo console (usado pelos testes automáticos) */
+try { window.__dlgT = (S, L, cb) => (typeof __dlg === "function" ? __dlg(S, L, cb) : null) } catch (e) {}
+/* Troca de idioma no meio do jogo: os menus em livro (inventário, árvore de habilidades, loja) montam os rótulos
+   uma vez só e ficavam no idioma antigo ("ATRIBUTOS", "EQUIPADAS", "NV 5"… em português depois de mudar para inglês).
+   Ao mudar o idioma, os que não estão abertos são desmontados e se remontam no idioma novo na próxima abertura;
+   o que estiver aberto se remonta assim que fechar. */
+{
+  const langNow = () => { try { return (typeof Kt === "function" ? Kt().language : null) || JSON.parse(localStorage.getItem("dungeon-crawler:settings") || "{}").language || null } catch (e) { return null } };
+  const isGO = (v) => !!(v && typeof v === "object" && typeof v.setVisible === "function" && "type" in v && !v.sys);
+  // desmonta e esquece tudo o que apontava para objetos da tela (abas, diário, pets, poções, prévia do herói…)
+  const purge = (o) => {
+    try { o.preview?.destroy?.() } catch (e) {}
+    o.preview = null; o.previewClassId = null;
+    try { o.root?.destroy?.(!0) } catch (e) {}
+    try { o.confirmRoot?.destroy?.(!0) } catch (e) {}
+    for (const k of Object.keys(o)) {
+      if (k === "ui" || k === "scene" || k === "game") continue;
+      const v = o[k];
+      if (isGO(v) || (Array.isArray(v) && v.some((x) => isGO(x) || (x && typeof x === "object" && Object.values(x).some(isGO)))) || (v && typeof v === "object" && !Array.isArray(v) && !isGO(v) && Object.values(v).some(isGO))) o[k] = undefined;
+    }
+    o.built = !1; o.__langStale = 0;
+  };
+  const reset = (o) => {
+    if (!o || !o.built) return;
+    if (o.open) { o.__langStale = 1; return }
+    purge(o);
+  };
+  const names = ["inventoryUI", "skillTree", "shopUI"];
+  const O0 = Vd.prototype.onSettingsChanged;
+  Vd.prototype.onSettingsChanged = function () {
+    const r = O0?.apply(this, arguments);
+    try {
+      const L = langNow();
+      if (this.__dgLang === undefined) this.__dgLang = L;
+      else if (L && L !== this.__dgLang) { this.__dgLang = L; for (const n of names) reset(this[n]) }
+    } catch (e) {}
+    return r;
+  };
+  // o que estava aberto na troca se remonta ao fechar
+  for (const C of [typeof Cd !== "undefined" ? Cd : null]) if (C) {
+    const c0 = C.prototype.close;
+    C.prototype.close = function () { const r = c0.apply(this, arguments); try { if (this.__langStale && !this.open) purge(this) } catch (e) {} return r };
+  }
+  const C1 = Vd.prototype.create;
+  Vd.prototype.create = function () { const r = C1.apply(this, arguments); try { this.__dgLang = langNow() } catch (e) {} return r };
+}

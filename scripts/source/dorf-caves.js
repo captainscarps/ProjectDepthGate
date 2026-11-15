@@ -1795,8 +1795,9 @@ function __dorfBake(B) {
           } catch (e) {}
         };
 
-        S.events.on("update", (time, delta) => {
-          if (!S.scene?.isActive() || !S.isDorfCave || !S.player || S.player.dead || S.__dorfExiting) return;
+        // o ouvinte sai junto com a caverna (antes ficava na cena e se acumulava a cada visita)
+        const __dorfU = (time, delta) => {
+          if (!S.scene?.isActive() || !S.isDorfCave || !S.player || S.player.dead || S.__dorfExiting || !dTxt.scene) return;
           const P = S.player, pt = ((P.y / T) | 0) * CC + ((P.x / T) | 0);
           if (pt !== pTile || time - pAt > 900) { const f = bfs((P.x / T) | 0, (P.y / T) | 0); if (f) { pField = f; pTile = pt; pAt = time } }
           for (const en of S.enemies?.getChildren?.() || []) {
@@ -1815,7 +1816,9 @@ function __dorfBake(B) {
           }
           acc += delta;
           if (acc >= nextWave) { acc = 0; nextWave = Math.max(12000, 32000 - S.__dorfDanger * 3500); wave() }
-        });
+        };
+        S.events.on("update", __dorfU);
+        S.events.once("shutdown", () => S.events.off("update", __dorfU));
       }
 
       for (const en of S.enemies?.getChildren?.() || []) if (en.__dorfBossPending) { en.__dorfBossPending = false; S.__dorfMakeBoss?.(en) }

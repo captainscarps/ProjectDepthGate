@@ -576,10 +576,12 @@ class ProceduralEnvironmentManager {
     // 4. Hook de update para interações em tempo real
     if (!scene.__envUpdateHookRegistered) {
       scene.__envUpdateHookRegistered = true;
-      scene.events.on('update', () => {
-        this.updateSceneEnvironment(scene);
-      });
+      // o ouvinte sai na troca de fase (antes só o aviso era limpo e um ouvinte novo se somava a cada fase,
+      // multiplicando o trabalho por quadro)
+      const envU = () => { this.updateSceneEnvironment(scene); };
+      scene.events.on('update', envU);
       scene.events.once('shutdown', () => {
+        scene.events.off('update', envU);
         scene.__envUpdateHookRegistered = false;
       });
     }

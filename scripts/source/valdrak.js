@@ -529,7 +529,7 @@ class __ValdrakAntiga extends j.Scene {
   spawnShade() {
     const S = this, M = S.M, x = M.gateX + (Math.random() - .5) * 520, y = M.wallH + 150 + Math.random() * 300;
     const s = S.add.sprite(x, y, "vk-shade", 0).setOrigin(.5, .97).setScale(1.3).setAlpha(0); s.play("vk-s-walk"); S.tweens.add({ targets: s, alpha: 1, duration: 500 });
-    const gl = S.add.image(x, y - 30, "light").setTint(0xa01040).setBlendMode(j.BlendModes.ADD).setScale(.45).setAlpha(.5).setDepth(y - 1); s.on("destroy", () => gl.destroy()); S.events.on("update", () => { if (gl.active && s.active) gl.setPosition(s.x, s.y - 30).setAlpha(s.alpha * .5) });
+    const gl = S.add.image(x, y - 30, "light").setTint(0xa01040).setBlendMode(j.BlendModes.ADD).setScale(.45).setAlpha(.5).setDepth(y - 1); s.on("destroy", () => gl.destroy()); { const fU = () => { if (gl.active && s.active) gl.setPosition(s.x, s.y - 30).setAlpha(s.alpha * .5); else S.events.off("update", fU) }; S.events.on("update", fU) };
     const e = { s, hp: 2, shade: !0, cd: 900, kx: 0, stun: 0, onDie: () => { S.kills++; S.setObj("o_defend", ` (${Math.min(10, S.kills)}/10)`); S.kills >= 10 && S.absorb() } }; S.enemies.push(e); return e;
   }
   updQueen(dtMs) {

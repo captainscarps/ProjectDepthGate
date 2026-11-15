@@ -11,7 +11,7 @@ const __HART=["warrior","berserker","archer","rogue","mage","shaman","hunter","d
  this.hero?.setVisible(!1);this.__heroT?.forEach?.(q=>q.remove?.());
  const H=252,h=this.hero,X=h?h.x:318,Y=(h?h.y:288)+6;let a=this.__art;if(!a||!a.active){a=this.__art=this.add.image(X,Y,k).setOrigin(.5,1).setDepth(3);a.__dy=0;
   /* segue o sprite original, que o layout (ex.: celular) reposiciona */
-  this.events.on("update",()=>{const hh=this.hero;if(a.active&&hh){a.x=hh.x;a.y=hh.y+6+a.__dy}})}
+  {const fU=()=>{const hh=this.hero;if(a.active&&hh){a.x=hh.x;a.y=hh.y+6+a.__dy}else if(!a.active)this.events.off("update",fU)};this.events.on("update",fU)}}
  const changed=this.__artK!==k||this.__artL!==lk;this.__artK=k;this.__artL=lk;
  a.setTexture(k).setVisible(!0);const s=H*(__HSZ[cls]||1)/a.height;a.__s=s;lk?a.setTint(1379848).setAlpha(.92):a.clearTint();
  if(changed){this.tweens.killTweensOf(a);a.setScale(s*.96).setAlpha(0);a.__dy=10;

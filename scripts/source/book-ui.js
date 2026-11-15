@@ -246,7 +246,7 @@ function __bkPlay(S, spr, from, to, ms, done) {
   spr.setFrame(f);
   const U = (_, dt) => {
     if (!spr.active) { S.events.off("update", U); return; }
-    t += Math.min(dt, 34);
+    t += Math.min(dt, 120);   // tempo real: em aparelho lento (poucos quadros por segundo) a animação não se arrasta
     while (t >= ms && f < to) { t -= ms; spr.setFrame(++f); }
     if (f >= to && t >= ms) { S.events.off("update", U); done?.(); }
   };
@@ -265,11 +265,16 @@ function __bkOpenAnim(S, root, done) {
   __bkAnims(S);
   const ox = root.x, oy = root.y, s = __bkFit(S, S.add.sprite(0, 0, "bk-open", 2), { ...B, x: B.x + ox, y: B.y + oy }, (root.depth || 0) + 1);
   root.setAlpha(0);
-  __bkPlay(S, s, 2, 15, 38, () => {
-    s.destroy();
-    S.tweens.add({ targets: root, alpha: 1, duration: 120 });
+  let fin = !1;
+  const end = () => {
+    if (fin) return; fin = !0;
+    s.active && s.destroy();
+    root.scene && S.tweens.add({ targets: root, alpha: 1, duration: 120 });
     done?.();
-  });
+  };
+  __bkPlay(S, s, 2, 15, 38, end);
+  // rede de segurança: a página aparece mesmo se a animação travar (aba em segundo plano, quadro perdido)
+  setTimeout(() => { if (!fin && root.scene && root.visible) end(); }, 1200);
 }
 function __bkFlip(S, root, fwd) {
   const B = root.__bk;

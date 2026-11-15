@@ -203,7 +203,7 @@ buildUI(){const S=this,L3=__L3,U=S.ui,F="Georgia, 'Times New Roman', serif";
  const az=S.add.zone(0,0,160,30).setInteractive({useHandCursor:!0});az.on("pointerdown",()=>{S.uiTap=!0;S.doAct()});S.act.add(az);U.add(S.act);
  /* botões maiores e com área de toque folgada (no celular eram difíceis de acertar) */
  const btn=(x,y,t,ox,fn)=>{const b=S.add.text(x,y,t,{fontFamily:"'Courier New', monospace",fontStyle:"bold",fontSize:"12px",color:"#f2e6bc",backgroundColor:"#1a120cee",padding:{x:12,y:8}}).setOrigin(ox,0).setInteractive({useHandCursor:!0});Gt(b,16,12);
-  const bd=S.add.graphics();const draw=()=>{bd.clear();if(!b.visible)return;const w=b.width,h=b.height,x0=b.x-w*b.originX,y0=b.y;bd.lineStyle(1.5,0xc9a24a,.85).strokeRoundedRect(x0,y0,w,h,5)};S.events.on("update",draw);U.add(bd);
+  const bd=S.add.graphics();const draw=()=>{bd.clear();if(!b.visible)return;const w=b.width,h=b.height,x0=b.x-w*b.originX,y0=b.y;bd.lineStyle(1.5,0xc9a24a,.85).strokeRoundedRect(x0,y0,w,h,5)};S.events.on("update",draw);S.events.once("shutdown",()=>S.events.off("update",draw));U.add(bd);
   b.on("pointerdown",()=>{S.uiTap=!0;b.setScale(.94);S.time.delayedCall(90,()=>b.setScale(1));fn()});U.add(b);return b};
  S.startBtn=btn(_-10,8,"❚❚ START",1,()=>S.togglePause());
  S.skipBtn=btn(_/2+250,st-112,L3("PULAR DIÁLOGO ▸","SKIP DIALOGUE ▸","SALTAR DIÁLOGO ▸"),1,()=>S.skipLine()).setVisible(!1);

@@ -181,7 +181,8 @@ function __rfLake(H) {
     });
   };
   // afastou do pier: recolhe a linha
-  H.events.on("update", () => { if (fish.st && Math.hypot(H.playerX - PX, H.playerY - (PY + 8)) > 40) end() });
+  const farU = () => { if (fish.st && Math.hypot(H.playerX - PX, H.playerY - (PY + 8)) > 40) end() };
+  H.events.on("update", farU); H.events.once("shutdown", () => H.events.off("update", farU));
   H.inters.push({ area: "out", id: "fish", x: PX, y: PY + 4, ay: PY + 10, r: 26, label: L3("PESCAR", "FISH", "PESCAR"), desc: L3("Espere a boia afundar e puxe na hora", "Wait for the bobber to sink, then pull", "Espera a que se hunda y tira"), act: () => cast() });
   const lab = H.add.text(K.x + K.w / 2, K.y - 6, L3("LAGUINHO", "POND", "LAGUITO"), { ...Le, fontSize: "8px", color: "#a8d8f0", stroke: "#120c08", strokeThickness: 3 }).setOrigin(.5, 1).setScale(.7).setDepth(9100).setAlpha(.9);
   H.labels.push(lab);

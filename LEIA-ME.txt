@@ -1,4 +1,26 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p214.8 · cache ded-web-v6.6.8-vozes2)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p214.9 · cache ded-web-v6.6.9-qa)
+
+P214.9 — TESTE GERAL (MENUS, ENTRADAS, TRANSIÇÕES, DESEMPENHO) E CORREÇÕES
+Bugs encontrados e corrigidos:
+· Cavernas Dorf "contaminavam" a fase seguinte: depois de entrar nas cavernas, qualquer fase na mesma sessão
+  continuava achando que era caverna — o herói NÃO GANHAVA XP, o perigo e as ondas da caverna seguiam e havia
+  erro na tela (texto destruído). Agora a marca é zerada a cada fase e o ouvinte da caverna sai junto.
+· Cartas do Pacto (Modo Infinito) sem imagem: a limpeza de arquivos de 11/2026 apagou as 25 artes das cartas
+  (o jogo monta o nome na hora e a busca não achou). Restauradas; o jogo também parou de tentar baixá-las sem
+  parar (eram ~800 erros por sessão).
+· Inventário/Habilidades invisíveis: fechar e reabrir rápido (ou abrir Habilidades e apertar Esc no meio)
+  deixava o livro "aberto" mas transparente — parecia jogo travado. A animação do livro agora segue o tempo
+  real (não se arrasta em aparelho lento) e a página sempre aparece em até 1,2 s.
+· Vazamento de desempenho: as interações do ambiente somavam um ouvinte por fase visitada (depois de 20 fases,
+  a mesma conta rodava 20 vezes por quadro). Mesmo problema corrigido no laguinho do Refúgio, na escolha de
+  personagem, no prólogo e nas sombras de Valdrak.
+· Troca de idioma no meio do jogo: abas do livro (Equipamento, Atributos…), "Equipadas" e "NV" ficavam no
+  idioma antigo. Agora se remontam no idioma novo.
+· Cemitério: o jogo tentava baixar duas folhas de parede que não existem (erro em toda abertura). Removido.
+Testado e sem problema: menu principal, pausa e todos os itens, inventário, árvore de habilidades, Refúgio
+(36 interações) e painéis (vendedor, pets, herborista, santuário, armaria, mural) com teclado, gamepad, mouse
+e toque; todas as fases da campanha, castelo (3 andares) e infinito; transições (portal, cavernas, saída,
+escadas, memória de Valdrak); vozes; memória estável em idas e voltas. Testes em scripts/qa/ (README).
 
 P214.8 — ÚLTIMAS FALAS COM VOZ E TESTE GERAL 19/19
 · Vozes novas (ElevenLabs, PT e EN): o grito da Bruxa das Sepulturas ao despertar (voz "Bianca", idosa, rouca
