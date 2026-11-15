@@ -88,7 +88,11 @@ __dub=function(text,onEnd){__dubInit();if(__DUB.a){try{__DUB.a.onended=null;__DU
 
 /* voz e texto juntos: quanto do texto já deveria aparecer (0..1) pelo ponto em que a voz está */
 window.__dubProg=function(full){if(!full||__DUB.cur!==full)return null;const H=__DUB.a;if(!H||H._text!==full)return performance.now()-(__DUB.t0||0)<1200?0:null;
- const started=H._html?H._html.currentTime>0:H._t0>0;if(!started)return performance.now()-(__DUB.t0||0)<1200?0:null;const d=H.duration||H._dur||0;if(!d)return null;return Math.min(1,H.currentTime/(d*.86)+.03)};
+ const started=H._html?H._html.currentTime>0:H._t0>0;if(!started)return performance.now()-(__DUB.t0||0)<1200?0:null;const d=H.duration||H._dur||0;if(!d)return null;
+ /* voz travada (celular no silencioso, áudio suspenso, aba em segundo plano): o relógio dela não anda — o texto volta a correr sozinho */
+ try{if(!H._html&&ctxOf()?.state&&ctxOf().state!=="running")return null;if(H._html&&H._html.paused&&!H._html.ended)return null}catch(e){}
+ const ct=H.currentTime,now=performance.now();if(H.__lc!==ct){H.__lc=ct;H.__lt=now}else if(now-(H.__lt||now)>500)return null;
+ return Math.min(1,ct/(d*.86)+.03)};
 window.__dubType=function(full,cur,step){const f=window.__dubProg(full);return f==null?Math.min(full.length,cur+step):Math.max(cur,Math.min(full.length,Math.floor(full.length*f)))};
 
 /* baixa e prepara as vozes de uma conversa inteira antes de ela começar */

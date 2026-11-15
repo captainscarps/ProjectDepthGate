@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p215.1 · cache ded-web-v6.7.1-ferreiro)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p215.2 · cache ded-web-v6.7.2-dialogo)
+
+P215.2 — DIÁLOGO TRAVADO NAS PRIMEIRAS LETRAS (CELULAR)
+· Com o celular no silencioso (ou o áudio suspenso / app em segundo plano), a fala dublada "começava" mas o relógio
+  dela não andava; como o texto acompanha a voz, a caixa ficava parada em 3% da frase ("Cad", "V"). Agora, se a voz
+  não avança por meio segundo, o texto volta a correr sozinho e o diálogo segue normalmente.
 
 P215.1 — PEÇAS DO FERREIRO SÃO INTOCÁVEIS
 · Armas e armaduras do ferreiro não podem ser vendidas na loja (aviso "Peças do ferreiro não podem ser vendidas";
