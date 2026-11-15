@@ -1,4 +1,17 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p215.3 · cache ded-web-v6.7.3-hall)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.0 · cache ded-web-v6.8.0-ecos)
+
+P216.0 — ECOS DOS AMIGOS NO REFÚGIO (PROTÓTIPO, ETAPA 1)
+· Refúgio do Modo Infinito: os heróis dos amigos aparecem como "ecos" de corpo inteiro (mesmo boneco do herói,
+  com colisão — esbarram no jogador e entre si), vestindo o equipamento do amigo (lendária = sem capacete + capa;
+  peça do ferreiro = brilho). Saem do portal azul e seguem rotina: fogueira, bonecos de treino (dano próprio, não
+  conta no combo), pesca nos pontos do píer, mural, vendedor, santuário, cachorro, passeio. Olham pro jogador
+  quando ele chega perto e fazem um gesto se ele fica do lado.
+· Interagir: conversa (diálogo especial quando é o MESMO herói: "parece que os portais trouxeram outras versões
+  minhas…", 3 variações; herói diferente: fala própria de cada herói + comentário sobre a melhor peça) → vitrine do
+  amigo (retrato, profundidade, pontos, equipamento com LENDÁRIA / DO FERREIRO) → SAUDAR (+5 fragmentos, 1x por dia
+  por amigo). O herói da história com a mesma classe de um eco sai de cena.
+· Por enquanto só com amigos de teste: abrir o jogo com ?ecos=teste no endereço (fica ligado; ?ecos=0 desliga).
+  Fonte real (etapa 5): window.__ecoSource → amigos do Supabase. Código: scripts/source/ecos.js (bloco /*__ECOS__*/).
 
 P215.3 — HALL DA FAMA NO MURAL DO REFÚGIO (MODO INFINITO)
 · No Refúgio do Modo Infinito o MURAL vira o HALL DA FAMA: as 10 maiores expedições (herói, jogador, profundidade,
