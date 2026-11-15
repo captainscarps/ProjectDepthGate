@@ -111,7 +111,9 @@ const __FORGE_RUNS = {
   armor_forge_brasa: 5, armor_forge_geada: 4, armor_forge_raizes: 4, armor_forge_penumbra: 4, armor_forge_aurora: 3, armor_forge_cobalto: 3,
 };
 function __forgeMaxRuns(id) { return __FORGE_RUNS[id] || __FORGE_MAX_RUNS }
-try { if (typeof window !== "undefined") Object.assign(window, { __FORGE_MAX_RUNS, __FORGE_RUNS, __forgeMaxRuns, __forgeDurGet, __forgeDurSet, __forgeBrokenGet, __forgeBrokenSet, __forgeBrokenAdd }) } catch (e) {}
+/* peças do ferreiro: não se vendem, não entram na forja da run e não se desmontam */
+function __isForgeItem(it) { return !!it && (!!it.uniqueForge || /^(unique_forge_|armor_forge_)/.test(String(it.id || ""))) }
+try { if (typeof window !== "undefined") Object.assign(window, { __FORGE_MAX_RUNS, __FORGE_RUNS, __forgeMaxRuns, __isForgeItem, __forgeDurGet, __forgeDurSet, __forgeBrokenGet, __forgeBrokenSet, __forgeBrokenAdd }) } catch (e) {}
 
 /* 0a2) Armas do ferreiro: cada uma tem uma animação própria a cada golpe (por cima do ataque normal) */
 const __FFX = {

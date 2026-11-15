@@ -88,14 +88,20 @@ rep("  let selectedRow = 0; // 0..5 (COMMON..RELIC)", """  let selectedRow = 0; 
       if (invUi.selected?.source === "inv") it = invUi.selectedItem?.();
       else if (invUi.focus?.area === "inv") it = S.inventory.items[invUi.focus.index] ?? null;
     } catch (e) {}
-    return it && it.type !== "quest" ? it : null;
+    return it && it.type !== "quest" && !window.__isForgeItem?.(it) ? it : null;
+  };
+  const dmForgeSel = () => {
+    try {
+      const it = invUi.selected?.source === "inv" ? invUi.selectedItem?.() : (invUi.focus?.area === "inv" ? S.inventory.items[invUi.focus.index] : null);
+      return !!window.__isForgeItem?.(it);
+    } catch (e) { return false; }
   };
   let lastDm = 0;
   const dismantle = () => {
     if (Date.now() - lastDm < 300) return;
     lastDm = Date.now();
     const it = dmTarget();
-    if (!it) { S.audioRef?.play?.("sfx-event-refuse"); return; }
+    if (!it) { S.audioRef?.play?.("sfx-event-refuse"); if (dmForgeSel()) S.game.events.emit("ui:banner", __L3("PEÇAS DO FERREIRO NÃO PODEM SER DESMONTADAS", "BLACKSMITH PIECES CAN'T BE DISMANTLED", "LAS PIEZAS DEL HERRERO NO SE PUEDEN DESMONTAR"), "#ff8a6a"); return; }
     const gold = __DM_GOLD[it.rarity] ?? 8;
     const nm = typeof _t === "function" ? _t(it) : (it.name || "Item");
     S.inventory.remove(it);
@@ -116,7 +122,7 @@ rep("""    // Saldo atual de Cristais do Refúgio do Herói""", """    // Linha 
       g2.lineStyle(isSel ? 2 : 1, isSel ? 0xffd24a : 0x8a6a3a, isSel ? 1 : 0.7).strokeRoundedRect(x0 + 14, ry, W - 28, rowH - 4, 4);
       rowsContainer.add(g2);
       const rc = (__FORGE_RARITIES.find(r => r.key === it?.rarity) || {}).color || "#8a7f66";
-      const nm = it ? (typeof _t === "function" ? _t(it) : (it.name || "Item")) : __L3("selecione um item na mochila", "select an item in your bag", "elige un objeto de la bolsa");
+      const nm = it ? (typeof _t === "function" ? _t(it) : (it.name || "Item")) : dmForgeSel() ? __L3("ferreiro: não desmonta", "smith item: locked", "herrero: no se desmonta") : __L3("selecione um item na mochila", "select an item in your bag", "elige un objeto de la bolsa");
       rowsContainer.add(ui.add.text(x0 + 24, ry + (rowH - 4) / 2, (isSel ? "▶ " : "") + __L3("DESMONTAR", "DISMANTLE", "DESMONTAR"), { fontFamily: F_SERIF, fontStyle: "bold", fontSize: "9px", color: isSel ? "#ffffff" : "#e8c872", stroke: "#0a0604", strokeThickness: 2 }).setOrigin(0, 0.5));
       rowsContainer.add(ui.add.text(x0 + 130, ry + (rowH - 4) / 2, nm.length > 26 ? nm.slice(0, 25) + "…" : nm, { fontFamily: F_MONO, fontSize: "8.5px", color: it ? rc : "#8a7f66", stroke: "#0a0604", strokeThickness: 2 }).setOrigin(0, 0.5));
       const bx = x0 + W - 24 - 55, by = ry + (rowH - 4) / 2, bg3 = ui.add.graphics();

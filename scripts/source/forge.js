@@ -171,7 +171,7 @@ function __openForge(invUi) {
     const bagItems = S.inventory.items.filter(Boolean);
     const byRarity = { COMMON: [], UNCOMMON: [], RARE: [], EPIC: [], LEGENDARY: [], RELIC: [] };
     for (const it of bagItems) {
-      if (it && byRarity[it.rarity]) byRarity[it.rarity].push(it);
+      if (it && byRarity[it.rarity] && !window.__isForgeItem?.(it)) byRarity[it.rarity].push(it);
     }
 
     const rowStartY = y0 + 58;
@@ -277,7 +277,7 @@ function __openForge(invUi) {
     // Pega 3 itens daquela raridade
     const matched = [];
     for (let i = 0; i < bag.length; i++) {
-      if (bag[i] && bag[i].rarity === rarKey) {
+      if (bag[i] && bag[i].rarity === rarKey && !window.__isForgeItem?.(bag[i])) {
         matched.push(bag[i]);
         if (matched.length === 3) break;
       }

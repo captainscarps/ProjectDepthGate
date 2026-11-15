@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p215.0 · cache ded-web-v6.7.0-infinito)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p215.1 · cache ded-web-v6.7.1-ferreiro)
+
+P215.1 — PEÇAS DO FERREIRO SÃO INTOCÁVEIS
+· Armas e armaduras do ferreiro não podem ser vendidas na loja (aviso "Peças do ferreiro não podem ser vendidas";
+  o preço aparece como "—"), não entram na Forja de Equipamentos (não contam nos 3 da mesma raridade) e não podem
+  ser desmontadas (a linha DESMONTAR mostra "ferreiro: não desmonta").
 
 P215.0 — MODO INFINITO: HERÓI PERSISTENTE ATÉ SER APAGADO
 · O herói do slot vale até você apagá-lo (EXCLUIR no slot). Ao morrer, ele volta DIRETO ao Refúgio (sem tela
