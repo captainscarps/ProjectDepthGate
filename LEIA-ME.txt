@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.0 · cache ded-web-v6.8.0-ecos)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.1 · cache ded-web-v6.8.1-conta)
+
+P216.1 — CONTA NOVA (SUPABASE AUTH), ETAPA 3
+· O login antigo (resumo de senha numa tabela pública e senhas no navegador) foi substituído pelo Supabase Auth:
+  conta anônima automática (joga sem cadastro), e-mail + senha (com "esqueci a senha") e Google (o botão só aparece
+  quando o Google estiver ligado no painel). O convidado vira conta permanente sem perder o id (progresso e amigos
+  vão junto). Perfil público em dg_profiles: nome único (3–16), avatar e CÓDIGO DE AMIGO (DG-XXXXXX).
+· Nova entrada: CONTA no menu principal e no menu do Refúgio (Start). A janela pausa o jogo; fecha com Esc, X,
+  clique fora ou B do controle; o direcional anda pelos botões e o A confirma. Sem internet: avisa e salva o nome
+  no aparelho. A API usada pelo jogo (getProfile, getAvatarUrl, getRankingAvatar) continua a mesma.
+· Biblioteca: assets/vendor/supabase-2.119.0.js (supabase-js, MIT). Banco: scripts/supabase/001_contas_saves_amigos.sql.
 
 P216.0 — ECOS DOS AMIGOS NO REFÚGIO (PROTÓTIPO, ETAPA 1)
 · Refúgio do Modo Infinito: os heróis dos amigos aparecem como "ecos" de corpo inteiro (mesmo boneco do herói,
