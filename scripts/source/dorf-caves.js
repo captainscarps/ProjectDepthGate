@@ -96,14 +96,22 @@ if (typeof window !== "undefined") {
   window.__addForgeCoins = __addForgeCoins;
 }
 
-/* 0a) Durabilidade das armas do ferreiro no modo infinito (máximo de 3 runs, conserto com Pedra Cobalto) */
+/* 0a) Durabilidade das peças do ferreiro no modo infinito (runs próprias de cada peça, conserto com Pedra Cobalto) */
 const __FORGE_MAX_RUNS = 3;
 function __forgeDurGet(slot) { try { return JSON.parse(localStorage.getItem("depthgate:forgeDur:" + slot) || "{}") || {} } catch (e) { return {} } }
 function __forgeDurSet(slot, m) { try { localStorage.setItem("depthgate:forgeDur:" + slot, JSON.stringify(m || {})) } catch (e) {} }
 function __forgeBrokenGet(slot) { try { const v = JSON.parse(localStorage.getItem("depthgate:forgeBroken:" + slot) || "[]"); return Array.isArray(v) ? v : [] } catch (e) { return [] } }
 function __forgeBrokenSet(slot, l) { try { localStorage.setItem("depthgate:forgeBroken:" + slot, JSON.stringify(l || [])) } catch (e) {} }
 function __forgeBrokenAdd(slot, l) { __forgeBrokenSet(slot, __forgeBrokenGet(slot).concat(l || [])) }
-try { if (typeof window !== "undefined") Object.assign(window, { __FORGE_MAX_RUNS, __forgeDurGet, __forgeDurSet, __forgeBrokenGet, __forgeBrokenSet, __forgeBrokenAdd }) } catch (e) {}
+/* durabilidade própria de cada peça do ferreiro (em runs do modo infinito): as mais simples aguentam mais,
+   as mais fortes se desgastam antes; o Martelo de Brokk (recompensa de missão) é o mais resistente */
+const __FORGE_RUNS = {
+  unique_forge_aegis: 5, unique_forge_eclipse: 4, unique_forge_shadowfangs: 4, unique_forge_starfall: 3,
+  unique_forge_cataclysm: 3, unique_forge_abyss_scepter: 3, unique_forge_brokk: 5,
+  armor_forge_brasa: 5, armor_forge_geada: 4, armor_forge_raizes: 4, armor_forge_penumbra: 4, armor_forge_aurora: 3, armor_forge_cobalto: 3,
+};
+function __forgeMaxRuns(id) { return __FORGE_RUNS[id] || __FORGE_MAX_RUNS }
+try { if (typeof window !== "undefined") Object.assign(window, { __FORGE_MAX_RUNS, __FORGE_RUNS, __forgeMaxRuns, __forgeDurGet, __forgeDurSet, __forgeBrokenGet, __forgeBrokenSet, __forgeBrokenAdd }) } catch (e) {}
 
 /* 0a2) Armas do ferreiro: cada uma tem uma animação própria a cada golpe (por cima do ataque normal) */
 const __FFX = {

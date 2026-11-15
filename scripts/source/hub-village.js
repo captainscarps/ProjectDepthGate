@@ -385,15 +385,15 @@ __hsQty(k){const H=this.__hs;if(!H)return;H.q=Math.max(0,Math.min(2,H.q+k));this
 __hsBuy(){const H=this.__hs;if(!H)return;const r=H.rows[H.sel],S=this.__hbStore(),L3=__L3;if(!S)return;let Q=[1,5,10][H.q];if(r.k==="c"){Q=Math.min(Q,S.max-S.run);if(Q<=0){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(L3("O slot 1 já está cheio.","Slot 1 is already full.","La ranura 1 ya está llena.")).setColor("#e08a7a");return}}const c=this.__hbPrice(r.k)*Q;if(S.money<c){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(L3("Ouro insuficiente.","Not enough gold.","Oro insuficiente.")).setColor("#e08a7a");return}
 r.k==="c"?S.addRun(Q):S.h[r.k]=(S.h[r.k]|0)+Q;if(!S.pay(c)){H.msg.setText(L3("Não foi possível salvar.","Could not save.","No se pudo guardar.")).setColor("#e08a7a");return}this.game.audioEngine?.sfx?.("sfx-item-pickup");H.msg.setText(`+${Q} ${__hbName(r.k)}`).setColor(r.k==="v"?"#ffd24a":"#8ae0b0");this.refreshFragments();const h=this.herb;if(h)for(let i=0;i<6;i++){const b=this.add.circle(h.x+j.Math.Between(-8,8),h.y-28,2,r.k==="v"?16765514:r.k==="p"?16730730:9101402).setDepth(h.y+2).setBlendMode(j.BlendModes.ADD);this.tweens.add({targets:b,y:b.y-26-i*3,alpha:0,duration:700,delay:i*40,onComplete:()=>b.destroy()})}this.tweens.add({targets:r.nm,scale:{from:1.12,to:1},duration:220});this.__hsDraw()}
 
-/* ── CONSERTO das armas do ferreiro (modo infinito): devolve as 3 runs de durabilidade por Pedra Cobalto ── */
+/* ── CONSERTO das peças do ferreiro (modo infinito): devolve a durabilidade (runs próprias de cada peça) por Pedra Cobalto ── */
 __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
   if(this.panel)return;
-  const L3=__L3,d=_/2,Y=12,HH=336,MAXR=window.__FORGE_MAX_RUNS||3;
+  const L3=__L3,d=_/2,Y=12,HH=336,MX=id=>window.__forgeMaxRuns?.(id)??(window.__FORGE_MAX_RUNS||3);
   const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
   const bg=this.add.rectangle(d,st/2,_,st,328450,.82).setInteractive();
   const n=this.add.graphics();Dt(n,d-210,Y,420,HH);o.add([bg,n]);__winSkin(this,o,d-210,Y,420,HH,1)&&n.clear();
   o.add(this.add.text(d,Y+16,L3("CONSERTO NA FORJA","FORGE REPAIRS","REPARACIÓN EN LA FORJA"),{...ti,fontSize:"12px",color:"#9cc2ff"}).setOrigin(.5));
-  o.add(this.add.text(d,Y+30,L3(`Cada arma do ferreiro aguenta ${MAXR} runs. O conserto devolve a durabilidade toda.`,`Each blacksmith weapon lasts ${MAXR} runs. Repairing restores it fully.`,`Cada arma del herrero dura ${MAXR} runs. Reparar la restaura por completo.`),{...Le,fontSize:"8px",fontStyle:"italic",color:"#cbd5e1"}).setOrigin(.5));
+  o.add(this.add.text(d,Y+30,L3(`Cada peça do ferreiro aguenta um número próprio de runs. O conserto devolve a durabilidade toda.`,`Each blacksmith piece lasts its own number of runs. Repairing restores it fully.`,`Cada pieza del herrero dura sus propias runs. Reparar la restaura por completo.`),{...Le,fontSize:"8px",fontStyle:"italic",color:"#cbd5e1"}).setOrigin(.5));
   const coinT=this.add.text(d,Y+276,"",{...ti,fontSize:"11px",color:"#7fb2ff"}).setOrigin(.5);
   const msgT=this.add.text(d,Y+292,"",{...Le,fontSize:"9px",color:"#4ade80"}).setOrigin(.5);
   o.add([coinT,msgT]);
@@ -402,7 +402,7 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
   const own=()=>{
     const e=Nn(slot);if(!e.ok)return[];
     const P=e.data.player||{},FD=window.__forgeDurGet?.(slot)||{},out=[];
-    const add=(it,where)=>{if(it&&Xt[it.id]?.uniqueForge)out.push({it,where,used:where==="broken"?MAXR:(FD[String(it.seed??0)]|0)})};
+    const add=(it,where)=>{if(it&&Xt[it.id]?.uniqueForge)out.push({it,where,used:where==="broken"?MX(it.id):(FD[String(it.seed??0)]|0)})};
     Object.values(P.equipment||{}).forEach(it=>add(it,"equip"));(P.items||[]).forEach(it=>add(it,"inv"));
     (window.__forgeBrokenGet?.(slot)||[]).forEach(it=>add(it,"broken"));
     return out;
@@ -414,7 +414,7 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
     const list=own();
     if(!list.length){const t=this.add.text(d,Y+130,L3("Você ainda não tem armas do ferreiro.","You don't own blacksmith weapons yet.","Aún no tienes armas del herrero."),{...Le,fontSize:"10px",color:"#a89878"}).setOrigin(.5);o.add(t);rows.push(t);return}
     list.slice(0,6).forEach((f,idx)=>{
-      const ry=Y+44+idx*37,X=Xt[f.it.id]||{},left=Math.max(0,MAXR-f.used),c=cost(f);
+      const MAXR=MX(f.it.id),ry=Y+44+idx*37,X=Xt[f.it.id]||{},left=Math.max(0,MAXR-f.used),c=cost(f);
       const box=this.add.graphics();box.fillStyle(0x0b1224,.7).fillRoundedRect(d-200,ry,400,34,4);box.lineStyle(1,left?0x2f56c8:0xb91c1c,.7).strokeRoundedRect(d-200,ry,400,34,4);
       const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(f.it.id),ic=hd?this.add.image(d-176,ry+16,"items-hd",f.it.id).setDisplaySize(32,32):this.add.image(d-176,ry+16,this.textures.exists(X.icon)?X.icon:"icon-sword").setScale(1.1);left||ic.setTint(0x777777);
       const nm=this.add.text(d-154,ry+4,String(X.name||f.it.id).toUpperCase(),{...ti,fontSize:"10px",color:left?"#e2e8f0":"#f87171"});
@@ -472,12 +472,12 @@ __forgeWeaponsShop(fromSmith,mode){
     for(const s of [1,2,3,4]){if(Nn(s).ok){slot=s;break;}}
   }
   // durabilidade (modo infinito): runs usadas por arma do ferreiro, chave = seed do item
-  const MAXR=window.__FORGE_MAX_RUNS||3;
+  const MX=id=>window.__forgeMaxRuns?.(id)??(window.__FORGE_MAX_RUNS||3);
   const ownedForge=()=>{
     if(isCamp)return[];
     const e=Nn(slot);if(!e.ok)return[];
     const P=e.data.player||{},FD=window.__forgeDurGet?.(slot)||{},out=[];
-    const add=(it,where)=>{if(it&&Xt[it.id]?.uniqueForge)out.push({it,where,used:where==="broken"?MAXR:(FD[String(it.seed??0)]|0)})};
+    const add=(it,where)=>{if(it&&Xt[it.id]?.uniqueForge)out.push({it,where,used:where==="broken"?MX(it.id):(FD[String(it.seed??0)]|0)})};
     Object.values(P.equipment||{}).forEach(it=>add(it,"equip"));
     (P.items||[]).forEach(it=>add(it,"inv"));
     (window.__forgeBrokenGet?.(slot)||[]).forEach(it=>add(it,"broken"));
@@ -502,7 +502,7 @@ __forgeWeaponsShop(fromSmith,mode){
 
   const LX=d-300+14,LW=272,LC=d-150,RX=d+14,RW=272,RC=d+150;   // livro: lista na página da esquerda, a peça escolhida na da direita
   o.add(this.add.text(LC,Y+16,L3("FORJA ANCESTRAL","ANCIENT FORGE","FORJA ANCESTRAL"),{...ti,fontSize:"12px",color:"#ffd24a"}).setOrigin(.5));
-  o.add(this.add.text(d,Y+30,(isCamp?L3("Forjadas em Pedra Cobalto, que só existe nas Cavernas Dorf · Quebram se morrer na run!","Forged from Cobalt Stone, found only in the Dorf Caves · Break if you die in a run!","Forjadas en Piedra Cobalto de las Cavernas Dorf · ¡Se rompen si mueres!"):L3("Forjadas em Pedra Cobalto · Resistem à morte, mas duram 3 runs · Conserte aqui","Forged from Cobalt Stone · Survive death but last 3 runs · Repair them here","Forjadas en Piedra Cobalto · Resisten la muerte pero duran 3 runs · Repáralas aquí")),{...Le,fontSize:"7px",fontStyle:"italic",color:"#f87171",align:"center",wordWrap:{width:LW}}).setOrigin(.5,0).setPosition(LC,Y+25));
+  o.add(this.add.text(d,Y+30,(isCamp?L3("Forjadas em Pedra Cobalto, que só existe nas Cavernas Dorf · Quebram se morrer na run!","Forged from Cobalt Stone, found only in the Dorf Caves · Break if you die in a run!","Forjadas en Piedra Cobalto de las Cavernas Dorf · ¡Se rompen si mueres!"):L3("Forjadas em Pedra Cobalto · Resistem à morte · Cada peça dura um número de runs · Conserte aqui","Forged from Cobalt Stone · Survive death · Each piece lasts a set number of runs · Repair them here","Forjadas en Piedra Cobalto · Resisten la muerte · Cada pieza dura sus runs · Repáralas aquí")),{...Le,fontSize:"7px",fontStyle:"italic",color:"#f87171",align:"center",wordWrap:{width:LW}}).setOrigin(.5,0).setPosition(LC,Y+25));
 
   const weaponsList=[
     {id:"unique_forge_aegis",name:L3("Espada-Baluarte da Aurora","Aurora Bastion Edge","Espada Baluarte de la Aurora"),price:120,icon:"icon-dragon-sword",stats:"+15 DANO · +8 DEFESA · +4 VIDA · +18% BLOQUEIO",color:"#34d399"},
@@ -546,7 +546,7 @@ __forgeWeaponsShop(fromSmith,mode){
   const showPv=wp=>{if(!pv)return;try{const eq=curEq();arm&&(eq.armor={id:wp.id,rarity:"UNIQUE",uid:"pv-"+wp.id,seed:1});pv.refreshEquipment({equipment:eq})}catch(_){}};
 
   let sel=0,confirming=!1;const rowsUi=[];
-  const ownTxt=wp=>{const own=ownedForge().filter(f=>f.it.id===wp.id);if(!own.length)return["",""];const f=own.sort((a,b)=>a.used-b.used)[0],left=Math.max(0,MAXR-f.used);return left?[`${L3("VOCÊ TEM","OWNED","TIENES")} · ${"▮".repeat(left)}${"▯".repeat(MAXR-left)} ${left}/${MAXR} ${L3("runs","runs","runs")}`,"#9cc2ff"]:[L3("QUEBRADA · CONSERTE","BROKEN · REPAIR","ROTA · REPARA"),"#f87171"]};
+  const ownTxt=wp=>{const MAXR=MX(wp.id),own=ownedForge().filter(f=>f.it.id===wp.id);if(!own.length)return isCamp?["",""]:[`${L3("DURA","LASTS","DURA")} ${MAXR} ${L3("RUNS NO INFINITO","RUNS IN ENDLESS","RUNS EN EL INFINITO")}`,"#9cc2ff"];const f=own.sort((a,b)=>a.used-b.used)[0],left=Math.max(0,MAXR-f.used);return left?[`${L3("VOCÊ TEM","OWNED","TIENES")} · ${"▮".repeat(left)}${"▯".repeat(MAXR-left)} ${left}/${MAXR} ${L3("runs","runs","runs")}`,"#9cc2ff"]:[L3("QUEBRADA · CONSERTE","BROKEN · REPAIR","ROTA · REPARA"),"#f87171"]};
   const paintRight=()=>{
     const wp=list[sel];if(!wp)return;
     pName.setText(wp.name.toUpperCase()).setColor(wp.color);
@@ -598,7 +598,7 @@ __forgeWeaponsShop(fromSmith,mode){
       }
       this.forgeCoinHud?.active&&this.forgeCoinHud.setText(`◆ ${curCoins}`);
       goldText.setText(`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${curCoins} ◆`);
-      msgText.setText(isCamp?L3(`Forjado: ${wp.name}! (Quebra se morrer na run)`,`Forged: ${wp.name}! (Breaks on death in run)`,`¡Forjado: ${wp.name}! (Se rompe si mueres en run)`):L3(`Forjado: ${wp.name}! Dura ${MAXR} runs.`,`Forged: ${wp.name}! Lasts ${MAXR} runs.`,`¡Forjado: ${wp.name}! Dura ${MAXR} runs.`)).setColor("#4ade80");
+      msgText.setText(isCamp?L3(`Forjado: ${wp.name}! (Quebra se morrer na run)`,`Forged: ${wp.name}! (Breaks on death in run)`,`¡Forjado: ${wp.name}! (Se rompe si mueres en run)`):L3(`Forjado: ${wp.name}! Dura ${MX(wp.id)} runs.`,`Forged: ${wp.name}! Lasts ${MX(wp.id)} runs.`,`¡Forjado: ${wp.name}! Dura ${MX(wp.id)} runs.`)).setColor("#4ade80");
       window.__advancedAudio?.playMetalClang?.("E5");
       this.game.audioEngine?.sfx?.("sfx-item-pickup");
       const I=this.M?.interior;
