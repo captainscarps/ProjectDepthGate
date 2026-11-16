@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.6 · cache ded-web-v6.8.6-controle)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.7 · cache ded-web-v6.8.7-mochila)
+
+P216.7 — MOCHILA NO REFÚGIO
+· Nova tela MOCHILA no Refúgio (campanha e Modo Infinito): à esquerda o que o herói veste (7 espaços), à direita a
+  mochila em grade (20), embaixo os detalhes da peça (atributos, durabilidade das peças do ferreiro, "REQUER …") e
+  EQUIPAR / DESEQUIPAR. Lê e grava o mesmo save da run, com as regras do jogo (classe, adagas na mão secundária,
+  dois acessórios, mochila cheia); o herói na vila troca de visual na hora.
+· Abre por: botão 🎒 MOCHILA ao lado do START, "Mochila" no menu Start, tecla I, Select do controle (o Start continua
+  abrindo o menu). Controle: direcional anda pela lista e pela grade (cima/baixo de linha em linha), A escolhe e
+  leva ao botão de ação, B/Select fecha. Código: scripts/source/mochila.js (bloco /*__MOCHILA__*/).
 
 P216.6 — VARREDURA DE MENUS NO CONTROLE
 · Treino de Pets: A no pet leva o foco ao botão de ação (ADOTAR / LEVAR COMIGO / RECRUTAR); direita pula da lista
