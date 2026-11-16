@@ -1,13 +1,12 @@
-/* ══ Mochila no Refúgio ══
-   O inventário da run depende da cena da partida; no Refúgio esta tela lê e grava o MESMO save (campanha do slot ou
-   herói do Modo Infinito): à esquerda o que o herói veste, à direita a mochila (grade de 20), embaixo os detalhes da
-   peça e EQUIPAR / DESEQUIPAR — com as mesmas regras do jogo (classe que pode usar, mão secundária das adagas,
-   dois acessórios, mochila cheia). O herói na vila troca de visual na hora.
-   Abre por: botão 🎒 MOCHILA (ao lado do START), "Mochila" no menu Start, tecla I e Select do controle.
-   Controle: direcional anda pela lista e pela grade (cima/baixo de linha em linha na grade), A escolhe e leva ao
-   botão de ação, B/Select fecha. */
-const __MO_SLOTS = ["weapon", "offhand", "helmet", "armor", "boots", "accessory1", "accessory2"];
-const __MO_CAP = 20;
+/* ══ Inventário do jogo dentro do Refúgio ══
+   O MESMO livro de inventário da run (Equipamento, Atributos, Missão, Diário, Habilidades, Poções…), aberto na camada
+   de interface do Refúgio (HubUI). Como a cena da partida não está rodando, o livro recebe um "jogo substituto"
+   montado com as peças do próprio jogo — o inventário (Rh) e os atributos (Eh) de verdade — preenchidos pelo save
+   (campanha do slot ou herói do Modo Infinito). Cada troca grava no save na hora e o herói na vila troca de visual.
+   Abre por: botão 🎒 INVENTÁRIO (ao lado do START), "Inventário" no menu Start, tecla I e Select do controle.
+   Controle e teclado: os mesmos da run (direcional/setas andam, A/Enter escolhe e equipa, LB/RB ou Q/E trocam a
+   aba, B/Esc volta e fecha, Select/I fecha). */
+const __HI_SLOTS = ["weapon", "offhand", "helmet", "armor", "boots", "accessory1", "accessory2"];
 
 Fl.prototype.__moLoad = function () {
   try {
@@ -16,180 +15,123 @@ Fl.prototype.__moLoad = function () {
     return e.ok ? { d: e.data, key: Wt("endless", sl), sl } : null;
   } catch (e) { return null }
 };
-Fl.prototype.__moItem = function (raw) {
-  if (!raw) return null;
-  try { const L = this.__moL || (this.__moL = new Bh(this)), it = L.makeItem(raw.id, raw.rarity || "COMMON", raw.seed ?? 0); if (it) return { ...it, ...(raw.uid ? { uid: raw.uid } : {}) } } catch (e) {}
-  return { ...raw, name: raw.name || raw.id };
+
+/* o "jogo substituto" que o livro enxerga no lugar da cena da partida */
+Fl.prototype.__hiState = function (S) {
+  const H = this, g = H.game, cls = H.classDef, P = S.d.player = S.d.player || {};
+  const L = new Bh(H), mk = r => { if (!r) return null; try { return L.makeItem(r.id, r.rarity || "COMMON", r.seed ?? 0) } catch (e) { return null } };
+  const A = {
+    game: g, registry: g.registry, time: H.time, scene: H.scene, sys: H.sys, classDef: cls, lootSystem: L, __hubInv: !0,
+    mode: H.fromForest ? "campaign" : "endless", state: "playing", uiOpen: !0,
+    audioRef: { play: k => { try { g.audioEngine?.sfx?.(k) } catch (e) {} } },
+    endlessRun: () => null,
+    skillState: P.skills && Array.isArray(P.skills.unlocked) ? { unlocked: [...P.skills.unlocked], equipped: [0, 1, 2, 3].map(k => P.skills.equipped?.[k] ?? null) } : zh(cls.id),
+    abilities: { setEquipped() {} },
+    player: { hp: P.hp || 6, maxHp: P.hp || 6, x: H.playerX, y: H.playerY, heal() {} },
+    resource: { current: P.resource ?? 100, max: P.resource ?? 100 },
+    potions: { count: P.potions || 0 }
+  };
+  A.stats = new Eh(A, cls); A.stats.level = P.level || 1; A.stats.xp = P.xp || 0; A.stats.gold = P.gold || 0;
+  A.inventory = new Rh(A, A.stats);
+  for (const r of P.items || []) { const it = mk(r); it && A.inventory.items.push(it) }
+  for (const k of __HI_SLOTS) A.inventory.equipment[k] = mk(P.equipment?.[k]);
+  A.stats.attachInventory(A.inventory);
+  // descartar no Refúgio apagaria o item de vez (não há chão para ele cair): fica só para a run
+  A.inventory.discard = () => { try { g.events.emit("ui:banner", __L3("Descartar itens só durante a run.", "Discard items only during a run.", "Descartar objetos solo durante la run."), "#ff9a7a") } catch (e) {} return !1 };
+  try { A.player.maxHp = Math.max(A.player.hp, A.stats.total?.maxHp || A.player.hp) } catch (e) {}
+  return A;
 };
 
-Fl.prototype.__mochila = function (focusKey) {
-  const L3 = __L3;
-  if (this.__busy || this.__hubDlgO) return;
-  this.closePanel();
-  const S = this.__moLoad();
-  const cls = this.classDef?.id || "WARRIOR";
-  const d = _ / 2, Y = 28, HH = 304, X0 = d - 282, W0 = 564;
-  const o = this.add.container(this.__ox, this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
-  const bg = this.add.rectangle(d, st / 2, _, st, 328450, .8).setInteractive(), n = this.add.graphics();
-  Dt(n, X0, Y, W0, HH); o.add([bg, n]); __winSkin(this, o, X0, Y, W0, HH, 1) && n.clear();
-  o.add(this.add.text(d, Y + 16, L3("MOCHILA", "BACKPACK", "MOCHILA"), { ...la, fontSize: "15px" }).setOrigin(.5));
-  const closeB = this.add.text(X0 + W0 - 40, Y + HH - 14, L3("✕ FECHAR", "✕ CLOSE", "✕ CERRAR"), { ...ti, fontSize: "10px", color: "#8a4a3a" }).setOrigin(.5).setInteractive({ useHandCursor: !0 });
-  closeB.on("pointerdown", () => this.closePanel());
-  if (!S || (S.d.player?.classId && S.d.player.classId !== cls)) {
-    o.add(this.add.text(d, Y + 140, L3("Nenhum save deste herói para mostrar.", "No save for this hero to show.", "No hay partida de este héroe."), { ...Le, fontSize: "10px", color: "#5a4a3a" }).setOrigin(.5));
-    o.add(closeB); this.__fixScroll?.(o); this.panel = o; this.panelRows = null; this.__fnAuto?.(o, closeB); return;
-  }
-  const P = S.d.player = S.d.player || {}; P.equipment = P.equipment || {}; P.items = Array.isArray(P.items) ? P.items : [];
-  const mk = r => this.__moItem(r);
-  const FD = !this.fromForest ? (window.__forgeDurGet?.(S.sl) || {}) : {};
-  const rarCol = it => { try { return es(bt[it?.rarity]?.color ?? 0x8a7f66) } catch (e) { return "#8a7f66" } };
-  const nameOf = it => it ? ((typeof _t === "function" ? _t(it) : it.name) || it.id) : "";
-  const iconOf = (it, x, y, size) => {
-    if (!it) return null;
-    const hd = this.textures.exists("items-hd") && this.textures.get("items-hd").has(it.id);
-    const im = hd ? this.add.image(x, y, "items-hd", it.id).setDisplaySize(size, size) : this.add.image(x, y, this.textures.exists(it.icon) ? it.icon : "icon-sword");
-    if (!hd) { im.setScale(size / Math.max(im.width, im.height, 1)); it.tint != null && !/^farm-ic-/.test(it.icon || "") && im.setTint(it.tint) }
-    return im;
+Fl.prototype.__invHub = function () {
+  const H = this, U = H.scene.get("HubUI");
+  if (!U?.sys?.isActive?.() || H.__busy || H.panel || H.__hubDlgO || U.__hiOpen) return;
+  const S = H.__moLoad();
+  if (!S || (S.d.player?.classId && S.d.player.classId !== H.classDef?.id)) { H.__ecoBanner?.(__L3("Nenhum save deste herói para abrir o inventário.", "No save for this hero to open the inventory.", "No hay partida de este héroe para abrir el inventario.")); return }
+  const A = H.__hiState(S);
+  const inv = U.__hiInv || (U.__hiInv = new Cd(U));
+  inv.gs = () => A;
+  // grava a cada troca (mesmo formato do save da run) e veste o herói da vila
+  const ser = it => it ? { id: it.id, rarity: it.rarity, seed: it.seed ?? 0 } : null;
+  const save = () => {
+    try {
+      const P = S.d.player; P.items = A.inventory.items.map(ser).filter(Boolean);
+      P.equipment = Object.fromEntries(__HI_SLOTS.map(k => [k, ser(A.inventory.equipment[k])]));
+      P.skills = { ...(P.skills || {}), unlocked: [...A.skillState.unlocked], equipped: [...A.skillState.equipped] };   // mantém a árvore do Infinito e as escolhas
+      localStorage.setItem(S.key, JSON.stringify(S.d));
+      typeof __rfGear === "function" && __rfGear(H);
+    } catch (e) { console.warn("[inventário do Refúgio]", e) }
   };
-  const SLOTN = { weapon: L3("Arma", "Weapon", "Arma"), offhand: L3("Mão secundária", "Off-hand", "Mano secundaria"), helmet: L3("Elmo", "Helmet", "Yelmo"), armor: L3("Armadura", "Armor", "Armadura"), boots: L3("Botas", "Boots", "Botas"), accessory1: L3("Acessório 1", "Accessory 1", "Accesorio 1"), accessory2: L3("Acessório 2", "Accessory 2", "Accesorio 2") };
-  // nomes dos atributos como o jogo mostra (st.*); os que não têm tradução ganham um nome próprio
-  const STK = { damage: "damage", magicDamage: "magic", defense: "defense", maxHp: "hp", maxHpAdd: "hp", maxMana: "mana", speed: "speed", speedAdd: "speed", critChance: "crit", blockChance: "block", blockCounter: "counter" };
-  const STX = { cooldownReduction: L3("Recarga%", "Cooldown%", "Recarga%"), dodgeChance: L3("Esquiva%", "Dodge%", "Esquiva%"), knockbackBonus: L3("Empurrão", "Knockback", "Empuje"), attackRangeAdd: L3("Alcance", "Range", "Alcance"), projectileBoost: L3("Projétil", "Projectile", "Proyectil"), backstabBonus: L3("Ataque pelas costas", "Backstab", "Puñalada"), chillOnHit: L3("Congela ao acertar", "Chill on hit", "Congela al golpear") };
-  const statTxt = it => {
-    const s = it?.stats || {}, out = [];
-    for (const [k, v] of Object.entries(s)) {
-      if (!v || typeof v !== "number") continue;
-      let lb = STX[k] || k; if (STK[k]) { try { const w = W(`st.${STK[k]}`); if (w && w !== `st.${STK[k]}`) lb = w } catch (e) {} }
-      out.push(`${v > 0 ? "+" : ""}${Math.round(v * 10) / 10} ${lb}`);
-    }
-    return out.join("  ·  ");
+  const onCh = () => save();
+  A.requestSave = () => save();
+  // aba HABILIDADES: a árvore de habilidades do jogo, também com o "jogo substituto"
+  const T = U.skillTree || (U.skillTree = new Rd(U));
+  T.gs = () => A; T.persist = () => save();
+  H.game.events.on("inv:changed", onCh);
+  // o Refúgio para enquanto o livro está aberto; os botões da vila somem para não cobrir o livro
+  H.__busy = !0; H.path = null; H.pending = null; U.__hiOpen = !0; U.__hiAt = performance.now();
+  const hud = [U.pzBtn, U.moBtn, U.pzBd, U.moBd].filter(Boolean);
+  hud.forEach(o => o.setVisible(!1));
+  try { U.tc?.setVisible?.(!1) } catch (e) {}
+  // os avisos que o livro manda (ex.: "precisa do Martelo de Forjador") aparecem no Refúgio
+  const onBan = (t, c) => {   // por cima do livro (na mesma camada dele)
+    try { const x = U.add.text(_ / 2, 22, String(t || ""), { ...ti, fontSize: "11px", color: c || "#ffd27a", stroke: "#120c08", strokeThickness: 4, align: "center", wordWrap: { width: 560 } }).setOrigin(.5, 0).setDepth(99999); U.tweens.add({ targets: x, alpha: 0, delay: 2200, duration: 500, onComplete: () => x.destroy() }) } catch (e) {}
   };
-  const extraTxt = it => {
-    if (!it) return "";
-    const parts = [];
-    if (window.__isForgeItem?.(it)) {
-      if (this.fromForest) parts.push(L3("Peça do ferreiro · quebra se morrer na run", "Blacksmith piece · breaks if you die in the run", "Pieza del herrero · se rompe si mueres en la run"));
-      else { const mx = window.__forgeMaxRuns?.(it.id) || 3, used = FD[String(it.seed ?? 0)] | 0; parts.push(L3(`Peça do ferreiro · ${Math.max(0, mx - used)}/${mx} runs`, `Blacksmith piece · ${Math.max(0, mx - used)}/${mx} runs`, `Pieza del herrero · ${Math.max(0, mx - used)}/${mx} runs`)) }
-    }
-    if (it.slot && !Ee(cls, it)) { try { parts.push(yi(it)) } catch (e) {} }
-    if (it.type === "quest") parts.push(L3("Item de missão", "Quest item", "Objeto de misión"));
-    return parts.join("  ·  ");
+  H.game.events.on("ui:banner", onBan);
+  const C0 = inv.close;
+  inv.close = function () {
+    try { typeof __invSkills === "function" && __invSkills(inv, !1) } catch (e) {}
+    try { inv.__forgeModal?.destroy?.(); inv.__forgeModal = null } catch (e) {}
+    const r = C0.apply(this, arguments);
+    inv.close = C0; save(); H.game.events.off("inv:changed", onCh); H.game.events.off("ui:banner", onBan);
+    U.__hiOpen = !1; hud.forEach(o => o.setVisible(!0)); try { U.tc?.setVisible?.(!0) } catch (e) {}
+    U.time.delayedCall(120, () => { H.__busy = !1; H.__slPv = !0; H.__stPv = !0 });
+    return r;
   };
+  inv.show();
+  try { inv.__sk && typeof __invTab === "function" && __invTab(inv, 0) } catch (e) {}   // abre sempre em EQUIPAMENTO
+};
+Fl.prototype.__mochila = function () { return this.__invHub() };
+Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen };
 
-  // ── esquerda: o que o herói veste ──
-  o.add(this.add.text(X0 + 20, Y + 34, L3("EQUIPADO", "EQUIPPED", "EQUIPADO"), { ...Le, fontSize: "8px", color: "#8a6a3a", fontStyle: "bold" }));
-  const LX = X0 + 16, LW = 250, RH = 23, R0 = Y + 46, focusables = [], eqZones = [];
-  __MO_SLOTS.forEach((slot, i) => {
-    const y = R0 + i * (RH + 2), raw = P.equipment[slot], it = mk(raw);
-    const g = this.add.graphics(); g.fillStyle(0x1a120b, .18).fillRoundedRect(LX, y, LW, RH, 4); g.lineStyle(1, it ? 0x8a6a3a : 0x5a4832, .5).strokeRoundedRect(LX, y, LW, RH, 4);
-    o.add(g);
-    const ic = iconOf(it, LX + 14, y + RH / 2, 18); ic && o.add(ic);
-    o.add(this.add.text(LX + 30, y + 3, SLOTN[slot], { ...Le, fontSize: "7px", color: "#8a6a3a" }));
-    o.add(this.add.text(LX + 30, y + 12, it ? nameOf(it) : "—", { ...Le, fontSize: "9px", color: it ? "#3a2a1a" : "#9a8a7a", fontStyle: it && (bt[it.rarity]?.order ?? 0) >= 3 ? "bold" : "normal" }));
-    const z = this.add.zone(LX + LW / 2, y + RH / 2, LW, RH).setInteractive({ useHandCursor: !0 });
-    z.__mo = { kind: "eq", slot, raw, it }; o.add(z); focusables.push(z); eqZones.push(z);
-  });
-
-  // ── direita: a mochila ──
-  const nItems = P.items.filter(q => q?.type !== "quest").length;
-  o.add(this.add.text(X0 + 290, Y + 34, `${L3("MOCHILA", "BACKPACK", "MOCHILA")}  ${nItems}/${__MO_CAP}`, { ...Le, fontSize: "8px", color: "#8a6a3a", fontStyle: "bold" }));
-  const GX = X0 + 290, GY = Y + 46, CS = 44, COLS = 5, cellZones = [];
-  for (let k = 0; k < __MO_CAP; k++) {
-    const cx = GX + (k % COLS) * (CS + 4), cy = GY + Math.floor(k / COLS) * (CS - 4 + 4), raw = P.items[k], it = mk(raw);
-    const g = this.add.graphics(); g.fillStyle(0x1a120b, it ? .22 : .1).fillRoundedRect(cx, cy, CS, CS - 4, 4);
-    g.lineStyle(it ? 1.5 : 1, it ? parseInt(rarCol(it).slice(1), 16) : 0x5a4832, it ? .9 : .4).strokeRoundedRect(cx, cy, CS, CS - 4, 4);
-    o.add(g);
-    const ic = iconOf(it, cx + CS / 2, cy + (CS - 4) / 2, 28); ic && o.add(ic);
-    const z = this.add.zone(cx + CS / 2, cy + (CS - 4) / 2, CS, CS - 4).setInteractive({ useHandCursor: !0 });
-    z.__mo = { kind: "bag", idx: k, raw, it }; o.add(z); focusables.push(z); cellZones.push(z);
-  }
-
-  // ── embaixo: detalhes e ação ──
-  const DY = Y + 238;
-  const ln = this.add.graphics(); ln.lineStyle(1, 9053216, .5).lineBetween(X0 + 16, DY - 6, X0 + W0 - 16, DY - 6); o.add(ln);
-  const dName = this.add.text(X0 + 20, DY, "", { ...ti, fontSize: "11px", color: "#3a2a1a" });
-  const dStat = this.add.text(X0 + 20, DY + 15, "", { ...Le, fontSize: "8px", color: "#4a3a2a", wordWrap: { width: 380 } });
-  const dExtra = this.add.text(X0 + 20, DY + 37, "", { ...Le, fontSize: "8px", color: "#2a58a0", wordWrap: { width: 380 } });
-  const msg = this.add.text(X0 + 20, Y + HH - 20, "", { ...Le, fontSize: "8px", color: "#2a7a3a" });
-  const actB = this.add.text(X0 + W0 - 90, DY + 18, "", { ...ti, fontSize: "11px", color: "#f6e7c8", backgroundColor: "#6e3b22", padding: { x: 12, y: 5 } }).setOrigin(.5).setInteractive({ useHandCursor: !0 }).setVisible(!1);
-  o.add([dName, dStat, dExtra, msg, actB, closeB]);
-  let chosen = null;
-  const show = m => {
-    const it = m?.it;
-    dName.setText(it ? nameOf(it) : (m?.kind === "eq" ? `${SLOTN[m.slot]} — ${L3("vazio", "empty", "vacío")}` : L3("Espaço vazio", "Empty space", "Espacio vacío"))).setColor(it ? rarCol(it) : "#8a7f66");
-    dStat.setText(it ? statTxt(it) || "" : ""); dExtra.setText(extraTxt(it));
-  };
-  const setAction = m => {
-    chosen = m; let label = null;
-    if (m?.it) {
-      if (m.kind === "eq") label = L3("DESEQUIPAR", "UNEQUIP", "DESEQUIPAR");
-      else if (m.it.slot && m.it.type !== "quest") label = Ee(cls, m.it) ? L3("EQUIPAR", "EQUIP", "EQUIPAR") : null;
-    }
-    actB.setVisible(!!label); label && actB.setText(label);
-    actB.input && (actB.input.enabled = !!label);
-    this.__fnAuto?.(o, closeB, !0); hook();
-  };
-  for (const z of focusables) {
-    z.on("pointerover", () => { if (!chosen) show(z.__mo) });
-    z.on("pointerdown", () => {
-      const pad = this.__fnByPad; show(z.__mo); setAction(z.__mo); this.game.audioEngine?.sfx?.("sfx-ui-tab");
-      const F = this.__fn; if (F) { const want = pad && actB.visible ? actB : z, k = F.items.indexOf(want); k >= 0 && (F.sel = k, this.__fnDraw()) }
-      if (z.__mo.it && !actB.visible && z.__mo.it.slot && !Ee(cls, z.__mo.it)) msg.setText(extraTxt(z.__mo.it)).setColor("#a83a2a");
+/* teclado e controle do livro no Refúgio (na run quem faz isso é a cena da interface) */
+{
+  const C0 = __HubUI.prototype.create;
+  __HubUI.prototype.create = function () {
+    const r = C0.apply(this, arguments), U = this;
+    const close = () => U.__hiInv?.open && U.__hiInv.close();
+    const key = k => {
+      const v = U.__hiInv; if (!v?.open) return;
+      if (k === "i" || k === "I") return performance.now() - (U.__hiAt || 0) > 250 && close();
+      // na aba HABILIDADES as setas e o Enter vão para a árvore; Q/E trocam a aba e Esc fecha o livro
+      if (U.skillTree?.open && U.skillTree.__emb && !["q", "e", "Q", "E", "Escape", "Tab", "PageUp", "PageDown"].includes(k)) return U.skillTree.handleKey(k);
+      if (k === "Escape" && U.skillTree?.__emb) return close();
+      // T / Y: a forja do livro (fundir itens), como na run — se a forja já estiver aberta, as teclas vão para ela
+      if ((k === "t" || k === "T") && !v.__forgeModal) { try { __openForge(v) } catch (e) {} return }
+      const used = v.handleKey(k); if (!used && k === "Escape") close();
+    };
+    U.input.keyboard?.on("keydown", e => { if (U.__hiOpen) key(e.key) });
+    const MAP = [[12, "ArrowUp"], [13, "ArrowDown"], [14, "ArrowLeft"], [15, "ArrowRight"], [0, "Enter"], [1, "Escape"], [4, "q"], [5, "e"], [3, "t"]];
+    let pv = { all: !0 };
+    U.events.on("update", () => {
+      if (!U.__hiOpen) { pv = { all: !0 }; return }
+      let g = null; try { g = Array.from(navigator.getGamepads?.() ?? []).find(p => p && p.connected) } catch (e) {}
+      if (!g) return;
+      const b = i => !!(g.buttons[i]?.pressed || (g.buttons[i]?.value ?? 0) > .5), ax = g.axes[0] ?? 0, ay = g.axes[1] ?? 0;
+      const now = { 12: b(12) || ay < -.6, 13: b(13) || ay > .6, 14: b(14) || ax < -.6, 15: b(15) || ax > .6, 0: b(0), 1: b(1), 2: b(2), 3: b(3), 4: b(4), 5: b(5), 8: b(8), 9: b(9) };
+      if (pv.all) { pv = now; return }        // ignora o botão que abriu o livro
+      for (const [i, k] of MAP) if (now[i] && !pv[i]) key(k);
+      if ((now[8] && !pv[8]) || (now[9] && !pv[9])) close();
+      pv = now;
     });
-  }
-  const save = () => { try { localStorage.setItem(S.key, JSON.stringify(S.d)) } catch (e) { return !1 } try { typeof __rfGear === "function" && __rfGear(this) } catch (e) {} return !0 };
-  const insBag = raw => { const k = P.items.findIndex(q => q?.type === "quest"); k < 0 ? P.items.push(raw) : P.items.splice(k, 0, raw) };
-  actB.on("pointerdown", () => {
-    const m = chosen; if (!m?.it) return;
-    if (m.kind === "eq") {
-      if (P.items.filter(q => q?.type !== "quest").length >= __MO_CAP) { msg.setText(L3("Mochila cheia.", "Backpack full.", "Mochila llena.")).setColor("#a83a2a"); this.game.audioEngine?.sfx?.("sfx-event-refuse"); return }
-      P.equipment[m.slot] = null; insBag(m.raw);
-      if (!save()) return; this.game.audioEngine?.sfx?.("sfx-unequip");
-      return this.__mochila("bag:" + P.items.indexOf(m.raw));
-    }
-    const it = m.it; if (!it.slot || !Ee(cls, it)) return;
-    const E = P.equipment, wpn = mk(E.weapon);
-    const slot = fa(it) && yh(cls) && fa(wpn) && !E.offhand ? "offhand" : it.slot !== "accessory" ? it.slot : E.accessory1 ? (E.accessory2 ? "accessory1" : "accessory2") : "accessory1";
-    const prev = E[slot]; P.items.splice(m.idx, 1); E[slot] = m.raw; prev && insBag(prev);
-    if (!save()) return; this.game.audioEngine?.sfx?.("sfx-equip");
-    this.__mochila("eq:" + slot);
-  });
-  // controle: na grade, esquerda/direita andam de casa em casa e cima/baixo de linha em linha; da lista da
-  // esquerda, direita entra na grade; da primeira coluna da grade, esquerda volta para a lista
-  const hook = () => {
-    const F = this.__fn; if (!F || F.o !== o) return;
-    const go = b => { const k = F.items.indexOf(b); k >= 0 && (F.sel = k, this.__fnDraw(), this.game.audioEngine?.sfx?.("sfx-ui-move")) };
-    F.lr = dd => {
-      const cur = F.items[F.sel], ci = cellZones.indexOf(cur), ei = eqZones.indexOf(cur);
-      if (ci >= 0) { const col = ci % COLS; if (dd < 0 && col === 0) return go(eqZones[Math.min(eqZones.length - 1, Math.floor(ci / COLS) * 2)]); if (dd > 0 && col === COLS - 1) return actB.visible ? go(actB) : go(cellZones[ci]); return go(cellZones[ci + dd]) }
-      if (ei >= 0 && dd > 0) return go(cellZones[Math.min(cellZones.length - 1, Math.floor(ei / 2) * COLS)]);
-      if (cur === actB && dd < 0) { const z = focusables.find(q => q.__mo === chosen); return z ? go(z) : this.__fnNav(dd) }
-      this.__fnNav(dd);
-    };
-    F.ud = dd => {
-      const cur = F.items[F.sel], ci = cellZones.indexOf(cur);
-      if (ci >= 0) { const nx = ci + dd * COLS; if (nx >= 0 && nx < cellZones.length) return go(cellZones[nx]); if (dd > 0) return go(actB.visible ? actB : closeB) }
-      this.__fnNav(dd);
-    };
+    return r;
   };
-  this.__fixScroll?.(o); this.panel = o; this.panelRows = null;
-  this.__fnAuto?.(o, closeB); hook();
-  // foco inicial: onde a última ação parou (ou a arma)
-  const [fk, fv] = String(focusKey || "eq:weapon").split(":");
-  const start = fk === "bag" ? cellZones[+fv] : eqZones[Math.max(0, __MO_SLOTS.indexOf(fv))];
-  if (this.__fn && start) { const k = this.__fn.items.indexOf(start); k >= 0 && (this.__fn.sel = k, this.__fnDraw()) }
-  show(start?.__mo);
-  if (focusKey) msg.setText(fk === "bag" ? L3("Guardado na mochila.", "Put in the backpack.", "Guardado en la mochila.") : L3("Equipado!", "Equipped!", "¡Equipado!")).setColor("#2a7a3a");
-  this.game.audioEngine?.sfx?.("sfx-ui-open");
-};
-
-/* atalhos: tecla I (teclado) e a entrada "Mochila" no menu Start */
+}
+/* tecla I no Refúgio */
 {
   const C0 = Fl.prototype.create;
   Fl.prototype.create = function () {
     const r = C0.apply(this, arguments);
-    try { this.input.keyboard?.on("keydown-I", () => { if (this.panel && this.__moOpen()) this.closePanel(); else if (!this.panel) this.__mochila() }) } catch (e) {}
+    try { this.input.keyboard?.on("keydown-I", () => { if (!this.scene.get("HubUI")?.__hiOpen && !this.panel) this.__invHub() }) } catch (e) {}
     return r;
   };
-  Fl.prototype.__moOpen = function () { return !!this.panel?.list?.some(x => x.type === "Text" && /^(MOCHILA|BACKPACK)$/.test(x.text)) };
 }

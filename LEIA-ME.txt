@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.7 · cache ded-web-v6.8.7-mochila)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.8 · cache ded-web-v6.8.8-inventario)
+
+P216.8 — O INVENTÁRIO DO JOGO DENTRO DO REFÚGIO (substitui a "mochila" da p216.7)
+· O MESMO livro de inventário da run abre no Refúgio (campanha e Modo Infinito): Equipamento, Atributos, Missão,
+  Diário, Habilidades (árvore de habilidades com desbloquear/equipar), Poções, Pets e a FORJA do livro (fundir).
+  Ele recebe um "jogo substituto" montado com o inventário (Rh) e os atributos (Eh) de verdade, preenchidos pelo
+  save; cada troca grava no save na hora (mantendo a árvore do Infinito e as escolhas) e o herói da vila troca de visual.
+· Abre por: botão 🎒 INVENTÁRIO ao lado do START, "Inventário" no menu Start, tecla I, Select do controle. Sempre
+  abre em EQUIPAMENTO. Controle/teclado iguais aos da run (direcional/setas, A/Enter, LB/RB ou Q/E trocam a aba,
+  Y/T abre a forja, B/Esc/Select/I fecham). O herói fica parado e os botões da vila somem enquanto o livro está aberto.
+· No Refúgio não se descarta item (não há chão para ele cair; sumiria de vez): aparece o aviso "Descartar itens só
+  durante a run". Os avisos do livro (ex.: falta o Martelo de Forjador) aparecem por cima dele.
 
 P216.7 — MOCHILA NO REFÚGIO
 · Nova tela MOCHILA no Refúgio (campanha e Modo Infinito): à esquerda o que o herói veste (7 espaços), à direita a

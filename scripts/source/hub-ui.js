@@ -7,12 +7,12 @@ const hide=()=>{if(!T.built)return;for(const b of[T.potionBtn,T.guardBtn,T.start
 const sv=T.setVisible.bind(T);T.setVisible=v=>{sv(v);hide()};const bd=T.build.bind(T);T.build=()=>{bd();hide()};
 /* START (pausa): grande, com borda e área de toque folgada, na camada de UI sem zoom (no HUD da vila o toque errava o alvo) */
 {const b=this.add.text(_-10,8,"❚❚ START",{fontFamily:"'Courier New', monospace",fontStyle:"bold",fontSize:"13px",color:"#f2e6bc",backgroundColor:"#1a1410ee",padding:{x:12,y:8}}).setOrigin(1,0).setDepth(9900).setInteractive({useHandCursor:!0});Gt(b,18,14);
- const bd=this.add.graphics().setDepth(9901);bd.lineStyle(1.5,13216842,.85).strokeRoundedRect(b.x-b.width,b.y,b.width,b.height,5);this.pzBtn=b;
+ const bd=this.add.graphics().setDepth(9901);bd.lineStyle(1.5,13216842,.85).strokeRoundedRect(b.x-b.width,b.y,b.width,b.height,5);this.pzBtn=b;this.pzBd=bd;
  b.on("pointerdown",(p,x,y,e)=>{e?.stopPropagation?.();const h=this.hub;if(!h?.sys?.isActive?.())return;b.setScale(.94);this.time.delayedCall(90,()=>b.setScale(1));h.__uiTap=!0;h.__pz?h.__pzClose():h.__pzOpen()})}
 /* MOCHILA: ao lado do START (toque e mouse) */
-{const pz=this.pzBtn,m=this.add.text(pz.x-pz.width-10,8,"🎒 MOCHILA",{fontFamily:"'Courier New', monospace",fontStyle:"bold",fontSize:"13px",color:"#f2e6bc",backgroundColor:"#1a1410ee",padding:{x:10,y:8}}).setOrigin(1,0).setDepth(9900).setInteractive({useHandCursor:!0});Gt(m,14,14);
- const bd2=this.add.graphics().setDepth(9901);bd2.lineStyle(1.5,13216842,.85).strokeRoundedRect(m.x-m.width,m.y,m.width,m.height,5);this.moBtn=m;
- m.on("pointerdown",(p,x,y,e)=>{e?.stopPropagation?.();const h=this.hub;if(!h?.sys?.isActive?.()||h.__hubDlgO||h.__busy)return;m.setScale(.94);this.time.delayedCall(90,()=>m.setScale(1));h.__uiTap=!0;h.panel&&h.__moOpen?.()?h.closePanel():(h.panel||h.__mochila?.())})}
+{const pz=this.pzBtn,m=this.add.text(pz.x-pz.width-10,8,"🎒 INVENTÁRIO",{fontFamily:"'Courier New', monospace",fontStyle:"bold",fontSize:"13px",color:"#f2e6bc",backgroundColor:"#1a1410ee",padding:{x:10,y:8}}).setOrigin(1,0).setDepth(9900).setInteractive({useHandCursor:!0});Gt(m,14,14);
+ const bd2=this.add.graphics().setDepth(9901);bd2.lineStyle(1.5,13216842,.85).strokeRoundedRect(m.x-m.width,m.y,m.width,m.height,5);this.moBtn=m;this.moBd=bd2;
+ m.on("pointerdown",(p,x,y,e)=>{e?.stopPropagation?.();const h=this.hub;if(!h?.sys?.isActive?.()||h.__hubDlgO||h.__busy)return;m.setScale(.94);this.time.delayedCall(90,()=>m.setScale(1));h.__uiTap=!0;h.__moOpen?.()?this.__hiInv?.close():(h.panel||h.__invHub?.())})}
 this.events.once("shutdown",()=>{const m=this.game.inputManager;m&&(m.touch.axis={x:0,y:0},m.touch.held.clear())})}
 update(){const h=this.hub;if(!h?.sys?.isActive?.()){return}const show=!h.panel&&!h.__busy;/* com painel aberto as áreas de toque dos controles (por cima de tudo) não podem engolir o toque dos botões do painel */if(this.__zShow!==show){this.__zShow=show;for(const o of this.children.list)if(o!==this.pzBtn&&o.input)o.input.enabled=show}this.tc.update();/* depois do update (ele mexe na opacidade dos botões): com diálogo ou painel aberto os controles somem */if(this.tc.built){for(const b of this.tc.all)for(const p of b.parts)p.setAlpha?.(show?(this.tc.settings.touchOpacity??.6):0)}}
 touchOn(){return!!this.tc?.visible}}
