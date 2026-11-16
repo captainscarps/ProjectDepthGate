@@ -2020,7 +2020,7 @@ const out=[];for(let i=0;i<P.length;i++){if(i%2===1&&i<P.length-1)continue;out.p
 __inters(){const M=this.M,S=M.spots,H=M.house,I=M.interior,L3=__L3,add=o=>this.inters.push({area:"out",r:30,...o});
 add({id:"vendor",x:S.vendor[0],y:S.vendor[1]+6,ay:S.vendor[1]+22,r:34,label:W("hub.vendor"),desc:W("hub.vendorDesc"),act:()=>this.openMetaPanel(W("hub.vendor"),this.fromForest?L3("Ouro da sua campanha, mercadoria da boa.","Your campaign gold, fine goods.","Oro de tu campaña, buena mercancía."):W("hub.vendorQuote"),this.fromForest?["SATCHEL","ALCHEMY"]:["FORTUNE","SATCHEL"])});
 add({id:"door",x:H.door[0],y:H.door[1],r:22,label:L3("FORJA","FORGE","FORJA"),desc:L3("Entrar na oficina do ferreiro","Enter the blacksmith's workshop","Entrar en el taller del herrero"),act:()=>this.__enter()});
-add({id:"girl",x:S.girl[0],y:S.girl[1],ay:S.girl[1]+16,r:32,label:L3("APRENDIZ","APPRENTICE","APRENDIZ"),desc:L3("Conversar","Talk","Hablar"),act:()=>this.__talk("girl")});
+/* (a aprendiz do pacote de arte saiu do Refúgio) */
 add(this.fromForest?{id:"board",x:S.board[0],y:S.board[1],ay:S.board[1]+14,r:30,label:L3("MURAL","NOTICE BOARD","TABLÓN"),desc:L3("Ler os avisos","Read the notices","Leer los avisos"),act:()=>this.__board()}:{id:"board",x:S.board[0],y:S.board[1],ay:S.board[1]+14,r:30,label:L3("HALL DA FAMA","HALL OF FAME","SALÓN DE LA FAMA"),desc:L3("Ver as maiores expedições","See the greatest expeditions","Ver las mayores expediciones"),act:()=>this.__hallBoard()});
 add({id:"shrine",x:S.shrine[0],y:S.shrine[1],ay:S.shrine[1]+14,r:34,label:W("hub.shrine"),desc:W("hub.shrineDesc"),act:()=>{this.game.audioEngine?.sfx("sfx-shrine-use");this.openMetaPanel(W("hub.shrine"),W("hub.shrineQuote"),this.fromForest?["VITALITY","SWIFTNESS"]:["VITALITY","SWIFTNESS","ALCHEMY","PRECISION","MIGHT"])}});
 add({id:"campfire",x:S.campfire[0],y:S.campfire[1],ay:S.campfire[1]+16,r:34,label:L3("FOGUEIRA","CAMPFIRE","HOGUERA"),desc:L3("Descansar um pouco","Rest for a while","Descansar un poco"),act:()=>this.__rest()});
@@ -2175,7 +2175,7 @@ if(this.alline&&this.__hubDlgO==null&&this.area==="in")this.alline.s.setFlipX(th
 __hunter(){const p=this.M.spots.hunter;const h=this.hunter={s:this.add.sprite(p[0],p[1]+2,"vh-hunter-tans",0).setOrigin(.5,1).setDepth(p[1]).play("vh-ht"),state:"tans",t:6+Math.random()*4,talk:0}}
 __hunterTick(dt){const h=this.hunter;if(!h)return;if(h.talk>0){if(h.state==="tans"&&!h.paused){h.paused=!0;h.s.anims.pause()}h.talk-=dt;h.talk<=0&&(h.paused=!1,h.s.anims.resume());return}h.t-=dt;if(h.t>0)return;
 if(h.state==="tans"){h.state="leave";h.s.play("vh-hlv");h.s.once("animationcomplete",()=>{h.state="rest";h.t=2+Math.random()*2.5})}else if(h.state==="rest"){h.state="take";h.s.play("vh-htk");h.s.once("animationcomplete",()=>{h.state="tans";h.t=7+Math.random()*5;h.s.play("vh-ht")})}}
-__girl(){const g=this.M.house.girl;this.add.sprite(g[0],g[1],"vh-girl",0).setOrigin(.5,1).setDepth(this.M.house.table[2]-1).play("vh-girl-a")}
+__girl(){/* a aprendiz do pacote de arte não faz parte do jogo: não aparece mais */}
 /* ── cão: passeia pela praça, senta, olha o herói ── */
 __dog(){const P=this.M.dog,p=P[0];this.dog={s:this.add.sprite(p[0],p[1],"vh-dog",24).setOrigin(.5,.85).setDepth(p[1]).play("vh-di-d"),x:p[0],y:p[1],state:"sit",t:2,tgt:null}}
 __dogTick(dt){this.__allineTick?.(dt);const d=this.dog;if(!d)return;d.t-=dt;const near=this.area==="out"&&Math.hypot(this.playerX-d.x,this.playerY-d.y)<70;
@@ -23238,3 +23238,23 @@ Fl.prototype.__ecoBanner = function (msg) {
   };
 }
 /*__ECOS__*/
+/*__RFVOZ__*/
+/* ══ Refúgio: cada fala dublada toca uma vez só ══
+   Conversar de novo com o mesmo NPC mostra o texto, mas a voz não se repete (vale para todo o Refúgio — Olivia,
+   ferreiro, taverna, heróis, curtidor… — porque todos tocam a voz por window.__dub). A lista vale até recarregar o
+   jogo; fora do Refúgio (história, cenas) nada muda. */
+{
+  const D0 = window.__dub;
+  if (typeof D0 === "function" && !D0.__once) {
+    const said = new Set();
+    const W2 = function (t) {
+      try {
+        const H = window.__DED_GAME?.scene?.getScene("Hub");
+        if (H?.sys?.isActive?.() && t) { const k = String(t).trim(); if (said.has(k)) return !1; said.add(k) }
+      } catch (e) {}
+      return D0.apply(this, arguments);
+    };
+    W2.__once = 1; window.__dub = W2;
+  }
+}
+/*__RFVOZ__*/

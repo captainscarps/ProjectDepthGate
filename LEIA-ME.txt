@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.3 · cache ded-web-v6.8.3-amigos)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.4 · cache ded-web-v6.8.4-vozes)
+
+P216.4 — REFÚGIO: SAI A APRENDIZ, VOZES NÃO SE REPETEM
+· A "APRENDIZ" (menina do pacote de arte da vila, atrás da mesa de armas da forja) saiu do Refúgio: sem desenho e
+  sem "Conversar". Nenhuma missão usava.
+· Cada fala dublada do Refúgio toca uma vez só por sessão de jogo: conversar de novo com o mesmo NPC mostra o texto,
+  mas a voz não se repete (Olivia, ferreiro, taverna, heróis, curtidor… — todos tocam por window.__dub).
+  Fora do Refúgio nada muda. Código: scripts/source/refugio-voz.js (bloco /*__RFVOZ__*/).
 
 P216.3 — AMIGOS DE VERDADE + ECOS REAIS, ETAPA 5 (assets/friends.js)
 · CONTA E AMIGOS (menu principal e Start do Refúgio): seção AMIGOS — adicionar por código (DG-XXXXXX) ou nome,
