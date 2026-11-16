@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.9 · cache ded-web-v6.8.9-pets-infinito)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.10 · cache ded-web-v6.9.0-golpe)
+
+P216.10 — GOLPE CORPO A CORPO COM PESO (o alcance volta ao original)
+· DESFEITA a redução de alcance da p216.9: os arcos de acerto voltaram aos valores originais (espada 52, machado 58,
+  montante 62, adaga 46, desarmado 42…).
+· Em vez disso a ANIMAÇÃO agora cobre a área do golpe: rastro em meia-lua que varre exatamente o arco de acerto,
+  do raio interno até a ponta, na cor do elemento da arma (aço por padrão). Adagas fazem estocada (risco longo
+  até o alcance); desarmado, arco curto e rápido; machado/montante/cutelo/clava têm rastro mais grosso e lento,
+  com poeira no fim. O herói dá um passo visual para frente no golpe (só o desenho; a física não muda).
+  Bastões e cajados continuam sem rastro. Arquivo: scripts/source/combate-alcance.js.
 
 P216.9 — DECK DO PACTO NO PADRÃO DO LIVRO, ALCANCE CORPO A CORPO, PETS E HERBORISTA NO MODO INFINITO
 · Aba DECK DO PACTO (livro do inventário, Infinito) refeita em duas páginas como as outras abas: à esquerda as
