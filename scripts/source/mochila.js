@@ -135,3 +135,9 @@ Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen
     return r;
   };
 }
+
+/* aba DECK DO PACTO: setas/direcional escolhem a carta (vale na run e no Refúgio) */
+{
+  const HK = Cd.prototype.handleKey;
+  Cd.prototype.handleKey = function (k) { if (this.open && window.__invDeckKey?.(this, k)) return !0; return HK.apply(this, arguments) };
+}

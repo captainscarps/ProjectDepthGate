@@ -1889,7 +1889,7 @@ const sv=T.setVisible.bind(T);T.setVisible=v=>{sv(v);hide()};const bd=T.build.bi
  const bd2=this.add.graphics().setDepth(9901);bd2.lineStyle(1.5,13216842,.85).strokeRoundedRect(m.x-m.width,m.y,m.width,m.height,5);this.moBtn=m;this.moBd=bd2;
  m.on("pointerdown",(p,x,y,e)=>{e?.stopPropagation?.();const h=this.hub;if(!h?.sys?.isActive?.()||h.__hubDlgO||h.__busy)return;m.setScale(.94);this.time.delayedCall(90,()=>m.setScale(1));h.__uiTap=!0;h.__moOpen?.()?this.__hiInv?.close():(h.panel||h.__invHub?.())})}
 this.events.once("shutdown",()=>{const m=this.game.inputManager;m&&(m.touch.axis={x:0,y:0},m.touch.held.clear())})}
-update(){const h=this.hub;if(!h?.sys?.isActive?.()){return}const show=!h.panel&&!h.__busy;/* com painel aberto as áreas de toque dos controles (por cima de tudo) não podem engolir o toque dos botões do painel */if(this.__zShow!==show){this.__zShow=show;for(const o of this.children.list)if(o!==this.pzBtn&&o.input)o.input.enabled=show}this.tc.update();/* depois do update (ele mexe na opacidade dos botões): com diálogo ou painel aberto os controles somem */if(this.tc.built){for(const b of this.tc.all)for(const p of b.parts)p.setAlpha?.(show?(this.tc.settings.touchOpacity??.6):0)}}
+update(){const h=this.hub;if(!h?.sys?.isActive?.()){return}const show=!h.panel&&!h.__busy;/* com painel aberto as áreas de toque dos controles (por cima de tudo) não podem engolir o toque dos botões do painel */if(this.__zShow!==show){this.__zShow=show;for(const o of this.children.list)if(o!==this.pzBtn&&o.input)o.input.enabled=show;this.moBtn?.setVisible(show);this.moBd?.setVisible(show)}this.tc.update();/* depois do update (ele mexe na opacidade dos botões): com diálogo ou painel aberto os controles somem */if(this.tc.built){for(const b of this.tc.all)for(const p of b.parts)p.setAlpha?.(show?(this.tc.settings.touchOpacity??.6):0)}}
 touchOn(){return!!this.tc?.visible}}
 
 /* Botões de texto com área de toque ampliada (Gt): quando o texto muda (ex.: "»  Continuar  «" ao selecionar),
@@ -2031,7 +2031,7 @@ add({id:"campfire",x:S.campfire[0],y:S.campfire[1],ay:S.campfire[1]+16,r:34,labe
 add({id:"portal",x:S.portal[0],y:S.portal[1]-8,ay:S.portal[1]+10,r:34,tap:40,label:W("hub.portal"),desc:this.fromForest?L3("Voltar ao Coração da Floresta (campanha)","Back to the Heart of the Forest (campaign)","Volver al Corazón del Bosque (campaña)"):W("hub.portalDesc"),act:()=>this.fromForest?this.__backToForest():this.enterPortal()});
 add({id:"sign",x:S.sign[0],y:S.sign[1],ay:S.sign[1]+12,r:28,label:this.fromForest?L3("FLORESTA","FOREST","BOSQUE"):L3("SAÍDA","EXIT","SALIDA"),desc:this.fromForest?L3("Voltar ao Coração da Floresta","Back to the Heart of the Forest","Volver al Corazón del Bosque"):L3("Voltar ao menu","Back to the menu","Volver al menú"),act:()=>this.fromForest?this.__backToForest():this.exitToMenu()});
 add({id:"cave_portal",x:836,y:642,ay:660,r:38,tap:44,label:L3("CAVERNAS DA MONTANHA DORF","DORF MOUNTAIN CAVES","CAVERNAS DE LA MONTAÑA DORF"),desc:L3("Explorar e minerar Pedra Cobalto","Explore and mine Cobalt Stone","Explorar y minar Piedra Cobalto"),act:()=>this.__enterDorfCave()});
-M.herb&&this.fromForest&&add({id:"herb",x:M.herb.boiler[0],y:M.herb.boiler[1]-10,ay:M.herb.boiler[1]+16,r:46,tap:30,label:L3("HERBORISTA","HERBALIST","HERBOLARIA"),desc:L3("Comprar poções","Buy potions","Comprar pociones"),act:()=>this.__herbShop()});
+M.herb&&add({id:"herb",x:M.herb.boiler[0],y:M.herb.boiler[1]-10,ay:M.herb.boiler[1]+16,r:46,tap:30,label:L3("HERBORISTA","HERBALIST","HERBOLARIA"),desc:L3("Comprar poções","Buy potions","Comprar pociones"),act:()=>this.__herbShop()});
 add({id:"hunter",x:S.hunter[0],y:S.hunter[1],ay:S.hunter[1]+16,r:32,label:L3("CURTIDOR","TANNER","CURTIDOR"),desc:L3("Conversar","Talk","Hablar"),act:()=>this.__talk("hunter")});
 add({id:"cabin",x:S.cabin[0]-12,y:S.cabin[1],ay:S.cabin[1]+12,r:26,label:L3("CABANA","CABIN","CABAÑA"),desc:L3("Bater na porta","Knock on the door","Llamar a la puerta"),act:()=>{this.game.audioEngine?.sfx("sfx-door-locked");this.__say(S.cabin[0]-12,S.cabin[1]-40,L3("Trancada. O curtidor guarda as peles lá dentro.","Locked. The tanner keeps his hides inside.","Cerrada. El curtidor guarda las pieles dentro."))}});
 this.dummies.forEach((d,i)=>add({id:"dummy"+i,x:d.x,y:d.y,ay:d.y+14,r:30,label:L3("BONECO DE TREINO","TRAINING DUMMY","MUÑECO DE ENTRENAMIENTO"),desc:L3("Atacar","Attack","Atacar"),dummy:d,act:()=>this.__hit(d)}));
@@ -2273,27 +2273,27 @@ this.inters.push({area:"out",id:"hero-"+id,x,y,ay:y+14,r:30,label:name,desc:L3("
 __heroTalk(h){const L3=__L3,first=h.n++%2===0,t=h.visited?(first?h.after:h.about):h.about;h.face={x:Math.sign(this.playerX-h.x)||1,y:0};this.__say(h.x,h.y-40,`${(__HN[h.id]??h.id).toUpperCase()}: ${t}`,3600,h.visited&&first?"#b8f0a0":"#fff3c4",/ROGUE|MAGE|SHAMAN/.test(h.id)?"female":"male")}
 __heroesTick(e){for(const h of this.heroes||[]){if(this.area==="out"&&Math.hypot(this.playerX-h.x,this.playerY-h.y)<60){const dx=this.playerX-h.x,dy=this.playerY-h.y;h.face=Math.abs(dx)>Math.abs(dy)?{x:Math.sign(dx),y:0}:{x:0,y:Math.sign(dy)}}h.rig.update(e,{x:h.x,y:h.y,facing:h.face,body:h.body,dead:!1,invuln:0})}}
 /* ── Herborista: cabana, canteiro, estante e o caldeirão; loja de poções sem limite ── */
-__herbInit(){if(!this.fromForest)return;const B=this.M.herb;if(!B||!this.textures.exists("vh-herb-hut"))return;const ADD=j.BlendModes.ADD;
+__herbInit(){const B=this.M.herb;if(!B||!this.textures.exists("vh-herb-hut"))return;const ADD=j.BlendModes.ADD;
 this.add.image(B.hut[0],B.hut[1],"vh-herb-hut").setOrigin(.5,1).setDepth(B.hut[1]);this.add.image(B.bed[0],B.bed[1],"vh-herb-bed").setOrigin(.5,1).setDepth(B.bed[1]);this.add.image(B.shelf[0],B.shelf[1],"vh-herb-shelf").setOrigin(.5,1).setDepth(B.shelf[1]);
 this.add.sprite(B.boiler[0],B.boiler[1],"vh-herb-caul",0).setOrigin(.5,1).setDepth(B.boiler[1]+1).play("vh-herb-c");const s=this.add.sprite(B.boiler[0]-14,B.boiler[1]+2,"elf-1",0).setOrigin(.5,1).setScale(.44).setDepth(B.boiler[1]).play("elf-1-idle");this.herb={s,x:B.boiler[0],y:B.boiler[1],hi:!1,bt:0,on:!0};
 this.__glow(B.boiler[0],B.boiler[1]-20,.32,9101402,.32,900);this.__glow(B.hut[0]+14,B.hut[1]-24,.22,16764006,.18,1300)}
-__herbTick(e){if(!this.fromForest)return;const h=this.herb;if(!h||this.area!=="out")return;const top=27;h.bt-=e;if(h.bt<=0){h.bt=.28+Math.random()*.3;const b=this.add.circle(h.x+j.Math.Between(-7,7),h.y-top,j.Math.Between(1,2),j.Math.RND.pick([9101402,11206570,7522632])).setDepth(h.y+1).setAlpha(.9);this.tweens.add({targets:b,y:b.y-14-Math.random()*12,x:b.x+j.Math.Between(-4,4),alpha:0,duration:900+Math.random()*500,onComplete:()=>b.destroy()})}
+__herbTick(e){const h=this.herb;if(!h||this.area!=="out")return;const top=27;h.bt-=e;if(h.bt<=0){h.bt=.28+Math.random()*.3;const b=this.add.circle(h.x+j.Math.Between(-7,7),h.y-top,j.Math.Between(1,2),j.Math.RND.pick([9101402,11206570,7522632])).setDepth(h.y+1).setAlpha(.9);this.tweens.add({targets:b,y:b.y-14-Math.random()*12,x:b.x+j.Math.Between(-4,4),alpha:0,duration:900+Math.random()*500,onComplete:()=>b.destroy()})}
 if(!h.hi&&!this.panel&&Math.hypot(this.playerX-h.x,this.playerY-h.y)<84){h.hi=!0;h.s&&h.s.play("elf-1-talk",!0);this.time.delayedCall(2800,()=>h.s&&h.s.play("elf-1-idle",!0));this.__say(h.x,h.y-38,__L3("Psst! Poções fresquinhas, direto do caldeirão!","Psst! Fresh potions, straight from the cauldron!","¡Psst! ¡Pociones frescas, recién salidas del caldero!"),2800,"#c8f0b0","female")}}
-__hbPrice(k){return{c:20,p:55,v:80,d:70,a:90}[k]}
-__hbStore(){if(!this.fromForest)return null;const c=__cData(this);if(!c)return null;c.d.campaign??={};const ref=c.d.campaign.refuge??={upgrades:{}};ref.herb=Object.assign({c:0,p:0,v:0,d:0,a:0,s:"p"},ref.herb||{});const pl=c.d.player??={};return{h:ref.herb,money:pl.gold??0,run:pl.potions??0,max:5+(ref.upgrades?.SATCHEL??0),addRun:n=>{pl.potions=(pl.potions??0)+n},pay:n=>{c.d.player.gold=(c.d.player.gold??0)-n;try{localStorage.setItem(Wt("campaign",c.sl),JSON.stringify(c.d))}catch(e){return!1}this.game.registry.set("campaign:refuge",ref);return!0}}}
-__herbShop(){if(this.panel||this.__busy||!this.fromForest)return;const L3=__L3,h=this.herb,t=[L3("Ervas frescas e um pouco de magia. Do que você precisa?","Fresh herbs and a little magic. What do you need?","Hierbas frescas y un poco de magia. ¿Qué necesitas?"),L3("Plantei essas flores em terra do Abismo. Curam melhor assim.","I planted these flowers in Abyss soil. They heal better that way.","Planté estas flores en tierra del Abismo. Curan mejor así."),L3("A dourada protege, mas não dura. Use na hora certa.","The golden one protects, but it doesn't last. Use it at the right moment.","La dorada protege, pero no dura. Úsala en el momento justo."),L3("A laranja acende a fúria; a azul devolve a magia na hora.","The orange one kindles fury; the blue one brings your magic right back.","La naranja enciende la furia; la azul devuelve la magia al instante.")];this.__hbN=(this.__hbN??-1)+1;h&&h.s&&h.s.play("elf-1-talk",!0);this.time.delayedCall(3200,()=>h&&h.s&&h.s.play("elf-1-idle",!0));h&&this.__say(h.x,h.y-38,t[this.__hbN%t.length],3200,"#c8f0b0","female");this.time.delayedCall(200,()=>this.__hsOpen())}
-__hsOpen(){if(this.panel||!this.fromForest)return;const L3=__L3,d=_/2,Y=6,HH=348,o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us),bg=this.add.rectangle(d,st/2,_,st,328450,.78).setInteractive(),n=this.add.graphics();Dt(n,d-205,Y,410,HH);o.add([bg,n]);__winSkin(this,o,d-205,Y,410,HH,1)&&n.clear();
+__hbPrice(k){return this.fromForest?{c:20,p:55,v:80,d:70,a:90}[k]:{c:4,p:9,v:14,d:12,a:15}[k]}
+__hbStore(){if(!this.fromForest){const H=__hbELoad();return{h:H,money:Xe().fragments||0,run:0,max:0,end:!0,addRun:()=>{},pay:n=>{const m=Xe();if((m.fragments||0)<n)return!1;m.fragments-=n;tr(m);this.meta=m;this.fragText?.setText?.(`◆ ${m.fragments}`);__hbESave(H);return!0}}}const c=__cData(this);if(!c)return null;c.d.campaign??={};const ref=c.d.campaign.refuge??={upgrades:{}};ref.herb=Object.assign({c:0,p:0,v:0,d:0,a:0,s:"p"},ref.herb||{});const pl=c.d.player??={};return{h:ref.herb,money:pl.gold??0,run:pl.potions??0,max:5+(ref.upgrades?.SATCHEL??0),addRun:n=>{pl.potions=(pl.potions??0)+n},pay:n=>{c.d.player.gold=(c.d.player.gold??0)-n;try{localStorage.setItem(Wt("campaign",c.sl),JSON.stringify(c.d))}catch(e){return!1}this.game.registry.set("campaign:refuge",ref);return!0}}}
+__herbShop(){if(this.panel||this.__busy)return;const L3=__L3,h=this.herb,t=[L3("Ervas frescas e um pouco de magia. Do que você precisa?","Fresh herbs and a little magic. What do you need?","Hierbas frescas y un poco de magia. ¿Qué necesitas?"),L3("Plantei essas flores em terra do Abismo. Curam melhor assim.","I planted these flowers in Abyss soil. They heal better that way.","Planté estas flores en tierra del Abismo. Curan mejor así."),L3("A dourada protege, mas não dura. Use na hora certa.","The golden one protects, but it doesn't last. Use it at the right moment.","La dorada protege, pero no dura. Úsala en el momento justo."),L3("A laranja acende a fúria; a azul devolve a magia na hora.","The orange one kindles fury; the blue one brings your magic right back.","La naranja enciende la furia; la azul devuelve la magia al instante.")];this.__hbN=(this.__hbN??-1)+1;h&&h.s&&h.s.play("elf-1-talk",!0);this.time.delayedCall(3200,()=>h&&h.s&&h.s.play("elf-1-idle",!0));h&&this.__say(h.x,h.y-38,t[this.__hbN%t.length],3200,"#c8f0b0","female");this.time.delayedCall(200,()=>this.__hsOpen())}
+__hsOpen(){if(this.panel)return;const END=!this.fromForest;const L3=__L3,d=_/2,Y=6,HH=348,o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us),bg=this.add.rectangle(d,st/2,_,st,328450,.78).setInteractive(),n=this.add.graphics();Dt(n,d-205,Y,410,HH);o.add([bg,n]);__winSkin(this,o,d-205,Y,410,HH,1)&&n.clear();
 o.add(this.add.text(d,Y+18,L3("HERBORISTA","HERBALIST","HERBOLARIA"),la).setOrigin(.5));o.add(this.add.text(d,Y+36,L3("“Leve quantas precisar. O caldeirão nunca esvazia.”","“Take as many as you need. The cauldron never runs dry.”","“Lleva cuantas necesites. El caldero nunca se vacía.”"),{...Le,fontStyle:"italic",fontSize:"9px"}).setOrigin(.5));
-const defs=["c",...__HBK].map(k=>[k,__hbIcon(k),k==="v"?"#ffd24a":k==="p"?"#ff8ab4":k==="d"?"#ff8a4a":k==="a"?"#9ab4ff":"#ff9a9a",k==="c"?L3("Poção normal — vai direto para o slot 1.","Normal potion — goes straight to slot 1.","Poción normal — va directo a la ranura 1."):__hbDesc(k)]);
+const defs=(END?__HBK:["c",...__HBK]).map(k=>[k,__hbIcon(k),k==="v"?"#ffd24a":k==="p"?"#ff8ab4":k==="d"?"#ff8a4a":k==="a"?"#9ab4ff":"#ff9a9a",k==="c"?L3("Poção normal — vai direto para o slot 1.","Normal potion — goes straight to slot 1.","Poción normal — va directo a la ranura 1."):__hbDesc(k)]);
 const rows=defs.map(([k,ic,col,desc],i)=>{const y=Y+50+i*34,box=this.add.graphics(),z=this.add.zone(d,y+15,380,32).setInteractive({useHandCursor:!0});const im=this.add.image(d-172,y+15,ic).setScale(1.1),nm=this.add.text(d-152,y+2,__hbName(k).toUpperCase(),{...ti,fontSize:"11px",color:col}),ds=this.add.text(d-152,y+16,desc,{...Le,fontSize:"8px",color:"#c9bfa4"}),pr=this.add.text(d+184,y+2,"",{...ti,fontSize:"11px"}).setOrigin(1,0),ow=this.add.text(d+184,y+16,"",{...Le,fontSize:"8px",color:"#a8c8a0"}).setOrigin(1,0);
 z.on("pointerover",()=>{this.__hs&&(this.__hs.sel=i,this.__hsDraw())});z.on("pointerdown",(p,lx,ly,ev)=>{ev?.stopPropagation?.();if(!this.__hs)return;this.__hs.sel=i;this.__hsBuy()});o.add([box,im,nm,ds,pr,ow,z]);return{k,y,box,pr,ow,nm}});
 const qy=Y+238,ql=this.add.text(d-46,qy,"◂",{...ti,fontSize:"14px"}).setOrigin(.5).setInteractive({useHandCursor:!0}),qr=this.add.text(d+46,qy,"▸",{...ti,fontSize:"14px"}).setOrigin(.5).setInteractive({useHandCursor:!0}),qt=this.add.text(d,qy,"",{...ti,fontSize:"12px",color:"#ffd24a"}).setOrigin(.5);Gt(ql,10,8);Gt(qr,10,8);ql.on("pointerdown",(p,x,y,e)=>{e?.stopPropagation?.();this.__hsQty(-1)});qr.on("pointerdown",(p,x,y,e)=>{e?.stopPropagation?.();this.__hsQty(1)});
 const ql2=this.add.text(d,qy-14,L3("QUANTIDADE","QUANTITY","CANTIDAD"),{...Le,fontSize:"7px",color:"#a8a08a"}).setOrigin(.5),money=this.add.text(d,Y+260,"",{...ti,fontSize:"10px"}).setOrigin(.5),msg=this.add.text(d,Y+276,"",{...Le,color:"#8ae0b0"}).setOrigin(.5),tip=this.add.text(d,Y+292,L3("Equipe no inventário (aba POÇÕES) · beba com R (→ no controle)","Equip it in the inventory (POTIONS tab) · drink with R (pad →)","Equípala en el inventario (pestaña POCIONES) · bebe con R (→ en el mando)"),{...Le,fontSize:"7px",color:"#a8a08a"}).setOrigin(.5),back=this.add.text(d,Y+HH-14,W("hub.back"),{...ti,color:"#e08a7a"}).setOrigin(.5).setInteractive({useHandCursor:!0});Gt(back,16,10);back.on("pointerdown",(p,x,y,e)=>{e?.stopPropagation?.();this.closePanel()});
 o.add([ql,qr,qt,ql2,money,msg,tip,back]);this.__fixScroll?.(o);this.panel=o;this.panelRows=null;this.__hs={sel:0,q:0,rows,qt,money,msg};this.__padPv={a:!0,x:!0,s:!0,u:!0,d:!0,l:!0,r:!0};this.__hsDraw();this.game.audioEngine?.sfx?.("sfx-ui-open")}
-__hsDraw(){const H=this.__hs;if(!H)return;const S=this.__hbStore(),Q=[1,5,10][H.q],d=_/2;H.rows.forEach((r,i)=>{const on=i===H.sel,c=this.__hbPrice(r.k)*Q,ok=S&&S.money>=c;r.box.clear();r.box.fillStyle(on?3813406:2366992,on?.95:.7).fillRoundedRect(d-192,r.y,384,30,5);on&&r.box.lineStyle(1.5,16765514,.9).strokeRoundedRect(d-192,r.y,384,30,5);r.pr.setText(`${c} ${__L3("ouro","gold","oro")}`).setColor(ok?on?"#ffd24a":"#e8dcc0":"#e08a7a");r.ow.setText(r.k==="c"?__L3("slot 1: ","slot 1: ","ranura 1: ")+(S?`${S.run}/${S.max}`:"0"):__L3("na bolsa: ","in bag: ","en la bolsa: ")+(S?S.h[r.k]|0:0))});H.qt.setText(`x${Q}`);H.money.setText(__L3(`Seu ouro: ● ${S?.money??0}`,`Your gold: ● ${S?.money??0}`,`Tu oro: ● ${S?.money??0}`)).setColor("#f2d98a")}
+__hsDraw(){const H=this.__hs;if(!H)return;const S=this.__hbStore(),Q=[1,5,10][H.q],d=_/2;H.rows.forEach((r,i)=>{const on=i===H.sel,c=this.__hbPrice(r.k)*Q,ok=S&&S.money>=c;r.box.clear();r.box.fillStyle(on?3813406:2366992,on?.95:.7).fillRoundedRect(d-192,r.y,384,30,5);on&&r.box.lineStyle(1.5,16765514,.9).strokeRoundedRect(d-192,r.y,384,30,5);r.pr.setText(S?.end?`${c} ◆`:`${c} ${__L3("ouro","gold","oro")}`).setColor(ok?on?"#ffd24a":"#e8dcc0":"#e08a7a");r.ow.setText(r.k==="c"?__L3("slot 1: ","slot 1: ","ranura 1: ")+(S?`${S.run}/${S.max}`:"0"):__L3("na bolsa: ","in bag: ","en la bolsa: ")+(S?S.h[r.k]|0:0))});H.qt.setText(`x${Q}`);H.money.setText(S?.end?__L3(`Seus fragmentos: ◆ ${S.money}`,`Your fragments: ◆ ${S.money}`,`Tus fragmentos: ◆ ${S.money}`):__L3(`Seu ouro: ● ${S?.money??0}`,`Your gold: ● ${S?.money??0}`,`Tu oro: ● ${S?.money??0}`)).setColor("#f2d98a")}
 __hsNav(k){const H=this.__hs;if(!H)return;H.sel=(H.sel+k+H.rows.length)%H.rows.length;this.game.audioEngine?.sfx?.("sfx-ui-tab");this.__hsDraw()}
 __hsQty(k){const H=this.__hs;if(!H)return;H.q=Math.max(0,Math.min(2,H.q+k));this.game.audioEngine?.sfx?.("sfx-ui-tab");this.__hsDraw()}
-__hsBuy(){const H=this.__hs;if(!H)return;const r=H.rows[H.sel],S=this.__hbStore(),L3=__L3;if(!S)return;let Q=[1,5,10][H.q];if(r.k==="c"){Q=Math.min(Q,S.max-S.run);if(Q<=0){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(L3("O slot 1 já está cheio.","Slot 1 is already full.","La ranura 1 ya está llena.")).setColor("#e08a7a");return}}const c=this.__hbPrice(r.k)*Q;if(S.money<c){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(L3("Ouro insuficiente.","Not enough gold.","Oro insuficiente.")).setColor("#e08a7a");return}
+__hsBuy(){const H=this.__hs;if(!H)return;const r=H.rows[H.sel],S=this.__hbStore(),L3=__L3;if(!S)return;let Q=[1,5,10][H.q];if(r.k==="c"){Q=Math.min(Q,S.max-S.run);if(Q<=0){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(L3("O slot 1 já está cheio.","Slot 1 is already full.","La ranura 1 ya está llena.")).setColor("#e08a7a");return}}const c=this.__hbPrice(r.k)*Q;if(S.money<c){this.game.audioEngine?.sfx?.("sfx-event-refuse");H.msg.setText(S.end?L3("Fragmentos insuficientes.","Not enough fragments.","Fragmentos insuficientes."):L3("Ouro insuficiente.","Not enough gold.","Oro insuficiente.")).setColor("#e08a7a");return}
 r.k==="c"?S.addRun(Q):S.h[r.k]=(S.h[r.k]|0)+Q;if(!S.pay(c)){H.msg.setText(L3("Não foi possível salvar.","Could not save.","No se pudo guardar.")).setColor("#e08a7a");return}this.game.audioEngine?.sfx?.("sfx-item-pickup");H.msg.setText(`+${Q} ${__hbName(r.k)}`).setColor(r.k==="v"?"#ffd24a":"#8ae0b0");this.refreshFragments();const h=this.herb;if(h)for(let i=0;i<6;i++){const b=this.add.circle(h.x+j.Math.Between(-8,8),h.y-28,2,r.k==="v"?16765514:r.k==="p"?16730730:9101402).setDepth(h.y+2).setBlendMode(j.BlendModes.ADD);this.tweens.add({targets:b,y:b.y-26-i*3,alpha:0,duration:700,delay:i*40,onComplete:()=>b.destroy()})}this.tweens.add({targets:r.nm,scale:{from:1.12,to:1},duration:220});this.__hsDraw()}
 
 /* ── CONSERTO das peças do ferreiro (modo infinito): devolve a durabilidade (runs próprias de cada peça) por Pedra Cobalto ── */
@@ -3216,12 +3216,16 @@ $o.prototype.showOnlineCoopLobby = function() {
 /*__HERB__*/const __HBV=6,__HBF=10,__HBA=8,__HBK=["p","v","d","a"];function __hbName(k,sh){return k==="p"?(sh?"PLUS":__L3("Poção de Vida Plus","Health Potion Plus","Poción de Vida Plus")):k==="v"?(sh?"INVULN.":__L3("Poção de Invulnerabilidade","Invulnerability Potion","Poción de Invulnerabilidad")):k==="d"?(sh?__L3("FÚRIA","FURY","FURIA"):__L3("Poção de Fúria","Fury Potion","Poción de Furia")):k==="a"?(sh?__L3("ARCANA","ARCANE","ARCANA"):__L3("Poção Arcana","Arcane Potion","Poción Arcana")):(sh?__L3("VIDA","HEALTH","VIDA"):__L3("Poção de Vida","Health Potion","Poción de Vida"))}
 function __hbIcon(k){return k==="p"?"icon-potion-plus":k==="v"?"icon-potion-inv":k==="d"?"icon-potion-fury":k==="a"?"icon-potion-arcane":"icon-potion"}
 function __hbDesc(k){return k==="p"?__L3("Cura o triplo da poção comum.","Heals triple the common potion.","Cura el triple de la poción común."):k==="v"?__L3("Nenhum dano por 6 segundos.","No damage for 6 seconds.","Ningún daño durante 6 segundos."):k==="d"?__L3("+50% de dano (físico e mágico) por 10 segundos.","+50% damage (physical and magic) for 10 seconds.","+50% de daño (físico y mágico) durante 10 segundos."):k==="a"?__L3("Habilidades sem recarga por 8 segundos.","Abilities have no cooldown for 8 seconds.","Habilidades sin recarga durante 8 segundos."):__L3("Cura comum (+3 de vida e o bônus de Alquimia).","Common heal (+3 health plus Alchemy bonus).","Cura común (+3 de vida y el bono de Alquimia).")}
-function __hbCamp(S){return S?.game?.registry?.get("mode")==="campaign"}
-function __hbGet(S){const g=S.game;if(!__hbCamp(S))return S.__hbE||(S.__hbE={c:0,p:0,v:0,d:0,a:0,s:"p"});let r=g.registry.get("campaign:refuge");r||(r={upgrades:{}},g.registry.set("campaign:refuge",r));r.herb=Object.assign({c:0,p:0,v:0,d:0,a:0,s:"p"},r.herb||{});return r.herb}
-function __hbPut(S){if(!__hbCamp(S))return;const g=S.game,H=__hbGet(S);try{const sl=g.registry.get("save:slot")??1,r=Dn(sl);if(r.ok){r.data.campaign??={};r.data.campaign.refuge??={upgrades:{}};r.data.campaign.refuge.herb={c:H.c|0,p:H.p|0,v:H.v|0,d:H.d|0,a:H.a|0,s:H.s};localStorage.setItem(Wt("campaign",sl),JSON.stringify(r.data))}}catch(e){}}
-function __hbHud(S){const H=__hbGet(S),k=H.s||"p";window.__potHud={sel:k,n:H[k]|0,c:H.c|0,p:H.p|0,v:H.v|0,d:H.d|0,a:H.a|0,all:__HBK.reduce((t,x)=>t+(H[x]|0),0),camp:__hbCamp(S)}}
+function __hbCamp(S){return S?.__hubInv?S.mode==="campaign":S?.game?.registry?.get("mode")==="campaign"}
+function __hbEnd(S){try{return S?.__hubInv?S.mode==="endless":S?.game?.registry?.get("mode")==="endless"||!!S?.endlessRun?.()}catch(e){return!1}}
+function __hbEKey(){try{return __metaKey()+":herb"}catch(e){return"depthgate:endless:herb"}}
+function __hbELoad(){let o={};try{o=JSON.parse(localStorage.getItem(__hbEKey())||"{}")||{}}catch(e){}return Object.assign({c:0,p:0,v:0,d:0,a:0,s:"p"},o)}
+function __hbESave(H){try{localStorage.setItem(__hbEKey(),JSON.stringify({p:H.p|0,v:H.v|0,d:H.d|0,a:H.a|0,s:H.s||"p"}))}catch(e){}}
+function __hbGet(S){const g=S.game;if(!__hbCamp(S))return S.__hbE||(S.__hbE=__hbEnd(S)?__hbELoad():{c:0,p:0,v:0,d:0,a:0,s:"p"});let r=g.registry.get("campaign:refuge");r||(r={upgrades:{}},g.registry.set("campaign:refuge",r));r.herb=Object.assign({c:0,p:0,v:0,d:0,a:0,s:"p"},r.herb||{});return r.herb}
+function __hbPut(S){if(!__hbCamp(S)){__hbEnd(S)&&S.__hbE&&__hbESave(S.__hbE);return}const g=S.game,H=__hbGet(S);try{const sl=g.registry.get("save:slot")??1,r=Dn(sl);if(r.ok){r.data.campaign??={};r.data.campaign.refuge??={upgrades:{}};r.data.campaign.refuge.herb={c:H.c|0,p:H.p|0,v:H.v|0,d:H.d|0,a:H.a|0,s:H.s};localStorage.setItem(Wt("campaign",sl),JSON.stringify(r.data))}}catch(e){}}
+function __hbHud(S){const H=__hbGet(S),k=H.s||"p";window.__potHud={sel:k,n:H[k]|0,c:H.c|0,p:H.p|0,v:H.v|0,d:H.d|0,a:H.a|0,all:__HBK.reduce((t,x)=>t+(H[x]|0),0),camp:__hbCamp(S)||__hbEnd(S)}}
 function __hbUse2(S){const i=S.player;if(!i||S.state!=="playing"||i.dead||S.potionCooldown>0)return!1;const H=__hbGet(S);let k=H.s||"p";const no=t=>(S.effects.floatText(i.x,i.y-20,t,"#d84040"),!1);
-if((H[k]|0)<=0){const alt=__HBK.find(x=>(H[x]|0)>0);if(!alt)return no(__hbCamp(S)?__L3("Slot 2 vazio — compre na Herborista","Slot 2 empty — buy from the Herbalist","Ranura 2 vacía — compra a la Herbolaria"):__L3("Sem poções da Herborista","No Herbalist potions","Sin pociones de la Herbolaria"));H.s=k=alt;S.effects.floatText(i.x,i.y-34,"⇄ "+__hbName(k),"#ffd24a")}
+if((H[k]|0)<=0){const alt=__HBK.find(x=>(H[x]|0)>0);if(!alt)return no(__hbCamp(S)||__hbEnd(S)?__L3("Slot 2 vazio — compre na Herborista","Slot 2 empty — buy from the Herbalist","Ranura 2 vacía — compra a la Herbolaria"):__L3("Sem poções da Herborista","No Herbalist potions","Sin pociones de la Herbolaria"));H.s=k=alt;S.effects.floatText(i.x,i.y-34,"⇄ "+__hbName(k),"#ffd24a")}
 if((k==="c"||k==="p")&&i.hp>=i.maxHp)return __hbHud(S),S.effects.floatText(i.x,i.y-20,W("g.hpFull"),"#8ae0b0"),!1;H[k]--;__hbPut(S);S.potionCooldown=1.2;const t=3+S.getBlessingBonus("potionPower");
 if(k==="d"){const T=S.stats?.total||{},dd=Math.max(1,Math.ceil((T.damage||1)*.5)),md=Math.max(1,Math.ceil((T.magicDamage||T.damage||1)*.5));S.stats?.addBuff?.("damage",dd,__HBF);S.stats?.addBuff?.("magicDamage",md,__HBF);i.__furyT=__HBF;S.audio.play(Ct.POTION_USE);S.game.audioEngine?.sfx?.("sfx-level-up");S.effects.burstTinted(i.x,i.y-6,16737843,20);S.effects.shockwaveRing?.(i.x,i.y,22);S.effects.floatText(i.x,i.y-26,__L3("FÚRIA! +50% DANO","FURY! +50% DAMAGE","¡FURIA! +50% DAÑO"),"#ff7a3a")}
 else if(k==="a"){i.__arcT=__HBA;for(const sl of S.abilities?.slots??[])sl&&(sl.cooldown=0);S.audio.play(Ct.POTION_USE);S.game.audioEngine?.sfx?.("sfx-shrine-use");S.effects.burstTinted(i.x,i.y-6,8956671,20);S.effects.shockwaveRing?.(i.x,i.y,22);S.effects.floatText(i.x,i.y-26,__L3("SEM RECARGA!","NO COOLDOWN!","¡SIN RECARGA!"),"#88aaff")}
@@ -3241,7 +3245,7 @@ c.add(C.__potH=i.add.text(52,148,__L3("BOLSA DA HERBORISTA — escolha a poção
 C.__potR=__HBK.map((k,n)=>{const y=162+n*30,z=i.add.zone(50,y,540,28).setOrigin(0).setInteractive({useHandCursor:!0}),o={k,y,ic:i.add.image(72,y+14,__hbIcon(k)),nm:i.add.text(92,y+2,__hbName(k).toUpperCase(),{...M,fontSize:"10px",color:k==="v"?"#ffd24a":k==="p"?"#ff8ab4":k==="d"?"#ff8a4a":k==="a"?"#9ab4ff":"#ff9a9a"}),ds:i.add.text(92,y+15,__hbDesc(k),{...M,fontSize:"8px",fontStyle:"normal",color:"#c9bfa4"}),ct:i.add.text(582,y+2,"",{...M,fontSize:"10px",color:"#e8dcc0"}).setOrigin(1,0),eq:i.add.text(582,y+15,"",{...M,fontSize:"8px",color:"#ffd24a"}).setOrigin(1,0)};z.on("pointerover",()=>{C.__pSel=n;__potDraw(C)});z.on("pointerdown",()=>{C.__pSel=n;__potEquip(C)});c.add([z,o.ic,o.nm,o.ds,o.ct,o.eq]);return o});
 c.add(C.__potT=i.add.text(320,316,"",{...M,fontSize:"8px",fontStyle:"normal",color:"#a8a08a",align:"center"}).setOrigin(.5,0));C.__pSel=0}
 C.__potC.setVisible(on);if(on){C.root.bringToTop(C.__potC);C.closeBtn&&C.root.bringToTop(C.closeBtn);const H=__hbGet(S);C.__pSel=Math.max(0,__HBK.indexOf(H.s||"p"));__potDraw(C)}}
-function __potDraw(C){if(!C.__potC?.visible)return;const S=C.gs(),H=__hbGet(S),g=C.__potG,camp=__hbCamp(S),k2=H.s||"p";g.clear();for(const x of[52,326]){g.fillStyle(1182736,.94).fillRoundedRect(x,62,262,80,6).lineStyle(1.5,x===52?14174826:16765514,.85).strokeRoundedRect(x+.5,62.5,261,79,6)}
+function __potDraw(C){if(!C.__potC?.visible)return;const S=C.gs(),H=__hbGet(S),g=C.__potG,camp=__hbCamp(S)||__hbEnd(S),k2=H.s||"p";g.clear();for(const x of[52,326]){g.fillStyle(1182736,.94).fillRoundedRect(x,62,262,80,6).lineStyle(1.5,x===52?14174826:16765514,.85).strokeRoundedRect(x+.5,62.5,261,79,6)}
 const a=C.__potS1;a.nm.setText(__hbName("c").toUpperCase());a.ct.setText(`x${S.potions?.count??0} / ${S.potions?.max??5}`);a.ky.setText(__hbKey(S,"POTION")?__L3("beber: ","drink: ","beber: ")+__hbKey(S,"POTION"):__L3("botão de poção","potion button","botón de poción"));a.ic.setTexture("icon-potion");
 const b=C.__potS2;b.ic.setTexture(__hbIcon(k2)).setAlpha((H[k2]|0)>0?1:.35);b.nm.setText(__hbName(k2).toUpperCase());b.ct.setText(`x${H[k2]|0}`);b.ky.setText(__hbKey(S,"POTION2")?__L3("beber: ","drink: ","beber: ")+__hbKey(S,"POTION2"):__L3("botão de poção 2","potion 2 button","botón de poción 2"));
 C.__potR.forEach((r,n)=>{const on=n===C.__pSel,eq=r.k===k2;g.fillStyle(on?3813406:2366992,on?.95:.7).fillRoundedRect(50,r.y,540,28,5);on&&g.lineStyle(1.5,16765514,.9).strokeRoundedRect(50.5,r.y+.5,539,27,5);r.ct.setText(__L3("na bolsa: ","in bag: ","en la bolsa: ")+(H[r.k]|0));r.eq.setText(eq?__L3("◆ NO SLOT 2","◆ IN SLOT 2","◆ EN RANURA 2"):"");r.ic.setAlpha((H[r.k]|0)>0?1:.4)});
@@ -19865,7 +19869,17 @@ function __petSt(S) {
   return o;
 }
 function __petSave(S, o) { try { localStorage.setItem(__petKey(S), JSON.stringify(o)) } catch (e) {} }
-function __petHasOll(S) { try { return !!window.__gtDone?.(S) } catch (e) { return !1 } }
+/* Modo Infinito: pets também; a moeda é o fragmento e o lendário de missão (Ollie) é vendido caro */
+const __PET_FRAG = { rato: 70, corvo: 90, cao: 105, lobo: 125, oll: 650 };
+function __petEnd(S) {
+  try {
+    if (S?.__hubInv) return S.mode === "endless";
+    if (S?.sys?.settings?.key === "Hub") return !S.fromForest;
+    return S?.game?.registry?.get("mode") === "endless" || !!S?.endlessRun?.();
+  } catch (e) { return !1 }
+}
+function __petOk(S) { try { return (__Q.camp(S) || __petEnd(S)) && !S.isRift } catch (e) { return !1 } }
+function __petHasOll(S) { try { return __petEnd(S) ? !!__petSt(S).own?.oll : !!window.__gtDone?.(S) } catch (e) { return !1 } }
 function __petOwned(S, ps = __petSt(S)) { return __PET_ORDER.filter((id) => (id === "oll" ? __petHasOll(S) : !!ps.own[id])) }
 function __petAct(S, ps = __petSt(S)) {
   const own = __petOwned(S, ps);
@@ -19994,7 +20008,7 @@ function __petTargets(S) {
   return out.map((o) => [o, Math.hypot(o.x - P.x, o.y - P.y)]).sort((a, b) => a[1] - b[1]);
 }
 function __petSpawn(S) {
-  if (S.__petObj || !S.player || S.isDorfCave || !__Q.camp(S)) return;
+  if (S.__petObj || !S.player || S.isDorfCave || !__petOk(S)) return;
   const ps = __petSt(S), id = __petAct(S, ps);
   if (!id || id === "oll" || !__PETS[id] || __petFallen(S, id, ps)) return;
   const D = __PETS[id];
@@ -20140,7 +20154,7 @@ function __petSpawn(S) {
 /* tira o pet atual (o comprado ou o Ollie) e chama o escolhido — usado pela aba PETS do livro */
 function __petSwap(S) {
   try {
-    if (!S?.scene?.isActive?.() || !S.player || !__Q.camp(S)) return;
+    if (!S?.scene?.isActive?.() || !S.player || !__petOk(S)) return;
     S.__petObj?.destroy(); S.__petObj = null;
     S.__gtPetKill?.();
     S.__petId = null; S.__petGuard = null;
@@ -20167,7 +20181,10 @@ function __petSwap(S) {
   const GP = __gtPet;
   __gtPet = function (S) {
     try { if (__petAct(S) !== "oll" || __petFallen(S, "oll")) return } catch (e) {}
-    const r = GP.apply(this, arguments);
+    // no Infinito o Ollie vem por compra, não pela missão da campanha
+    let r; const st0 = __GT.st;
+    if (__petEnd(S) && __petHasOll(S)) { __GT.st = () => 2; try { r = GP.apply(this, arguments) } finally { __GT.st = st0 } }
+    else r = GP.apply(this, arguments);
     try {
       const c = S.__gtPet;
       if (c && !c.__life) {
@@ -20183,11 +20200,11 @@ function __petSwap(S) {
   __hubSetup = function (S) {
     const r = HS.apply(this, arguments);
     try {
-      if (!__Q.camp(S) || S.isDorfCave) return r;
+      if (!__petOk(S) || S.isDorfCave) return r;
       __PET_SHOP.forEach((id) => __petAnims(S.anims, id));
       S.__petBossDone = !1;                                   // a cena é reaproveitada entre as áreas
       if (!S.__petObj && !S.__gtPet) { S.__petId = null; S.__petGuard = null }
-      S.time.delayedCall(720, () => S.scene.isActive() && __petSpawn(S));
+      S.time.delayedCall(720, () => S.scene.isActive() && (__petEnd(S) && __petAct(S) === "oll" ? __gtPet(S) : __petSpawn(S)));
       // treino: missão secundária concluída com o pet junto (a primeira leitura só guarda o que já estava pronto)
       S.time.delayedCall(1500, () => {
         if (!S.scene.isActive()) return;
@@ -20311,9 +20328,11 @@ function __bkPetTab(C, on) {
     const r = B0.apply(this, arguments);
     try {
       const T = this.__tabT, endless = this.ui?.game?.registry?.get("mode") === "endless" || !!this.gs?.()?.level?.endless;
-      if (T && T.length === 6 && !endless) {
-        const a = T[T.length - 1], o = this.ui.add.text(a.x + a.width + 20, a.y, __PL("PETS", "PETS", "MASCOTAS"), a.style).setOrigin(a.originX, a.originY).setInteractive({ useHandCursor: !0 });
-        o.on("pointerdown", () => __invTab(this, 6));
+      // campanha: 6 abas + PETS; Modo Infinito: 5 abas + PETS
+      if (T && T.length === (endless ? 5 : 6)) {
+        const idx = T.length, a = T[T.length - 1], o = this.ui.add.text(a.x + a.width + 20, a.y, __PL("PETS", "PETS", "MASCOTAS"), a.style).setOrigin(a.originX, a.originY).setInteractive({ useHandCursor: !0 });
+        this.__petIdx = idx;
+        o.on("pointerdown", () => __invTab(this, idx));
         this.root.add(o); T.push(o);
       }
     } catch (e) { console.warn("[pets]", e) }
@@ -20322,13 +20341,13 @@ function __bkPetTab(C, on) {
   // trocar para a aba 6: o resto do livro se comporta como numa aba de página inteira (Atributos) e o pet desenha por cima
   const TB = __invTab;
   __invTab = function (C, k) {
-    const n = C.__tabT?.length ?? 0;
-    if (n !== 7) { __bkPetTab(C, !1); return TB.apply(this, arguments) }
-    k = ((k % 7) + 7) % 7;
+    const n = C.__tabT?.length ?? 0, pi = C.__petIdx;
+    if (pi == null || n !== pi + 1) { __bkPetTab(C, !1); return TB.apply(this, arguments) }
+    k = ((k % n) + n) % n;
     const prev = C.__tab;
-    if (k !== 6) { __bkPetTab(C, !1); return TB.call(this, C, k) }
+    if (k !== pi) { __bkPetTab(C, !1); return TB.call(this, C, k) }
     TB.call(this, C, 1);
-    C.__tab = 6; C.__logicalTab = 6;
+    C.__tab = pi; C.__logicalTab = 6;
     try {
       C.__big?.setVisible(!1);
       C.__sbZ?.setVisible(!1); C.__dragZ?.setVisible(!1); C.__sbG?.clear();
@@ -20340,13 +20359,13 @@ function __bkPetTab(C, on) {
   const S0 = Cd.prototype.show;
   Cd.prototype.show = function () {
     const r = S0.apply(this, arguments);
-    try { if (this.__logicalTab === 6 && this.__tabT?.length === 7) { this.__big?.setVisible(!1); __bkPetTab(this, !0) } } catch (e) {}
+    try { if (this.__logicalTab === 6 && this.__petIdx != null && this.__tabT?.length === this.__petIdx + 1) { this.__big?.setVisible(!1); __bkPetTab(this, !0) } } catch (e) {}
     return r;
   };
   const R0 = Cd.prototype.refresh;
   Cd.prototype.refresh = function () {
     const r = R0.apply(this, arguments);
-    try { if (this.__logicalTab === 6 && this.__tabT?.length === 7) this.__big?.setVisible(!1) } catch (e) {}
+    try { if (this.__logicalTab === 6 && this.__petIdx != null && this.__tabT?.length === this.__petIdx + 1) this.__big?.setVisible(!1) } catch (e) {}
     return r;
   };
   const H0 = Cd.prototype.handleKey;
@@ -20369,7 +20388,7 @@ function __bkPetTab(C, on) {
   Fl.prototype.openMetaPanel = function (title, quote, ids) {
     const r = OM.apply(this, arguments);
     try {
-      if (this.fromForest && this.panel && title === W("hub.vendor")) {
+      if (this.panel && title === W("hub.vendor")) {
         this.__vendArgs = [title, quote, ids];
         const o = this.panel, d = _ / 2, rows = this.panelRows || [];
         for (const pr of rows) pr.row.setY(pr.row.y + 22);
@@ -20387,15 +20406,16 @@ function __bkPetTab(C, on) {
     return r;
   };
   Fl.prototype.__petShop = function () {
-    if (this.panel || !this.fromForest) return;
-    const L3 = __PL, d = _ / 2, Y = 12, HH = 336, H = this;
+    if (this.panel) return;
+    const L3 = __PL, d = _ / 2, Y = 12, HH = 336, H = this, END = !this.fromForest, CUR = END ? "◆" : "●";
+    const price = id => END ? __PET_FRAG[id] : __PETS[id].price;
     const o = this.add.container(this.__ox, this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
     const bg = this.add.rectangle(d, st / 2, _, st, 328450, .82).setInteractive();
     const n = this.add.graphics();
     Dt(n, d - 300, Y, 600, HH); o.add([bg, n]);
     __winSkin(this, o, d - 300, Y, 600, HH, 1) && n.clear();
     const LW = 272, LC = d - 150, RX = d + 14, RW = 272, RC = d + 150;
-    const gold = () => { try { return __cData(this)?.d?.player?.gold ?? 0 } catch (e) { return 0 } };
+    const gold = () => { try { return END ? (Xe().fragments || 0) : (__cData(this)?.d?.player?.gold ?? 0) } catch (e) { return 0 } };
     o.add(this.add.text(LC, Y + 16, L3("TREINO DE PETS", "PET TRAINING", "ENTRENAMIENTO DE MASCOTAS"), { ...ti, fontSize: "12px", color: "#ffd24a" }).setOrigin(.5));
     o.add(this.add.text(LC, Y + 28, L3("Um companheiro por vez. Quanto mais missões juntos, mais forte ele fica.", "One companion at a time. The more quests together, the stronger it gets.", "Un compañero a la vez. Cuantas más misiones juntos, más fuerte."), { ...Le, fontSize: "7px", fontStyle: "italic", color: "#c8b48a", align: "center", wordWrap: { width: LW } }).setOrigin(.5, 0));
     const tab = (lbl, x, on, fn) => {
@@ -20440,12 +20460,12 @@ function __bkPetTab(C, on) {
     cB.on("pointerdown", close); o.add(cB);
     const state = (id) => { const ps = __petSt(this); const own = id === "oll" ? __petHasOll(this) : !!ps.own[id], fall = own && !!ps.fall?.[id]; return { ps, own, fall, act: !fall && __petAct(this, ps) === id, tr: __petTrain(ps.mis[id] | 0) } };
     const paint = () => {
-      goldT.setText(L3(`Seu ouro: ● ${gold()}`, `Your gold: ● ${gold()}`, `Tu oro: ● ${gold()}`));
+      goldT.setText(END ? L3(`Seus fragmentos: ◆ ${gold()}`, `Your fragments: ◆ ${gold()}`, `Tus fragmentos: ◆ ${gold()}`) : L3(`Seu ouro: ● ${gold()}`, `Your gold: ● ${gold()}`, `Tu oro: ● ${gold()}`));
       rowsUi.forEach((r, i) => {
         r.draw(i === sel);
         const s2 = state(r.id), D = __PETS[r.id];
-        r.pr.setText(s2.fall ? L3("CAÍDO", "FALLEN", "CAÍDO") : s2.act ? L3("✓ COM VOCÊ", "✓ WITH YOU", "✓ CONTIGO") : s2.own ? `${L3("Nv", "Lv", "Nv")} ${s2.tr.L}` : D.quest ? L3("MISSÃO", "QUEST", "MISIÓN") : `${D.price} ●`)
-          .setColor(s2.fall ? "#ff7a6a" : s2.act ? "#8ae0b0" : s2.own ? "#9cc2ff" : D.quest ? "#e8a050" : gold() >= D.price ? "#ffd24a" : "#e08a7a");
+        r.pr.setText(s2.fall ? L3("CAÍDO", "FALLEN", "CAÍDO") : s2.act ? L3("✓ COM VOCÊ", "✓ WITH YOU", "✓ CONTIGO") : s2.own ? `${L3("Nv", "Lv", "Nv")} ${s2.tr.L}` : D.quest && !END ? L3("MISSÃO", "QUEST", "MISIÓN") : `${price(r.id)} ${CUR}`)
+          .setColor(s2.fall ? "#ff7a6a" : s2.act ? "#8ae0b0" : s2.own ? "#9cc2ff" : D.quest && !END ? "#e8a050" : gold() >= price(r.id) ? "#ffd24a" : "#e08a7a");
       });
       const id = list[sel], D = __PETS[id], s2 = state(id), rar = __PET_RAR[D.rar];
       pName.setText(D.nm.toUpperCase()).setColor(D.rar === "LEGENDARY" ? "#ffb347" : "#ffd24a");
@@ -20454,17 +20474,19 @@ function __bkPetTab(C, on) {
         const K = __petAnims(this.anims, id);
         pv.setTexture(D.tex).setVisible(!0).setScale(Math.min(2.4, 110 / D.fw / .8, 80 / D.fh / .8));
         K?.idle && this.anims.exists(K.idle) && pv.play(K.idle);
-        D.quest && !s2.own ? pv.setTint(0x202020) : pv.clearTint();
+        D.quest && !s2.own && !END ? pv.setTint(0x202020) : pv.clearTint();
       } else pv.setVisible(!1);
       pTr.setText(s2.fall ? L3("Caiu em combate: recrute para ele voltar a te acompanhar", "Fell in battle: recruit it so it can travel with you again", "Cayó en combate: recluta para que vuelva contigo") : s2.own ? L3(`TREINO: ${s2.tr.txt} · ♥ ${__petMaxHp(id, s2.tr.L)}`, `TRAINING: ${s2.tr.txt}`, `ENTRENAMIENTO: ${s2.tr.txt}`) : L3("Treino começa no nível 1", "Training starts at level 1", "El entrenamiento empieza en nivel 1"));
       pEff.setText(__petEff(id, s2.own ? s2.tr.L : 1));
       pNote.setY(pEff.y + pEff.height + 8).setText(D.quest
-        ? (s2.own ? L3("Lendário e único: não se compra, só se ganha em missão. Ele te escolheu.", "Legendary and unique: it can't be bought, only earned in a quest. It chose you.", "Legendario y único: no se compra, solo se gana en misión. Te eligió.")
+        ? (s2.own && END ? L3("Lendário e único. Agora ele desce com você ao Abismo.", "Legendary and unique. Now it descends into the Abyss with you.", "Legendario y único. Ahora desciende contigo al Abismo.")
+          : s2.own ? L3("Lendário e único: não se compra, só se ganha em missão. Ele te escolheu.", "Legendary and unique: it can't be bought, only earned in a quest. It chose you.", "Legendario y único: no se compra, solo se gana en misión. Te eligió.")
+          : END ? L3(`Lendário e único. Na campanha é recompensa de missão; aqui no Infinito o mercador o vende — e cobra caro: ${price(id)} ◆.`, `Legendary and unique. In the campaign it's a quest reward; here in Endless the merchant sells it — at a steep price: ${price(id)} ◆.`, `Legendario y único. En la campaña es recompensa de misión; aquí el mercader lo vende — y caro: ${price(id)} ◆.`)
           : L3("Lendário e único. Recompensa da missão Os Gatos da Alline.", "Legendary and unique. Reward of the quest Alline's Cats.", "Legendario y único. Recompensa de la misión Los Gatos de Alline."))
         : s2.tr.nx == null && s2.own ? "" : L3(`No nível 5 de treino: `, `At training level 5: `, `En nivel 5: `) + __petEff(id, 5));
-      const canBtn = !(D.quest && !s2.own);
+      const canBtn = !(D.quest && !s2.own && !END);
       btn.setVisible(!confirming && canBtn);
-      btn.setText(s2.fall ? L3("RECRUTAR DE VOLTA", "RECRUIT BACK", "RECLUTAR") : s2.act ? L3("✓ ACOMPANHANDO VOCÊ", "✓ TRAVELING WITH YOU", "✓ TE ACOMPAÑA") : s2.own ? L3("LEVAR COMIGO", "TAKE WITH ME", "LLEVAR CONMIGO") : `${L3("ADOTAR", "ADOPT", "ADOPTAR")} · ${D.price} ●`)
+      btn.setText(s2.fall ? L3("RECRUTAR DE VOLTA", "RECRUIT BACK", "RECLUTAR") : s2.act ? L3("✓ ACOMPANHANDO VOCÊ", "✓ TRAVELING WITH YOU", "✓ TE ACOMPAÑA") : s2.own ? L3("LEVAR COMIGO", "TAKE WITH ME", "LLEVAR CONMIGO") : `${L3("ADOTAR", "ADOPT", "ADOPTAR")} · ${price(id)} ${CUR}`)
         .setBackgroundColor(s2.act ? "#2f5a2a" : "#6e3b22");
       for (const b of [btn, yesBtn, noBtn]) b.input && (b.input.enabled = b.visible);
     };
@@ -20482,22 +20504,31 @@ function __bkPetTab(C, on) {
     const setConfirm = (on) => {
       confirming = on; const D = __PETS[list[sel]];
       ask.setVisible(on); yesBtn.setVisible(on); noBtn.setVisible(on);
-      on && ask.setText(L3(`Adotar ${D.nm} por ${D.price} de ouro?`, `Adopt ${D.nm} for ${D.price} gold?`, `¿Adoptar a ${D.nm} por ${D.price} de oro?`));
+      on && ask.setText(END ? L3(`Adotar ${D.nm} por ${price(list[sel])} fragmentos?`, `Adopt ${D.nm} for ${price(list[sel])} fragments?`, `¿Adoptar a ${D.nm} por ${price(list[sel])} fragmentos?`) : L3(`Adotar ${D.nm} por ${D.price} de ouro?`, `Adopt ${D.nm} for ${D.price} gold?`, `¿Adoptar a ${D.nm} por ${D.price} de oro?`));
       for (const r of rowsUi) r.z.input && (r.z.input.enabled = !on);
       paint(); refocus(on ? yesBtn : btn);
     };
     const select = (k) => { if (confirming) return; const pad = this.__fnByPad; sel = k; msg.setText(""); paint(); this.game.audioEngine?.sfx?.("sfx-ui-tab"); this.__fn && refocus(pad && btn.visible ? btn : rowsUi[k].z) };   // no controle, A no pet leva o foco ao botão de ação
     btn.on("pointerdown", () => {
       const id = list[sel], D = __PETS[id], s2 = state(id);
-      if (s2.act || (D.quest && !s2.own)) return;
+      if (s2.act || (D.quest && !s2.own && !END)) return;
       if (s2.fall) { delete s2.ps.fall[id]; s2.ps.act = id; __petSave(this, s2.ps); this.__petPenSpot && __petPenFill(this); this.game.audioEngine?.sfx?.("sfx-item-pickup"); msg.setText(L3(`${D.nm} está recuperado e vai com você na próxima saída!`, `${D.nm} has recovered and will go with you on your next trip!`, `¡${D.nm} se recuperó e irá contigo en la próxima salida!`)).setColor("#8ae0b0"); paint(); return }
       if (s2.own) { s2.ps.act = id; __petSave(this, s2.ps); this.__petPenSpot && __petPenFill(this); this.game.audioEngine?.sfx?.("sfx-item-pickup"); msg.setText(L3(`${D.nm} vai com você na próxima saída.`, `${D.nm} will go with you on your next trip.`, `${D.nm} irá contigo en la próxima salida.`)).setColor("#8ae0b0"); paint(); return }
-      if (gold() < D.price) { msg.setText(L3("Ouro da campanha insuficiente.", "Not enough campaign gold.", "Oro de campaña insuficiente.")).setColor("#e08a7a"); this.game.audioEngine?.sfx?.("sfx-event-refuse"); return }
+      if (gold() < price(id)) { msg.setText(END ? L3("Fragmentos insuficientes.", "Not enough fragments.", "Fragmentos insuficientes.") : L3("Ouro da campanha insuficiente.", "Not enough campaign gold.", "Oro de campaña insuficiente.")).setColor("#e08a7a"); this.game.audioEngine?.sfx?.("sfx-event-refuse"); return }
       setConfirm(!0);
     });
     noBtn.on("pointerdown", () => setConfirm(!1));
     yesBtn.on("pointerdown", () => {
-      const id = list[sel], D = __PETS[id], c = __cData(this);
+      const id = list[sel], D = __PETS[id], c = END ? null : __cData(this);
+      if (END) {   // Modo Infinito: paga com fragmentos do Refúgio
+        const m = Xe(), f = m.fragments || 0, pr = price(id);
+        if (f < pr) { setConfirm(!1); msg.setText(L3("Fragmentos insuficientes.", "Not enough fragments.", "Fragmentos insuficientes.")).setColor("#e08a7a"); return }
+        m.fragments = f - pr; tr(m); this.meta = m; this.fragText?.setText?.(`◆ ${m.fragments}`);
+        const ps = __petSt(this); ps.own[id] = 1; ps.mis[id] ??= 0; ps.act = id; __petSave(this, ps); this.__petPenSpot && __petPenFill(this);
+        this.game.audioEngine?.sfx?.("sfx-item-pickup"); setConfirm(!1);
+        msg.setText(L3(`${D.nm} agora é seu e vai com você na próxima descida!`, `${D.nm} is yours and will go with you on your next descent!`, `¡${D.nm} es tuyo e irá contigo en el próximo descenso!`)).setColor("#8ae0b0");
+        return;
+      }
       if (!c?.d) return setConfirm(!1);
       c.d.player ??= {};
       const g = c.d.player.gold ?? 0;
@@ -20533,7 +20564,7 @@ const __PEN_IMG = ["pet-pen-back", "pet-pen-front", "pet-kennel", "pet-bowl", "p
   const I0 = Fl.prototype.__inters;
   Fl.prototype.__inters = function () {
     const r = I0.apply(this, arguments);
-    try { this.fromForest && this.textures.exists("pet-pen-back") && __petPen(this) } catch (e) { console.warn("[pets]", e) }
+    try { this.textures.exists("pet-pen-back") && __petPen(this) } catch (e) { console.warn("[pets]", e) }
     return r;
   };
 }
@@ -23438,4 +23469,24 @@ Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen
     return r;
   };
 }
+
+/* aba DECK DO PACTO: setas/direcional escolhem a carta (vale na run e no Refúgio) */
+{
+  const HK = Cd.prototype.handleKey;
+  Cd.prototype.handleKey = function (k) { if (this.open && window.__invDeckKey?.(this, k)) return !0; return HK.apply(this, arguments) };
+}
 /*__MOCHILA__*/
+/*__ALCANCE__*/
+/* ══ Alcance do golpe corpo a corpo igual ao que a animação mostra ══
+   O arco de acerto ia ~2× além do ponto onde a arma chega no golpe (medido com o arco desenhado sobre o herói no meio
+   do golpe): inimigos levavam dano onde a lâmina claramente não encostava. Agora o alcance acompanha o desenho de cada
+   arma, com uma pequena folga (o tamanho do inimigo continua contando a favor). Ângulos não mudam; habilidades também não. */
+{
+  const R = {
+    DEFAULT: 38, unarmed: 30, dagger: 33, rogue_dual: 33, shadow_dagger: 33, twin_fangs: 34, assassin_dagger: 34, frostfang: 34,
+    boreal_daggers: 33, merchant_razor: 33, sword: 37, frost_blade: 37, dragon_sword: 40, club: 38, simple_staff: 36,
+    axe: 42, winter_axe: 42, great_sword: 46, frost_greatsword: 46, dragon_slayer: 46, executioner_cleaver: 44
+  };
+  try { for (const k of Object.keys(oa)) oa[k].range = R[k] ?? Math.round(oa[k].range * .72) } catch (e) {}
+}
+/*__ALCANCE__*/

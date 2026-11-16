@@ -39,7 +39,17 @@ function __petSt(S) {
   return o;
 }
 function __petSave(S, o) { try { localStorage.setItem(__petKey(S), JSON.stringify(o)) } catch (e) {} }
-function __petHasOll(S) { try { return !!window.__gtDone?.(S) } catch (e) { return !1 } }
+/* Modo Infinito: pets também; a moeda é o fragmento e o lendário de missão (Ollie) é vendido caro */
+const __PET_FRAG = { rato: 70, corvo: 90, cao: 105, lobo: 125, oll: 650 };
+function __petEnd(S) {
+  try {
+    if (S?.__hubInv) return S.mode === "endless";
+    if (S?.sys?.settings?.key === "Hub") return !S.fromForest;
+    return S?.game?.registry?.get("mode") === "endless" || !!S?.endlessRun?.();
+  } catch (e) { return !1 }
+}
+function __petOk(S) { try { return (__Q.camp(S) || __petEnd(S)) && !S.isRift } catch (e) { return !1 } }
+function __petHasOll(S) { try { return __petEnd(S) ? !!__petSt(S).own?.oll : !!window.__gtDone?.(S) } catch (e) { return !1 } }
 function __petOwned(S, ps = __petSt(S)) { return __PET_ORDER.filter((id) => (id === "oll" ? __petHasOll(S) : !!ps.own[id])) }
 function __petAct(S, ps = __petSt(S)) {
   const own = __petOwned(S, ps);
@@ -168,7 +178,7 @@ function __petTargets(S) {
   return out.map((o) => [o, Math.hypot(o.x - P.x, o.y - P.y)]).sort((a, b) => a[1] - b[1]);
 }
 function __petSpawn(S) {
-  if (S.__petObj || !S.player || S.isDorfCave || !__Q.camp(S)) return;
+  if (S.__petObj || !S.player || S.isDorfCave || !__petOk(S)) return;
   const ps = __petSt(S), id = __petAct(S, ps);
   if (!id || id === "oll" || !__PETS[id] || __petFallen(S, id, ps)) return;
   const D = __PETS[id];
@@ -314,7 +324,7 @@ function __petSpawn(S) {
 /* tira o pet atual (o comprado ou o Ollie) e chama o escolhido — usado pela aba PETS do livro */
 function __petSwap(S) {
   try {
-    if (!S?.scene?.isActive?.() || !S.player || !__Q.camp(S)) return;
+    if (!S?.scene?.isActive?.() || !S.player || !__petOk(S)) return;
     S.__petObj?.destroy(); S.__petObj = null;
     S.__gtPetKill?.();
     S.__petId = null; S.__petGuard = null;
@@ -341,7 +351,10 @@ function __petSwap(S) {
   const GP = __gtPet;
   __gtPet = function (S) {
     try { if (__petAct(S) !== "oll" || __petFallen(S, "oll")) return } catch (e) {}
-    const r = GP.apply(this, arguments);
+    // no Infinito o Ollie vem por compra, não pela missão da campanha
+    let r; const st0 = __GT.st;
+    if (__petEnd(S) && __petHasOll(S)) { __GT.st = () => 2; try { r = GP.apply(this, arguments) } finally { __GT.st = st0 } }
+    else r = GP.apply(this, arguments);
     try {
       const c = S.__gtPet;
       if (c && !c.__life) {
@@ -357,11 +370,11 @@ function __petSwap(S) {
   __hubSetup = function (S) {
     const r = HS.apply(this, arguments);
     try {
-      if (!__Q.camp(S) || S.isDorfCave) return r;
+      if (!__petOk(S) || S.isDorfCave) return r;
       __PET_SHOP.forEach((id) => __petAnims(S.anims, id));
       S.__petBossDone = !1;                                   // a cena é reaproveitada entre as áreas
       if (!S.__petObj && !S.__gtPet) { S.__petId = null; S.__petGuard = null }
-      S.time.delayedCall(720, () => S.scene.isActive() && __petSpawn(S));
+      S.time.delayedCall(720, () => S.scene.isActive() && (__petEnd(S) && __petAct(S) === "oll" ? __gtPet(S) : __petSpawn(S)));
       // treino: missão secundária concluída com o pet junto (a primeira leitura só guarda o que já estava pronto)
       S.time.delayedCall(1500, () => {
         if (!S.scene.isActive()) return;
@@ -485,9 +498,11 @@ function __bkPetTab(C, on) {
     const r = B0.apply(this, arguments);
     try {
       const T = this.__tabT, endless = this.ui?.game?.registry?.get("mode") === "endless" || !!this.gs?.()?.level?.endless;
-      if (T && T.length === 6 && !endless) {
-        const a = T[T.length - 1], o = this.ui.add.text(a.x + a.width + 20, a.y, __PL("PETS", "PETS", "MASCOTAS"), a.style).setOrigin(a.originX, a.originY).setInteractive({ useHandCursor: !0 });
-        o.on("pointerdown", () => __invTab(this, 6));
+      // campanha: 6 abas + PETS; Modo Infinito: 5 abas + PETS
+      if (T && T.length === (endless ? 5 : 6)) {
+        const idx = T.length, a = T[T.length - 1], o = this.ui.add.text(a.x + a.width + 20, a.y, __PL("PETS", "PETS", "MASCOTAS"), a.style).setOrigin(a.originX, a.originY).setInteractive({ useHandCursor: !0 });
+        this.__petIdx = idx;
+        o.on("pointerdown", () => __invTab(this, idx));
         this.root.add(o); T.push(o);
       }
     } catch (e) { console.warn("[pets]", e) }
@@ -496,13 +511,13 @@ function __bkPetTab(C, on) {
   // trocar para a aba 6: o resto do livro se comporta como numa aba de página inteira (Atributos) e o pet desenha por cima
   const TB = __invTab;
   __invTab = function (C, k) {
-    const n = C.__tabT?.length ?? 0;
-    if (n !== 7) { __bkPetTab(C, !1); return TB.apply(this, arguments) }
-    k = ((k % 7) + 7) % 7;
+    const n = C.__tabT?.length ?? 0, pi = C.__petIdx;
+    if (pi == null || n !== pi + 1) { __bkPetTab(C, !1); return TB.apply(this, arguments) }
+    k = ((k % n) + n) % n;
     const prev = C.__tab;
-    if (k !== 6) { __bkPetTab(C, !1); return TB.call(this, C, k) }
+    if (k !== pi) { __bkPetTab(C, !1); return TB.call(this, C, k) }
     TB.call(this, C, 1);
-    C.__tab = 6; C.__logicalTab = 6;
+    C.__tab = pi; C.__logicalTab = 6;
     try {
       C.__big?.setVisible(!1);
       C.__sbZ?.setVisible(!1); C.__dragZ?.setVisible(!1); C.__sbG?.clear();
@@ -514,13 +529,13 @@ function __bkPetTab(C, on) {
   const S0 = Cd.prototype.show;
   Cd.prototype.show = function () {
     const r = S0.apply(this, arguments);
-    try { if (this.__logicalTab === 6 && this.__tabT?.length === 7) { this.__big?.setVisible(!1); __bkPetTab(this, !0) } } catch (e) {}
+    try { if (this.__logicalTab === 6 && this.__petIdx != null && this.__tabT?.length === this.__petIdx + 1) { this.__big?.setVisible(!1); __bkPetTab(this, !0) } } catch (e) {}
     return r;
   };
   const R0 = Cd.prototype.refresh;
   Cd.prototype.refresh = function () {
     const r = R0.apply(this, arguments);
-    try { if (this.__logicalTab === 6 && this.__tabT?.length === 7) this.__big?.setVisible(!1) } catch (e) {}
+    try { if (this.__logicalTab === 6 && this.__petIdx != null && this.__tabT?.length === this.__petIdx + 1) this.__big?.setVisible(!1) } catch (e) {}
     return r;
   };
   const H0 = Cd.prototype.handleKey;
@@ -543,7 +558,7 @@ function __bkPetTab(C, on) {
   Fl.prototype.openMetaPanel = function (title, quote, ids) {
     const r = OM.apply(this, arguments);
     try {
-      if (this.fromForest && this.panel && title === W("hub.vendor")) {
+      if (this.panel && title === W("hub.vendor")) {
         this.__vendArgs = [title, quote, ids];
         const o = this.panel, d = _ / 2, rows = this.panelRows || [];
         for (const pr of rows) pr.row.setY(pr.row.y + 22);
@@ -561,15 +576,16 @@ function __bkPetTab(C, on) {
     return r;
   };
   Fl.prototype.__petShop = function () {
-    if (this.panel || !this.fromForest) return;
-    const L3 = __PL, d = _ / 2, Y = 12, HH = 336, H = this;
+    if (this.panel) return;
+    const L3 = __PL, d = _ / 2, Y = 12, HH = 336, H = this, END = !this.fromForest, CUR = END ? "◆" : "●";
+    const price = id => END ? __PET_FRAG[id] : __PETS[id].price;
     const o = this.add.container(this.__ox, this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
     const bg = this.add.rectangle(d, st / 2, _, st, 328450, .82).setInteractive();
     const n = this.add.graphics();
     Dt(n, d - 300, Y, 600, HH); o.add([bg, n]);
     __winSkin(this, o, d - 300, Y, 600, HH, 1) && n.clear();
     const LW = 272, LC = d - 150, RX = d + 14, RW = 272, RC = d + 150;
-    const gold = () => { try { return __cData(this)?.d?.player?.gold ?? 0 } catch (e) { return 0 } };
+    const gold = () => { try { return END ? (Xe().fragments || 0) : (__cData(this)?.d?.player?.gold ?? 0) } catch (e) { return 0 } };
     o.add(this.add.text(LC, Y + 16, L3("TREINO DE PETS", "PET TRAINING", "ENTRENAMIENTO DE MASCOTAS"), { ...ti, fontSize: "12px", color: "#ffd24a" }).setOrigin(.5));
     o.add(this.add.text(LC, Y + 28, L3("Um companheiro por vez. Quanto mais missões juntos, mais forte ele fica.", "One companion at a time. The more quests together, the stronger it gets.", "Un compañero a la vez. Cuantas más misiones juntos, más fuerte."), { ...Le, fontSize: "7px", fontStyle: "italic", color: "#c8b48a", align: "center", wordWrap: { width: LW } }).setOrigin(.5, 0));
     const tab = (lbl, x, on, fn) => {
@@ -614,12 +630,12 @@ function __bkPetTab(C, on) {
     cB.on("pointerdown", close); o.add(cB);
     const state = (id) => { const ps = __petSt(this); const own = id === "oll" ? __petHasOll(this) : !!ps.own[id], fall = own && !!ps.fall?.[id]; return { ps, own, fall, act: !fall && __petAct(this, ps) === id, tr: __petTrain(ps.mis[id] | 0) } };
     const paint = () => {
-      goldT.setText(L3(`Seu ouro: ● ${gold()}`, `Your gold: ● ${gold()}`, `Tu oro: ● ${gold()}`));
+      goldT.setText(END ? L3(`Seus fragmentos: ◆ ${gold()}`, `Your fragments: ◆ ${gold()}`, `Tus fragmentos: ◆ ${gold()}`) : L3(`Seu ouro: ● ${gold()}`, `Your gold: ● ${gold()}`, `Tu oro: ● ${gold()}`));
       rowsUi.forEach((r, i) => {
         r.draw(i === sel);
         const s2 = state(r.id), D = __PETS[r.id];
-        r.pr.setText(s2.fall ? L3("CAÍDO", "FALLEN", "CAÍDO") : s2.act ? L3("✓ COM VOCÊ", "✓ WITH YOU", "✓ CONTIGO") : s2.own ? `${L3("Nv", "Lv", "Nv")} ${s2.tr.L}` : D.quest ? L3("MISSÃO", "QUEST", "MISIÓN") : `${D.price} ●`)
-          .setColor(s2.fall ? "#ff7a6a" : s2.act ? "#8ae0b0" : s2.own ? "#9cc2ff" : D.quest ? "#e8a050" : gold() >= D.price ? "#ffd24a" : "#e08a7a");
+        r.pr.setText(s2.fall ? L3("CAÍDO", "FALLEN", "CAÍDO") : s2.act ? L3("✓ COM VOCÊ", "✓ WITH YOU", "✓ CONTIGO") : s2.own ? `${L3("Nv", "Lv", "Nv")} ${s2.tr.L}` : D.quest && !END ? L3("MISSÃO", "QUEST", "MISIÓN") : `${price(r.id)} ${CUR}`)
+          .setColor(s2.fall ? "#ff7a6a" : s2.act ? "#8ae0b0" : s2.own ? "#9cc2ff" : D.quest && !END ? "#e8a050" : gold() >= price(r.id) ? "#ffd24a" : "#e08a7a");
       });
       const id = list[sel], D = __PETS[id], s2 = state(id), rar = __PET_RAR[D.rar];
       pName.setText(D.nm.toUpperCase()).setColor(D.rar === "LEGENDARY" ? "#ffb347" : "#ffd24a");
@@ -628,17 +644,19 @@ function __bkPetTab(C, on) {
         const K = __petAnims(this.anims, id);
         pv.setTexture(D.tex).setVisible(!0).setScale(Math.min(2.4, 110 / D.fw / .8, 80 / D.fh / .8));
         K?.idle && this.anims.exists(K.idle) && pv.play(K.idle);
-        D.quest && !s2.own ? pv.setTint(0x202020) : pv.clearTint();
+        D.quest && !s2.own && !END ? pv.setTint(0x202020) : pv.clearTint();
       } else pv.setVisible(!1);
       pTr.setText(s2.fall ? L3("Caiu em combate: recrute para ele voltar a te acompanhar", "Fell in battle: recruit it so it can travel with you again", "Cayó en combate: recluta para que vuelva contigo") : s2.own ? L3(`TREINO: ${s2.tr.txt} · ♥ ${__petMaxHp(id, s2.tr.L)}`, `TRAINING: ${s2.tr.txt}`, `ENTRENAMIENTO: ${s2.tr.txt}`) : L3("Treino começa no nível 1", "Training starts at level 1", "El entrenamiento empieza en nivel 1"));
       pEff.setText(__petEff(id, s2.own ? s2.tr.L : 1));
       pNote.setY(pEff.y + pEff.height + 8).setText(D.quest
-        ? (s2.own ? L3("Lendário e único: não se compra, só se ganha em missão. Ele te escolheu.", "Legendary and unique: it can't be bought, only earned in a quest. It chose you.", "Legendario y único: no se compra, solo se gana en misión. Te eligió.")
+        ? (s2.own && END ? L3("Lendário e único. Agora ele desce com você ao Abismo.", "Legendary and unique. Now it descends into the Abyss with you.", "Legendario y único. Ahora desciende contigo al Abismo.")
+          : s2.own ? L3("Lendário e único: não se compra, só se ganha em missão. Ele te escolheu.", "Legendary and unique: it can't be bought, only earned in a quest. It chose you.", "Legendario y único: no se compra, solo se gana en misión. Te eligió.")
+          : END ? L3(`Lendário e único. Na campanha é recompensa de missão; aqui no Infinito o mercador o vende — e cobra caro: ${price(id)} ◆.`, `Legendary and unique. In the campaign it's a quest reward; here in Endless the merchant sells it — at a steep price: ${price(id)} ◆.`, `Legendario y único. En la campaña es recompensa de misión; aquí el mercader lo vende — y caro: ${price(id)} ◆.`)
           : L3("Lendário e único. Recompensa da missão Os Gatos da Alline.", "Legendary and unique. Reward of the quest Alline's Cats.", "Legendario y único. Recompensa de la misión Los Gatos de Alline."))
         : s2.tr.nx == null && s2.own ? "" : L3(`No nível 5 de treino: `, `At training level 5: `, `En nivel 5: `) + __petEff(id, 5));
-      const canBtn = !(D.quest && !s2.own);
+      const canBtn = !(D.quest && !s2.own && !END);
       btn.setVisible(!confirming && canBtn);
-      btn.setText(s2.fall ? L3("RECRUTAR DE VOLTA", "RECRUIT BACK", "RECLUTAR") : s2.act ? L3("✓ ACOMPANHANDO VOCÊ", "✓ TRAVELING WITH YOU", "✓ TE ACOMPAÑA") : s2.own ? L3("LEVAR COMIGO", "TAKE WITH ME", "LLEVAR CONMIGO") : `${L3("ADOTAR", "ADOPT", "ADOPTAR")} · ${D.price} ●`)
+      btn.setText(s2.fall ? L3("RECRUTAR DE VOLTA", "RECRUIT BACK", "RECLUTAR") : s2.act ? L3("✓ ACOMPANHANDO VOCÊ", "✓ TRAVELING WITH YOU", "✓ TE ACOMPAÑA") : s2.own ? L3("LEVAR COMIGO", "TAKE WITH ME", "LLEVAR CONMIGO") : `${L3("ADOTAR", "ADOPT", "ADOPTAR")} · ${price(id)} ${CUR}`)
         .setBackgroundColor(s2.act ? "#2f5a2a" : "#6e3b22");
       for (const b of [btn, yesBtn, noBtn]) b.input && (b.input.enabled = b.visible);
     };
@@ -656,22 +674,31 @@ function __bkPetTab(C, on) {
     const setConfirm = (on) => {
       confirming = on; const D = __PETS[list[sel]];
       ask.setVisible(on); yesBtn.setVisible(on); noBtn.setVisible(on);
-      on && ask.setText(L3(`Adotar ${D.nm} por ${D.price} de ouro?`, `Adopt ${D.nm} for ${D.price} gold?`, `¿Adoptar a ${D.nm} por ${D.price} de oro?`));
+      on && ask.setText(END ? L3(`Adotar ${D.nm} por ${price(list[sel])} fragmentos?`, `Adopt ${D.nm} for ${price(list[sel])} fragments?`, `¿Adoptar a ${D.nm} por ${price(list[sel])} fragmentos?`) : L3(`Adotar ${D.nm} por ${D.price} de ouro?`, `Adopt ${D.nm} for ${D.price} gold?`, `¿Adoptar a ${D.nm} por ${D.price} de oro?`));
       for (const r of rowsUi) r.z.input && (r.z.input.enabled = !on);
       paint(); refocus(on ? yesBtn : btn);
     };
     const select = (k) => { if (confirming) return; const pad = this.__fnByPad; sel = k; msg.setText(""); paint(); this.game.audioEngine?.sfx?.("sfx-ui-tab"); this.__fn && refocus(pad && btn.visible ? btn : rowsUi[k].z) };   // no controle, A no pet leva o foco ao botão de ação
     btn.on("pointerdown", () => {
       const id = list[sel], D = __PETS[id], s2 = state(id);
-      if (s2.act || (D.quest && !s2.own)) return;
+      if (s2.act || (D.quest && !s2.own && !END)) return;
       if (s2.fall) { delete s2.ps.fall[id]; s2.ps.act = id; __petSave(this, s2.ps); this.__petPenSpot && __petPenFill(this); this.game.audioEngine?.sfx?.("sfx-item-pickup"); msg.setText(L3(`${D.nm} está recuperado e vai com você na próxima saída!`, `${D.nm} has recovered and will go with you on your next trip!`, `¡${D.nm} se recuperó e irá contigo en la próxima salida!`)).setColor("#8ae0b0"); paint(); return }
       if (s2.own) { s2.ps.act = id; __petSave(this, s2.ps); this.__petPenSpot && __petPenFill(this); this.game.audioEngine?.sfx?.("sfx-item-pickup"); msg.setText(L3(`${D.nm} vai com você na próxima saída.`, `${D.nm} will go with you on your next trip.`, `${D.nm} irá contigo en la próxima salida.`)).setColor("#8ae0b0"); paint(); return }
-      if (gold() < D.price) { msg.setText(L3("Ouro da campanha insuficiente.", "Not enough campaign gold.", "Oro de campaña insuficiente.")).setColor("#e08a7a"); this.game.audioEngine?.sfx?.("sfx-event-refuse"); return }
+      if (gold() < price(id)) { msg.setText(END ? L3("Fragmentos insuficientes.", "Not enough fragments.", "Fragmentos insuficientes.") : L3("Ouro da campanha insuficiente.", "Not enough campaign gold.", "Oro de campaña insuficiente.")).setColor("#e08a7a"); this.game.audioEngine?.sfx?.("sfx-event-refuse"); return }
       setConfirm(!0);
     });
     noBtn.on("pointerdown", () => setConfirm(!1));
     yesBtn.on("pointerdown", () => {
-      const id = list[sel], D = __PETS[id], c = __cData(this);
+      const id = list[sel], D = __PETS[id], c = END ? null : __cData(this);
+      if (END) {   // Modo Infinito: paga com fragmentos do Refúgio
+        const m = Xe(), f = m.fragments || 0, pr = price(id);
+        if (f < pr) { setConfirm(!1); msg.setText(L3("Fragmentos insuficientes.", "Not enough fragments.", "Fragmentos insuficientes.")).setColor("#e08a7a"); return }
+        m.fragments = f - pr; tr(m); this.meta = m; this.fragText?.setText?.(`◆ ${m.fragments}`);
+        const ps = __petSt(this); ps.own[id] = 1; ps.mis[id] ??= 0; ps.act = id; __petSave(this, ps); this.__petPenSpot && __petPenFill(this);
+        this.game.audioEngine?.sfx?.("sfx-item-pickup"); setConfirm(!1);
+        msg.setText(L3(`${D.nm} agora é seu e vai com você na próxima descida!`, `${D.nm} is yours and will go with you on your next descent!`, `¡${D.nm} es tuyo e irá contigo en el próximo descenso!`)).setColor("#8ae0b0");
+        return;
+      }
       if (!c?.d) return setConfirm(!1);
       c.d.player ??= {};
       const g = c.d.player.gold ?? 0;
@@ -707,7 +734,7 @@ const __PEN_IMG = ["pet-pen-back", "pet-pen-front", "pet-kennel", "pet-bowl", "p
   const I0 = Fl.prototype.__inters;
   Fl.prototype.__inters = function () {
     const r = I0.apply(this, arguments);
-    try { this.fromForest && this.textures.exists("pet-pen-back") && __petPen(this) } catch (e) { console.warn("[pets]", e) }
+    try { this.textures.exists("pet-pen-back") && __petPen(this) } catch (e) { console.warn("[pets]", e) }
     return r;
   };
 }

@@ -697,43 +697,67 @@
       C.closeBtn && C.root.bringToTop(C.closeBtn);
       const g = C.gs?.() || ui.scene.get("Game"), h = hand(g);
       const voidEye = h.includes("l3"), eternal = h.includes("l4");
-      D.add(ui.add.text(320, 64, T("CARTAS ATIVAS", "ACTIVE CARDS", "CARTAS ACTIVAS") + `   ${h.length}/${HAND_MAX}`, { fontFamily: FONT, fontSize: "12px", color: "#e8d4a8" }).setOrigin(.5));
-      if (!h.length) {
-        D.add(ui.add.text(320, 190, T("Nenhuma carta ainda.\n\nComungue no Altar do Pacto para tirar cartas.", "No cards yet.\n\nCommune at the Pact Altar to draw cards.", "Aún no hay cartas.\n\nComulga en el Altar del Pacto para sacar cartas."),
-          { fontFamily: FONT, fontSize: "11px", color: "#a89880", align: "center" }).setOrigin(.5));
-      }
-      const S = .56, step = 92;
+      // ── como as outras abas: página da esquerda = as cartas; página da direita = a carta escolhida ──
+      const LC = 176, RC = 466, ink = "#5a4232", soft = "#8a7058";
+      D.add(ui.add.text(LC, 62, T("CARTAS ATIVAS", "ACTIVE CARDS", "CARTAS ACTIVAS") + `   ${h.length}/${HAND_MAX}`, { fontFamily: FONT, fontSize: "12px", color: ink }).setOrigin(.5));
+      const S = .5, cw = 156 * S, ch = 236 * S, slots = [];
       for (let i = 0; i < HAND_MAX; i++) {
-        const x = 320 + (i - (HAND_MAX - 1) / 2) * step, y = 192, id = h[i];
+        const x = LC + ((i % 3) - 1) * (cw + 8), y = 136 + Math.floor(i / 3) * (ch + 10), id = h[i];
+        const frame = ui.add.rectangle(x, y, cw + 4, ch + 4, 0x000000, 0).setStrokeStyle(2, 0xffd24a, 1).setVisible(false);
+        D.add(frame);
         if (!id) {
-          if (h.length) {
-            D.add(ui.add.rectangle(x, y, 156 * S - 6, 236 * S - 6, 0x000000, .3).setStrokeStyle(1, 0x5a4636, .8));
-            D.add(ui.add.text(x, y, T("VAZIO", "EMPTY", "VACÍO"), { fontFamily: FONT, fontSize: "9px", color: "#5a4a3c" }).setOrigin(.5));
-          }
+          D.add(ui.add.rectangle(x, y, cw - 4, ch - 4, 0x3a2a1a, .12).setStrokeStyle(1, 0x8a7058, .7));
+          D.add(ui.add.text(x, y, T("VAZIO", "EMPTY", "VACÍO"), { fontFamily: FONT, fontSize: "9px", color: soft }).setOrigin(.5));
+          slots.push({ id: null, x, y, frame });
           continue;
         }
         const c = makeCard(ui, id, S);
-        setFace(c, true);
-        c.setPosition(x, y);
-        D.add(c);
+        setFace(c, true); c.setPosition(x, y); D.add(c);
         const t = BY[id].type;
         if ((t === "m" && voidEye) || (t === "p" && eternal)) {
-          const stamp = ui.add.text(x, y - 28, t === "m" ? T("ANULADA", "CANCELLED", "ANULADA") : T("SEM CUSTO", "NO COST", "SIN COSTE"),
-            { fontFamily: FONT, fontSize: "10px", color: "#ffd24a", backgroundColor: "#1a1008", padding: { x: 4, y: 2 } }).setOrigin(.5);
           if (t === "m") c.inner.list.forEach((o) => o.setTint?.(0x8a8a8a));
-          D.add(stamp);
-          c.__stamp = stamp;
+          D.add(ui.add.text(x, y - 30, t === "m" ? T("ANULADA", "CANCELLED", "ANULADA") : T("SEM CUSTO", "NO COST", "SIN COSTE"),
+            { fontFamily: FONT, fontSize: "9px", color: "#ffd24a", backgroundColor: "#1a1008", padding: { x: 3, y: 2 } }).setOrigin(.5));
         }
-        c.hit.on("pointerover", () => { D.bringToTop(c); c.__stamp && D.bringToTop(c.__stamp); ui.tweens.add({ targets: c, scale: S * 1.45, y: y - 12, duration: 140, ease: "Quad.easeOut" }); });
-        c.hit.on("pointerout", () => ui.tweens.add({ targets: c, scale: S, y, duration: 140, ease: "Quad.easeOut" }));
+        const k = slots.length;
+        c.hit.on("pointerover", () => show(k));
+        c.hit.on("pointerdown", () => show(k));
+        slots.push({ id, x, y, frame, c });
       }
+      // página da direita
+      const R = ui.add.container(0, 0); D.add(R);
+      const show = (k) => {
+        C.__deckSel = k;
+        slots.forEach((sl, n) => sl.frame.setVisible(n === k));
+        R.removeAll(true);
+        const id = slots[k]?.id;
+        if (!id) {
+          R.add(ui.add.text(RC, 150, h.length ? T("Espaço livre no deck.", "Free slot in the deck.", "Espacio libre en el mazo.") : T("Nenhuma carta ainda.", "No cards yet.", "Aún no hay cartas."), { fontFamily: FONT, fontSize: "12px", color: ink, align: "center" }).setOrigin(.5));
+          R.add(ui.add.text(RC, 182, T("Comungue no Altar do Pacto para tirar cartas.\nCada carta muda a sua run: bênçãos ajudam, pactos cobram um preço e maldições atrapalham.", "Commune at the Pact Altar to draw cards.\nEach card changes your run: blessings help, pacts charge a price and curses hinder.", "Comulga en el Altar del Pacto para sacar cartas.\nCada carta cambia tu run: las bendiciones ayudan, los pactos cobran un precio y las maldiciones estorban."),
+            { fontFamily: FONT, fontSize: "9px", color: soft, align: "center", wordWrap: { width: 236 }, lineSpacing: 3 }).setOrigin(.5, 0));
+          return;
+        }
+        const def = BY[id], TY = TYPE[def.type];
+        const big = makeCard(ui, id, .74); setFace(big, true); big.setPosition(RC, 158); big.hit.disableInteractive(); R.add(big);
+        R.add(ui.add.text(RC, 252, L(def.name), { fontFamily: FONT, fontSize: "12px", color: ink }).setOrigin(.5));
+        R.add(ui.add.text(RC, 268, T(TY.pt, TY.en), { fontFamily: FONT, fontSize: "9px", color: TY.color, stroke: "#3a2a1a", strokeThickness: 2 }).setOrigin(.5));
+      };
       const cnt = { b: 0, p: 0, m: 0, l: 0 };
       h.forEach((id) => cnt[BY[id].type]++);
-      const parts = ["b", "p", "m", "l"].map((k) => `${T(TYPE[k].pt, TYPE[k].en)} ${cnt[k]}`);
-      D.add(ui.add.text(320, 300, parts.join("   ·   "), { fontFamily: FONT, fontSize: "10px", color: "#a89880" }).setOrigin(.5));
-      D.add(ui.add.text(320, 316, T("▲ ganha   ▼ perde   ·   passe o dedo/mouse numa carta para ampliar", "▲ gain   ▼ lose   ·   hover/touch a card to enlarge", "▲ gana   ▼ pierde   ·   pasa el dedo/ratón por una carta para ampliarla"),
-        { fontFamily: FONT, fontSize: "9px", color: "#7a6a58" }).setOrigin(.5));
+      D.add(ui.add.text(RC, 296, ["b", "p", "m", "l"].map((k) => `${T(TYPE[k].pt, TYPE[k].en)} ${cnt[k]}`).join("  ·  "), { fontFamily: FONT, fontSize: "9px", color: soft }).setOrigin(.5));
+      D.add(ui.add.text(RC, 312, T("▲ ganha   ▼ perde   ·   escolha uma carta para ver", "▲ gain   ▼ lose   ·   pick a card to see it", "▲ gana   ▼ pierde   ·   elige una carta para verla"), { fontFamily: FONT, fontSize: "8px", color: soft }).setOrigin(.5));
+      C.__deckSlots = slots; C.__deckShow = show;
+      show(Math.min(C.__deckSel ?? 0, HAND_MAX - 1));
     });
+  };
+  // controle/teclado na aba do deck: setas andam pela grade 3×2
+  window.__invDeckKey = function (C, k) {
+    if (!C?.__deckShow || C.__logicalTab !== 3 || !C.__deck?.visible) return false;
+    const i = C.__deckSel ?? 0;
+    const n = k === "ArrowLeft" ? (i % 3 ? i - 1 : i + 2) : k === "ArrowRight" ? (i % 3 < 2 ? i + 1 : i - 2) : (k === "ArrowUp" || k === "ArrowDown") ? (i + 3) % 6 : null;
+    if (n == null) return false;
+    C.__deckShow(n);
+    return true;
   };
 
   function roll(h) {

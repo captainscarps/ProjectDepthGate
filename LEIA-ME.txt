@@ -1,4 +1,20 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.8 · cache ded-web-v6.8.8-inventario)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.9 · cache ded-web-v6.8.9-pets-infinito)
+
+P216.9 — DECK DO PACTO NO PADRÃO DO LIVRO, ALCANCE CORPO A CORPO, PETS E HERBORISTA NO MODO INFINITO
+· Aba DECK DO PACTO (livro do inventário, Infinito) refeita em duas páginas como as outras abas: à esquerda as
+  6 cartas ativas (3×2, moldura dourada na selecionada, inclusive espaço vazio); à direita a carta escolhida
+  ampliada com nome, tipo e descrição, contagem e legenda. Setas/direcional navegam a grade.
+· Ataque corpo a corpo: o alcance do golpe (tabela de arcos por arma) foi reduzido para casar com a animação
+  (antes acertava ~2× além da lâmina). Ex.: desarmado 42→30, adaga 46→33, espada 52→37, machado 58→42,
+  montante 62→46; armas sem valor próprio ficam com 72% do antigo (scripts/source/combate-alcance.js).
+· PETS no Modo Infinito: o pet ativo acompanha a descida, o cercado aparece no Refúgio do Infinito, a aba PETS
+  entra no livro do Infinito e o MERCADOR tem a aba Treino de Pets cobrando FRAGMENTOS (◆): Migalha 70, Agouro 90,
+  Caramelo 105, Breu 125. O lendário de campanha OLLIE (na campanha só pela missão) é vendido aqui por 650 ◆.
+  Os pets do Infinito são de cada herói (etiqueta e1..e4), separados dos da campanha.
+· HERBORISTA no Modo Infinito: cabana, caldeirão e loja ativos no Refúgio do Infinito, cobrando fragmentos
+  (Vida Plus 9, Invulnerabilidade 14, Fúria 12, Arcana 15 ◆; a poção comum fica de fora porque a run já começa
+  com as suas). A bolsa é guardada por herói e vai para a run (slot 2 / aba POÇÕES do livro).
+· O botão 🎒 INVENTÁRIO some enquanto um painel da vila está aberto (não cobre mais o título).
 
 P216.8 — O INVENTÁRIO DO JOGO DENTRO DO REFÚGIO (substitui a "mochila" da p216.7)
 · O MESMO livro de inventário da run abre no Refúgio (campanha e Modo Infinito): Equipamento, Atributos, Missão,
