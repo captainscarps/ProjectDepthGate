@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.14 · cache ded-web-v6.9.4-encomendas)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.15 · cache ded-web-v6.9.5-config-voltar)
+
+P216.15 — CONFIGURAÇÕES: BOTÃO VOLTAR CORTADO EM TELA CHEIA
+· O "◀ VOLTAR" e o "✕" das Configurações ficavam no canto extremo da tela, em cima da moldura da página de papel,
+  e apareciam cortados em tela cheia (Edge 1080p). Agora ficam dentro da área útil do papel; a dica de teclas sobe
+  junto. Vale para as configurações do menu e da pausa. scripts/source/config-voltar.js
 
 P216.14 — ENCOMENDAS ESPECIAIS DO FERREIRO (desbloqueadas por feitos)
 · Nova aba 📜 ENCOMENDAS na Forja Ancestral (ao lado de ARMAS e ARMADURAS). As peças trancadas aparecem como
