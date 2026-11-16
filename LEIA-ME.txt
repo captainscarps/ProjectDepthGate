@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.10 · cache ded-web-v6.9.0-golpe)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.11 · cache ded-web-v6.9.1-run-continua)
+
+P216.11 — MODO INFINITO: A RUN CONTINUA ATÉ MORRER · OURO VOLTA · MARTELO COM DESGASTE
+· Carregar o herói no menu: com run em andamento ele entra DIRETO na profundidade em que estava (antes sempre
+  abria no Refúgio). Só abre no Refúgio se acabou de morrer (a morte grava atRefuge no save; o primeiro
+  salvamento dentro da run apaga a marca) ou se ainda não desceu (prof. 1 e 0 pts). scripts/source/infinito-run.js
+· Morte no Infinito: o herói volta ao Refúgio COM O OURO que tinha (antes zerava), a arma inicial e as peças do
+  ferreiro com as runs que ainda restam a cada uma (a durabilidade continua igual). O aviso mostra o ouro trazido.
+· Martelo de Forjador (campanha e Infinito): aguenta 10 forjas; cada fusão 3→1 gasta 1 uso e a forja mostra os
+  usos restantes no rodapé, com aviso a cada uso. No fim ele QUEBRA, some do herói e não tem conserto: compra-se
+  outro no Ferreiro (a descrição na loja mostra os usos). Usos por herói. scripts/source/martelo.js
 
 P216.10 — GOLPE CORPO A CORPO COM PESO (o alcance volta ao original)
 · DESFEITA a redução de alcance da p216.9: os arcos de acerto voltaram aos valores originais (espada 52, machado 58,

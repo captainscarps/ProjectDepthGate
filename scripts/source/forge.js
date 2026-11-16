@@ -261,7 +261,7 @@ function __openForge(invUi) {
     // Saldo atual de Cristais do Refúgio do Herói
     let curFrags = 0;
     try { curFrags = Xe().fragments || 0; } catch(e) {}
-    const tFrags = ui.add.text(cx, y0 + H - 18, `✦ ${typeof __L3 === "function" ? __L3("Cristais do Refúgio do Herói", "Hero's Refuge Crystals", "Cristales del Refugio del Héroe") : "Cristais do Refúgio do Herói"}: ${curFrags} ✦`, {
+    const tFrags = ui.add.text(cx, y0 + H - 18, `✦ ${typeof __L3 === "function" ? __L3("Cristais do Refúgio do Herói", "Hero's Refuge Crystals", "Cristales del Refugio del Héroe") : "Cristais do Refúgio do Herói"}: ${curFrags} ✦${(() => { try { const n = window.__hammerLeft?.(S) || 0; return n ? "   ·   ⚒ " + (typeof __L3 === "function" ? __L3(`Martelo: ${n} usos`, `Hammer: ${n} uses`, `Martillo: ${n} usos`) : n) : "" } catch(e) { return "" } })()}`, {
       fontFamily: F_MONO,
       fontStyle: "bold",
       fontSize: "8px",
@@ -288,6 +288,7 @@ function __openForge(invUi) {
     for (const it of matched) {
       S.inventory.remove(it);
     }
+    try { window.__hammerUse?.(S); } catch(e) {}
 
     if (rarKey === "RELIC") {
       // Máxima raridade -> Cristais do Refúgio!
