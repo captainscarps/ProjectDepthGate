@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.11 · cache ded-web-v6.9.1-run-continua)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.12 · cache ded-web-v6.9.2-aviso-amigos)
+
+P216.12 — AVISO DE AMIGO QUE VOLTOU DO ABISMO · FERREIRO SEM MISSÃO NO INFINITO
+· Ferreiro no Modo Infinito não fala mais da missão do aprendiz Brokk (nem o Brokk aparece na forja): o Infinito
+  não tem missões. Na campanha continua tudo igual. O Martelo de Forjador com 10 usos vale nos dois modos.
+· Amigos: cada morte no Infinito republica a vitrine do herói (dg_showcases; o updated_at avança mesmo sem recorde
+  novo). Quem é amigo recebe um aviso no topo da tela: "Fulano acabou de voltar de uma tentativa no Abismo ·
+  herói · recorde: prof. N · pontos — olhe as pontuações!". Clicar no aviso no Refúgio do Infinito abre o Hall
+  da Fama na aba AMIGOS. A lista de amigos é consultada ao entrar na conta, ao voltar para a aba e a cada 90 s;
+  avisos só de tentativas das últimas 6 h, no máximo um por amigo a cada 5 min. Não precisa de SQL novo.
 
 P216.11 — MODO INFINITO: A RUN CONTINUA ATÉ MORRER · OURO VOLTA · MARTELO COM DESGASTE
 · Carregar o herói no menu: com run em andamento ele entra DIRETO na profundidade em que estava (antes sempre

@@ -33,6 +33,7 @@
       if (error) { console.warn("[amigos]", error.message); return this.list; }
       this.list = data || [];
       try { localStorage.setItem(CACHE, JSON.stringify(this.list)); } catch (e) {}
+      try { this.checkReturns(); } catch (e) {}
       this.cacheEcos();
       window.dispatchEvent(new CustomEvent("depthgate:friends", { detail: this.list }));
       return this.list;
@@ -96,6 +97,48 @@
       let best = null;
       for (let s = 1; s <= 3; s++) { const b = J(localStorage.getItem(BEST + s)); if (b && (!best || (b.score || 0) > (best.score || 0))) best = b; }
       return best;
+    },
+
+    /* ── aviso "amigo voltou de uma tentativa" ──
+       Cada morte no Infinito republica a vitrine do herói (mesmo sem recorde novo), o que avança o show_updated que
+       os amigos recebem em dg_my_friends. Quando o show_updated de um amigo passa do último que este aparelho viu,
+       aparece o aviso. Na primeira vez que um amigo é visto só se guarda a marca (sem aviso). */
+    attempt(slot) {
+      // espera o recorde da run ser gravado (logo depois da morte) para a vitrine já ir com ele
+      setTimeout(() => {
+        try {
+          this.trackBest(); clearTimeout(this._pt);
+          const k = BEST + slot, b = J(localStorage.getItem(k));
+          if (b) { b.dirty = !0; b.at = Date.now(); localStorage.setItem(k, JSON.stringify(b)); }
+          this.publish().catch(() => {});
+        } catch (e) {}
+      }, 1500);
+    },
+    checkReturns() {
+      const SEEN = "depthgate:friendSeen", seen = J(localStorage.getItem(SEEN)) || {}, back = [];
+      for (const f of this.accepted()) {
+        if (!f.show_updated || !f.class_id) continue;
+        const t = Date.parse(f.show_updated) || 0, prev = seen[f.friend_id];
+        if (prev != null && t > prev && Date.now() - t < 6 * 3600e3 && !(Date.now() - (this._toastAt?.[f.friend_id] || 0) < 300000)) { (this._toastAt ??= {})[f.friend_id] = Date.now(); back.push(f); }
+        if (prev == null || t > prev) seen[f.friend_id] = t;
+      }
+      try { localStorage.setItem(SEEN, JSON.stringify(seen)); } catch (e) {}
+      back.forEach((f, i) => setTimeout(() => this.toast(f), 600 + i * 7000));
+    },
+    toast(f) {
+      const id = "dg-fr-toast"; document.getElementById(id)?.remove();
+      const el = document.createElement("div"); el.id = id;
+      el.innerHTML = `<b>${esc(f.username)}</b> ${esc(L3("acabou de voltar de uma tentativa no Abismo", "just came back from an attempt in the Abyss", "acaba de volver de un intento en el Abismo"))}<br><span>${esc(heroName(f.class_id))} · ${L3("recorde", "record", "récord")}: ${L3("prof.", "depth", "prof.")} ${f.max_depth || 0} · ${Number(f.score || 0).toLocaleString("pt-BR")} pts — ${esc(L3("olhe as pontuações!", "check the scores!", "¡mira las puntuaciones!"))}</span>`;
+      el.style.cssText = "position:fixed;left:50%;top:84px;transform:translate(-50%,-30px);opacity:0;z-index:99990;max-width:min(92vw,520px);padding:10px 16px;border-radius:8px;background:rgba(20,14,8,.94);border:1.5px solid #c9a24a;color:#f2e6bc;font:13px Georgia,serif;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.6);transition:all .35s ease;cursor:pointer";
+      const st = el.querySelector("span"); if (st) st.style.cssText = "font:11px 'Courier New',monospace;color:#ffd24a";
+      el.addEventListener("click", () => {
+        el.remove();
+        try { const H = window.__DED_GAME?.scene?.getScene?.("Hub"); if (H?.sys?.isActive?.() && !H.fromForest && !H.panel && !H.__busy && H.__hallBoard) H.__hallBoard("friends"); } catch (e) {}
+      });
+      document.body.appendChild(el);
+      requestAnimationFrame(() => { el.style.opacity = "1"; el.style.transform = "translate(-50%,0)"; });
+      setTimeout(() => { el.style.opacity = "0"; el.style.transform = "translate(-50%,-30px)"; setTimeout(() => el.remove(), 400); }, 6500);
+      try { window.__DED_GAME?.audioEngine?.sfx?.("sfx-ui-open"); } catch (e) {}
     },
 
     /* ── saudações ── */
@@ -168,5 +211,9 @@
   // quando a conta fica pronta: atualiza amigos, acompanha o auge dos heróis e publica
   window.addEventListener("depthgate:auth", () => { if (F.acc()) { F.refresh().catch(() => {}); F.trackBest(); F.publish().catch(() => {}); } });
   setInterval(() => F.trackBest(), 15000);
+  // procura amigos que voltaram de uma tentativa a cada 90 s (só com a conta conectada e a aba visível)
+  setInterval(() => { if (!document.hidden && F.acc()) F.refresh().catch(() => {}); }, 90000);
+  // morte no Infinito: republica a vitrine para os amigos saberem que você voltou de uma tentativa
+  window.addEventListener("depthgate:endlessDeath", e => { if (F.acc()) F.attempt(e.detail?.slot || 1); });
   document.addEventListener("visibilitychange", () => { if (!document.hidden && F.acc()) F.refresh().catch(() => {}); });
 })(window);
