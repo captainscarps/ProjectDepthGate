@@ -1,4 +1,20 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.13 · cache ded-web-v6.9.3-passivas)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.14 · cache ded-web-v6.9.4-encomendas)
+
+P216.14 — ENCOMENDAS ESPECIAIS DO FERREIRO (desbloqueadas por feitos)
+· Nova aba 📜 ENCOMENDAS na Forja Ancestral (ao lado de ARMAS e ARMADURAS). As peças trancadas aparecem como
+  silhueta com a pista do feito; cumprido o feito, a peça fica à venda em Pedra Cobalto, com durabilidade em runs
+  e conserto como as outras peças do ferreiro. Feitos e encomendas são de cada herói.
+  · Coroa do Abismo (elmo, 190 ◆, 4 runs): chegar à profundidade 30 no Infinito · +6 DEF +5 DANO +8% CRÍT
+  · Anel do Intocado (acessório, 170 ◆, 4 runs): vencer um chefe sem levar dano · +15% CRÍT +4 DANO +10 VEL
+  · Manto do Carrasco (armadura, 200 ◆, 3 runs): 500 abates numa única run do Infinito · +8 DEF +8 DANO +6% CRÍT
+  · Botas do Peregrino (botas, 140 ◆, 6 runs): morrer 25 vezes com o mesmo herói do Infinito · +25 VEL +6 VIDA +3 DEF
+  · Martelo do Mestre-Ferreiro (entregue de graça): 30 forjas → o Martelo de Forjador nunca mais quebra (e conta
+    como martelo mesmo sem ter comprado)
+  · ??? secreta: vencer um chefe usando só a arma inicial da classe → Amuleto da Origem (210 ◆, 3 runs)
+· Ao cumprir um feito: banner "O FERREIRO OUVIU FALAR DO SEU FEITO"; na próxima visita o ferreiro comenta e a loja
+  já abre na aba ENCOMENDAS.
+· Ícones HD próprios das 6 encomendas no atlas items-hd (scripts/build_item_icons.py), no mesmo estilo das
+  armaduras do ferreiro. Lógica em scripts/source/encomendas.js.
 
 P216.13 — PESADELO: UMA PASSIVA POR GRAU · ÍCONES DAS PASSIVAS E DAS ARMADURAS DO FERREIRO
 · Bug: ao chegar no nível 15 do Infinito apareciam 4 escolhas de passiva seguidas. A conta dos graus de Pesadelo

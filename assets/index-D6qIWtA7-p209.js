@@ -2366,9 +2366,11 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
 
 __forgeWeaponsShop(fromSmith,mode){
   if(this.panel||this.__busy)return;
-  const arm=mode==="arm"&&!!window.__FARM;
+  const arm=mode==="arm"&&!!window.__FARM,enc=mode==="enc"&&!!window.__encList;
   if(!fromSmith&&window.__apzGet?.(this)?.mourn){this.__apzSmith?.();return}
   const L3=__L3,d=_/2,Y=12,HH=336;
+  if(mode==null&&window.__encUntold){try{window.__encDeaths?.(this,this.fromForest?this.retSlot:(this.game.registry.get("save:slot")??1))}catch(_){}const nw=window.__encUntold(this);if(nw.length){window.__encTold(this,nw.map(e=>e.id));try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46,nm=nw.map(e=>L3(...e.name)).join(", ");this.__say(sx,sy,L3(`Ouvi falar do que você fez. Poucos chegam lá… Já tenho o molde pronto: ${nm}. Está nas ENCOMENDAS.`,`I heard what you did. Few get there… I already have the mold ready: ${nm}. It's under COMMISSIONS.`,`Oí lo que hiciste. Pocos llegan… Ya tengo el molde listo: ${nm}. Está en ENCARGOS.`),6800,"#ffd24a","male")}catch(_){}mode="enc"}}
+  const enc2=mode==="enc"&&!!window.__encList;
   if(mode==null)try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Só forjo com Pedra Cobalto. Essas armas são feitas dela, por isso são tão raras. E ela só existe nas Cavernas Dorf; o portal branco fica logo ali no canto.","I only forge with Cobalt Stone. These weapons are made of it, that's why they're so rare. And it's only found in the Dorf Caves; the white portal is right there in the corner.","Solo forjo con Piedra Cobalto. Estas armas están hechas de ella, por eso son tan raras. Y solo existe en las Cavernas Dorf; el portal blanco está ahí en la esquina."),6200,"#bcd4ff","male")}catch(_){}
   const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
   const bg=this.add.rectangle(d,st/2,_,st,328450,.82).setInteractive();
@@ -2426,13 +2428,17 @@ __forgeWeaponsShop(fromSmith,mode){
   if(window.__apzGet?.(this)?.s===3)weaponsList.push({id:"unique_forge_brokk",name:L3("Martelo Rúnico de Brokk","Brokk's Runic Hammer","Martillo Rúnico de Brokk"),price:150,icon:"icon-axe",stats:"+20 DANO · +6 DEFESA · +2 VIDA · +10% CRÍTICO",color:"#60a5fa"});
   // armaduras da forja: mudam o visual do herói (scripts/source/forge-armor.js)
   const armorsList=Object.entries(window.__FARM||{}).map(([id,a])=>({id,name:L3(...a.name),price:a.price,icon:Xt[id]?.icon||"icon-armor",tint:a.trim,stats:L3(a.st[0],a.st[1],a.st[1]),color:"#"+a.trim.toString(16).padStart(6,"0")}));
-  const list=arm?armorsList:weaponsList;
+  // encomendas especiais: trancadas até o herói cumprir o feito (scripts/source/encomendas.js)
+  const encList=(window.__encList?.(this)||[]).map(e=>({id:e.id,name:e.secret&&e.locked?"???":L3(...e.name),price:e.price,icon:e.icon,stats:e.locked?L3(...e.hint):L3(e.st[0],e.st[1],e.st[1]),color:e.locked?"#8a7f66":e.color,locked:e.locked,special:e.special,secret:e.secret,found:e.found}));
+  const list=enc2?encList:arm?armorsList:weaponsList;
   const RH=list.length>6?27:30,RS=RH+2;
   // abas: ARMAS | ARMADURAS (toque, ou foco + A no controle)
   if(window.__FARM){
-    const tab=(lbl,on,x,m)=>{const t=this.add.text(x,Y+56,on?`▸ ${lbl} ◂`:lbl,{...ti,fontSize:on?"11px":"10px",color:on?"#ffd24a":"#d8cdb4",...(on?{}:{backgroundColor:"#1a120b",padding:{x:8,y:3}})}).setOrigin(.5).setInteractive({useHandCursor:!0});
+    const t3=!!window.__encList;
+    const tab=(lbl,on,x,m)=>{const t=this.add.text(x,Y+56,on?`▸ ${lbl} ◂`:lbl,{...ti,fontSize:t3?(on?"9px":"8px"):on?"11px":"10px",color:on?"#ffd24a":"#d8cdb4",...(on?{}:{backgroundColor:"#1a120b",padding:{x:t3?5:8,y:3}})}).setOrigin(.5).setInteractive({useHandCursor:!0});
       on?(t.__fnSkip=1):t.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeWeaponsShop(fromSmith,m)});o.add(t);return t};
-    tab(L3("⚔ ARMAS","⚔ WEAPONS","⚔ ARMAS"),!arm,LC-66,"wpn");tab(L3("🛡 ARMADURAS","🛡 ARMOR","🛡 ARMADURAS"),arm,LC+66,"arm");
+    if(window.__encList){tab(L3("⚔ ARMAS","⚔ WEAPONS","⚔ ARMAS"),!arm&&!enc2,LC-90,"wpn");tab(L3("🛡 ARMADURAS","🛡 ARMOR","🛡 ARMADURAS"),arm&&!enc2,LC-4,"arm");tab(L3("📜 ENCOMENDAS","📜 COMMISSIONS","📜 ENCARGOS"),enc2,LC+90,"enc")}
+    else{tab(L3("⚔ ARMAS","⚔ WEAPONS","⚔ ARMAS"),!arm,LC-66,"wpn");tab(L3("🛡 ARMADURAS","🛡 ARMOR","🛡 ARMADURAS"),arm,LC+66,"arm");}
   }
   const R0=window.__FARM?Y+70:Y+52;
   const goldText=this.add.text(LC,Y+HH-38,`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${curCoins} ◆`,{...ti,fontSize:"10px",color:"#7fb2ff"}).setOrigin(.5);
@@ -2463,10 +2469,11 @@ __forgeWeaponsShop(fromSmith,mode){
     pName.setText(wp.name.toUpperCase()).setColor(wp.color);
     const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
     hd?pIcon.setTexture("items-hd",wp.id).setDisplaySize(52,52):pIcon.setTexture(this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(2.2);
-    pIcon.clearTint();wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&pIcon.setTint(wp.tint);pIcon.setVisible(!0).setX(pv?RC-70:RC);
-    pStats.setText(wp.stats.split(" · ").join("\n"));
-    const [ot,oc]=ownTxt(wp);pOwn.setText(ot).setColor(oc||"#9cc2ff").setY(pStats.y+pStats.height+6);
-    forgeBtn.setText(`${L3("FORJAR","FORGE","FORJAR")} · ${this.__alPrice(wp.price)} ◆`);
+    pIcon.clearTint().setAlpha(1);wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&pIcon.setTint(wp.tint);pIcon.setVisible(!0).setX(pv?RC-70:RC);
+    wp.locked&&pIcon.setTint(0x000000).setAlpha(.82).setX(RC);pv?.container?.setVisible(!wp.locked);
+    pStats.setText(wp.locked?`🔒 ${wp.stats}`:wp.stats.split(" · ").join("\n"));
+    const [ot,oc]=wp.locked||wp.special?[wp.locked?"":L3("ENTREGUE PELO FERREIRO","DELIVERED BY THE BLACKSMITH","ENTREGADO POR EL HERRERO"),"#4ade80"]:ownTxt(wp);pOwn.setText(wp.found&&!wp.locked?L3(...wp.found):ot).setColor(oc||"#9cc2ff").setY(pStats.y+pStats.height+6);
+    forgeBtn.setText(wp.locked?L3("🔒 FEITO NECESSÁRIO","🔒 DEED REQUIRED","🔒 HAZAÑA NECESARIA"):wp.special?L3("✔ ENTREGUE","✔ DELIVERED","✔ ENTREGADO"):`${L3("FORJAR","FORGE","FORJAR")} · ${this.__alPrice(wp.price)} ◆`);
     showPv(wp);
   };
   const setConfirm=on=>{
@@ -2523,7 +2530,7 @@ __forgeWeaponsShop(fromSmith,mode){
       if(I?.spots?.rack)this.__sparks(I.spots.rack[0],I.spots.rack[1]-14,12);
       return !0;
   };
-  forgeBtn.on("pointerdown",()=>{if(!confirming){this.game.audioEngine?.sfx?.("sfx-ui-confirm");setConfirm(!0)}});
+  forgeBtn.on("pointerdown",()=>{const w0=list[sel];if(w0?.locked||w0?.special){this.game.audioEngine?.sfx?.(w0.locked?"sfx-door-locked":"sfx-ui-tab");msgText.setText(w0.locked?L3("Ainda não. Cumpra o feito e eu forjo.","Not yet. Accomplish the deed and I'll forge it.","Todavía no. Cumple la hazaña y la forjo."):"").setColor("#f87171");return}if(!confirming){this.game.audioEngine?.sfx?.("sfx-ui-confirm");setConfirm(!0)}});
   noBtn.on("pointerdown",()=>setConfirm(!1));
   yesBtn.on("pointerdown",()=>{const wp=list[sel];setConfirm(!1);doBuy(wp);paintRight()});
 
@@ -2534,17 +2541,18 @@ __forgeWeaponsShop(fromSmith,mode){
     const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
     const im=hd?this.add.image(LX+16,ry+RH/2,"items-hd",wp.id).setDisplaySize(24,24):this.add.image(LX+16,ry+RH/2,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(.9);
     wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&im.setTint(wp.tint);
-    const nm=this.add.text(LX+34,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"9px",color:wp.color});
-    const own=ownTxt(wp)[0];
-    const stT=this.add.text(LX+34,ry+16,own?own:wp.stats.split(" · ").slice(0,2).join(" · "),{...Le,fontSize:"7px",color:own?"#9cc2ff":"#e2e8f0"});
-    const prT=this.add.text(LX+LW-4,ry+RH/2,`${this.__alPrice(wp.price)} ◆`,{...ti,fontSize:"10px",color:"#7fb2ff"}).setOrigin(1,.5);
+    wp.locked&&im.setTint(0x000000).setAlpha(.82);
+    const nm=this.add.text(LX+34,ry+4,(wp.locked?"🔒 ":"")+wp.name.toUpperCase(),{...ti,fontSize:"9px",color:wp.color});
+    const own=wp.locked||wp.special?"":ownTxt(wp)[0];
+    const stT=this.add.text(LX+34,ry+16,wp.locked?(wp.secret?L3("Feito secreto","Secret deed","Hazaña secreta"):L3("Feito necessário · veja a pista","Deed required · see the hint","Hazaña necesaria · mira la pista")):wp.special?L3("Martelo eterno","Everlasting hammer","Martillo eterno"):own?own:wp.stats.split(" · ").slice(0,2).join(" · "),{...Le,fontSize:"7px",color:wp.locked?"#8a7f66":own?"#9cc2ff":"#e2e8f0"});
+    const prT=this.add.text(LX+LW-4,ry+RH/2,wp.locked?"🔒":wp.special?"✔":`${this.__alPrice(wp.price)} ◆`,{...ti,fontSize:"10px",color:wp.locked?"#8a7f66":wp.special?"#4ade80":"#7fb2ff"}).setOrigin(1,.5);
     const draw=(on,hover)=>{box.clear();box.fillStyle(on?0x3d2818:0x1a120b,on?.92:hover?.8:.55).fillRoundedRect(LX,ry,LW,RH,4);box.lineStyle(on?1.5:1,on?0xffd24a:hover?0xb8862f:0x5a4832,on||hover?1:.5).strokeRoundedRect(LX,ry,LW,RH,4)};
     draw(idx===sel);
     z.on("pointerover",()=>draw(idx===sel,!0));
     z.on("pointerout",()=>draw(idx===sel));
     z.on("pointerdown",()=>{const pad=this.__fnByPad;select(idx);pad&&this.time.delayedCall(0,()=>focusOn(forgeBtn))});       // tocar escolhe e mostra; forjar só pelo botão, com confirmação (no controle, A leva o foco ao FORJAR)
     rowsUi.push({z,draw});
-    (o.__prTs=o.__prTs||[]).push([prT,wp]);this.__alDisc()&&prT.setColor("#4ade80");
+    wp.locked||wp.special||((o.__prTs=o.__prTs||[]).push([prT,wp]),this.__alDisc()&&prT.setColor("#4ade80"));
     o.add([box,im,nm,stT,prT,z]);
   });
 
@@ -2553,7 +2561,7 @@ __forgeWeaponsShop(fromSmith,mode){
     const rpBtn=this.add.text(LC-66,bY,L3("CONSERTAR","REPAIR","REPARAR"),{...ti,fontSize:"9px",color:"#9cc2ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
     rpBtn.on("pointerover",()=>rpBtn.setColor("#ffffff"));
     rpBtn.on("pointerout",()=>rpBtn.setColor("#9cc2ff"));
-    rpBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeRepairPanel(slot,[...weaponsList,...armorsList],getCoins,setCoins);});
+    rpBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeRepairPanel(slot,[...weaponsList,...armorsList,...encList.filter(e=>!e.special&&!e.locked)],getCoins,setCoins);});
     o.add(rpBtn);
   }
   const swBtn=this.add.text(isCamp?LC:LC+66,bY,L3("⚙ MELHORIAS","⚙ UPGRADES","⚙ MEJORAS"),{...ti,fontSize:"9px",color:"#8fd8ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
@@ -3669,7 +3677,7 @@ const eq0=sv.player.equipment||{},eq={};for(const k in eq0){const it=eq0[k];eq[k
 if(!eq.weapon)eq.weapon={id:__sw,rarity:"COMMON",seed:0};if(__so&&!eq.offhand)eq.offhand={id:__so,rarity:"COMMON",seed:0};
 sv.player.equipment=eq;sv.player.items=(Array.isArray(sv.player.items)?sv.player.items:[]).filter(it=>isForge(it)&&wear(it));
 if(eq.weapon&&eq.weapon.id!==__sw&&!sv.player.items.some(it=>it&&it.id===__sw))sv.player.items.unshift({id:__sw,rarity:"COMMON",seed:0});
-sv.player.potions=1;sv.player.lastPact=null;sv.run.pacts=[];sv.atRefuge=!0;
+sv.player.potions=1;sv.player.lastPact=null;sv.run.pacts=[];sv.run.__kills=0;sv.atRefuge=!0;
 window.__forgeDurSet?.(sl,FD);broke.length&&window.__forgeBrokenAdd?.(sl,broke);localStorage.setItem(Wt("endless",sl),JSON.stringify(sv));const L3=typeof __L3==="function"?__L3:(pt,en)=>pt;try{window.dispatchEvent(new CustomEvent("depthgate:endlessDeath",{detail:{slot:sl}}))}catch(e){}
 const __dep=i.depth||1;this.game.events.emit("ui:banner",L3(`VOCÊ CAIU NA PROFUNDIDADE ${__dep} · O HERÓI VOLTA AO NÍVEL 1`,`YOU FELL AT DEPTH ${__dep} · THE HERO RETURNS TO LEVEL 1`,`CAÍSTE EN LA PROFUNDIDAD ${__dep} · EL HÉROE VUELVE AL NIVEL 1`),"#e05a4a");
 this.time.delayedCall(1700,()=>this.game.events.emit("ui:banner",L3(`VOCÊ VOLTA COM SEU OURO (● ${sv.player.gold|0}), A ARMA INICIAL E AS PEÇAS DO FERREIRO`,`YOU RETURN WITH YOUR GOLD (● ${sv.player.gold|0}), THE STARTING WEAPON AND BLACKSMITH PIECES`,`VUELVES CON TU ORO (● ${sv.player.gold|0}), EL ARMA INICIAL Y LAS PIEZAS DEL HERRERO`),"#f2d9a0"));
@@ -23688,4 +23696,132 @@ window.__endInRun = function (d) {
   };
 }
 
-/*__PASSICONS__*/
+/*__PASSICONS__*//*__ENCOMENDAS__*/
+/* ══ Encomendas especiais do ferreiro ══
+   Peças que o ferreiro só forja para quem fez algo excepcional. Na loja da forja, aba 📜 ENCOMENDAS: as trancadas
+   aparecem como silhueta com a pista do feito; cumprido o feito, a peça fica à venda em Pedra Cobalto, com
+   durabilidade em runs como as outras peças do ferreiro. Os feitos são de cada herói (etiqueta 1..4 / e1..e4).
+   · Coroa do Abismo ........ chegar à profundidade 30 (Modo Infinito)
+   · Anel do Intocado ....... vencer um chefe sem levar dano
+   · Manto do Carrasco ...... 500 abates numa única run (Modo Infinito)
+   · Botas do Peregrino ..... morrer 25 vezes com o mesmo herói (Modo Infinito)
+   · Martelo do Mestre ...... 30 forjas com o Martelo de Forjador → o martelo nunca mais quebra (entregue de graça)
+   · ??? (secreta) .......... vencer um chefe usando só a arma inicial da classe → Amuleto da Origem */
+const __ENC = [
+  { id: "unique_forge_abyss_crown", slot: "helmet", price: 190, runs: 4, icon: "icon-helmet", color: "#c084fc",
+    name: ["Coroa do Abismo", "Crown of the Abyss", "Corona del Abismo"], stats: { defense: 6, damage: 5, critChance: 8 },
+    st: ["+6 DEFESA · +5 DANO · +8% CRÍTICO", "+6 DEFENSE · +5 DAMAGE · +8% CRIT"],
+    hint: ["Só forjo esta para quem viu a profundidade 30 do Abismo.", "I only forge this for someone who has seen depth 30 of the Abyss.", "Solo la forjo para quien vio la profundidad 30 del Abismo."],
+    desc: "Feita com cobalto que só aparece abaixo do trigésimo andar. Pesa como uma promessa." },
+  { id: "unique_forge_untouched_ring", slot: "accessory", price: 170, runs: 4, icon: "icon-ring", color: "#fde68a",
+    name: ["Anel do Intocado", "Ring of the Untouched", "Anillo del Intocado"], stats: { critChance: 15, damage: 4, speed: 10 },
+    st: ["+15% CRÍTICO · +4 DANO · +10 VEL", "+15% CRIT · +4 DAMAGE · +10 SPEED"],
+    hint: ["Derrube um chefe sem que ele encoste um dedo em você.", "Bring down a boss without it laying a finger on you.", "Derriba a un jefe sin que te toque."],
+    desc: "Um aro liso, sem nenhum arranhão — como quem o conquistou." },
+  { id: "unique_forge_executioner_mantle", slot: "armor", price: 200, runs: 3, icon: "icon-armor", color: "#f87171",
+    name: ["Manto do Carrasco", "Executioner's Mantle", "Manto del Verdugo"], stats: { defense: 8, damage: 8, critChance: 6 },
+    st: ["+8 DEFESA · +8 DANO · +6% CRÍTICO", "+8 DEFENSE · +8 DAMAGE · +6% CRIT"],
+    hint: ["Quinhentos abates numa única descida. Nem um a menos.", "Five hundred kills in a single descent. Not one less.", "Quinientos abates en un solo descenso. Ni uno menos."],
+    desc: "Tingido de um vermelho que não sai. Os inimigos sabem quem o veste." },
+  { id: "unique_forge_pilgrim_boots", slot: "boots", price: 140, runs: 6, icon: "icon-boots", color: "#86efac",
+    name: ["Botas do Peregrino", "Pilgrim's Boots", "Botas del Peregrino"], stats: { speed: 25, maxHp: 6, defense: 3 },
+    st: ["+25 VEL · +6 VIDA · +3 DEFESA", "+25 SPEED · +6 HEALTH · +3 DEFENSE"],
+    hint: ["Caia vinte e cinco vezes com o mesmo herói — e continue voltando.", "Fall twenty-five times with the same hero — and keep coming back.", "Cae veinticinco veces con el mismo héroe — y sigue volviendo."],
+    desc: "Gastas de tanto voltar. Quem insiste assim merece um passo mais leve." },
+  { id: "enc_master_hammer", special: "hammer", price: 0, icon: "icon-club", color: "#93c5fd",
+    name: ["Martelo do Mestre-Ferreiro", "Master Smith's Hammer", "Martillo del Maestro Herrero"],
+    st: ["SEU MARTELO DE FORJADOR NUNCA MAIS QUEBRA", "YOUR FORGER'S HAMMER NEVER BREAKS AGAIN"],
+    hint: ["Forje trinta vezes com o Martelo de Forjador. Aí conversamos de mestre para mestre.", "Forge thirty times with the Forger's Hammer. Then we'll talk master to master.", "Forja treinta veces con el Martillo de Forjador. Luego hablamos de maestro a maestro."],
+    desc: "" },
+  { id: "unique_forge_origin_amulet", slot: "accessory", price: 210, runs: 3, icon: "icon-amulet", color: "#fcd34d", secret: !0,
+    name: ["Amuleto da Origem", "Amulet of Origin", "Amuleto del Origen"], stats: { damage: 6, maxHp: 6, defense: 4, maxMana: 20 },
+    st: ["+6 DANO · +6 VIDA · +4 DEFESA · +20 MANA", "+6 DAMAGE · +6 HEALTH · +4 DEFENSE · +20 MANA"],
+    hint: ["???", "???", "???"],
+    found: ["Venceu um chefe só com a arma com que começou.", "Defeated a boss with only the weapon you started with.", "Venció a un jefe solo con el arma con la que empezó."],
+    desc: "Guarda o calor da primeira arma. Lembra de onde você veio." },
+];
+for (const e of __ENC) {
+  if (e.special) continue;
+  Xt[e.id] = { name: e.name[0], type: e.slot === "accessory" ? "accessory" : "armor", slot: e.slot, icon: e.icon, minRarity: "UNIQUE", stats: e.stats,
+    value: e.price * 2, uniqueForge: !0, breaksOnDeath: !0, encomenda: !0, desc: e.desc + " Encomenda especial do ferreiro." };
+  try { _s["item." + e.id] = e.name[1]; Io["item." + e.id] = e.name[2] } catch (x) {}
+  try { window.__FORGE_RUNS && (window.__FORGE_RUNS[e.id] = e.runs) } catch (x) {}
+}
+
+/* feitos do herói */
+function __encTag(S) { try { return window.__heroTag ? window.__heroTag((S?.game || window.__DED_GAME).registry, 1, S?.sys ? S : null) : "1" } catch (e) { return "1" } }
+function __encGet(S) { let o = {}; try { o = JSON.parse(localStorage.getItem("depthgate:feats:" + __encTag(S)) || "{}") || {} } catch (e) {} o.u ??= {}; o.told ??= {}; return o }
+function __encSet(S, o) { try { localStorage.setItem("depthgate:feats:" + __encTag(S), JSON.stringify(o)) } catch (e) {} }
+function __encUnlock(S, id) {
+  const F = __encGet(S); if (F.u[id]) return !1;
+  F.u[id] = Date.now(); __encSet(S, F);
+  const E = __ENC.find(e => e.id === id); if (!E) return !0;
+  const nm = __L3(...E.name), ev = (S?.game || window.__DED_GAME)?.events;
+  try { S?.audioRef?.play?.("sfx-boss-victory") || S?.game?.audioEngine?.sfx?.("sfx-boss-victory") } catch (e) {}
+  setTimeout(() => ev?.emit("ui:banner", __L3(`📜 O FERREIRO OUVIU FALAR DO SEU FEITO · ${nm.toUpperCase()}`, `📜 THE BLACKSMITH HEARD OF YOUR DEED · ${nm.toUpperCase()}`, `📜 EL HERRERO OYÓ DE TU HAZAÑA · ${nm.toUpperCase()}`), "#ffd24a"), 900);
+  return !0;
+}
+window.__encUnlocked = (S, id) => !!__encGet(S).u[id];
+window.__encList = S => { const F = __encGet(S); return __ENC.map(e => ({ ...e, locked: !F.u[e.id] })) };
+window.__encUntold = S => { const F = __encGet(S); return __ENC.filter(e => F.u[e.id] && !F.told[e.id]) };
+window.__encTold = (S, ids) => { const F = __encGet(S); ids.forEach(id => F.told[id] = 1); __encSet(S, F) };
+
+/* Martelo do Mestre: conta as forjas; com 30, o martelo vira eterno */
+{
+  const H0 = __hasHammer;
+  __hasHammer = function (S) { try { if (__encGet(S || { game: window.__DED_GAME }).u.enc_master_hammer) return !0 } catch (e) {} return H0.apply(this, arguments) };
+  const U0 = window.__hammerUse;
+  window.__hammerUse = function (S) {
+    try {
+      const F = __encGet(S); F.forges = (F.forges | 0) + 1; __encSet(S, F);
+      if (F.u.enc_master_hammer) return;
+      if (F.forges >= 30) { __encUnlock(S, "enc_master_hammer"); return }
+    } catch (e) {}
+    return U0?.apply(this, arguments);
+  };
+  const L0 = window.__hammerLeft;
+  window.__hammerLeft = function (S) { try { if (__encGet(S).u.enc_master_hammer) return 0 } catch (e) {} return L0?.apply(this, arguments) ?? 0 };
+}
+
+/* ganchos da run: profundidade, abates, chefes sem dano, chefe com a arma inicial */
+{
+  const isEnd = S => { try { return S.game.registry.get("mode") === "endless" && !!S.endlessRun?.() } catch (e) { return !1 } };
+  const C0 = Sd.prototype.create;
+  Sd.prototype.create = function () {
+    const r = C0.apply(this, arguments);
+    try {
+      const S = this;
+      const hurt = () => { try { for (const e of S.enemies?.getChildren?.() ?? []) e?.active && (e.isBoss || e === S.boss) && (e.__encHit = 1); S.boss && (S.boss.__encHit = 1) } catch (e) {} };
+      S.game.events.on("fx:player-damaged", hurt);
+      let acc = 0;
+      const tick = (t, dt) => {
+        acc += dt; if (acc < 1000) return; acc = 0;
+        try { if (isEnd(S) && (S.endlessRun()?.depth | 0) >= 30) __encUnlock(S, "unique_forge_abyss_crown") } catch (e) {}
+      };
+      S.events.on("update", tick);
+      S.events.once("shutdown", () => { S.game.events.off("fx:player-damaged", hurt); S.events.off("update", tick) });
+    } catch (e) { console.warn("[encomendas]", e) }
+    return r;
+  };
+  const D0 = Sd.prototype.onEnemyDied;
+  Sd.prototype.onEnemyDied = function (e) {
+    const r = D0.apply(this, arguments);
+    try {
+      const S = this;
+      if (isEnd(S)) { const run = S.endlessRun(); run.__kills = (run.__kills | 0) + 1; run.__kills >= 500 && __encUnlock(S, "unique_forge_executioner_mantle") }
+      if (e && (e.isBoss || e === S.boss) && !e.__encDone) {
+        e.__encDone = 1;
+        if (!e.__encHit && !S.player?.dead) __encUnlock(S, "unique_forge_untouched_ring");
+        const cid = S.classDef?.id, start = (typeof xh !== "undefined" && xh[cid]) || "sword", w = S.inventory?.equipment?.weapon;
+        if (w && w.id === start) __encUnlock(S, "unique_forge_origin_amulet");
+      }
+    } catch (x) {}
+    return r;
+  };
+}
+/* Botas do Peregrino: 25 mortes com o mesmo herói do Infinito (conferido na morte e ao abrir a forja) */
+function __encDeaths(S, slot) { try { const d = Nn(slot); if (d.ok && (d.data.player?.deaths | 0) >= 25) __encUnlock(S, "unique_forge_pilgrim_boots") } catch (e) {} }
+window.addEventListener("depthgate:endlessDeath", e => { try { const G = window.__DED_GAME, S = G?.scene?.getScene?.("Game"); __encDeaths(S?.sys ? S : { game: G }, e.detail?.slot || 1) } catch (x) {} });
+window.__encDeaths = __encDeaths;
+
+/*__ENCOMENDAS__*/

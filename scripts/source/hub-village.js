@@ -468,9 +468,11 @@ __forgeRepairPanel(slot,weaponsList,getCoins,setCoins){
 
 __forgeWeaponsShop(fromSmith,mode){
   if(this.panel||this.__busy)return;
-  const arm=mode==="arm"&&!!window.__FARM;
+  const arm=mode==="arm"&&!!window.__FARM,enc=mode==="enc"&&!!window.__encList;
   if(!fromSmith&&window.__apzGet?.(this)?.mourn){this.__apzSmith?.();return}
   const L3=__L3,d=_/2,Y=12,HH=336;
+  if(mode==null&&window.__encUntold){try{window.__encDeaths?.(this,this.fromForest?this.retSlot:(this.game.registry.get("save:slot")??1))}catch(_){}const nw=window.__encUntold(this);if(nw.length){window.__encTold(this,nw.map(e=>e.id));try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46,nm=nw.map(e=>L3(...e.name)).join(", ");this.__say(sx,sy,L3(`Ouvi falar do que você fez. Poucos chegam lá… Já tenho o molde pronto: ${nm}. Está nas ENCOMENDAS.`,`I heard what you did. Few get there… I already have the mold ready: ${nm}. It's under COMMISSIONS.`,`Oí lo que hiciste. Pocos llegan… Ya tengo el molde listo: ${nm}. Está en ENCARGOS.`),6800,"#ffd24a","male")}catch(_){}mode="enc"}}
+  const enc2=mode==="enc"&&!!window.__encList;
   if(mode==null)try{const sm=this.smith,sx=sm?.f?.x??this.playerX,sy=(sm?.f?.y??this.playerY)-46;this.__say(sx,sy,L3("Só forjo com Pedra Cobalto. Essas armas são feitas dela, por isso são tão raras. E ela só existe nas Cavernas Dorf; o portal branco fica logo ali no canto.","I only forge with Cobalt Stone. These weapons are made of it, that's why they're so rare. And it's only found in the Dorf Caves; the white portal is right there in the corner.","Solo forjo con Piedra Cobalto. Estas armas están hechas de ella, por eso son tan raras. Y solo existe en las Cavernas Dorf; el portal blanco está ahí en la esquina."),6200,"#bcd4ff","male")}catch(_){}
   const o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us);
   const bg=this.add.rectangle(d,st/2,_,st,328450,.82).setInteractive();
@@ -528,13 +530,17 @@ __forgeWeaponsShop(fromSmith,mode){
   if(window.__apzGet?.(this)?.s===3)weaponsList.push({id:"unique_forge_brokk",name:L3("Martelo Rúnico de Brokk","Brokk's Runic Hammer","Martillo Rúnico de Brokk"),price:150,icon:"icon-axe",stats:"+20 DANO · +6 DEFESA · +2 VIDA · +10% CRÍTICO",color:"#60a5fa"});
   // armaduras da forja: mudam o visual do herói (scripts/source/forge-armor.js)
   const armorsList=Object.entries(window.__FARM||{}).map(([id,a])=>({id,name:L3(...a.name),price:a.price,icon:Xt[id]?.icon||"icon-armor",tint:a.trim,stats:L3(a.st[0],a.st[1],a.st[1]),color:"#"+a.trim.toString(16).padStart(6,"0")}));
-  const list=arm?armorsList:weaponsList;
+  // encomendas especiais: trancadas até o herói cumprir o feito (scripts/source/encomendas.js)
+  const encList=(window.__encList?.(this)||[]).map(e=>({id:e.id,name:e.secret&&e.locked?"???":L3(...e.name),price:e.price,icon:e.icon,stats:e.locked?L3(...e.hint):L3(e.st[0],e.st[1],e.st[1]),color:e.locked?"#8a7f66":e.color,locked:e.locked,special:e.special,secret:e.secret,found:e.found}));
+  const list=enc2?encList:arm?armorsList:weaponsList;
   const RH=list.length>6?27:30,RS=RH+2;
   // abas: ARMAS | ARMADURAS (toque, ou foco + A no controle)
   if(window.__FARM){
-    const tab=(lbl,on,x,m)=>{const t=this.add.text(x,Y+56,on?`▸ ${lbl} ◂`:lbl,{...ti,fontSize:on?"11px":"10px",color:on?"#ffd24a":"#d8cdb4",...(on?{}:{backgroundColor:"#1a120b",padding:{x:8,y:3}})}).setOrigin(.5).setInteractive({useHandCursor:!0});
+    const t3=!!window.__encList;
+    const tab=(lbl,on,x,m)=>{const t=this.add.text(x,Y+56,on?`▸ ${lbl} ◂`:lbl,{...ti,fontSize:t3?(on?"9px":"8px"):on?"11px":"10px",color:on?"#ffd24a":"#d8cdb4",...(on?{}:{backgroundColor:"#1a120b",padding:{x:t3?5:8,y:3}})}).setOrigin(.5).setInteractive({useHandCursor:!0});
       on?(t.__fnSkip=1):t.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeWeaponsShop(fromSmith,m)});o.add(t);return t};
-    tab(L3("⚔ ARMAS","⚔ WEAPONS","⚔ ARMAS"),!arm,LC-66,"wpn");tab(L3("🛡 ARMADURAS","🛡 ARMOR","🛡 ARMADURAS"),arm,LC+66,"arm");
+    if(window.__encList){tab(L3("⚔ ARMAS","⚔ WEAPONS","⚔ ARMAS"),!arm&&!enc2,LC-90,"wpn");tab(L3("🛡 ARMADURAS","🛡 ARMOR","🛡 ARMADURAS"),arm&&!enc2,LC-4,"arm");tab(L3("📜 ENCOMENDAS","📜 COMMISSIONS","📜 ENCARGOS"),enc2,LC+90,"enc")}
+    else{tab(L3("⚔ ARMAS","⚔ WEAPONS","⚔ ARMAS"),!arm,LC-66,"wpn");tab(L3("🛡 ARMADURAS","🛡 ARMOR","🛡 ARMADURAS"),arm,LC+66,"arm");}
   }
   const R0=window.__FARM?Y+70:Y+52;
   const goldText=this.add.text(LC,Y+HH-38,`${L3("PEDRA COBALTO","COBALT STONE","PIEDRA COBALTO")}: ${curCoins} ◆`,{...ti,fontSize:"10px",color:"#7fb2ff"}).setOrigin(.5);
@@ -565,10 +571,11 @@ __forgeWeaponsShop(fromSmith,mode){
     pName.setText(wp.name.toUpperCase()).setColor(wp.color);
     const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
     hd?pIcon.setTexture("items-hd",wp.id).setDisplaySize(52,52):pIcon.setTexture(this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(2.2);
-    pIcon.clearTint();wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&pIcon.setTint(wp.tint);pIcon.setVisible(!0).setX(pv?RC-70:RC);
-    pStats.setText(wp.stats.split(" · ").join("\n"));
-    const [ot,oc]=ownTxt(wp);pOwn.setText(ot).setColor(oc||"#9cc2ff").setY(pStats.y+pStats.height+6);
-    forgeBtn.setText(`${L3("FORJAR","FORGE","FORJAR")} · ${this.__alPrice(wp.price)} ◆`);
+    pIcon.clearTint().setAlpha(1);wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&pIcon.setTint(wp.tint);pIcon.setVisible(!0).setX(pv?RC-70:RC);
+    wp.locked&&pIcon.setTint(0x000000).setAlpha(.82).setX(RC);pv?.container?.setVisible(!wp.locked);
+    pStats.setText(wp.locked?`🔒 ${wp.stats}`:wp.stats.split(" · ").join("\n"));
+    const [ot,oc]=wp.locked||wp.special?[wp.locked?"":L3("ENTREGUE PELO FERREIRO","DELIVERED BY THE BLACKSMITH","ENTREGADO POR EL HERRERO"),"#4ade80"]:ownTxt(wp);pOwn.setText(wp.found&&!wp.locked?L3(...wp.found):ot).setColor(oc||"#9cc2ff").setY(pStats.y+pStats.height+6);
+    forgeBtn.setText(wp.locked?L3("🔒 FEITO NECESSÁRIO","🔒 DEED REQUIRED","🔒 HAZAÑA NECESARIA"):wp.special?L3("✔ ENTREGUE","✔ DELIVERED","✔ ENTREGADO"):`${L3("FORJAR","FORGE","FORJAR")} · ${this.__alPrice(wp.price)} ◆`);
     showPv(wp);
   };
   const setConfirm=on=>{
@@ -625,7 +632,7 @@ __forgeWeaponsShop(fromSmith,mode){
       if(I?.spots?.rack)this.__sparks(I.spots.rack[0],I.spots.rack[1]-14,12);
       return !0;
   };
-  forgeBtn.on("pointerdown",()=>{if(!confirming){this.game.audioEngine?.sfx?.("sfx-ui-confirm");setConfirm(!0)}});
+  forgeBtn.on("pointerdown",()=>{const w0=list[sel];if(w0?.locked||w0?.special){this.game.audioEngine?.sfx?.(w0.locked?"sfx-door-locked":"sfx-ui-tab");msgText.setText(w0.locked?L3("Ainda não. Cumpra o feito e eu forjo.","Not yet. Accomplish the deed and I'll forge it.","Todavía no. Cumple la hazaña y la forjo."):"").setColor("#f87171");return}if(!confirming){this.game.audioEngine?.sfx?.("sfx-ui-confirm");setConfirm(!0)}});
   noBtn.on("pointerdown",()=>setConfirm(!1));
   yesBtn.on("pointerdown",()=>{const wp=list[sel];setConfirm(!1);doBuy(wp);paintRight()});
 
@@ -636,17 +643,18 @@ __forgeWeaponsShop(fromSmith,mode){
     const hd=this.textures.exists("items-hd")&&this.textures.get("items-hd").has(wp.id);
     const im=hd?this.add.image(LX+16,ry+RH/2,"items-hd",wp.id).setDisplaySize(24,24):this.add.image(LX+16,ry+RH/2,this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(.9);
     wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&im.setTint(wp.tint);
-    const nm=this.add.text(LX+34,ry+4,wp.name.toUpperCase(),{...ti,fontSize:"9px",color:wp.color});
-    const own=ownTxt(wp)[0];
-    const stT=this.add.text(LX+34,ry+16,own?own:wp.stats.split(" · ").slice(0,2).join(" · "),{...Le,fontSize:"7px",color:own?"#9cc2ff":"#e2e8f0"});
-    const prT=this.add.text(LX+LW-4,ry+RH/2,`${this.__alPrice(wp.price)} ◆`,{...ti,fontSize:"10px",color:"#7fb2ff"}).setOrigin(1,.5);
+    wp.locked&&im.setTint(0x000000).setAlpha(.82);
+    const nm=this.add.text(LX+34,ry+4,(wp.locked?"🔒 ":"")+wp.name.toUpperCase(),{...ti,fontSize:"9px",color:wp.color});
+    const own=wp.locked||wp.special?"":ownTxt(wp)[0];
+    const stT=this.add.text(LX+34,ry+16,wp.locked?(wp.secret?L3("Feito secreto","Secret deed","Hazaña secreta"):L3("Feito necessário · veja a pista","Deed required · see the hint","Hazaña necesaria · mira la pista")):wp.special?L3("Martelo eterno","Everlasting hammer","Martillo eterno"):own?own:wp.stats.split(" · ").slice(0,2).join(" · "),{...Le,fontSize:"7px",color:wp.locked?"#8a7f66":own?"#9cc2ff":"#e2e8f0"});
+    const prT=this.add.text(LX+LW-4,ry+RH/2,wp.locked?"🔒":wp.special?"✔":`${this.__alPrice(wp.price)} ◆`,{...ti,fontSize:"10px",color:wp.locked?"#8a7f66":wp.special?"#4ade80":"#7fb2ff"}).setOrigin(1,.5);
     const draw=(on,hover)=>{box.clear();box.fillStyle(on?0x3d2818:0x1a120b,on?.92:hover?.8:.55).fillRoundedRect(LX,ry,LW,RH,4);box.lineStyle(on?1.5:1,on?0xffd24a:hover?0xb8862f:0x5a4832,on||hover?1:.5).strokeRoundedRect(LX,ry,LW,RH,4)};
     draw(idx===sel);
     z.on("pointerover",()=>draw(idx===sel,!0));
     z.on("pointerout",()=>draw(idx===sel));
     z.on("pointerdown",()=>{const pad=this.__fnByPad;select(idx);pad&&this.time.delayedCall(0,()=>focusOn(forgeBtn))});       // tocar escolhe e mostra; forjar só pelo botão, com confirmação (no controle, A leva o foco ao FORJAR)
     rowsUi.push({z,draw});
-    (o.__prTs=o.__prTs||[]).push([prT,wp]);this.__alDisc()&&prT.setColor("#4ade80");
+    wp.locked||wp.special||((o.__prTs=o.__prTs||[]).push([prT,wp]),this.__alDisc()&&prT.setColor("#4ade80"));
     o.add([box,im,nm,stT,prT,z]);
   });
 
@@ -655,7 +663,7 @@ __forgeWeaponsShop(fromSmith,mode){
     const rpBtn=this.add.text(LC-66,bY,L3("CONSERTAR","REPAIR","REPARAR"),{...ti,fontSize:"9px",color:"#9cc2ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});
     rpBtn.on("pointerover",()=>rpBtn.setColor("#ffffff"));
     rpBtn.on("pointerout",()=>rpBtn.setColor("#9cc2ff"));
-    rpBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeRepairPanel(slot,[...weaponsList,...armorsList],getCoins,setCoins);});
+    rpBtn.on("pointerdown",()=>{o.destroy();this.panel=null;this.__forgeRepairPanel(slot,[...weaponsList,...armorsList,...encList.filter(e=>!e.special&&!e.locked)],getCoins,setCoins);});
     o.add(rpBtn);
   }
   const swBtn=this.add.text(isCamp?LC:LC+66,bY,L3("⚙ MELHORIAS","⚙ UPGRADES","⚙ MEJORAS"),{...ti,fontSize:"9px",color:"#8fd8ff"}).setOrigin(.5).setInteractive({useHandCursor:!0});

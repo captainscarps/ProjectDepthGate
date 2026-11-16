@@ -173,6 +173,40 @@ def forge_armor(I, k):
         B('<path d="M40 104 L88 104" stroke="#6ff3ff" stroke-width="2" stroke-dasharray="3 3"/>')
 
 
+# ── encomendas especiais do ferreiro (scripts/source/encomendas.js) ──
+def enc_icon(I, k):
+    B = I.body.append
+    if k == "crown":       # Coroa do Abismo: coroa de cobalto escuro com pontas roxas e gema do vazio
+        B(f'<path d="M26 92 L22 44 L44 66 L64 30 L84 66 L106 44 L102 92Z" fill="{I.lin(list(MAT["obsidian"]), 0, 0, 0, 1)}" stroke="{OUT}" stroke-width="3.5" stroke-linejoin="round"/>')
+        B(f'<rect x="24" y="88" width="80" height="16" rx="3" fill="{I.metal("darksteel", True)}" stroke="{OUT}" stroke-width="3"/>')
+        for x in (22, 64, 106):
+            B(f'<circle cx="{x}" cy="{44 if x != 64 else 30}" r="5" fill="#c690ff" stroke="{OUT}" stroke-width="2"/>')
+        B(gem(I, 64, 70, 9, "void"))
+        for x in (40, 88):
+            B(gem(I, x, 96, 4.5, "amethyst"))
+        B('<path d="M30 104 Q64 116 98 104" stroke="#a855f7" stroke-width="2" fill="none" opacity=".7"/>')
+    elif k == "ring":      # Anel do Intocado: aro liso e polido, sem arranhão, com diamante
+        ring(I, "gold", "diamond", big=True)
+        B('<path d="M40 72 Q46 58 58 54" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".9"/>')
+        for (x, y, r) in ((92, 34, 6), (30, 40, 4), (100, 88, 4)):
+            B(star(x, y, r, "#fff6cf"))
+    elif k == "mantle":    # Manto do Carrasco: capa vermelho-sangue com capuz e machado bordado
+        armor(I, "crimson", "darksteel", "cloak", None)
+        B(f'<path d="M64 60 L64 104" stroke="{MAT["darksteel"][1]}" stroke-width="4"/>')
+        B(f'<path d="M64 64 Q80 66 80 80 Q72 76 64 78Z" fill="{I.metal("steel", True)}" stroke="{OUT}" stroke-width="2"/>')
+        B('<path d="M32 108 L40 96 M96 108 L88 96" stroke="#4f0b0b" stroke-width="3"/>')
+    elif k == "boots":     # Botas do Peregrino: couro gasto, remendos, asinhas verdes
+        boots(I, "leather", "bronze", "boot", "emerald", wings="jade")
+        for (x, y) in ((44, 86), (82, 84)):
+            B(f'<rect x="{x}" y="{y}" width="9" height="7" fill="{MAT["greenleather"][1]}" stroke="{OUT}" stroke-width="1.6" transform="rotate(-12 {x} {y})"/>')
+            B(f'<path d="M{x+1} {y+2} L{x+8} {y+2}" stroke="#e8dcc0" stroke-width="1" stroke-dasharray="1.5 1.5" transform="rotate(-12 {x} {y})"/>')
+    elif k == "amulet":    # Amuleto da Origem: medalhão dourado com a brasa da primeira arma
+        amulet(I, "gold", "topaz", "ember", "gold")
+        B('<circle cx="64" cy="80" r="26" fill="none" stroke="#fde68a" stroke-width="1.6" stroke-dasharray="3 4" opacity=".9"/>')
+    elif k == "hammer":    # Martelo do Mestre-Ferreiro: martelo de cobalto e ouro, com runas acesas
+        blunt(I, "hammer", "cobalt", "darkwood", "topaz", "#93c5fd", "gold")
+
+
 UNIQ = {
     # armas
     "bulwark_blade": lambda: U(lambda I: sword(I, "steel", "silver", "leather", "silver", "curved", "sapphire", "sapphire", "#4f8dff", None, None, "broad", 16), "#4f8dff"),
@@ -213,6 +247,12 @@ UNIQ = {
     "winter_fangs": lambda: U(lambda I: twin(I, blade_mat="ice", guard_mat="silver", grip_mat="cloth_grey", pom_mat="silver", bkind="curved", gem_g="sapphire", glow="#bff6ff"), "#7af6ff", "#5ad6ff", 3, 42),
     "winter_axe": lambda: U(lambda I: axe(I, "ice", "darkwood", False, "sapphire", "#ffffff", None, "silver"), "#5ad6ff"),
     # armas do ferreiro (forjadas em Pedra Cobalto)
+    "unique_forge_abyss_crown": lambda: U(lambda I: enc_icon(I, "crown"), "#a855f7", "#7a2cff", 4, 121, 5),
+    "unique_forge_untouched_ring": lambda: U(lambda I: enc_icon(I, "ring"), "#fff6cf", "#ffe08a", 5, 122, 5),
+    "unique_forge_executioner_mantle": lambda: U(lambda I: enc_icon(I, "mantle"), "#ff3b3b", "#c42b2b", 3, 123, 5),
+    "unique_forge_pilgrim_boots": lambda: U(shrink(lambda I: enc_icon(I, "boots"), .9, 2), "#86efac", None, 3, 124, 5),
+    "unique_forge_origin_amulet": lambda: U(lambda I: enc_icon(I, "amulet"), "#fcd34d", "#ffae1e", 4, 125, 5),
+    "enc_master_hammer": lambda: U(shrink(lambda I: enc_icon(I, "hammer"), .86, 4), "#93c5fd", "#60a5fa", 5, 126, 5),
     "armor_forge_brasa": lambda: U(lambda I: forge_armor(I, "brasa"), "#ff8a2a", "#ff6a1a", 4, 111, 5),
     "armor_forge_geada": lambda: U(lambda I: forge_armor(I, "geada"), "#bfe8ff", "#8fd8ff", 5, 112, 5),
     "armor_forge_penumbra": lambda: U(lambda I: forge_armor(I, "penumbra"), "#a060ff", "#7a2cff", 3, 113, 5),
