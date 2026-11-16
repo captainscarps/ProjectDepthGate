@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.5 · cache ded-web-v6.8.5-forja-pad)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.6 · cache ded-web-v6.8.6-controle)
+
+P216.6 — VARREDURA DE MENUS NO CONTROLE
+· Treino de Pets: A no pet leva o foco ao botão de ação (ADOTAR / LEVAR COMIGO / RECRUTAR); direita pula da lista
+  para o botão e alterna ✔/✕ na confirmação; esquerda volta ao pet (mesmo padrão da Forja Ancestral).
+· Valdrak Antiga (sonho, memórias do rei, final): a cena lia o controle pelo plugin do Phaser, que não está ligado
+  no jogo — andar, atacar, pular, usar, diálogos e a escolha final não respondiam ao controle. Agora lê direto do
+  navegador como o resto do jogo; a ponte de controle→teclado fica desligada nessa cena (não avança fala em dobro).
+  A escolha final aceita direcional/analógico + A.
+· Conferidos no controle e sem mudança: Vendedor, Santuário, Ervas, Mural/Hall da Fama, Melhorias, Conserto, pausa do
+  Refúgio, loja da run (A confirma, esquerda/direita trocam a aba, B fecha), inventário (Select), livro de abas,
+  Hall da Fama da pausa, escolha da missão da bruxa.
 
 P216.5 — FORJA ANCESTRAL NO CONTROLE
 · A numa peça agora escolhe e já leva o foco para FORJAR (antes o foco ficava na lista e o FORJAR só aparecia

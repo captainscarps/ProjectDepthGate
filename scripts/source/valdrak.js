@@ -165,8 +165,9 @@ class __ValdrakAntiga extends j.Scene {
     S.input.on("pointerup", p => { if (p.id !== S.joy.id) return; S.joy.id = null; S.joy.dx = S.joy.dy = 0; S.joy.knob.setPosition(S.joy.base.x, S.joy.base.y) });
   }
   padState() {
-    const g = this.input.gamepad?.pad1; if (!g) return null;
-    const b = i => !!g.buttons[i]?.pressed, ax = g.axes[0]?.getValue?.() ?? 0, ay = g.axes[1]?.getValue?.() ?? 0;
+    // controle lido direto do navegador (o plugin de controle do Phaser não está ligado no jogo)
+    let g = null; try { g = Array.from(navigator.getGamepads?.() || []).find(p => p && p.connected) } catch (e) {} if (!g) return null;
+    const b = i => !!(g.buttons[i]?.pressed || (g.buttons[i]?.value ?? 0) > .5), ax = g.axes[0] ?? 0, ay = g.axes[1] ?? 0;
     return { x: Math.abs(ax) > .25 ? ax : (b(14) ? -1 : b(15) ? 1 : 0), y: Math.abs(ay) > .25 ? ay : (b(12) ? -1 : b(13) ? 1 : 0), a: b(0), b: b(1), x2: b(2), run: b(5) || b(7) };
   }
   // ── diálogo ────────────────────────────────────────────────────────────────────────────────────
@@ -452,7 +453,8 @@ class __ValdrakAntiga extends j.Scene {
     });
     const kd = e => { const c = e.code; if (c === "Digit1") fin(0); else if (c === "Digit2") fin(1); else if (/Arrow(Up|Down)|KeyW|KeyS/.test(c)) { sel = 1 - sel; paint() } else if (/Enter|Space|KeyE/.test(c)) fin(sel) };
     S.input.keyboard?.on("keydown", kd); paint();
-    let pad = 0; const pu = () => { if (done) return; const g = S.input.gamepad?.getPad?.(0); if (g) { const y = g.leftStick?.y || 0; if (Math.abs(y) > .6 && !pad) { sel = 1 - sel; paint(); pad = 1 } else if (Math.abs(y) < .3) pad = 0; if (g.A) fin(sel) } S.time.delayedCall(60, pu) }; pu();
+    // controle: direcional ou analógico troca a opção, A confirma (ignora o A que ainda estava apertado do diálogo)
+    let pv = { m: 0, a: !!S.padState()?.a }; const pu = () => { if (done) return; const P = S.padState(); if (P) { const m = Math.abs(P.y) > .6 ? 1 : 0; if (m && !pv.m) { sel = 1 - sel; paint() } if (P.a && !pv.a) fin(sel); pv = { m, a: P.a } } S.time.delayedCall(50, pu) }; pu();
   }
   // ── memórias do rei adulto ──────────────────────────────────────────────────────────────────────
   startMemory() {

@@ -642,7 +642,17 @@ function __bkPetTab(C, on) {
         .setBackgroundColor(s2.act ? "#2f5a2a" : "#6e3b22");
       for (const b of [btn, yesBtn, noBtn]) b.input && (b.input.enabled = b.visible);
     };
-    const refocus = (want) => { this.__fnAuto(o, confirming ? noBtn : cB, !0); if (this.__fn && want) { const k = this.__fn.items.indexOf(want); k >= 0 && (this.__fn.sel = k); this.__fnDraw() } };
+    const refocus = (want) => {
+      this.__fnAuto(o, confirming ? noBtn : cB, !0); if (this.__fn && want) { const k = this.__fn.items.indexOf(want); k >= 0 && (this.__fn.sel = k); this.__fnDraw() }
+      // controle: direita leva ao botão de ação (ou alterna ✔/✕), esquerda volta para o pet escolhido
+      const F = this.__fn; if (F && F.o === o) F.lr = d => {
+        const cur = F.items[F.sel], isRow = rowsUi.some(r => r.z === cur), go = b => { const k = F.items.indexOf(b); k >= 0 && (F.sel = k, this.__fnDraw(), this.game.audioEngine?.sfx?.("sfx-ui-move")) };
+        if (confirming) return go(cur === yesBtn ? noBtn : yesBtn);
+        if (d > 0 && isRow && btn.visible) return go(btn);
+        if (d < 0 && cur === btn) return go(rowsUi[sel].z);
+        this.__fnNav(d);
+      };
+    };
     const setConfirm = (on) => {
       confirming = on; const D = __PETS[list[sel]];
       ask.setVisible(on); yesBtn.setVisible(on); noBtn.setVisible(on);
@@ -650,7 +660,7 @@ function __bkPetTab(C, on) {
       for (const r of rowsUi) r.z.input && (r.z.input.enabled = !on);
       paint(); refocus(on ? yesBtn : btn);
     };
-    const select = (k) => { if (confirming) return; sel = k; msg.setText(""); paint(); this.game.audioEngine?.sfx?.("sfx-ui-tab"); this.__fn && refocus(rowsUi[k].z) };
+    const select = (k) => { if (confirming) return; const pad = this.__fnByPad; sel = k; msg.setText(""); paint(); this.game.audioEngine?.sfx?.("sfx-ui-tab"); this.__fn && refocus(pad && btn.visible ? btn : rowsUi[k].z) };   // no controle, A no pet leva o foco ao botão de ação
     btn.on("pointerdown", () => {
       const id = list[sel], D = __PETS[id], s2 = state(id);
       if (s2.act || (D.quest && !s2.own)) return;
