@@ -121,6 +121,58 @@ def U(fn, glow=None, aura=None, sp=0, seed=7, gr=4):
     return I.svg(glow, gr, sparkles(seed, sp) if sp else None, aura)
 
 
+# ── armaduras do ferreiro (forjadas em Pedra Cobalto): desenho próprio de cada uma ──
+MAT.update({
+    "ember_plate": ("#8a7a70", "#3b302c", "#140f0c"),
+    "penumbra": ("#9a86d0", "#2a2140", "#0d0918"),
+    "roots": ("#a8d884", "#4f7a36", "#1a3010"),
+    "dawn": ("#ffffff", "#f1e7cc", "#a08a5e"),
+})
+
+
+def forge_armor(I, k):
+    B = I.body.append
+    if k == "brasa":
+        armor(I, "ember_plate", "lava", "plate", "amber", spikes=True)
+        for d in ("M44 62 L52 70 L48 80 L56 90", "M84 58 L76 68 L82 78 L74 92", "M60 96 L66 104 L62 110"):
+            B(f'<path d="{d}" stroke="#ff7a1a" stroke-width="3.2" fill="none" stroke-linecap="round"/>')
+            B(f'<path d="{d}" stroke="#ffe08a" stroke-width="1.2" fill="none" stroke-linecap="round"/>')
+        for (x, y, r) in ((30, 22, 2.6), (98, 18, 2.2), (60, 14, 2), (106, 30, 1.8)):
+            B(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#ffb04a"/>')
+    elif k == "geada":
+        armor(I, "ice", "silver", "cloak", "diamond")
+        B('<path d="M28 108 L36 98 L44 110 L54 100 L64 112 L74 100 L84 110 L92 98 L100 108" stroke="#f2fbff" stroke-width="3" fill="none" stroke-linejoin="round"/>')
+        for (x, y, r) in ((40, 78, 6), (86, 70, 5), (66, 92, 4), (100, 40, 4), (26, 46, 3.5)):
+            B(star(x, y, r, "#ffffff"))
+    elif k == "penumbra":
+        armor(I, "penumbra", "obsidian", "robe", "void")
+        for d in ("M30 100 C18 86 30 70 20 58", "M98 100 C110 86 98 72 108 60", "M64 112 C56 120 72 124 64 126"):
+            B(f'<path d="{d}" stroke="#b06cff" stroke-width="3.4" fill="none" stroke-linecap="round" opacity=".85"/>')
+        B('<path d="M50 64 Q64 56 78 64 Q64 70 50 64Z" fill="#b06cff" opacity=".9"/><circle cx="64" cy="64" r="3" fill="#f0d8ff"/>')
+    elif k == "raizes":
+        armor(I, "roots", "gold", "leather", "emerald")
+        for d in ("M38 40 C50 56 34 70 46 86 C52 96 42 104 46 110", "M90 40 C78 56 94 70 82 86 C76 96 86 104 82 110"):
+            B(f'<path d="{d}" stroke="#5a3a1c" stroke-width="4" fill="none" stroke-linecap="round"/>')
+            B(f'<path d="{d}" stroke="#8a5a2c" stroke-width="1.6" fill="none" stroke-linecap="round"/>')
+        for (x, y, a) in ((44, 58, -30), (84, 60, 30), (48, 96, -20), (80, 98, 20), (64, 30, 0)):
+            B(f'<ellipse cx="{x}" cy="{y}" rx="7" ry="3.6" transform="rotate({a} {x} {y})" fill="#8ee06a" stroke="#14301a" stroke-width="1.6"/>')
+    elif k == "aurora":
+        I.under.append('<circle cx="64" cy="20" r="15" fill="none" stroke="#ffe08a" stroke-width="5" opacity=".95"/>')
+        I.under.append('<circle cx="64" cy="20" r="15" fill="none" stroke="#fff6cf" stroke-width="1.6"/>')
+        armor(I, "dawn", "gold", "plate", "topaz")
+        for a in range(0, 360, 45):
+            import math as _m
+            x1, y1 = 64 + _m.cos(_m.radians(a)) * 8, 76 + _m.sin(_m.radians(a)) * 8
+            x2, y2 = 64 + _m.cos(_m.radians(a)) * 14, 76 + _m.sin(_m.radians(a)) * 14
+            B(f'<path d="M{x1:.1f} {y1:.1f} L{x2:.1f} {y2:.1f}" stroke="#f2c14e" stroke-width="2.6" stroke-linecap="round"/>')
+        B('<circle cx="64" cy="76" r="7" fill="#ffcf4a" stroke="#0b0d13" stroke-width="2.2"/>')
+    elif k == "cobalto":
+        armor(I, "cobalt", "silver", "plate", "cobalt", spikes=True)
+        for d in ("M46 72 L52 66 L58 72 L52 78Z", "M70 72 L76 66 L82 72 L76 78Z", "M58 92 L64 86 L70 92 L64 98Z"):
+            B(f'<path d="{d}" fill="none" stroke="#6ff3ff" stroke-width="2.4"/>')
+        B('<path d="M40 104 L88 104" stroke="#6ff3ff" stroke-width="2" stroke-dasharray="3 3"/>')
+
+
 UNIQ = {
     # armas
     "bulwark_blade": lambda: U(lambda I: sword(I, "steel", "silver", "leather", "silver", "curved", "sapphire", "sapphire", "#4f8dff", None, None, "broad", 16), "#4f8dff"),
@@ -161,6 +213,12 @@ UNIQ = {
     "winter_fangs": lambda: U(lambda I: twin(I, blade_mat="ice", guard_mat="silver", grip_mat="cloth_grey", pom_mat="silver", bkind="curved", gem_g="sapphire", glow="#bff6ff"), "#7af6ff", "#5ad6ff", 3, 42),
     "winter_axe": lambda: U(lambda I: axe(I, "ice", "darkwood", False, "sapphire", "#ffffff", None, "silver"), "#5ad6ff"),
     # armas do ferreiro (forjadas em Pedra Cobalto)
+    "armor_forge_brasa": lambda: U(lambda I: forge_armor(I, "brasa"), "#ff8a2a", "#ff6a1a", 4, 111, 5),
+    "armor_forge_geada": lambda: U(lambda I: forge_armor(I, "geada"), "#bfe8ff", "#8fd8ff", 5, 112, 5),
+    "armor_forge_penumbra": lambda: U(lambda I: forge_armor(I, "penumbra"), "#a060ff", "#7a2cff", 3, 113, 5),
+    "armor_forge_raizes": lambda: U(lambda I: forge_armor(I, "raizes"), "#d8e870", "#8ee06a", 3, 114, 5),
+    "armor_forge_aurora": lambda: U(lambda I: forge_armor(I, "aurora"), "#ffe08a", "#ffcf4a", 5, 115, 5),
+    "armor_forge_cobalto": lambda: U(lambda I: forge_armor(I, "cobalto"), "#58e6ff", "#3d6cf0", 4, 116, 5),
     "unique_forge_aegis": lambda: U(lambda I: sword(I, "cobalt", "gold", "cloth_blue", "gold", "wings", "topaz", "diamond", "#ffe9a0", "#ffd36a", None, "broad", 15), "#ffd36a", "#ffcf5a", 4, 101, 5),
     "unique_forge_eclipse": lambda: U(lambda I: sword(I, "darksteel", "gold", "cloth_black", "cobalt", "curved", "onyx", "onyx", "#0b0d13", "#ffcf5a", None, "jagged", 14), "#ffae1e", "#1a1030", 4, 102, 5),
     "unique_forge_shadowfangs": lambda: U(lambda I: twin(I, blade_mat="cobalt", guard_mat="darksteel", grip_mat="cloth_black", pom_mat="darksteel", bkind="fang", gem_g="sapphire", glow="#7ad8ff"), "#38bdf8", "#1f8fd0", 3, 103),

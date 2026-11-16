@@ -1,4 +1,18 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.12 · cache ded-web-v6.9.2-aviso-amigos)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.13 · cache ded-web-v6.9.3-passivas)
+
+P216.13 — PESADELO: UMA PASSIVA POR GRAU · ÍCONES DAS PASSIVAS E DAS ARMADURAS DO FERREIRO
+· Bug: ao chegar no nível 15 do Infinito apareciam 4 escolhas de passiva seguidas. A conta dos graus de Pesadelo
+  (__nmT) ainda partia do XP antigo do nível 15 (8200), mas a curva nova pede 18600 — o herói já chegava com
+  4 graus. Agora os graus contam a partir do XP do nível máximo: no 15 não há grau nenhum e cada grau novo dá
+  UMA escolha de passiva.
+· Ícones próprios para as 130 passivas das árvores do Infinito (antes reaproveitavam ícones de arma/habilidade, até
+  5 iguais): desenho do efeito + selo no canto (↑ aumenta, ↓ reduz dano, + cura, × multiplica, relógio = tempo,
+  caveira = execução, 1 = uma vez por andar…); passivas de topo com moldura dourada e de Pesadelo com moldura
+  carmesim e chifres. Atlas assets/pixel-art/ui/passives.png (scripts/build_passive_icons.py); o jogo monta as
+  texturas "ip-<id>" no carregamento (scripts/source/passivas-icones.js).
+· Ícones HD próprios das 6 armaduras do ferreiro no atlas items-hd: Brasa Viva (placas carbonizadas com rachaduras
+  em brasa), Geada Eterna (manto de gelo com cristais), Penumbra (veste roxa com sombras), Raízes Vivas (couro
+  com raízes e folhas), Aurora (placas claras com halo e sol) e Cobalto Rúnico (placas azuis com runas).
 
 P216.12 — AVISO DE AMIGO QUE VOLTOU DO ABISMO · FERREIRO SEM MISSÃO NO INFINITO
 · Ferreiro no Modo Infinito não fala mais da missão do aprendiz Brokk (nem o Brokk aparece na forja): o Infinito

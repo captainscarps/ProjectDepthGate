@@ -437,4 +437,5 @@ def main():
     print(len(out), "ícones")
 
 
-main()
+if __name__ == "__main__":
+    main()
