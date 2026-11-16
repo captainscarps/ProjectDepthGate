@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.4 · cache ded-web-v6.8.4-vozes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.5 · cache ded-web-v6.8.5-forja-pad)
+
+P216.5 — FORJA ANCESTRAL NO CONTROLE
+· A numa peça agora escolhe e já leva o foco para FORJAR (antes o foco ficava na lista e o FORJAR só aparecia
+  depois de descer a lista inteira e passar pelo CONSERTAR). A de novo abre a confirmação; ✔ FORJAR / ✕ CANCELAR.
+· Direita (direcional, analógico ou seta do teclado) pula da lista para o FORJAR e alterna ✔/✕; esquerda volta
+  para a peça escolhida. Ordem do foco: abas → lista → FORJAR → CONSERTAR → MELHORIAS → FECHAR.
+· MELHORIAS do ferreiro (e os outros painéis de lista do Refúgio): o item escolhido ganha contorno dourado — a cor
+  de destaque era apagada pelo papel do livro e não dava para ver a seleção no controle.
 
 P216.4 — REFÚGIO: SAI A APRENDIZ, VOZES NÃO SE REPETEM
 · A "APRENDIZ" (menina do pacote de arte da vila, atrás da mesa de armas da forja) saiu do Refúgio: sem desenho e

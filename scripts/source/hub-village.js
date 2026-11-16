@@ -68,7 +68,7 @@ this.__area("out",!0);
 /* entrada */
 this.input.on("pointerdown",p=>{if(this.panel||this.__busy)return;if(this.__uiTap){this.__uiTap=!1;return}if(this.__joyStart(p))return;if(!this.__tapMove)return;if(this.game.inputManager?.wasTouchConsumed?.())return;const sx=p.x/(cam.zoom||Pt),sy=p.y/(cam.zoom||Pt);if(sy<52&&(sx<262||sx>_-110))return;const wx=p.worldX,wy=p.worldY;const it=this.inters.filter(o=>o.area===this.area&&Math.hypot(o.x-wx,(o.y-wy)*.9)<(o.tap??26)).sort((a,b)=>Math.hypot(a.x-wx,a.y-wy)-Math.hypot(b.x-wx,b.y-wy))[0];
 if(it){if(Math.hypot(it.x-this.playerX,it.y-this.playerY)<=it.r){this.__do(it);return}this.pending=it;this.__goto(it.ax??it.x,it.ay??it.y+14)}else{this.pending=null;this.__goto(wx,wy)}});
-this.input.keyboard.on("keydown-ESC",()=>{this.__fn?.o?.active?this.__fnClose():this.__pz?this.__pzClose():this.panel?this.closePanel():this.__pzOpen()});this.input.keyboard.on("keydown-ENTER",()=>{this.__fn?.o?.active?this.__fnOk():this.__pz?this.__pzConfirm():this.__hs?this.__hsBuy():this.panel?(this.panelRows?.length?this.panelConfirm():this.closePanel()):this.tryInteract()});this.input.keyboard.on("keydown-SPACE",()=>{this.__pz&&this.__pzConfirm()});this.input.keyboard.on("keydown-E",()=>{this.panel||this.tryInteract()});this.input.keyboard.on("keydown-UP",()=>this.__fn?.o?.active?this.__fnNav(-1):this.__pz?this.__pzNav(-1):this.__hs?this.__hsNav(-1):this.panelNav(-1)),this.input.keyboard.on("keydown-DOWN",()=>this.__fn?.o?.active?this.__fnNav(1):this.__pz?this.__pzNav(1):this.__hs?this.__hsNav(1):this.panelNav(1));this.input.keyboard.on("keydown-LEFT",()=>this.__fn?.o?.active?this.__fnNav(-1):this.__hs&&this.__hsQty(-1));this.input.keyboard.on("keydown-RIGHT",()=>this.__fn?.o?.active?this.__fnNav(1):this.__hs&&this.__hsQty(1));
+this.input.keyboard.on("keydown-ESC",()=>{this.__fn?.o?.active?this.__fnClose():this.__pz?this.__pzClose():this.panel?this.closePanel():this.__pzOpen()});this.input.keyboard.on("keydown-ENTER",()=>{this.__fn?.o?.active?this.__fnOk():this.__pz?this.__pzConfirm():this.__hs?this.__hsBuy():this.panel?(this.panelRows?.length?this.panelConfirm():this.closePanel()):this.tryInteract()});this.input.keyboard.on("keydown-SPACE",()=>{this.__pz&&this.__pzConfirm()});this.input.keyboard.on("keydown-E",()=>{this.panel||this.tryInteract()});this.input.keyboard.on("keydown-UP",()=>this.__fn?.o?.active?this.__fnNav(-1):this.__pz?this.__pzNav(-1):this.__hs?this.__hsNav(-1):this.panelNav(-1)),this.input.keyboard.on("keydown-DOWN",()=>this.__fn?.o?.active?this.__fnNav(1):this.__pz?this.__pzNav(1):this.__hs?this.__hsNav(1):this.panelNav(1));this.input.keyboard.on("keydown-LEFT",()=>this.__fn?.o?.active?(this.__fn.lr?this.__fn.lr(-1):this.__fnNav(-1)):this.__hs&&this.__hsQty(-1));this.input.keyboard.on("keydown-RIGHT",()=>this.__fn?.o?.active?(this.__fn.lr?this.__fn.lr(1):this.__fnNav(1)):this.__hs&&this.__hsQty(1));
 /* toques nos painéis (pausa, lojas, HUD): os filhos dos painéis fixos na tela precisam do mesmo "fixo na tela"
    do painel, senão o toque é calculado com a câmera (com zoom) e erra o botão */
 this.refreshFragments();this.__combatHud();this.__joyInit();try{this.scene.get("HubUI")?this.scene.launch("HubUI"):this.scene.add("HubUI",__HubUI,!0);this.scene.bringToTop("HubUI")}catch(e){}this.events.once("shutdown",()=>{this.__busy=!1;try{this.scene.stop("HubUI")}catch(e){}});cam.fadeIn(400,0,0,0);
@@ -102,9 +102,9 @@ __fnDraw(){const F=this.__fn,g=this.__fnHl;if(!F||!g?.active)return;g.clear();co
   g.fillStyle(16765514,.1).fillRoundedRect(x-4,y-3,w+8,h+6,4);g.lineStyle(2,16765514,1).strokeRoundedRect(x-4,y-3,w+8,h+6,4);
   F.items.forEach(it=>it!==b&&it.emit?.("pointerout"));b.emit?.("pointerover")}
 __fnNav(d){const F=this.__fn;if(!F)return;F.sel=(F.sel+d+F.items.length)%F.items.length;this.__fnDraw();this.game.audioEngine?.sfx?.("sfx-ui-move")}
-__fnOk(){const F=this.__fn;const b=F?.items[F.sel];b?.active&&b.emit("pointerdown",{x:b.x,y:b.y},0,0,{stopPropagation(){}})}
+__fnOk(){const F=this.__fn;const b=F?.items[F.sel];this.__fnByPad=1;try{b?.active&&b.emit("pointerdown",{x:b.x,y:b.y},0,0,{stopPropagation(){}})}finally{this.__fnByPad=0}}
 __fnClose(){const F=this.__fn;if(F?.close?.active)F.close.emit("pointerdown",{},0,0,{stopPropagation(){}});else{this.__fn=null;this.closePanel();this.__busy=!1}}
-__padPanel(){let g=null;try{g=Array.from(navigator.getGamepads?.()??[]).find(p=>p&&p.connected)}catch(e){}if(!g)return;const b=k=>!!(g.buttons[k]?.pressed||g.buttons[k]?.value>.5),ay=g.axes[1]??0,ax=g.axes[0]??0,now={u:b(12)||ay<-.6,d:b(13)||ay>.6,l:b(14)||ax<-.6,r:b(15)||ax>.6,a:b(0),x:b(1),s:b(9)||b(8)},pv=this.__padPv||{};this.__padPv=now;if(this.__fn&&!this.__fn.o?.active)this.__fn=null;if(this.__fn){if((now.u&&!pv.u)||(now.l&&!pv.l))this.__fnNav(-1);if((now.d&&!pv.d)||(now.r&&!pv.r))this.__fnNav(1);if(now.a&&!pv.a)this.__fnOk();else if((now.x&&!pv.x)||(now.s&&!pv.s))this.__fnClose();return}if(this.__pz){if(now.u&&!pv.u)this.__pzNav(-1);if(now.d&&!pv.d)this.__pzNav(1);if(now.a&&!pv.a)this.__pzConfirm();else if((now.x&&!pv.x)||(now.s&&!pv.s))this.__pzClose();return}if(this.__hs){if(now.u&&!pv.u)this.__hsNav(-1);if(now.d&&!pv.d)this.__hsNav(1);if(now.l&&!pv.l)this.__hsQty(-1);if(now.r&&!pv.r)this.__hsQty(1);if(now.a&&!pv.a)this.__hsBuy();if(now.x&&!pv.x)this.closePanel();return}if(now.u&&!pv.u)this.panelNav(-1);if(now.d&&!pv.d)this.panelNav(1);if(now.a&&!pv.a){this.panelRows?.length?this.panelConfirm():this.closePanel()}if(now.x&&!pv.x)this.closePanel()}
+__padPanel(){let g=null;try{g=Array.from(navigator.getGamepads?.()??[]).find(p=>p&&p.connected)}catch(e){}if(!g)return;const b=k=>!!(g.buttons[k]?.pressed||g.buttons[k]?.value>.5),ay=g.axes[1]??0,ax=g.axes[0]??0,now={u:b(12)||ay<-.6,d:b(13)||ay>.6,l:b(14)||ax<-.6,r:b(15)||ax>.6,a:b(0),x:b(1),s:b(9)||b(8)},pv=this.__padPv||{};this.__padPv=now;if(this.__fn&&!this.__fn.o?.active)this.__fn=null;if(this.__fn){const LR=this.__fn.lr;if(now.u&&!pv.u)this.__fnNav(-1);if(now.d&&!pv.d)this.__fnNav(1);if(now.l&&!pv.l)LR?LR(-1):this.__fnNav(-1);if(now.r&&!pv.r)LR?LR(1):this.__fnNav(1);if(now.a&&!pv.a)this.__fnOk();else if((now.x&&!pv.x)||(now.s&&!pv.s))this.__fnClose();return}if(this.__pz){if(now.u&&!pv.u)this.__pzNav(-1);if(now.d&&!pv.d)this.__pzNav(1);if(now.a&&!pv.a)this.__pzConfirm();else if((now.x&&!pv.x)||(now.s&&!pv.s))this.__pzClose();return}if(this.__hs){if(now.u&&!pv.u)this.__hsNav(-1);if(now.d&&!pv.d)this.__hsNav(1);if(now.l&&!pv.l)this.__hsQty(-1);if(now.r&&!pv.r)this.__hsQty(1);if(now.a&&!pv.a)this.__hsBuy();if(now.x&&!pv.x)this.closePanel();return}if(now.u&&!pv.u)this.panelNav(-1);if(now.d&&!pv.d)this.panelNav(1);if(now.a&&!pv.a){this.panelRows?.length?this.panelConfirm():this.closePanel()}if(now.x&&!pv.x)this.closePanel()}
 __glow(x,y,s,c,a,d,dp){const o=this.add.image(x,y,"light").setScale(s).setBlendMode(j.BlendModes.ADD).setTint(c).setAlpha(a).setDepth(dp??9001);this.tweens.add({targets:o,alpha:a*.55,duration:d,yoyo:!0,repeat:-1,ease:"Sine.easeInOut"});return o}
 __area(a,instant){this.area=a;const cam=this.cameras.main,M=this.M,vw=cam.width/cam.zoom,vh=cam.height/cam.zoom;cam.stopFollow();
 if(a==="out"){const bx=M.w<vw?(M.w-vw)/2:0,bw=Math.max(M.w,vw),by=M.h<vh?(M.h-vh)/2:0,bh=Math.max(M.h,vh);cam.setBounds(bx,by,bw,bh);cam.startFollow(this.rig.container,!0,instant?1:.14,instant?1:.14);this.shade?.setAlpha?.(.26);if(this.title?.active)try{this.title.setText(W("hub.title"))}catch(_){}}
@@ -577,9 +577,16 @@ __forgeWeaponsShop(fromSmith,mode){
     on&&ask.setText(L3(`Forjar ${wp.name} por ${this.__alPrice(wp.price)} ◆?`,`Forge ${wp.name} for ${this.__alPrice(wp.price)} ◆?`,`¿Forjar ${wp.name} por ${this.__alPrice(wp.price)} ◆?`));
     for(const b of[forgeBtn,yesBtn,noBtn])b.input&&(b.input.enabled=b.visible);
     for(const r of rowsUi)r.z.input&&(r.z.input.enabled=!on);   // durante a pergunta, a lista não troca a peça
-    this.__fnAuto(o,on?noBtn:cBtn,!0);
+    this.__fnAuto(o,on?noBtn:cBtn,!0);fnHook();
     if(this.__fn){const want=on?yesBtn:forgeBtn,k=this.__fn.items.indexOf(want);k>=0&&(this.__fn.sel=k);this.__fnDraw()}
   };
+  // controle: direita leva ao FORJAR (ou ao ✔/✕ da confirmação), esquerda volta para a peça escolhida
+  const focusOn=b=>{const F=this.__fn;if(!F||F.o!==o)return;const k=F.items.indexOf(b);k>=0&&(F.sel=k,this.__fnDraw(),this.game.audioEngine?.sfx?.("sfx-ui-move"))};
+  const fnHook=()=>{const F=this.__fn;if(!F||F.o!==o)return;F.lr=d=>{const cur=F.items[F.sel],isRow=rowsUi.some(r=>r.z===cur);
+    if(confirming){focusOn(cur===yesBtn?noBtn:yesBtn);return}
+    if(d>0&&isRow){focusOn(forgeBtn);return}
+    if(d<0&&cur===forgeBtn){focusOn(rowsUi[sel]?.z);return}
+    this.__fnNav(d)}};
   const select=(idx)=>{if(confirming)return;sel=idx;rowsUi.forEach((r,i)=>r.draw(i===sel));msgText.setText("");paintRight();this.game.audioEngine?.sfx?.("sfx-ui-tab")};
   const doBuy=(wp)=>{
       curCoins=getCoins();
@@ -637,7 +644,7 @@ __forgeWeaponsShop(fromSmith,mode){
     draw(idx===sel);
     z.on("pointerover",()=>draw(idx===sel,!0));
     z.on("pointerout",()=>draw(idx===sel));
-    z.on("pointerdown",()=>select(idx));       // tocar escolhe e mostra; forjar só pelo botão, com confirmação
+    z.on("pointerdown",()=>{const pad=this.__fnByPad;select(idx);pad&&this.time.delayedCall(0,()=>focusOn(forgeBtn))});       // tocar escolhe e mostra; forjar só pelo botão, com confirmação (no controle, A leva o foco ao FORJAR)
     rowsUi.push({z,draw});
     (o.__prTs=o.__prTs||[]).push([prT,wp]);this.__alDisc()&&prT.setColor("#4ade80");
     o.add([box,im,nm,stT,prT,z]);
@@ -663,11 +670,12 @@ __forgeWeaponsShop(fromSmith,mode){
 
   o.add([swBtn,cBtn]);
   // ordem do foco no controle: abas, lista, botão de forjar, rodapé
-  o.bringToTop(forgeBtn);o.bringToTop(yesBtn);o.bringToTop(noBtn);for(const b of[swBtn,cBtn])o.bringToTop(b);
+  o.bringToTop(forgeBtn);o.bringToTop(yesBtn);o.bringToTop(noBtn);for(const b of[o.list.find(x=>x.type==="Text"&&/^(CONSERTAR|REPAIR|REPARAR)$/.test(x.text)),swBtn,cBtn])b&&o.bringToTop(b);
   this.__fixScroll?.(o);
   this.panel=o;
   paintRight();
   setConfirm(!1);
   // abrir já com o foco na primeira peça da lista
   if(this.__fn){const k=this.__fn.items.indexOf(rowsUi[0]?.z);k>=0&&(this.__fn.sel=k,this.__fnDraw())}
+  fnHook();
 }

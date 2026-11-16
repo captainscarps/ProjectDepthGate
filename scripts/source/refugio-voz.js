@@ -16,3 +16,21 @@
     W2.__once = 1; window.__dub = W2;
   }
 }
+
+/* ══ Refúgio: no MELHORIAS do ferreiro (e nos outros painéis de lista) o item escolhido ganha um contorno dourado ══
+   A cor de destaque do item era trocada pelo papel do livro e ninguém via qual estava escolhido no controle. */
+{
+  const R0 = Fl.prototype.refreshPanel;
+  Fl.prototype.refreshPanel = function () {
+    const r = R0.apply(this, arguments);
+    try {
+      const P = this.panel, rows = this.panelRows, row = rows?.[this.panelSel]?.row;
+      if (!P?.active || !row?.active) { this.__prHl?.destroy(); this.__prHl = null; return r }
+      if (!this.__prHl?.active || this.__prHl.parentContainer !== P) { this.__prHl?.destroy(); this.__prHl = this.add.graphics(); P.add(this.__prHl) }
+      P.bringToTop(this.__prHl);
+      const w = row.displayWidth || row.width, h = row.displayHeight || row.height, x = row.x - w * (row.originX ?? .5), y = row.y - h * (row.originY ?? .5);
+      this.__prHl.clear().lineStyle(2, 16765514, 1).strokeRoundedRect(x - 3, y - 3, w + 6, h + 6, 4);
+    } catch (e) {}
+    return r;
+  };
+}
