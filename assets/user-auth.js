@@ -13,6 +13,9 @@
   const SUPA_URL = "https://drkypjvlclvjzfuakjeo.supabase.co";
   const SUPA_KEY = "sb_publishable_UGpQ4AxUnOWrD5qQm4nuiA_tb7mq1eR";
   const STORAGE_PROFILE_KEY = "depthgate:user_profile";
+  // convidado criando conta por e-mail: o Supabase só aceita a senha DEPOIS que o e-mail é confirmado.
+  // Guarda só o e-mail (nunca a senha) até a confirmação; aí a janela pede a senha.
+  const PENDING_KEY = "depthgate:acc:pending";
 
   const HERO_AVATARS = {
     warrior: {
@@ -92,6 +95,25 @@
       window.dispatchEvent(new CustomEvent("depthgate:auth", { detail: { user: this.user, anonymous: this.isAnonymous(), profile: this.cloud } }));
     }
     isAnonymous() { return !this.user || !!this.user.is_anonymous; }
+    pending() { try { const p = JSON.parse(localStorage.getItem(PENDING_KEY) || "null"); return p && p.email && Date.now() - (p.t || 0) < 14 * 864e5 ? p : null; } catch (e) { return null; } }
+    setPending(email) { try { email ? localStorage.setItem(PENDING_KEY, JSON.stringify({ email, t: Date.now() })) : localStorage.removeItem(PENDING_KEY); } catch (e) {} }
+    /* o e-mail do convidado já foi confirmado (a conta virou permanente), mas ainda falta a senha */
+    needsPassword() {
+      const p = this.pending();
+      return !!(p && this.user && !this.isAnonymous() && String(this.user.email || "").toLowerCase() === p.email.toLowerCase());
+    }
+    /* busca o estado novo do usuário no servidor (o link pode ter sido aberto em outro aparelho/navegador) */
+    async recheck() {
+      if (!this.sb || !this.user) return;
+      try { await this.sb.auth.refreshSession(); } catch (e) {}
+      try { const { data } = await this.sb.auth.getUser(); if (data?.user) this.user = data.user; } catch (e) {}
+      if (this.needsPassword() && this._pendPass) {
+        try { await this.setPassword(this._pendPass); this._pendDone = 1; } catch (e) { console.warn("[conta] senha", e?.message); }
+        this._pendPass = null;
+      }
+      if (this.needsPassword() && !this.modalEl?.classList.contains("open")) this.openModal();
+      this.refreshViews(); this.emitAuth();
+    }
     provider() {
       const ids = (this.user?.identities || []).map(i => i.provider);
       return ids.includes("google") ? "google" : ids.includes("email") ? "email" : this.user ? "anonymous" : null;
@@ -110,6 +132,9 @@
         const prev = this.user?.id;
         this.user = session?.user || null;
         if (this.user && this.user.id !== prev) this.ensureProfile().catch(() => {});
+        // (nada de chamada ao Supabase dentro deste callback: trava o cliente — vai para o próximo ciclo)
+        if (ev === "USER_UPDATED" && this.needsPassword() && this._pendPass) setTimeout(() => this.recheck(), 0);
+        else if (ev === "USER_UPDATED" && this.needsPassword() && !this.modalEl?.classList.contains("open")) setTimeout(() => this.openModal(), 300);
         this.refreshViews(); this.emitAuth();
       });
       try {
@@ -128,6 +153,12 @@
       }
       if (this.user) await this.ensureProfile();
       this.refreshViews(); this.emitAuth();
+      // voltou do link de confirmação (ou confirmou em outro aparelho): pede a senha
+      if (this.pending()) {
+        if (!this.needsPassword()) await this.recheck();
+        else setTimeout(() => this.openModal(), 1200);
+        document.addEventListener("visibilitychange", () => { if (!document.hidden && this.pending()) this.recheck(); });
+      }
     }
 
     /* cria/carrega a linha em dg_profiles; o nome vem do perfil local (único — ganha número se repetir) */
@@ -166,18 +197,27 @@
     async signUpEmail(email, password) {
       if (!this.sb) throw new Error(L3("Sem conexão com o servidor.", "No connection to the server.", "Sin conexión con el servidor."));
       if (this.user && this.isAnonymous()) {          // convidado vira conta permanente (mesmo id)
-        const { error } = await this.sb.auth.updateUser({ email, password }, { emailRedirectTo: this.redirectUrl() });
+        // 1º o e-mail (o Supabase manda o link); a senha só depois da confirmação — veja needsPassword()
+        const { error } = await this.sb.auth.updateUser({ email }, { emailRedirectTo: this.redirectUrl() });
         if (error) throw error;
+        this.setPending(email);
+        if (password) this._pendPass = password;     // só na memória desta aba: se ela continuar aberta, a senha entra sozinha
         return "confirm";
       }
       const { data, error } = await this.sb.auth.signUp({ email, password, options: { emailRedirectTo: this.redirectUrl() } });
       if (error) throw error;
       return data?.session ? "ok" : "confirm";
     }
+    async setPassword(password) {
+      const { error } = await this.sb.auth.updateUser({ password });
+      if (error) throw error;
+      this.setPending(null);
+    }
     async signInEmail(email, password) {
       if (!this.sb) throw new Error(L3("Sem conexão com o servidor.", "No connection to the server.", "Sin conexión con el servidor."));
       const { error } = await this.sb.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      this.setPending(null);
     }
     async resetPassword(email) {
       if (!this.sb) throw new Error(L3("Sem conexão com o servidor.", "No connection to the server.", "Sin conexión con el servidor."));
@@ -187,6 +227,7 @@
     async signOut() {
       if (!this.sb) return;
       await this.sb.auth.signOut();
+      this.setPending(null); this._pendPass = null;
       this.cloud = null; this.user = null;
       this.saveProfile({ username: "Aventureiro", isRegistered: false, email: null, friendCode: null });
       if (this.online && this.providers.anonymous) { const { data } = await this.sb.auth.signInAnonymously(); this.user = data?.user || null; if (this.user) await this.ensureProfile(); }
@@ -291,7 +332,17 @@
     <div class="heroes">${Object.keys(HERO_AVATARS).map(k => `<button data-hero="${k}" class="${p.avatarHero === k ? "sel" : ""}" title="${HERO_AVATARS[k].name}"><img src="${getHeroAvatarDataUrl(k)}" alt=""></button>`).join("")}</div>
     <button class="btn pri" data-a="save">${L3("SALVAR PERFIL", "SAVE PROFILE", "GUARDAR PERFIL")}</button>
     <div class="msg" id="dg-acc-pmsg"></div></div>
-  <div class="sec">${anon ? `
+  <div class="sec">${this.needsPassword() ? `
+    <div class="lbl">${L3("CRIE SUA SENHA", "CREATE YOUR PASSWORD", "CREA TU CONTRASEÑA")}</div>
+    <div class="hint" style="margin:0 0 8px">${L3("E-mail confirmado! Falta só a senha para entrar com", "E-mail confirmed! Just set a password to sign in with", "¡Correo confirmado! Solo falta la contraseña para entrar con")} <b>${esc(this.user.email)}</b>.</div>
+    <input id="dg-acc-pass" type="password" placeholder="${L3("senha (mín. 6)", "password (min. 6)", "contraseña (mín. 6)")}" autocomplete="new-password">
+    <button class="btn pri" data-a="setpass">${L3("SALVAR SENHA", "SAVE PASSWORD", "GUARDAR CONTRASEÑA")}</button>`
+    : anon && this.pending() ? `
+    <div class="lbl">${L3("CONFIRME SEU E-MAIL", "CONFIRM YOUR E-MAIL", "CONFIRMA TU CORREO")}</div>
+    <div class="hint" style="margin:0 0 8px">${L3("Mandamos um link para", "We sent a link to", "Enviamos un enlace a")} <b>${esc(this.pending().email)}</b>. ${L3("Abra o link (pode ser no celular) e depois toque em JÁ CONFIRMEI. Em seguida você cria a senha.", "Open the link (on any device), then tap I CONFIRMED. Then you create your password.", "Abre el enlace (en cualquier dispositivo) y luego toca YA CONFIRMÉ. Después creas la contraseña.")}</div>
+    <button class="btn pri" data-a="recheck">${L3("JÁ CONFIRMEI", "I CONFIRMED", "YA CONFIRMÉ")}</button>
+    <div class="row"><button class="btn" data-a="resend">${L3("REENVIAR LINK", "RESEND LINK", "REENVIAR ENLACE")}</button><button class="btn" data-a="cancelpend">${L3("USAR OUTRO E-MAIL", "USE ANOTHER E-MAIL", "USAR OTRO CORREO")}</button></div>`
+    : anon ? `
     <div class="lbl">${L3("ENTRAR / CRIAR CONTA", "SIGN IN / CREATE ACCOUNT", "ENTRAR / CREAR CUENTA")}</div>
     <div class="hint" style="margin:0 0 8px">${L3("Com conta, seu progresso da campanha e do Modo Infinito fica salvo na nuvem e seus amigos te encontram em qualquer aparelho.", "With an account, your campaign and Endless progress is saved in the cloud and friends can find you on any device.", "Con cuenta, tu progreso de campaña y del Modo Infinito se guarda en la nube y tus amigos te encuentran en cualquier dispositivo.")}</div>
     ${this.providers.google ? `<button class="btn google" data-a="google">G&nbsp;&nbsp;${L3("ENTRAR COM GOOGLE", "SIGN IN WITH GOOGLE", "ENTRAR CON GOOGLE")}</button>` : ""}
@@ -315,7 +366,9 @@
       if (/Email not confirmed/i.test(t)) return L3("Confirme o e-mail pelo link que enviamos antes de entrar.", "Confirm your e-mail with the link we sent before signing in.", "Confirma el correo con el enlace que enviamos antes de entrar.");
       if (/already (registered|been registered)|already exists/i.test(t)) return L3("Esse e-mail já tem conta. Use ENTRAR.", "That e-mail already has an account. Use SIGN IN.", "Ese correo ya tiene cuenta. Usa ENTRAR.");
       if (/Password should be at least/i.test(t)) return L3("A senha precisa ter pelo menos 6 caracteres.", "The password needs at least 6 characters.", "La contraseña necesita al menos 6 caracteres.");
-      if (/rate limit|too many/i.test(t)) return L3("Muitas tentativas. Espere um pouco e tente de novo.", "Too many attempts. Wait a bit and try again.", "Demasiados intentos. Espera un poco e inténtalo de nuevo.");
+      if (/reauthenticat/i.test(t)) return L3("Por segurança, entre de novo com o e-mail e crie a senha em \"esqueci a senha\".", "For security, use \"forgot password\" to set the password.", "Por seguridad, usa \"olvidé la contraseña\" para crear la contraseña.");
+      if (/same.*password|different from the old/i.test(t)) return L3("Escolha uma senha diferente da anterior.", "Choose a different password.", "Elige una contraseña diferente.");
+      if (/rate limit|too many|security purposes/i.test(t)) return L3("Muitas tentativas. Espere um pouco e tente de novo.", "Too many attempts. Wait a bit and try again.", "Demasiados intentos. Espera un poco e inténtalo de nuevo.");
       if (/fetch|network/i.test(t)) return L3("Sem conexão com o servidor.", "No connection to the server.", "Sin conexión con el servidor.");
       return t || L3("Algo deu errado. Tente de novo.", "Something went wrong. Try again.", "Algo salió mal. Inténtalo de nuevo.");
     }
@@ -335,6 +388,19 @@
           const r = await this.signUpEmail(mail(), pass()); this.render();
           return this.msg("dg-acc-amsg", r === "confirm" ? L3("Quase lá: abra o link que mandamos para o seu e-mail.", "Almost there: open the link we sent to your e-mail.", "Casi listo: abre el enlace que enviamos a tu correo.") : L3("Conta criada!", "Account created!", "¡Cuenta creada!"), !0);
         }
+        if (a === "setpass") {
+          if (pass().length < 6) return this.msg("dg-acc-amsg", L3("A senha precisa ter pelo menos 6 caracteres.", "The password needs at least 6 characters.", "La contraseña necesita al menos 6 caracteres."));
+          await this.setPassword(pass()); this.render();
+          return this.msg("dg-acc-amsg", L3("Conta criada! Use este e-mail e senha para entrar em qualquer aparelho.", "Account created! Use this e-mail and password on any device.", "¡Cuenta creada! Usa este correo y contraseña en cualquier dispositivo."), !0);
+        }
+        if (a === "recheck") {
+          this._pendDone = 0; await this.recheck(); this.render();
+          if (this._pendDone) return this.msg("dg-acc-amsg", L3("Conta criada! Use este e-mail e senha para entrar em qualquer aparelho.", "Account created! Use this e-mail and password on any device.", "¡Cuenta creada! Usa este correo y contraseña en cualquier dispositivo."), !0);
+          return this.needsPassword() ? this.msg("dg-acc-amsg", L3("E-mail confirmado. Agora crie a senha.", "E-mail confirmed. Now create the password.", "Correo confirmado. Ahora crea la contraseña."), !0)
+            : this.msg("dg-acc-amsg", L3("Ainda não chegou a confirmação. Abra o link do e-mail (veja também o spam).", "Not confirmed yet. Open the link in the e-mail (check spam too).", "Aún no se confirmó. Abre el enlace del correo (revisa también el spam)."));
+        }
+        if (a === "resend") { const p = this.pending(); await this.signUpEmail(p.email); return this.msg("dg-acc-amsg", L3("Link reenviado.", "Link sent again.", "Enlace reenviado."), !0); }
+        if (a === "cancelpend") { this.setPending(null); this.render(); return; }
         if (a === "logout") { await this.signOut(); this.render(); return this.msg("dg-acc-amsg", L3("Você saiu da conta.", "You signed out.", "Cerraste sesión."), !0); }
       } catch (e) { this.msg(a === "save" || a === "copy" ? "dg-acc-pmsg" : "dg-acc-amsg", this.errText(e)); }
     }
