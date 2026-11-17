@@ -145,6 +145,11 @@ def kokoro_en(text, cls, tmp):
 
 
 def main():
+    if "--only" in sys.argv and sys.argv[sys.argv.index("--only") + 1] == "en":
+        pass
+    elif "--sobrescrever-elevenlabs" not in sys.argv:   # a dublagem PT atual é do ElevenLabs (regravar_dublagem_elevenlabs.py)
+        raise SystemExit("A dublagem em português agora é do ElevenLabs (scripts/regravar_dublagem_elevenlabs.py). "
+                         "Este gerador Gemini sobrescreveria essas falas; use --sobrescrever-elevenlabs só se for de propósito.")
     argv = sys.argv[1:]
     only = argv[argv.index("--only") + 1] if "--only" in argv else None
     force = "--force" in argv

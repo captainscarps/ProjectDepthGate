@@ -71,6 +71,9 @@ def gem(key, text, voice, target, tmp, who=None):
 
 
 def main():
+    if "--sobrescrever-elevenlabs" not in sys.argv:   # a dublagem PT atual é do ElevenLabs (regravar_dublagem_elevenlabs.py)
+        raise SystemExit("A dublagem em português agora é do ElevenLabs (scripts/regravar_dublagem_elevenlabs.py). "
+                         "Este gerador Gemini sobrescreveria essas falas; use --sobrescrever-elevenlabs só se for de propósito.")
     argv = sys.argv[1:]
     mode = next((a for a in argv if a in ("exclusivas", "ecos")), None)
     if not mode:
