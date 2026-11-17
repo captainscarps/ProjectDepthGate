@@ -35,6 +35,11 @@ MIRROR_PT = os.path.join(ROOT, "Projeto atualizado", "assets", "audio", "voice",
 MIRROR_EN = os.path.join(ROOT, "Projeto atualizado", "assets", "audio", "voice", "en")
 MANIFEST_PATH = os.path.join(ROOT, "assets", "audio", "voice", "voice-manifest.json")
 MIRROR_MANIFEST = os.path.join(ROOT, "Projeto atualizado", "assets", "audio", "voice", "voice-manifest.json")
+if not os.path.isdir(os.path.join(ROOT, "Projeto atualizado")):   # a cópia espelho saiu do repositório: grava a cópia num lugar descartável
+    import tempfile as _tf
+    _M = os.path.join(_tf.gettempdir(), "dg-voice-mirror")
+    MIRROR_PT, MIRROR_EN, MIRROR_MANIFEST = os.path.join(_M, "pt"), os.path.join(_M, "en"), os.path.join(_M, "voice-manifest.json")
+    os.makedirs(MIRROR_PT, exist_ok=True); os.makedirs(MIRROR_EN, exist_ok=True)
 
 MODELS_QUEUE = [
     "gemini-2.5-flash-preview-tts",
