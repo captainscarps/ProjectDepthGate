@@ -67,6 +67,12 @@ if (fs.existsSync(hubPath)) {
   while ((m = defRegex.exec(hubCode)) !== null) {
     defs.add(m[1]);
   }
+  // métodos que outros módulos penduram no Refúgio (Fl.prototype.__x = ...) também contam como definidos
+  const srcDir = path.join(ROOT, 'scripts', 'source');
+  for (const f of fs.readdirSync(srcDir).filter((f) => f.endsWith('.js'))) {
+    const t = fs.readFileSync(path.join(srcDir, f), 'utf8'), pr = /Fl\.prototype\.(__\w+)\s*=/g;
+    while ((m = pr.exec(t)) !== null) defs.add(m[1]);
+  }
   const callRegex = /this\.(__\w+)\s*\(/g;
   const calls = new Set();
   while ((m = callRegex.exec(hubCode)) !== null) {
@@ -114,9 +120,9 @@ try {
     exitToMenu() { this.exitedToMenu = true; }
   }
 
-  const evaluatedClass = new Function('Base', 'j', 'Dt', '__winSkin', '__L3', 'la', 'ti', 'Le', 'Gt', '_', 'st', 'W', 
+  const evaluatedClass = new Function('Base', 'j', 'Dt', '__winSkin', '__L3', 'la', 'ti', 'Le', 'Gt', '_', 'st', 'W', 'window', 
     'class HubTest extends Base {\n' + src + '\n}\nreturn HubTest;'
-  )(MockScene, { BlendModes: { ADD: 1 } }, () => {}, () => false, (a) => a, {}, {}, {}, () => {}, 800, 450, (k) => k);
+  )(MockScene, { BlendModes: { ADD: 1 } }, () => {}, () => false, (a) => a, {}, {}, {}, () => {}, 800, 450, (k) => k, {});
 
   const hub = new evaluatedClass();
   hub.__pzOpen();
