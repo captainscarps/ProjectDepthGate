@@ -15,8 +15,8 @@ window.__gfxQ = function () {
 
 /* d: escuridão (0..1) · c: cor da sombra · r: raio da tocha do herói · a: partículas · g: cor do brilho das luzes */
 const __LZ = {
-  catacombs: { d: .8, c: 0x0d0806, r: 118, a: "dust", g: 0xffa040 },
-  dorf_cave: { d: .8, c: 0x06080e, r: 120, a: "dust", g: 0xffb060 },
+  catacombs: { d: .8, c: 0x0d0806, r: 140, a: "dust", g: 0xffa040 },
+  dorf_cave: { d: .8, c: 0x06080e, r: 140, a: "dust", g: 0xffb060 },
   castle: { d: .25, c: 0x0b0814, r: 130, a: "dust", g: 0xffb060 },
   fortress: { d: .6, c: 0x160604, r: 136, a: "ember", g: 0xff7a30 },
   vulcao: { d: .45, c: 0x1c0602, r: 150, a: "ember", g: 0xff6a20 },
