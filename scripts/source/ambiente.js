@@ -1,4 +1,4 @@
-/* ══ Ambientes realistas dos cenários procedurais (p216.17) — 1º bioma: Catacumbas ════════════════════════
+/* ══ Ambientes realistas dos cenários procedurais (p216.17–18): Catacumbas, Ruínas, Fortaleza do Dragão e Glacial ══
    • Luz com relevo: os blocos de pedra do piso e das paredes ganham um "mapa de relevo" (normal map) feito aqui
      mesmo a partir da arte (altura = brilho do pixel, rejunte fundo e pedra alta). A tocha do herói e as tochas
      da masmorra iluminam esse relevo com a luz do Phaser 4 — o brilho e a sombra nas frestas mudam conforme a
@@ -8,12 +8,32 @@
    • Sombras projetadas: herói, inimigos e pets projetam sombra para o lado oposto da tocha mais próxima; a sombra
      estica e gira quando passam por ela.
    • Detalhes: teias nos cantos, pó caindo do teto, gotas pingando nas poças.
+   • Ruínas: musgo e capim nas frestas, raízes nas paredes, fachos de luz do dia entrando por buracos do teto
+     (com luz fria no relevo). Fortaleza do Dragão: veios de lava brilhando nas rachaduras (pulsam e iluminam o
+     relevo), marcas de queimado e de garras. Glacial: geada no pé das paredes (em vez de sombra), montinhos de
+     neve, piso de gelo com brilhos que piscam perto da luz, névoa fria rasteira e bafo de vapor do herói e dos
+     inimigos.
    Gráfico MÉDIO: contato + manchas + sombras projetadas; BAIXO: nada.  */
 const __AMB = {
   catacombs: {
     tiles: "tiles-catacombs", top: "walltop-catacombs", face: "wallface-catacombs",
     amb: 0xb2a89c, hero: 0xffc890, torch: 0xff9a40, stain: "28,20,14", wet: "40,52,58", crack: "10,7,5",
     webs: .35, drips: 1, dust: 1,
+  },
+  ruins: {
+    tiles: "tiles-ruins", top: "walltop-ruins", face: "wallface-ruins",
+    amb: 0x96a290, hero: 0xffd8a0, heroI: 1.6, torch: 0xffb060, stain: "16,30,12", wet: "26,54,22", crack: "8,12,6",
+    webs: .12, drips: 0, dust: 1, moss: 1, shafts: 1,
+  },
+  fortress: {
+    tiles: "tiles-fortress", top: "walltop-fortress", face: "wallface-fortress",
+    amb: 0xb29684, hero: 0xffc890, torch: 0xff7a30, stain: "22,8,4", wet: "30,10,4", crack: "40,12,2",
+    webs: 0, drips: 0, dust: 0, lava: 1, scorch: 1,
+  },
+  frozen: {
+    tiles: "tiles-frozen", top: "walltop-frozen", face: "wallface-frozen",
+    amb: 0x8a9cb6, hero: 0xffd8a8, heroI: 1.1, torch: 0xffb070, stain: "150,190,230", wet: "190,225,255", crack: "60,90,130",
+    webs: 0, drips: 0, dust: 0, frost: 1, ice: 1, breath: 1, fog: 1,
   },
 };
 
@@ -75,13 +95,14 @@ function __ambPaint(S, C, R) {
     if (solid(c, r)) continue;
     const x = c * t, y = r * t;
     // contato com as paredes: em cima (a face da parede faz sombra comprida), dos lados e embaixo
-    const sh = (x0, y0, x1, y1, a) => { const q = g.createLinearGradient(x0, y0, x1, y1); q.addColorStop(0, `rgba(0,0,0,${a})`); q.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = q; g.fillRect(x, y, t, t) };
+    const ink = C.frost ? "225,242,255" : "0,0,0", fk = C.frost ? .5 : 1;      // no gelo o pé da parede acumula geada (claro), não sombra
+    const sh = (x0, y0, x1, y1, a) => { const q = g.createLinearGradient(x0, y0, x1, y1); q.addColorStop(0, `rgba(${ink},${a * fk})`); q.addColorStop(1, `rgba(${ink},0)`); g.fillStyle = q; g.fillRect(x, y, t, t) };
     if (solid(c, r - 1)) sh(x, y, x, y + t * .9, .5);
     if (solid(c - 1, r)) sh(x, y, x + t * .55, y, .38);
     if (solid(c + 1, r)) sh(x + t, y, x + t * .45, y, .38);
     if (solid(c, r + 1)) sh(x, y + t, x, y + t * .7, .22);
     // cantos internos: mais escuros (oclusão)
-    const corner = (cx, cy, a) => { const q = g.createRadialGradient(cx, cy, 0, cx, cy, t * .8); q.addColorStop(0, `rgba(0,0,0,${a})`); q.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = q; g.fillRect(x, y, t, t) };
+    const corner = (cx, cy, a) => { const q = g.createRadialGradient(cx, cy, 0, cx, cy, t * .8); q.addColorStop(0, `rgba(${ink},${a})`); q.addColorStop(1, `rgba(${ink},0)`); g.fillStyle = q; g.fillRect(x, y, t, t) };
     if (solid(c - 1, r - 1) && solid(c - 1, r) && solid(c, r - 1)) corner(x, y, .35);
     if (solid(c + 1, r - 1) && solid(c + 1, r) && solid(c, r - 1)) corner(x + t, y, .35);
     // umidade perto das paredes, manchas soltas, rachaduras
@@ -100,6 +121,31 @@ function __ambPaint(S, C, R) {
       for (let k = 0; k < 4 + R() * 4; k++) { px += (R() - .5) * 7; py += (R() - .5) * 7; g.lineTo(px, py) }
       g.stroke();
     }
+    // ruínas: musgo e capim nas frestas
+    if (C.moss && R() < (nearWall ? .5 : .12)) {
+      for (let k = 0; k < 2 + R() * 5; k++) {
+        const gx = x + R() * t, gy = y + (nearWall && solid(c, r - 1) ? R() * t * .5 : R() * t);
+        g.strokeStyle = `rgba(${[[70, 120, 40], [96, 150, 52], [52, 96, 34]][(R() * 3) | 0].join(",")},.85)`; g.lineWidth = .6;
+        g.beginPath(); g.moveTo(gx, gy); g.lineTo(gx + (R() - .5) * 2, gy - 1.5 - R() * 2.5); g.stroke();
+      }
+    }
+    // fortaleza: marcas de queimado e de garras
+    if (C.scorch && R() < .03) {
+      const cx = x + R() * t, cy = y + R() * t, rr = t * (.8 + R() * 1.2), q = g.createRadialGradient(cx, cy, 0, cx, cy, rr);
+      q.addColorStop(0, "rgba(6,3,2,.55)"); q.addColorStop(.6, "rgba(20,8,4,.25)"); q.addColorStop(1, "rgba(20,8,4,0)");
+      g.fillStyle = q; g.fillRect(cx - rr, cy - rr, rr * 2, rr * 2);
+    }
+    if (C.scorch && R() < .012) {
+      const cx = x + R() * t, cy = y + R() * t, a = R() * Math.PI;
+      g.strokeStyle = "rgba(12,6,4,.6)"; g.lineWidth = .8;
+      for (let k = -1; k <= 1; k++) { g.beginPath(); g.moveTo(cx + Math.cos(a + 1.57) * k * 2.2, cy + Math.sin(a + 1.57) * k * 2.2); g.lineTo(cx + Math.cos(a) * 9 + Math.cos(a + 1.57) * k * 2.8, cy + Math.sin(a) * 9 + Math.sin(a + 1.57) * k * 2.8); g.stroke() }
+    }
+    // glacial: montinhos de neve no pé das paredes
+    if (C.frost && solid(c, r - 1) && R() < .45) {
+      const cx = x + R() * t, cy = y + t * .18, rx = t * (.3 + R() * .5);
+      g.fillStyle = "rgba(236,246,255,.75)"; g.beginPath(); g.ellipse(cx, cy, rx, rx * .38, 0, 0, Math.PI * 2); g.fill();
+      g.fillStyle = "rgba(180,205,230,.5)"; g.beginPath(); g.ellipse(cx, cy + rx * .22, rx * .9, rx * .16, 0, 0, Math.PI); g.fill();
+    }
     if (C.drips && !solid(c, r - 1) && !solid(c, r + 1) && !solid(c - 1, r) && !solid(c + 1, r) && R() < .012) puddles.push({ x: (c + .2 + R() * .6) * T, y: (r + .2 + R() * .6) * T, s: .7 + R() * .6 });
   }
   // poças: escuras, com borda clara (reflexo do teto)
@@ -111,7 +157,31 @@ function __ambPaint(S, C, R) {
   tex.refresh();
   const im = S.add.image(0, 0, key).setOrigin(0).setScale(1 / K).setDepth(.5);
   im.__lzSkip = 1;
-  return { im, puddles, key };
+  // fortaleza: veios de lava nas rachaduras (camada ADD que pulsa) e pontos de luz
+  let lava = null; const lavaPts = [];
+  if (C.lava) {
+    const lk = key + "-lava";
+    if (S.textures.exists(lk)) S.textures.remove(lk);
+    const lt = S.textures.createCanvas(lk, W, H), lg = lt.getContext();
+    for (let r = 1; r < rows - 1; r++) for (let c = 1; c < cols - 1; c++) {
+      if (solid(c, r) || R() > .045) continue;
+      let px = (c + R()) * t, py = (r + R()) * t; const pts = [[px, py]];
+      let ang = R() * Math.PI * 2;                     // rachadura: segue numa direção, com quebras curtas
+      for (let k = 0; k < 5 + R() * 7; k++) { ang += (R() - .5) * 1.1; const st = 3 + R() * 4; px += Math.cos(ang) * st; py += Math.sin(ang) * st; pts.push([px, py]) }
+      for (const [w, col] of [[3.2, "rgba(255,70,10,.28)"], [1.6, "rgba(255,130,30,.75)"], [.7, "rgba(255,230,140,.95)"]]) {
+        lg.strokeStyle = col; lg.lineWidth = w; lg.lineJoin = "round"; lg.beginPath(); lg.moveTo(pts[0][0], pts[0][1]);
+        for (const q of pts.slice(1)) lg.lineTo(q[0], q[1]);
+        lg.stroke();
+      }
+      g.strokeStyle = "rgba(20,6,2,.7)"; g.lineWidth = 2.4; g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (const q of pts.slice(1)) g.lineTo(q[0], q[1]); g.stroke();
+      if (R() < .5) lavaPts.push({ x: pts[pts.length >> 1][0] / K, y: pts[pts.length >> 1][1] / K, type: "LAVA" });
+    }
+    tex.refresh(); lt.refresh();
+    lava = S.add.image(0, 0, lk).setOrigin(0).setScale(1 / K).setDepth(.6).setBlendMode(j.BlendModes.ADD);
+    lava.__lzSkip = 1;
+    S.tweens.add({ targets: lava, alpha: { from: .65, to: 1 }, duration: 1600, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+  }
+  return { im, puddles, key, lava, lavaPts };
 }
 
 function __ambSetup(S) {
@@ -124,13 +194,57 @@ function __ambSetup(S) {
   const R = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
   const A = { b, C, objs: [], lights: [], casts: new Map(), relief: false, litObjs: [], litT: 0 };
   S.__amb = A;
+  const T = dt, G = D.grid, solid = (c, r) => c < 0 || r < 0 || c >= D.cols || r >= D.rows || G[r][c] !== 0;
 
   // 1) chão: contato, manchas, poças
   const P = __ambPaint(S, C, R);
   A.objs.push(P.im);
+  if (P.lava) A.objs.push(P.lava);
+  A.extraLights = P.lavaPts.slice(0, 40).map((p) => ({ ...p, col: 0xff5a18, r: 120, i: .9 }));
+
+  // ruínas: fachos de luz do dia entrando por buracos do teto (um por sala grande, no meio do chão)
+  if (C.shafts) {
+    if (!S.textures.exists("amb-shaft")) {
+      const st = S.textures.createCanvas("amb-shaft", 64, 160), sg = st.getContext();
+      const q = sg.createLinearGradient(0, 0, 0, 160); q.addColorStop(0, "rgba(255,250,215,0)"); q.addColorStop(.25, "rgba(255,250,215,.35)"); q.addColorStop(1, "rgba(255,250,215,.6)");
+      sg.fillStyle = q; sg.beginPath(); sg.moveTo(22, 0); sg.lineTo(42, 0); sg.lineTo(60, 160); sg.lineTo(4, 160); sg.closePath(); sg.fill();
+      const e = sg.createRadialGradient(32, 150, 0, 32, 150, 30); e.addColorStop(0, "rgba(255,250,220,.55)"); e.addColorStop(1, "rgba(255,250,220,0)");
+      sg.fillStyle = e; sg.fillRect(0, 110, 64, 50); st.refresh();
+    }
+    for (const rm of (D.level?.rooms || [])) {
+      const rc = rm.rect || rm.def?.rect || rm; if (!rc || rc.w < 6 || rc.h < 5 || R() > .7) continue;
+      const fx = (rc.x + rc.w * (.3 + R() * .4)) * T, fy = (rc.y + rc.h * (.4 + R() * .3)) * T;
+      const sh = S.add.image(fx, fy, "amb-shaft").setOrigin(.5, 1).setBlendMode(j.BlendModes.ADD).setAlpha(.4).setDepth(9002).setRotation(-.18).setScale(1.2, 1.4);
+      sh.__lzSkip = 1; A.objs.push(sh);
+      S.tweens.add({ targets: sh, alpha: { from: .28, to: .42 }, duration: 3000 + R() * 2000, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+      A.extraLights.push({ x: fx, y: fy - 10, col: 0xfff2d0, r: 170, i: .8, type: "SUN" });
+    }
+  }
+
+  // glacial: névoa fria rasteira (poucas manchas grandes que derivam devagar)
+  if (C.fog) {
+    if (!S.textures.exists("amb-fog")) {
+      const ft = S.textures.createCanvas("amb-fog", 128, 64), fg = ft.getContext();
+      for (let k = 0; k < 9; k++) { const x = 20 + Math.random() * 88, y = 18 + Math.random() * 28, r = 14 + Math.random() * 18, q = fg.createRadialGradient(x, y, 0, x, y, r); q.addColorStop(0, "rgba(225,240,255,.16)"); q.addColorStop(1, "rgba(225,240,255,0)"); fg.fillStyle = q; fg.fillRect(0, 0, 128, 64) }
+      ft.refresh();
+    }
+    const v = S.cameras.main.worldView;
+    for (let k = 0; k < 7; k++) {
+      const f = S.add.image(v.x + R() * v.width, v.y + R() * v.height, "amb-fog").setScale(2.5 + R() * 2, 1.6 + R()).setAlpha(.5 + R() * .3).setDepth(8980);
+      f.__lzSkip = 1; f.__fx = (R() < .5 ? -1 : 1) * (4 + R() * 6); A.objs.push(f); (A.fog = A.fog || []).push(f);
+    }
+  }
+  // glacial: brilhos do gelo e bafo de vapor
+  if (C.ice && !S.textures.exists("amb-glint")) {
+    const gt = S.textures.createCanvas("amb-glint", 7, 7), gg = gt.getContext();
+    gg.fillStyle = "rgba(255,255,255,1)"; gg.fillRect(3, 0, 1, 7); gg.fillRect(0, 3, 7, 1); gg.fillStyle = "rgba(200,235,255,.8)"; gg.fillRect(2, 2, 3, 3); gt.refresh();
+  }
+  if (C.breath && !S.textures.exists("amb-puff")) {
+    const pt = S.textures.createCanvas("amb-puff", 16, 16), pg = pt.getContext(), q = pg.createRadialGradient(8, 8, 0, 8, 8, 8);
+    q.addColorStop(0, "rgba(240,248,255,.7)"); q.addColorStop(1, "rgba(240,248,255,0)"); pg.fillStyle = q; pg.fillRect(0, 0, 16, 16); pt.refresh();
+  }
 
   // 2) teias nos cantos internos de cima
-  const T = dt, G = D.grid, solid = (c, r) => c < 0 || r < 0 || c >= D.cols || r >= D.rows || G[r][c] !== 0;
   if (C.webs && S.textures.exists("web")) {
     for (let r = 1; r < D.rows; r++) for (let c = 1; c < D.cols - 1; c++) {
       if (solid(c, r) || !solid(c, r - 1)) continue;
@@ -187,8 +301,9 @@ function __ambSetup(S) {
       for (const k of [C.tiles, C.top, C.face]) __ambNormal(S, k, k === C.tiles ? 3.2 : 2.6);
       S.lights.enable().setAmbientColor(C.amb);
       for (const o of layers) o?.setLighting?.(true);
-      A.hero = S.lights.addLight(0, 0, 300, C.hero, 1.9, 90);
-      A.lights = (D.lightSources || D.torches || []).map((t) => { const L = S.lights.addLight(t.x, t.y, 210, C.torch, 1.3, 50); L.__f = R() * 10; return L });
+      A.hero = S.lights.addLight(0, 0, 300, C.hero, C.heroI || 1.9, 90);
+      A.lights = (D.lightSources || D.torches || []).map((t) => { const L = S.lights.addLight(t.x, t.y, 210, C.torch, 1.3, 50); L.__f = R() * 10; L.__b = 1.3; return L });
+      for (const e of A.extraLights || []) { const L = S.lights.addLight(e.x, e.y, e.r, e.col, e.i, 60); L.__f = R() * 10; L.__b = e.i; L.__steady = e.type === "SUN"; A.lights.push(L) }
       if (S.__lz) S.__lz.C = { ...S.__lz.C, d: Math.min(S.__lz.C.d, .18) };   // a luz com relevo já escurece: a camada de sombra alivia
     } else {
       for (const o of S.children.list) o.__ambLit = 0;
@@ -226,7 +341,7 @@ function __ambSetup(S) {
   let t = 0;
   const near = (x, y) => {
     let best = null, bd = 1e9;
-    for (const s of D.lightSources || D.torches || []) { const d = (s.x - x) ** 2 + (s.y - y) ** 2; if (d < bd) { bd = d; best = s } }
+    for (const s of [...(D.lightSources || D.torches || []), ...(A.extraLights || [])]) { const d = (s.x - x) ** 2 + (s.y - y) ** 2; if (d < bd) { bd = d; best = s } }
     return bd < 260 * 260 ? [best, Math.sqrt(bd)] : null;
   };
   const castFor = (o) => {
@@ -245,7 +360,7 @@ function __ambSetup(S) {
     if (A.relief && (A.litT -= dtMs) <= 0) { A.litT = 400; litScan() }
     if (A.relief && A.hero) {
       A.hero.x = S.player.x - 6; A.hero.y = S.player.y - 34;   // a tocha fica acima do ombro: luz por cima, sem estourar o herói
-      A.hero.intensity = 1.9 + Math.sin(t * .011) * .05 + Math.sin(t * .029) * .04;
+      A.hero.intensity = (C.heroI || 1.9) + Math.sin(t * .011) * .05 + Math.sin(t * .029) * .04;
       // só as 4 tochas mais perto do herói ficam acesas no shader (cada luz custa em todos os pixels iluminados)
       if ((A.selT = (A.selT || 0) - dtMs) <= 0) {
         A.selT = 300;
@@ -253,7 +368,33 @@ function __ambSetup(S) {
         const ord = A.lights.slice().sort((a, b) => ((a.x - px) ** 2 + (a.y - py) ** 2) - ((b.x - px) ** 2 + (b.y - py) ** 2));
         ord.forEach((L, i) => { L.visible = i < 4 && (L.x - px) ** 2 + (L.y - py) ** 2 < 520 * 520 });
       }
-      for (const L of A.lights) L.intensity = 1.3 + Math.sin(t * .013 + L.__f) * .12 + Math.sin(t * .031 + L.__f) * .06;
+      for (const L of A.lights) if (!L.__steady) L.intensity = L.__b + Math.sin(t * .013 + L.__f) * .12 + Math.sin(t * .031 + L.__f) * .06;
+    }
+    if (A.fog) {
+      const v = S.cameras.main.worldView;
+      for (const f of A.fog) {
+        f.x += f.__fx * dtMs / 1000;
+        if (f.x < v.x - 260) f.x = v.right + 200; else if (f.x > v.right + 260) f.x = v.x - 200;
+        if (f.y < v.y - 120 || f.y > v.bottom + 120) f.y = v.y + R() * v.height;
+      }
+    }
+    if (C.ice && Q() >= 1 && (A.glT = (A.glT || 0) - dtMs) <= 0) {      // gelo: brilho que pisca perto do herói
+      A.glT = 140 + R() * 220;
+      const a = R() * Math.PI * 2, d = 30 + R() * 150, x = S.player.x + Math.cos(a) * d, y = S.player.y + Math.sin(a) * d * .7;
+      const c = Math.floor(x / T), r = Math.floor(y / T);
+      if (!solid(c, r)) {
+        const gl = S.add.image(x, y, "amb-glint").setBlendMode(j.BlendModes.ADD).setDepth(2).setScale(0).setAlpha(.9); gl.__lzSkip = 1;
+        S.tweens.add({ targets: gl, scale: .6 + R() * .5, duration: 220, yoyo: true, onComplete: () => gl.destroy() });
+      }
+    }
+    if (C.breath && Q() >= 1 && (A.brT = (A.brT || 0) - dtMs) <= 0) {   // frio: bafo de vapor
+      A.brT = 700;
+      const who = [S.player, ...(S.enemies?.getChildren?.() || []).filter((e) => e.active && !e.dead && S.cameras.main.worldView.contains(e.x, e.y))].filter((o) => R() < .45);
+      for (const o of who.slice(0, 4)) {
+        const fx = o.facing?.x ?? (o.flipX ? -1 : 1) ?? 1;
+        const p = S.add.image(o.x + fx * 6, o.y - 14, "amb-puff").setDepth(o.y + 2).setScale(.25).setAlpha(.75); p.__lzSkip = 1;
+        S.tweens.add({ targets: p, x: p.x + fx * 10, y: p.y - 8, scale: .9, alpha: 0, duration: 900, onComplete: () => p.destroy() });
+      }
     }
     if (Q() >= 1) {
       castFor(S.player);

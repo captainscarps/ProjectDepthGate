@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.17 · cache ded-web-v6.9.8-catacumbas-reais)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.18 · cache ded-web-v6.9.9-biomas-reais)
+
+P216.18 — RUÍNAS, FORTALEZA DO DRAGÃO E GLACIAL REALISTAS
+· Os três biomas ganham o mesmo sistema das Catacumbas (luz com relevo no gráfico alto do computador, sombras de
+  contato e projetadas, manchas), cada um com a sua cara:
+  · Ruínas: musgo e capim nas frestas do chão, fachos de luz do dia entrando por buracos do teto (com luz fria no
+    relevo e poeira dançando), luz mais esverdeada.
+  · Fortaleza do Dragão (e Vulcão de Cinzas, que usa o mesmo piso): veios de lava brilhando nas rachaduras, que
+    pulsam e acendem o relevo em volta; marcas de queimado e de garras no chão; luz laranja forte.
+  · Glacial: geada no pé das paredes em vez de sombra, montinhos de neve, brilhos do gelo piscando perto do herói,
+    névoa fria rasteira passando devagar e bafo de vapor saindo do herói e dos inimigos; luz azulada.
+· Vale no Infinito e nas fases da campanha que usam esses pisos. scripts/source/ambiente.js
 
 P216.17 — CATACUMBAS REALISTAS (1º bioma do novo visual dos cenários)
 · Luz com relevo (gráfico ALTO, no computador): os blocos de pedra do chão e das paredes ganham um mapa de relevo
