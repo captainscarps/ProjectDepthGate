@@ -28,6 +28,7 @@ const __LZ = {
   rio: { d: 0, c: 0x041018, r: 200, a: null, g: 0xfff0c0 },
   temple: { d: 0, c: 0x201206, r: 200, a: null, g: 0xffd080 },
   glacial: { d: 0, c: 0x0a1630, r: 180, a: "snow", g: 0xbfe4ff },
+  frozen: { d: .32, c: 0x0c1a38, r: 170, a: "snow", g: 0xbfe4ff },     // Cidadela Congelada do Infinito
 };
 const __LZ_HOT = /torch|tocha|fire|flame|chama|brazier|brasei|lava|candle|vela|lamp|lantern|lanter|crystal|cristal|portal|bonfire|fogueira|campfire|rune|runa|glow|ember|brasa/i;
 
@@ -139,7 +140,7 @@ function __lzSetup(S) {
     // brilho colorido em volta das tochas e fogueiras (só as de cenário; as magias já brilham sozinhas)
     let gi = 0;
     for (const h of L.hot) {
-      if (!h.hot || Q() < 2 || gi >= 10) continue;
+      if (!h.hot || Q() < 2 || gi >= 10 || C.d < .4) continue;      // halo só em lugar escuro (na neve estoura)
       const g = glows[gi] || (glows[gi] = S.add.image(0, 0, "lz-glow").setBlendMode(j.BlendModes.ADD).setDepth(8995));
       g.__lzSkip = 1; g.__src = h; g.setTint(C.g).setVisible(L.on); gi++;
     }

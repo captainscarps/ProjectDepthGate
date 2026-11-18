@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.18 · cache ded-web-v6.9.9-biomas-reais)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.19 · cache ded-web-v6.10.0-glacial-neve)
+
+P216.19 — CIDADELA CONGELADA COM CARA DE GELO E NEVE
+· Arte nova do bioma Glacial do Infinito (antes era a pedra das catacumbas pintada de azul), gerada por
+  scripts/build_glacial_tiles.py a partir dos originais em scripts/art-src/frozen/:
+  · chão de neve batida azulada com laje congelada aparecendo, neve varrida pelo vento, pegadas e pedrinhas;
+    sombra azul (não preta) encostada nas paredes;
+  · paredes de blocos de gelo translúcido (rejunte azul profundo, brilho na quina, geada), marquise de neve no
+    alto, pingentes de gelo pendurados e neve acumulada no pé; topo das paredes coberto de neve com beirada.
+· Lençóis de gelo liso no chão (formas irregulares, com reflexo em faixas e rachaduras), dunas de neve, montes
+  de neve e cristais de gelo encostados nas paredes, névoa fria bem leve, neve caindo, brilhos do gelo e bafo.
+· Luz: ambiente frio e tochas mais fracas (na neve a luz estoura); os halos de luz da fase, feitos para piso
+  escuro, ficam desligados ou menores aqui.
 
 P216.18 — RUÍNAS, FORTALEZA DO DRAGÃO E GLACIAL REALISTAS
 · Os três biomas ganham o mesmo sistema das Catacumbas (luz com relevo no gráfico alto do computador, sombras de

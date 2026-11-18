@@ -32,7 +32,7 @@ const __AMB = {
   },
   frozen: {
     tiles: "tiles-frozen", top: "walltop-frozen", face: "wallface-frozen",
-    amb: 0x8a9cb6, hero: 0xffd8a8, heroI: 1.1, torch: 0xffb070, stain: "150,190,230", wet: "190,225,255", crack: "60,90,130",
+    amb: 0x627494, hero: 0xffe0b8, heroI: .4, torchI: .55, torch: 0xffb070, stain: "150,190,230", wet: "190,225,255", crack: "60,90,130",
     webs: 0, drips: 0, dust: 0, frost: 1, ice: 1, breath: 1, fog: 1,
   },
 };
@@ -95,7 +95,7 @@ function __ambPaint(S, C, R) {
     if (solid(c, r)) continue;
     const x = c * t, y = r * t;
     // contato com as paredes: em cima (a face da parede faz sombra comprida), dos lados e embaixo
-    const ink = C.frost ? "225,242,255" : "0,0,0", fk = C.frost ? .5 : 1;      // no gelo o pé da parede acumula geada (claro), não sombra
+    const ink = C.frost ? "70,100,160" : "0,0,0", fk = C.frost ? .55 : 1;      // na neve a sombra é azul
     const sh = (x0, y0, x1, y1, a) => { const q = g.createLinearGradient(x0, y0, x1, y1); q.addColorStop(0, `rgba(${ink},${a * fk})`); q.addColorStop(1, `rgba(${ink},0)`); g.fillStyle = q; g.fillRect(x, y, t, t) };
     if (solid(c, r - 1)) sh(x, y, x, y + t * .9, .5);
     if (solid(c - 1, r)) sh(x, y, x + t * .55, y, .38);
@@ -147,6 +147,32 @@ function __ambPaint(S, C, R) {
       g.fillStyle = "rgba(180,205,230,.5)"; g.beginPath(); g.ellipse(cx, cy + rx * .22, rx * .9, rx * .16, 0, 0, Math.PI); g.fill();
     }
     if (C.drips && !solid(c, r - 1) && !solid(c, r + 1) && !solid(c - 1, r) && !solid(c + 1, r) && R() < .012) puddles.push({ x: (c + .2 + R() * .6) * T, y: (r + .2 + R() * .6) * T, s: .7 + R() * .6 });
+  }
+  // glacial: lençóis de gelo liso (formas irregulares que atravessam vários quadros) e dunas de neve
+  if (C.ice) {
+    for (let r = 2; r < rows - 2; r += 3) for (let c = 2; c < cols - 2; c += 3) {
+      if (solid(c, r) || R() > .1) continue;
+      const cx = (c + .5) * t, cy = (r + .5) * t, blobs = [];
+      for (let k = 0; k < 3 + R() * 4; k++) blobs.push([cx + (R() - .5) * t * 2.4, cy + (R() - .5) * t * 1.6, t * (.5 + R() * .7)]);
+      const ok = blobs.every(([x, y, rr]) => !solid(Math.floor(x / t), Math.floor(y / t)) && !solid(Math.floor((x + rr) / t), Math.floor(y / t)) && !solid(Math.floor((x - rr) / t), Math.floor(y / t)) && !solid(Math.floor(x / t), Math.floor((y + rr * .6) / t)) && !solid(Math.floor(x / t), Math.floor((y - rr * .6) / t)));
+      if (!ok) continue;
+      const path = () => { g.beginPath(); for (const [x, y, rr] of blobs) { g.moveTo(x + rr, y); g.ellipse(x, y, rr, rr * .62, 0, 0, Math.PI * 2) } };
+      g.save(); path(); g.clip();
+      const q = g.createLinearGradient(cx - t * 2, cy - t, cx + t * 2, cy + t);
+      q.addColorStop(0, "rgba(160,205,240,.92)"); q.addColorStop(.5, "rgba(118,170,226,.92)"); q.addColorStop(1, "rgba(96,148,212,.92)");
+      g.fillStyle = q; g.fillRect(cx - t * 3, cy - t * 3, t * 6, t * 6);
+      g.strokeStyle = "rgba(240,250,255,.55)"; g.lineWidth = 1.4;                       // reflexo em faixas
+      for (let k = -2; k <= 2; k++) { g.beginPath(); g.moveTo(cx - t * 2 + k * 7, cy + t * 1.5); g.lineTo(cx + t * .5 + k * 7, cy - t * 1.5); g.stroke() }
+      g.strokeStyle = "rgba(235,248,255,.8)"; g.lineWidth = .5;                       // rachaduras
+      for (let k = 0; k < 3; k++) { let px = cx + (R() - .5) * t * 1.5, py = cy + (R() - .5) * t; g.beginPath(); g.moveTo(px, py); for (let n = 0; n < 5; n++) { px += (R() - .5) * 6; py += (R() - .5) * 4; g.lineTo(px, py) } g.stroke() }
+      g.restore();
+      g.strokeStyle = "rgba(245,252,255,.9)"; g.lineWidth = .8; path(); g.stroke();      // borda de neve
+    }
+    for (let k = 0; k < cols * rows / 14; k++) {                                          // dunas: sombra azul macia
+      const c = (R() * cols) | 0, r = (R() * rows) | 0; if (solid(c, r)) continue;
+      const x = (c + R()) * t, y = (r + R()) * t, rr = t * (1 + R() * 1.5), q = g.createRadialGradient(x, y + rr * .3, 0, x, y + rr * .3, rr);
+      q.addColorStop(0, "rgba(110,140,195,.16)"); q.addColorStop(1, "rgba(110,140,195,0)"); g.fillStyle = q; g.fillRect(x - rr, y - rr, rr * 2, rr * 2);
+    }
   }
   // poças: escuras, com borda clara (reflexo do teto)
   for (const p of puddles) {
@@ -221,16 +247,21 @@ function __ambSetup(S) {
     }
   }
 
+  // glacial: os halos de luz da fase (feitos para piso escuro) estouram na neve branca — ficam bem mais fracos
+  if (C.frost) {
+    const dim = () => { for (const o of S.children.list) if (o.texture?.key === "light" && (o.blendMode === 1 || o.blendMode === "ADD") && !o.__ambDim) { o.__ambDim = 1; if (o.displayWidth > 140) { o.setVisible(false); A.hidden = (A.hidden || []).concat(o) } else o.setScale(o.scaleX * .5, o.scaleY * .5) } };
+    dim(); S.time.delayedCall(1500, dim);
+  }
   // glacial: névoa fria rasteira (poucas manchas grandes que derivam devagar)
   if (C.fog) {
     if (!S.textures.exists("amb-fog")) {
       const ft = S.textures.createCanvas("amb-fog", 128, 64), fg = ft.getContext();
-      for (let k = 0; k < 9; k++) { const x = 20 + Math.random() * 88, y = 18 + Math.random() * 28, r = 14 + Math.random() * 18, q = fg.createRadialGradient(x, y, 0, x, y, r); q.addColorStop(0, "rgba(225,240,255,.16)"); q.addColorStop(1, "rgba(225,240,255,0)"); fg.fillStyle = q; fg.fillRect(0, 0, 128, 64) }
+      for (let k = 0; k < 9; k++) { const x = 20 + Math.random() * 88, y = 18 + Math.random() * 28, r = 14 + Math.random() * 18, q = fg.createRadialGradient(x, y, 0, x, y, r); q.addColorStop(0, "rgba(205,225,250,.14)"); q.addColorStop(1, "rgba(225,240,255,0)"); fg.fillStyle = q; fg.fillRect(0, 0, 128, 64) }
       ft.refresh();
     }
     const v = S.cameras.main.worldView;
-    for (let k = 0; k < 7; k++) {
-      const f = S.add.image(v.x + R() * v.width, v.y + R() * v.height, "amb-fog").setScale(2.5 + R() * 2, 1.6 + R()).setAlpha(.5 + R() * .3).setDepth(8980);
+    for (let k = 0; k < 4; k++) {
+      const f = S.add.image(v.x + R() * v.width, v.y + R() * v.height, "amb-fog").setScale(2.5 + R() * 2, 1.4 + R()).setAlpha(.05 + R() * .05).setDepth(8980);
       f.__lzSkip = 1; f.__fx = (R() < .5 ? -1 : 1) * (4 + R() * 6); A.objs.push(f); (A.fog = A.fog || []).push(f);
     }
   }
@@ -253,6 +284,17 @@ function __ambSetup(S) {
         const w = S.add.image(c * T + (L ? 2 : T - 2), r * T + 2, "web").setOrigin(L ? 0 : 1, 0).setFlipX(!L).setAlpha(.55).setScale(.8 + R() * .3).setDepth(2);
         w.__lzSkip = 1; A.objs.push(w);
       }
+    }
+  }
+
+  // glacial: montes de neve e cristais de gelo encostados nas paredes (só enfeite, sem colisão)
+  if (C.frost) {
+    const keys = ["snow-pile", "ice-crystal"].filter((k) => S.textures.exists(k));
+    if (keys.length) for (let r = 1; r < D.rows - 1; r++) for (let c = 1; c < D.cols - 1; c++) {
+      if (solid(c, r) || !(solid(c, r - 1) || solid(c - 1, r) || solid(c + 1, r)) || R() > .07) continue;
+      const k = keys[(R() * keys.length) | 0], x = c * T + T * (.25 + R() * .5), y = r * T + T * (solid(c, r - 1) ? .55 : .6 + R() * .3);
+      const o = S.add.image(x, y, k).setOrigin(.5, 1).setScale(k === "ice-crystal" ? .55 + R() * .25 : .6 + R() * .3).setFlipX(R() < .5).setDepth(y);
+      A.objs.push(o);
     }
   }
 
@@ -302,7 +344,7 @@ function __ambSetup(S) {
       S.lights.enable().setAmbientColor(C.amb);
       for (const o of layers) o?.setLighting?.(true);
       A.hero = S.lights.addLight(0, 0, 300, C.hero, C.heroI || 1.9, 90);
-      A.lights = (D.lightSources || D.torches || []).map((t) => { const L = S.lights.addLight(t.x, t.y, 210, C.torch, 1.3, 50); L.__f = R() * 10; L.__b = 1.3; return L });
+      A.lights = (D.lightSources || D.torches || []).map((t) => { const L = S.lights.addLight(t.x, t.y, 210, C.torch, C.torchI || 1.3, 50); L.__f = R() * 10; L.__b = C.torchI || 1.3; return L });
       for (const e of A.extraLights || []) { const L = S.lights.addLight(e.x, e.y, e.r, e.col, e.i, 60); L.__f = R() * 10; L.__b = e.i; L.__steady = e.type === "SUN"; A.lights.push(L) }
       if (S.__lz) S.__lz.C = { ...S.__lz.C, d: Math.min(S.__lz.C.d, .18) };   // a luz com relevo já escurece: a camada de sombra alivia
     } else {
