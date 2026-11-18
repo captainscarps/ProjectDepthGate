@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.19 · cache ded-web-v6.10.0-glacial-neve)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.20 · cache ded-web-v6.10.1-ossario)
+
+P216.20 — VESTES DO OSSÁRIO (armadura do ferreiro só para o Necromante)
+· Nova armadura na aba ARMADURAS da forja, 170 Pedra Cobalto, durabilidade em runs como as outras. Só aparece na
+  loja quando o herói é o Necromante. +6 VIDA · +5 DANO MÁGICO · sem defesa.
+· Visual: o Necromante vira um esqueleto de capuz roxo — caveira com olho roxo, costelas à mostra, mãos e canelas
+  de osso, manto roxo rasgado com cinto e punhos dourados, cajado escuro com gema roxa e magia roxa; olhos e gema
+  pulsam. Folha assets/pixel-art/characters/necromancer-ossos-body.png (scripts/build_necro_ossos.py).
+· Corrente de Ossos: 6 ossos presos numa corrente giram em volta dele. Cada golpe físico (inimigo colado) quebra um
+  osso e não tira vida; um osso volta a cada 3 s.
+· Sem defesa mágica: projéteis e magias (dano que vem de longe) entram 50% mais fortes.
+· Código em scripts/source/ossario.js.
 
 P216.19 — CIDADELA CONGELADA COM CARA DE GELO E NEVE
 · Arte nova do bioma Glacial do Infinito (antes era a pedra das catacumbas pintada de azul), gerada por
