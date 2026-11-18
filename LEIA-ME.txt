@@ -1,4 +1,17 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.16 · cache ded-web-v6.9.7-luz)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.17 · cache ded-web-v6.9.8-catacumbas-reais)
+
+P216.17 — CATACUMBAS REALISTAS (1º bioma do novo visual dos cenários)
+· Luz com relevo (gráfico ALTO, no computador): os blocos de pedra do chão e das paredes ganham um mapa de relevo
+  (normal map) gerado na hora a partir da arte; a tocha do herói (por cima do ombro) e as tochas da masmorra
+  iluminam o relevo de verdade com a luz do Phaser 4 — brilho nas quinas, sombra no rejunte, mudando conforme a
+  luz anda. Inimigos, baús e objetos recebem a mesma luz (ficam no escuro longe das tochas). Só as 4 tochas mais
+  perto do herói ficam acesas no shader. No celular/tablet o relevo fica desligado (custa muito na GPU).
+· Sombras de contato: o chão escurece encostado nas paredes e nos cantos; manchas de umidade, rachaduras e poças
+  pintadas uma vez num canvas da fase (meia resolução).
+· Sombras projetadas: herói, inimigos e pet projetam sombra para o lado oposto da tocha mais próxima.
+· Detalhes: teias nos cantos, pó caindo do teto, gotas pingando nas poças com anel na água.
+· Vale nas Catacumbas do Infinito e da campanha. Gráfico MÉDIO: tudo menos o relevo; BAIXO: nada.
+  scripts/source/ambiente.js (próximos: Ruínas, Fortaleza do Dragão e Glacial)
 
 P216.16 — LUZ E CLIMA NAS FASES
 · Masmorras escuras de verdade: catacumbas, cavernas Dorf, fortaleza, vulcão, fenda e Floresta Morta ganham
