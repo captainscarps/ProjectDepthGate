@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.15 · cache ded-web-v6.9.5-config-voltar)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.16 · cache ded-web-v6.9.7-luz)
+
+P216.16 — LUZ E CLIMA NAS FASES
+· Masmorras escuras de verdade: catacumbas, cavernas Dorf, fortaleza, vulcão, fenda e Floresta Morta ganham
+  uma camada de escuridão com a cor do lugar. O herói carrega uma tocha (luz que tremula em volta dele) e as
+  tochas, fogueiras, braseiros, lava, cristais, portais e magias abrem a escuridão em volta; no gráfico alto as
+  tochas ganham um halo quente. As fases abertas (floresta, ilhas, deserto, gelo) continuam claras.
+· Partículas de ambiente por fase: poeira nas masmorras, brasas na fortaleza e no vulcão, faíscas na fenda,
+  esporos nas florestas e neve na Cidadela Glacial.
+· Segue a QUALIDADE GRÁFICA das Configurações (baixa = desligado · média = luz + poucas partículas · alta = tudo)
+  e troca na hora. Se o jogo ficar abaixo de ~26 FPS por alguns segundos, baixa um nível só nesta sessão.
+· O mapa de luz é um canvas pequeno (1/4 da tela) esticado numa camada só. scripts/source/luz.js
 
 P216.15 — CONFIGURAÇÕES: BOTÃO VOLTAR CORTADO EM TELA CHEIA
 · O "◀ VOLTAR" e o "✕" das Configurações ficavam no canto extremo da tela, em cima da moldura da página de papel,
