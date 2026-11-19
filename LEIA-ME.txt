@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.25 · cache ded-web-v6.10.6-arai)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.26 · cache ded-web-v6.10.7-druida)
+
+P216.26 — DRUIDA NOVO (mais detalhe) + PÉ DOS HERÓIS EM ALTA NO LUGAR
+· Arte nova do Druida a partir da imagem de referência: capuz com chifres, manto de folhas, cajado de galho com
+  gema verde. Parada do Sprite-AI; caminhada, corrida, ataque, magia, dano e morte do PixelLab (PixMiniMax).
+  Fontes em scripts/art-src/druida/; montagem: python3 scripts/build_druida_pixellab.py (39 quadros no mesmo
+  mapa de antes; scale .493, hires .708, pcrop novo).
+· scripts/source/herois-hd.js: com a escala menor o pé da Araí e do Druida ficava ~11 px acima dos outros
+  heróis; agora volta para a mesma altura ("baseScale" no json). As formas de javali e lobisomem continuam no
+  tamanho de antes.
 
 P216.25 — CORREÇÃO: ARAÍ PARADA APARECIA CAÍDA
 · Os quadros upA/upB (pose parada olhando para cima e pulo nas travessias) estavam com quadros da morte; agora

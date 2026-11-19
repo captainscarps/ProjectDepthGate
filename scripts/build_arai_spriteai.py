@@ -85,7 +85,7 @@ meta["torso"], meta["head"] = torso, head
 # do mesmo tamanho no jogo; "hires" corrige as telas de escala fixa e "pcrop" recorta o rosto do retrato do HUD.
 h0 = FOOT - head[0][1] + 7                       # altura da figura parada (topo da cabeça ao pé)
 k = round(68 / h0, 3)
-meta["scale"], meta["hires"] = round(.69 * k, 3), k
+meta["scale"], meta["hires"], meta["baseScale"] = round(.69 * k, 3), k, .69
 hx, hy = head[0]
 meta["pcrop"] = [round(hx - 9), round(hy - 4), 28, 28]
 json.dump(meta, open(os.path.join(OUT, "shaman-pack.json"), "w"), separators=(",", ":"))
