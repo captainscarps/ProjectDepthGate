@@ -1,4 +1,19 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.40 · cache ded-web-v6.12.1-ajustes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.41 · cache ded-web-v6.12.2-armaduras)
+
+P216.41 — ARMADURAS EXTRAS NA ARTE NOVA DOS HERÓIS
+· Armaduras únicas refeitas no PixelLab sobre a arte nova (scripts/build_armaduras_unicas.py, fontes em
+  scripts/art-src/armaduras/): Vestes do Ossário (esqueleto de manto roxo), Vestes do Vendaval (cabelo azul-petróleo,
+  manto carmesim bordado), Vestes do Saqueador (viking loiro) e Caçador de Dragão (escamas carmesim, crista de fogo).
+  Cada uma tem perfil, as 4 direções e golpes/habilidades nas mesmas linhas do herói (<classe>-<nome>-body/-dirs/-sk,
+  e -glow do Ossário e do Vendaval); o mesmo tamanho dos heróis novos (saíram do __HD_OLD de herois-hd.js).
+· Cores de armadura (comuns com cor e armaduras da forja): a pintura agora vale também nas folhas de direções e de
+  golpes (antes o herói voltava à cor original ao andar de frente/costas ou usar habilidade) e o brilho da forja
+  acompanha a folha na tela — scripts/source/herois-armaduras.js. As regras de "que pixel é roupa" do Guerreiro,
+  Ladina, Necromante e Caçador foram ajustadas às cores novas (item-skins.js).
+· Lendárias: a troca do capacete pela cabeça descoberta usava máscaras da arte antiga e foi desligada nos heróis
+  refeitos; a capa continua, presa na nuca nova (scripts/build_herois_nuca.py → mods/<classe>-mods.json, com nuca
+  por quadro do perfil, das direções e dos golpes) e na altura certa (__hdOff em herois-hd.js).
+· hero-dirs.js reconhece a classe em folhas derivadas (cor, forja, armaduras únicas) e usa as 8 passadas.
 
 P216.40 — AJUSTES: PAUSA DO REFÚGIO E TAMANHO DO ARQUEIRO
 · Pausa do Refúgio: a moldura tinha altura fixa e, com Inventário e Conta e amigos, o "Menu principal" saía para

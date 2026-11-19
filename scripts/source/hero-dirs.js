@@ -24,7 +24,7 @@ const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8
   else{this.__hdS=0;
   const row=vy>0?(dg?2:0):(dg?3:1),sg=dg?(vx<0?-1:1):(this.lastSideSign??1);row!==pr&&(this.__hdD=0);this.__hd={row,sg}}}
  else if(!this.__hd)return r;
- const{row,sg}=this.__hd,run=sp>230,CF=__HDIRS[this.animPrefix.replace(/^mk4b-|-t\d$/g,"")],N=CF?.n?.[row]??6,NC=CF?.c??9;
+ const{row,sg}=this.__hd,run=sp>230,CF=__HDIRS[this.animPrefix.replace(/^mk4b-/,"").replace(/-.*$/,"")],N=CF?.n?.[row]??6,NC=CF?.c??9;
  /* um quadro a cada ~11 px andados (~14 quadros/s na velocidade normal); o desenho já tem o sobe-e-desce do corpo */
  sp>20?(this.__hdD=(this.__hdD??0)+sp*i):(this.__hdD=0);const k=Math.floor(this.__hdD/(run?14:11))%N,fr=sp>20?row*NC+1+k:row*NC;
  m.anims.stop();m.setTexture(key,fr);m.y=this.__hdY||0;this.lastSideSign=sg;C.setScale(sg*Math.abs(C.scaleX),C.scaleY);

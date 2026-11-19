@@ -8826,14 +8826,14 @@ const __RGB = (h, s, v) => { const c = v * s, x = c * (1 - Math.abs((h / 60) % 2
 const __in = (h, a, b) => a <= b ? h >= a && h <= b : h >= a || h <= b;
 // que pixels são "a roupa" de cada classe
 const __GARMENT = {
-  warrior: (h, s, v) => s < .22 && v > .42,                                   // armadura de aço
+  warrior: (h, s, v) => s < .34 && v > .28 && (__in(h, 190, 265) || s < .1),  // armadura de aço azulado (arte nova p216.41)
   berserker: (h, s, v) => __in(h, 195, 262) && s > .25,                        // armadura azul-marinho
   archer: (h, s, v) => __in(h, 100, 178) && s > .2,                            // roupa verde
   mage: (h, s, v) => __in(h, 322, 14) && s > .4 && v < .82,                    // túnica vermelha
-  rogue: (h, s, v) => __in(h, 12, 46) && s > .25 && v < .6,                    // couro
-  necromancer: (h, s, v) => __in(h, 0, 50) && v < .42 && s > .12,              // manto
+  rogue: (h, s, v) => __in(h, 355, 35) && s > .3 && v > .1 && v < .46,        // couro (arte nova p216.41)
+  necromancer: (h, s, v) => __in(h, 330, 50) && v > .05 && v < .45 && s > .08, // manto marrom (arte nova p216.41)
   shaman: (h, s, v) => (__in(h, 80, 178) && s > .25) || (__in(h, 340, 12) && s > .55 && v > .4),  // tangas e tinta corporal
-  hunter: (h, s, v) => __in(h, 15, 42) && s > .3 && v > .72,                   // pelagem
+  hunter: (h, s, v) => __in(h, 10, 32) && s > .62 && v > .42,                  // capa de palha (arte nova p216.41)
   druid: (h, s, v) => __in(h, 70, 160) && s > .2,                            // manto verde
 };
 function __skinTex(scene, srcKey, cls, color) {
@@ -19199,11 +19199,13 @@ function __capeUpdate(V, dt) {
   const C = V.container, m = V.mk2, cls = V.classDef?.id?.toLowerCase(), D = V.__capeD;
   const on = D && m && C.visible && !V.deadPose;
   if (!on) { V.__cape?.g.setVisible(!1); return; }
-  const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, F = info?.frames?.[fi] ?? V.__capeLastF;
+  const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, tk = m.texture?.key || "";
+  // p216.41: nuca por folha (perfil, direções, golpes) — as folhas novas têm quadros diferentes
+  const arr = tk.endsWith("-dirs") ? info?.dirs : tk.endsWith("-sk") ? info?.sk : info?.frames, F = arr?.[fi] ?? V.__capeLastF;
   if (!F) { V.__cape?.g.setVisible(!1); return; }
   V.__capeLastF = F;      // quadro sem cabeça achada (de costas, atrás do escudo): a capa fica na última nuca
-  const par = C.parentContainer, sx = C.scaleX, sy = C.scaleY, u = Math.abs(sx) * Math.abs(m.scaleX) / .69;
-  const ax = C.x + (m.x + (F.neck[0] - 2 - 64) * m.scaleX) * sx, ay = C.y + (m.y + (F.neck[1] - 64) * m.scaleY) * sy;
+  const par = C.parentContainer, sx = C.scaleX, sy = C.scaleY, u = Math.abs(sx) * Math.abs(m.scaleX) / .69 / (V.mk2Layout?.hires ?? 1);
+  const ax = C.x + (m.x + (F.neck[0] - 2 - 64) * m.scaleX) * sx, ay = C.y + (m.y + (typeof __hdOff === "function" ? __hdOff(V) : 0) + (F.neck[1] - 64) * m.scaleY) * sy;
   let K = V.__cape;
   if (K && K.D !== D) { K.g.destroy(); K = V.__cape = null; }     // trocou a armadura: outra capa (outro tamanho)
   if (!K) {
@@ -24817,7 +24819,12 @@ function __sqSheet(sc) {
    escala menor para que fiquem do mesmo tamanho no jogo (mais nítidos). Com o sprite preso pelo meio, a escala
    menor subia o pé ~11 px: aqui o pé volta para a mesma altura dos outros heróis ("baseScale" no json = escala
    antiga). As formas do Druida (javali e lobisomem) e as Vestes do Vendaval da Maga continuam na escala antiga.                   */
-const __HD_OLD = /-(javali|lobisomem|vendaval|dh|saqueador|ossos)$/;      // folhas desenhadas sobre a arte antiga (formas do Druida, Vendaval, Caçador de Dragão, Saqueador)
+const __HD_OLD = /-(javali|lobisomem)$/;   // p216.41: Vendaval, Ossário, Saqueador e Caçador de Dragão refeitos na arte nova      // folhas desenhadas sobre a arte antiga (formas do Druida, Vendaval, Caçador de Dragão, Saqueador)
+/* deslocamento do pé que este módulo aplica depois do update (a capa, calculada no meio do update, precisa somar) */
+function __hdOff(V) {
+  const L = V?.mk2Layout, m = V?.mk2; if (!L?.baseScale || !m || __HD_OLD.test(V.animPrefix || "")) return 0;
+  return ((L.footY ?? L.frameH - 1) - L.frameH / 2) * (L.baseScale - V.mk2Scale);
+}
 {const U0 = Qe.prototype.update; Qe.prototype.update = function () {
   const m = this.mk2, L = this.mk2Layout;
   if (!m || !L?.baseScale) return U0.apply(this, arguments);
@@ -24982,6 +24989,103 @@ function __skhKey(V) { return V.animPrefix + "-sk" }
   } catch (e) {}
   return r }}
 /*__HEROISSK__*/
+
+/*__HEROISARM__*/
+/* ══ Armaduras nos heróis refeitos (p216.41) ═══════════════════════════════════════════════════════════════════
+   • Cores de armadura (comuns com cor, armaduras da forja) eram pintadas só na folha de perfil: andando de frente/
+     costas ou usando golpe/habilidade o herói voltava à cor original. Agora, quando a folha colorida é criada, as
+     folhas "-dirs" e "-sk" ganham a mesma pintura (e o brilho "-glow" da forja), copiando cor a cor o que a pintura
+     fez na folha de perfil (as cores que só existem nas outras folhas usam a cor mais parecida).
+   • O brilho da forja acompanha a folha que está na tela (perfil, direções ou golpes).
+   • Lendárias: a troca do capacete pela cabeça descoberta usava máscaras da arte antiga e estragava a arte nova;
+     nos heróis refeitos ela fica desligada (a capa continua, presa na nuca nova de mods/<classe>-mods.json).  */
+/* folhas extras das armaduras únicas refeitas (scripts/build_armaduras_unicas.py) */
+const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0]];
+{const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
+  for (const [c, n, gl] of __HA_UNI) for (const suf of ["-dirs", "-sk"]) for (const g of gl ? ["", "-glow"] : [""]) {
+    const k = `mk4b-${c}-${n}${suf}${g}`; this.textures.exists(k) || L.spritesheet(k, `assets/pixel-art/characters/${c}-${n}${suf}${g}.png`, { frameWidth: 128, frameHeight: 128 }) }
+  L.setPath(op) } catch (e) {} return r }}
+function __haCtx(scene, key) {
+  const img = scene.textures.get(key).getSourceImage(), c = document.createElement("canvas");
+  c.width = img.width; c.height = img.height;
+  const g = c.getContext("2d", { willReadFrequently: !0 }); g.drawImage(img, 0, 0);
+  return { c, g, d: g.getImageData(0, 0, c.width, c.height) };
+}
+function __haLut(scene, srcKey, dstKey, glowKey) {
+  scene.__haL = scene.__haL || {};
+  const id = dstKey; if (scene.__haL[id]) return scene.__haL[id];
+  const S = __haCtx(scene, srcKey).d.data, D = __haCtx(scene, dstKey).d.data, G = glowKey && scene.textures.exists(glowKey) ? __haCtx(scene, glowKey).d.data : null;
+  const map = new Map(), bins = new Map();
+  for (let i = 0; i < S.length; i += 4) {
+    if (S[i + 3] < 128) continue;
+    const k = (S[i] << 16) | (S[i + 1] << 8) | S[i + 2];
+    if (map.has(k)) continue;
+    map.set(k, [D[i], D[i + 1], D[i + 2], G ? (G[i + 3] > 0 ? (G[i] << 16) | (G[i + 1] << 8) | G[i + 2] : -1) : -1]);
+    const b = ((S[i] >> 4) << 8) | ((S[i + 1] >> 4) << 4) | (S[i + 2] >> 4);
+    (bins.get(b) || bins.set(b, []).get(b)).push(k);
+  }
+  return (scene.__haL[id] = { map, bins, glow: !!G, cache: new Map() });
+}
+function __haLook(L, r, g, b) {
+  const k = (r << 16) | (g << 8) | b;
+  let v = L.cache.get(k); if (v !== undefined) return v;
+  const e = L.map.get(k);
+  if (e) v = e;
+  else {
+    let best = null, bd = 900;                     // até ~30 de distância
+    const br = r >> 4, bg = g >> 4, bb = b >> 4;
+    for (let x = -1; x <= 1; x++) for (let y = -1; y <= 1; y++) for (let z = -1; z <= 1; z++) {
+      const B = L.bins.get(((br + x) << 8) | ((bg + y) << 4) | (bb + z)); if (!B) continue;
+      for (const q of B) { const dr = (q >> 16) - r, dg = ((q >> 8) & 255) - g, db = (q & 255) - b, d = dr * dr + dg * dg + db * db; if (d < bd) { bd = d; best = q } }
+    }
+    if (best == null) v = null;
+    else {
+      const m = L.map.get(best), qr = best >> 16, qg = (best >> 8) & 255, qb = best & 255;
+      v = (m[0] === qr && m[1] === qg && m[2] === qb) ? null      // a pintura não mexeu nessa cor
+        : [Math.max(0, Math.min(255, m[0] + r - qr)), Math.max(0, Math.min(255, m[1] + g - qg)), Math.max(0, Math.min(255, m[2] + b - qb)), m[3]];
+    }
+  }
+  L.cache.set(k, v); return v;
+}
+function __haDerive(scene, srcKey, key) {
+  if (!scene?.textures?.exists(srcKey) || !scene.textures.exists(key)) return;
+  for (const suf of ["-dirs", "-sk"]) {
+    const s = srcKey + suf, d = key + suf;
+    if (!scene.textures.exists(s) || scene.textures.exists(d)) continue;
+    const L = __haLut(scene, srcKey, key, key + "-glow"), X = __haCtx(scene, s), p = X.d.data;
+    const gc = L.glow ? document.createElement("canvas") : null, gx = gc ? (gc.width = X.c.width, gc.height = X.c.height, gc.getContext("2d")) : null, GD = gx ? gx.createImageData(X.c.width, X.c.height) : null, q = GD?.data;
+    for (let i = 0; i < p.length; i += 4) {
+      if (p[i + 3] < 128) continue;
+      const v = __haLook(L, p[i], p[i + 1], p[i + 2]); if (!v) continue;
+      p[i] = v[0]; p[i + 1] = v[1]; p[i + 2] = v[2];
+      if (q && v[3] >= 0) { q[i] = v[3] >> 16; q[i + 1] = (v[3] >> 8) & 255; q[i + 2] = v[3] & 255; q[i + 3] = 255 }
+    }
+    X.g.putImageData(X.d, 0, 0); gx && gx.putImageData(GD, 0, 0);
+    const fw = scene.textures.get(s).get(0)?.width ?? 128, fh = scene.textures.get(s).get(0)?.height ?? 128;
+    for (const [k, cv] of [[d, X.c], ...(gc ? [[d + "-glow", gc]] : [])]) {
+      const t = scene.textures.addCanvas(k, cv), cols = Math.floor(cv.width / fw), rows = Math.floor(cv.height / fh);
+      for (let r = 0, n = 0; r < rows; r++) for (let c = 0; c < cols; c++, n++) t.add(n, 0, c * fw, r * fh, fw, fh);
+      t.setFilter(j.Textures.FilterMode.NEAREST);
+    }
+  }
+}
+{const S0 = __skinTex; __skinTex = function (scene, srcKey) { const k = S0.apply(this, arguments); try { k && __haDerive(scene, srcKey, k) } catch (e) {} return k }}
+{const F0 = __farmTex; __farmTex = function (scene, srcKey) { const k = F0.apply(this, arguments); try { k && __haDerive(scene, srcKey, k) } catch (e) {} return k }}
+{const H0 = __hmodTex; __hmodTex = function (scene, srcKey, cls) {
+  try { if (scene.cache.json.get(`mk4b-${cls}-layout`)?.hires) return null } catch (e) {}   // arte nova: sem troca de cabeça
+  return H0.apply(this, arguments) }}
+/* brilho da forja na folha que estiver na tela — instalado na primeira cena, depois de todos os outros módulos
+   (o das direções troca a folha no fim do update) */
+function __haGlowSync(V) {
+  const g = V.__fGlow, m = V.mk2;
+  if (!g || !g.visible || !m) return;
+  const gk = m.texture.key + "-glow";
+  if (V.scene.textures.exists(gk)) { g.texture.key !== gk && g.setTexture(gk); g.setFrame(m.frame.name) } else g.setAlpha(0);
+}
+{const C0 = Sd.prototype.create; Sd.prototype.create = function () {
+  if (!Qe.prototype.__haG) { const U0 = Qe.prototype.update; Qe.prototype.update = function () { const r = U0.apply(this, arguments); try { __haGlowSync(this) } catch (e) {} return r }; Qe.prototype.__haG = 1 }
+  return C0.apply(this, arguments) }}
+/*__HEROISARM__*/
 /*__HERODIRS__*/
 /* ══ Heróis andando para cima e para baixo ═══════════════════════════════════════════════════
    Folha extra "<classe>-pack-t<n>-dirs.png" (128×128 por quadro), 4 linhas × c colunas (13 na versão atual; 9 nas antigas):
@@ -25009,7 +25113,7 @@ const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8
   else{this.__hdS=0;
   const row=vy>0?(dg?2:0):(dg?3:1),sg=dg?(vx<0?-1:1):(this.lastSideSign??1);row!==pr&&(this.__hdD=0);this.__hd={row,sg}}}
  else if(!this.__hd)return r;
- const{row,sg}=this.__hd,run=sp>230,CF=__HDIRS[this.animPrefix.replace(/^mk4b-|-t\d$/g,"")],N=CF?.n?.[row]??6,NC=CF?.c??9;
+ const{row,sg}=this.__hd,run=sp>230,CF=__HDIRS[this.animPrefix.replace(/^mk4b-/,"").replace(/-.*$/,"")],N=CF?.n?.[row]??6,NC=CF?.c??9;
  /* um quadro a cada ~11 px andados (~14 quadros/s na velocidade normal); o desenho já tem o sobe-e-desce do corpo */
  sp>20?(this.__hdD=(this.__hdD??0)+sp*i):(this.__hdD=0);const k=Math.floor(this.__hdD/(run?14:11))%N,fr=sp>20?row*NC+1+k:row*NC;
  m.anims.stop();m.setTexture(key,fr);m.y=this.__hdY||0;this.lastSideSign=sg;C.setScale(sg*Math.abs(C.scaleX),C.scaleY);

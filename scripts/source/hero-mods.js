@@ -101,11 +101,13 @@ function __capeUpdate(V, dt) {
   const C = V.container, m = V.mk2, cls = V.classDef?.id?.toLowerCase(), D = V.__capeD;
   const on = D && m && C.visible && !V.deadPose;
   if (!on) { V.__cape?.g.setVisible(!1); return; }
-  const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, F = info?.frames?.[fi] ?? V.__capeLastF;
+  const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, tk = m.texture?.key || "";
+  // p216.41: nuca por folha (perfil, direções, golpes) — as folhas novas têm quadros diferentes
+  const arr = tk.endsWith("-dirs") ? info?.dirs : tk.endsWith("-sk") ? info?.sk : info?.frames, F = arr?.[fi] ?? V.__capeLastF;
   if (!F) { V.__cape?.g.setVisible(!1); return; }
   V.__capeLastF = F;      // quadro sem cabeça achada (de costas, atrás do escudo): a capa fica na última nuca
-  const par = C.parentContainer, sx = C.scaleX, sy = C.scaleY, u = Math.abs(sx) * Math.abs(m.scaleX) / .69;
-  const ax = C.x + (m.x + (F.neck[0] - 2 - 64) * m.scaleX) * sx, ay = C.y + (m.y + (F.neck[1] - 64) * m.scaleY) * sy;
+  const par = C.parentContainer, sx = C.scaleX, sy = C.scaleY, u = Math.abs(sx) * Math.abs(m.scaleX) / .69 / (V.mk2Layout?.hires ?? 1);
+  const ax = C.x + (m.x + (F.neck[0] - 2 - 64) * m.scaleX) * sx, ay = C.y + (m.y + (typeof __hdOff === "function" ? __hdOff(V) : 0) + (F.neck[1] - 64) * m.scaleY) * sy;
   let K = V.__cape;
   if (K && K.D !== D) { K.g.destroy(); K = V.__cape = null; }     // trocou a armadura: outra capa (outro tamanho)
   if (!K) {

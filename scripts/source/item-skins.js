@@ -134,14 +134,14 @@ const __RGB = (h, s, v) => { const c = v * s, x = c * (1 - Math.abs((h / 60) % 2
 const __in = (h, a, b) => a <= b ? h >= a && h <= b : h >= a || h <= b;
 // que pixels são "a roupa" de cada classe
 const __GARMENT = {
-  warrior: (h, s, v) => s < .22 && v > .42,                                   // armadura de aço
+  warrior: (h, s, v) => s < .34 && v > .28 && (__in(h, 190, 265) || s < .1),  // armadura de aço azulado (arte nova p216.41)
   berserker: (h, s, v) => __in(h, 195, 262) && s > .25,                        // armadura azul-marinho
   archer: (h, s, v) => __in(h, 100, 178) && s > .2,                            // roupa verde
   mage: (h, s, v) => __in(h, 322, 14) && s > .4 && v < .82,                    // túnica vermelha
-  rogue: (h, s, v) => __in(h, 12, 46) && s > .25 && v < .6,                    // couro
-  necromancer: (h, s, v) => __in(h, 0, 50) && v < .42 && s > .12,              // manto
+  rogue: (h, s, v) => __in(h, 355, 35) && s > .3 && v > .1 && v < .46,        // couro (arte nova p216.41)
+  necromancer: (h, s, v) => __in(h, 330, 50) && v > .05 && v < .45 && s > .08, // manto marrom (arte nova p216.41)
   shaman: (h, s, v) => (__in(h, 80, 178) && s > .25) || (__in(h, 340, 12) && s > .55 && v > .4),  // tangas e tinta corporal
-  hunter: (h, s, v) => __in(h, 15, 42) && s > .3 && v > .72,                   // pelagem
+  hunter: (h, s, v) => __in(h, 10, 32) && s > .62 && v > .42,                  // capa de palha (arte nova p216.41)
   druid: (h, s, v) => __in(h, 70, 160) && s > .2,                            // manto verde
 };
 function __skinTex(scene, srcKey, cls, color) {
