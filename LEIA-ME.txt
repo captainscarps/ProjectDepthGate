@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.23 · cache ded-web-v6.10.4-saqueador)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.24 · cache ded-web-v6.10.5-arai)
+
+P216.24 — ARAÍ NOVA (Xamã com mais detalhe)
+· Arte nova da Araí a partir da imagem de referência, animada no Sprite-AI: parada, caminhada, corrida, ataque,
+  dano e morte (scripts/art-src/arai/). Os 39 quadros da folha seguem o mesmo mapa de antes (golpe, guarda,
+  magia, esquiva, atordoada, levantar…), então todas as movimentações continuam funcionando.
+· Mais detalhe: a figura ocupa ~99 px do quadro (antes 68) e a escala do pacote caiu na mesma proporção
+  (scale .479, hires .694), então ela tem o mesmo tamanho no jogo, só que mais nítida. O retrato do HUD usa o
+  recorte novo do rosto (pcrop). As camadas t0…t4 recebem a mesma arte.
+· Montagem: python3 scripts/build_arai_spriteai.py (shaman-pack*-body.png e shaman-pack.json).
 
 P216.23 — VESTES DO SAQUEADOR (armadura do ferreiro só para o Guerreiro)
 · Aba ARMADURAS da forja, 170 Pedra Cobalto, durabilidade em runs; só aparece para o Guerreiro.
