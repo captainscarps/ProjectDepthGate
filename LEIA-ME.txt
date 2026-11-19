@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.20 · cache ded-web-v6.10.1-ossario)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.21 · cache ded-web-v6.10.2-vendaval)
+
+P216.21 — VESTES DO VENDAVAL (armadura do ferreiro só para a Maga)
+· Aba ARMADURAS da forja, 170 Pedra Cobalto, durabilidade em runs; só aparece para a Maga.
+  +4 VIDA · +6 DANO MÁGICO · +10 VEL.
+· Visual: sem capuz — cabelo azul-petróleo com trança e prendedor dourado, cabelo comprido nas costas, manto e
+  vestido carmesim com bordado dourado que pulsa. Folha mage-vendaval-body.png (scripts/build_maga_vendaval.py).
+· Defesa mágica em dobro: projéteis e magias (dano de longe) entram pela metade, e se desfazem num sopro de vento.
+· Defesa física pela metade: golpes de inimigos colados entram em dobro.
+· Aura de vento: rajadas girando em volta dela, com poeira e folhas levadas em espiral. scripts/source/vendaval.js
 
 P216.20 — VESTES DO OSSÁRIO (armadura do ferreiro só para o Necromante)
 · Nova armadura na aba ARMADURAS da forja, 170 Pedra Cobalto, durabilidade em runs como as outras. Só aparece na
