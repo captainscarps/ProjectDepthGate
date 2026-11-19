@@ -1,0 +1,183 @@
+{
+ "frames": [
+  {
+   "filename": "k-parry 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 74,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 74,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 74,
+    "h": 69
+   },
+   "pivot": {
+    "x": 0.581081081081081,
+    "y": 0.391304347826087
+   },
+   "duration": 125
+  },
+  {
+   "filename": "k-parry 1.png",
+   "frame": {
+    "x": 74,
+    "y": 0,
+    "w": 74,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 74,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 74,
+    "h": 69
+   },
+   "pivot": {
+    "x": 0.581081081081081,
+    "y": 0.391304347826087
+   },
+   "duration": 125
+  },
+  {
+   "filename": "k-parry 2.png",
+   "frame": {
+    "x": 148,
+    "y": 0,
+    "w": 74,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 74,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 74,
+    "h": 69
+   },
+   "pivot": {
+    "x": 0.581081081081081,
+    "y": 0.391304347826087
+   },
+   "duration": 125
+  },
+  {
+   "filename": "k-parry 3.png",
+   "frame": {
+    "x": 0,
+    "y": 69,
+    "w": 74,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 74,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 74,
+    "h": 69
+   },
+   "pivot": {
+    "x": 0.581081081081081,
+    "y": 0.391304347826087
+   },
+   "duration": 125
+  },
+  {
+   "filename": "k-parry 4.png",
+   "frame": {
+    "x": 74,
+    "y": 69,
+    "w": 74,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 74,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 74,
+    "h": 69
+   },
+   "pivot": {
+    "x": 0.581081081081081,
+    "y": 0.391304347826087
+   },
+   "duration": 125
+  },
+  {
+   "filename": "k-parry 5.png",
+   "frame": {
+    "x": 148,
+    "y": 69,
+    "w": 74,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 74,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 74,
+    "h": 69
+   },
+   "pivot": {
+    "x": 0.581081081081081,
+    "y": 0.391304347826087
+   },
+   "duration": 125
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "k-parry.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 222,
+   "h": 138
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 43,
+   "y": 27
+  },
+  "frameTags": [
+   {
+    "name": "k-parry",
+    "from": 0,
+    "to": 5,
+    "direction": "forward"
+   }
+  ]
+ }
+}

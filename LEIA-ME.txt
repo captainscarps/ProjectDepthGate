@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.37 · cache ded-web-v6.11.8-cache)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.38 · cache ded-web-v6.11.9-samurai)
+
+P216.38 — SAMURAI NOVO (PixelLab) COM 8 DIREÇÕES, GOLPES E HABILIDADES ANIMADOS
+· Arte nova a partir da imagem de referência: armadura laqueada azul-marinho com dourado, kabuto, máscara e faixa
+  vermelhas, katana na cintura. Parada, caminhada, corrida, corte de katana, kiai, dano e morte nos 39 quadros
+  (scripts/build_samurai_pixellab.py); anda de frente, de costas e nas diagonais (berserker-pack-dirs.png). As
+  vistas de costas vieram com uma pluma/pano branco inventado pela IA: tirado com edit-images do PixelLab
+  (scripts/art-src/samurai/re-*.png).
+· Golpe básico fluido e uma animação por habilidade: saque (Iaijutsu, Tsubame, Corte do Vento), redemoinho
+  (Tsumuji), golpe no chão (Terremoto, Kaishaku), defesa (Aparar, Mikiri, Muralha de Ferro) e kiai.
+  Efeitos novos: anel do kiai, faísca da defesa e corte de vento (mais os do Guerreiro).
 
 P216.37 — CORREÇÃO: HERÓI ALTERNANDO ENTRE A ARTE ANTIGA E A NOVA
 · Causa: logo depois de publicar, o CDN ainda entrega por alguns minutos a imagem antiga; o service worker
