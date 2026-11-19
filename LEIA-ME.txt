@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.29 · cache ded-web-v6.11.0-lado)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.30 · cache ded-web-v6.11.1-maga)
+
+P216.30 — MAGA NOVA (PixelLab) COM AS 8 DIREÇÕES
+· Arte nova da Maga a partir da imagem de referência: capuz e capa roxo-escuros, túnica carmesim com faixa
+  dourada, orbe roxo girando sobre a mão. Parada, caminhada, corrida, ataque (arremessa o orbe), magia, dano e
+  morte; os 39 quadros seguem o mapa de antes. Fontes em scripts/art-src/maga/; montagem:
+  python3 scripts/build_maga_pixellab.py (scale .479, hires .694, baseScale .69, pcrop do rosto no capuz).
+· Anda de frente, de costas e nas diagonais como a Araí e o Druida (mage-pack-dirs.png por
+  scripts/build_herois_dirs.py; hero-dirs.js ligado para a Maga).
+· As Vestes do Vendaval continuam com a folha própria (desenhada sobre a arte antiga) e no tamanho certo:
+  herois-hd.js trata "-vendaval" como folha antiga.
 
 P216.29 — HERÓI SEMPRE VIRADO PARA O LADO EM QUE ANDA
 · Araí e Druida: ao passar da diagonal, de frente ou de costas para andar de lado (inclusive invertendo o lado),

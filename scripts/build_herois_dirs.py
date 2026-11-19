@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Araí e Druida andando para baixo (de frente) e para cima (de costas) — folhas <classe>-pack-dirs.png.
+"""Araí, Druida e Maga andando para baixo (de frente) e para cima (de costas) — folhas <classe>-pack-dirs.png.
 
 Fontes (PixelLab, quadros 192×192; o quadro 0 é a pose parada, 1…8 a caminhada):
   scripts/art-src/<pasta>/dirs-south.png (de frente)  dirs-north.png (de costas)
@@ -15,7 +15,8 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "assets/pixel-art/characters")
 F, S, NC = 192, 128, 9
-HEROES = {"druid": "druida", "shaman": "arai"}
+HEROES = {"druid": "druida", "shaman": "arai", "mage": "maga"}
+SMALL = {"mage": 6}                     # a Maga tem faíscas soltas do orbe: só apaga sujeira bem miúda
 
 def frames(path):
     im = Image.open(path).convert("RGBA")
@@ -69,7 +70,7 @@ for cls, folder in HEROES.items():
     foot = meta["footY"]
     rows = []
     for name in ("south", "north", "se", "ne"):
-        fr = [clean(shrink(f), white=cls == "druid") for f in frames(os.path.join(ROOT, "scripts/art-src", folder, f"dirs-{name}.png"))][:NC]
+        fr = [clean(shrink(f), SMALL.get(cls, 40), white=cls == "druid") for f in frames(os.path.join(ROOT, "scripts/art-src", folder, f"dirs-{name}.png"))][:NC]
         mx, bot = body_mid(fr[0])
         dx, dy = round(64 - mx), foot - bot
         row = []
