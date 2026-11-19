@@ -26,7 +26,7 @@ ARM = {
     "saqueador": ("warrior", WAR_SK, None),
     "dh": ("warrior", WAR_SK, None),
 }
-DECAPE = set()                              # (o preto da armadura do Caçador de Dragão confundia o filtro de capa)
+DECAPE = {"nh-warrior"}                            # (o preto da armadura do Caçador de Dragão confundia o filtro de capa)
 FLOAT = {"saqueador"}                       # nas direções a IA deixou uma espada solta flutuando acima da cabeça
 
 def solid(im):

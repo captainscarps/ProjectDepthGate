@@ -25032,7 +25032,7 @@ function __haLook(L, r, g, b) {
   const e = L.map.get(k);
   if (e) v = e;
   else {
-    let best = null, bd = 900;                     // até ~30 de distância
+    let best = null, bd = 196;                     // até ~14 de distância (cores novas, como o cabelo da cabeça descoberta, ficam como estão)
     const br = r >> 4, bg = g >> 4, bb = b >> 4;
     for (let x = -1; x <= 1; x++) for (let y = -1; y <= 1; y++) for (let z = -1; z <= 1; z++) {
       const B = L.bins.get(((br + x) << 8) | ((bg + y) << 4) | (bb + z)); if (!B) continue;

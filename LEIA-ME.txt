@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.41 · cache ded-web-v6.12.2-armaduras)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.42 · cache ded-web-v6.12.3-sem-elmo)
+
+P216.42 — LENDÁRIAS: CABEÇA DESCOBERTA NA ARTE NOVA
+· Versão sem capacete/capuz de 8 heróis refeitos (Cavaleiro, Samurai, Arqueiro, Caçador, Druida, Necromante, Maga,
+  Ladina), feita no PixelLab (edit-images + animações): perfil, 4 direções e golpes/habilidades nas mesmas linhas
+  do herói — <classe>-nh-body/-dirs/-sk.png por scripts/build_armaduras_unicas.py (fontes
+  scripts/art-src/armaduras/nh-*.png). A Araí não usa capacete (continua com o cocar).
+· Com armadura lendária/relíquia, herois-armaduras.js troca a folha pela -nh e pinta com a cor da armadura
+  (copiando a pintura da folha base; cores que não existem na base, como o cabelo, ficam como estão). Vale para
+  armaduras comuns com cor, da forja e para os conjuntos do Cavaleiro; as armaduras únicas mantêm a folha própria.
 
 P216.41 — ARMADURAS EXTRAS NA ARTE NOVA DOS HERÓIS
 · Armaduras únicas refeitas no PixelLab sobre a arte nova (scripts/build_armaduras_unicas.py, fontes em
