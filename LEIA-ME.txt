@@ -1,4 +1,8 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.24 · cache ded-web-v6.10.5-arai)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.25 · cache ded-web-v6.10.6-arai)
+
+P216.25 — CORREÇÃO: ARAÍ PARADA APARECIA CAÍDA
+· Os quadros upA/upB (pose parada olhando para cima e pulo nas travessias) estavam com quadros da morte; agora
+  usam a pose parada. scripts/build_arai_spriteai.py
 
 P216.24 — ARAÍ NOVA (Xamã com mais detalhe)
 · Arte nova da Araí a partir da imagem de referência, animada no Sprite-AI: parada, caminhada, corrida, ataque,

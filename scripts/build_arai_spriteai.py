@@ -33,7 +33,7 @@ seq = [
     R[3], R[4],                                  # 29 dashA 30 dash
     K[3], K[4], K[5],                            # 31 castA 32 cast 33 castC (ergue a lâmina e invoca)
     D[2], D[4], D[5],                            # 34-36 morte
-    D[3], D[1],                                  # 37 upA 38 upB (a morte ao contrário)
+    I[0], I[0],                                  # 37 upA 38 upB (parada olhando para cima: não há vista de costas, fica a pose parada)
 ]
 assert len(seq) == 39
 
