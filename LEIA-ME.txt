@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.22 · cache ded-web-v6.10.3-vendaval-p20)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.23 · cache ded-web-v6.10.4-saqueador)
+
+P216.23 — VESTES DO SAQUEADOR (armadura do ferreiro só para o Guerreiro)
+· Aba ARMADURAS da forja, 170 Pedra Cobalto, durabilidade em runs; só aparece para o Guerreiro.
+  +10 DEFESA · +6 VIDA · +4 DANO.
+· Visual viking: cabelo loiro comprido, barba trançada, couro com tachas e ombreiras de ferro, gola de pele,
+  escudo redondo de madeira com raios vermelhos, calça azul e perneiras amarradas.
+  Folha warrior-saqueador-body.png (scripts/build_guerreiro_saqueador.py). scripts/source/saqueador.js
 
 P216.22 — VESTES DO VENDAVAL TAMBÉM COMO RECOMPENSA DO INFINITO
 · A Maga que passa da profundidade 20 do Infinito (ao chegar na 21) ganha as Vestes do Vendaval de graça: a
