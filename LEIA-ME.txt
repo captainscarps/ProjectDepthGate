@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.36 · cache ded-web-v6.11.7-ladina)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.37 · cache ded-web-v6.11.8-cache)
+
+P216.37 — CORREÇÃO: HERÓI ALTERNANDO ENTRE A ARTE ANTIGA E A NOVA
+· Causa: logo depois de publicar, o CDN ainda entrega por alguns minutos a imagem antiga; o service worker
+  guardava essa cópia velha no cache permanente e não buscava de novo (a versão do arquivo já constava como
+  atual). Resultado: perfil com a folha velha e direções/golpes com as folhas novas, alternando no movimento.
+· sw.js: as imagens/sons/dados são baixados com "?v=<versão do arquivo>" (do asset-versions.json), então o CDN
+  sempre entrega a versão certa; o cache permanente passa a "ded-assets-v2" (o v1, que pode ter cópias velhas,
+  é apagado pelo index.html e pelo sw.js ao ativar).
 
 P216.36 — LADINA NOVA (PixelLab) COM 8 DIREÇÕES, GOLPES E HABILIDADES ANIMADOS
 · Arte nova a partir da imagem de referência: capuz e cachecol roxos com dourado, roupa de couro marrom, botas

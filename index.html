@@ -136,7 +136,8 @@
               }
             });
           }).catch(function() {});
-          caches.open("ded-assets-v1").then(function(c) {
+          caches.delete("ded-assets-v1").catch(function() {});  /* p216.37: cache antigo podia ter arte velha presa */
+          caches.open("ded-assets-v2").then(function(c) {
             c.keys().then(function(reqs) {
               reqs.forEach(function(q) {
                 if (q.url && (q.url.indexOf(".js") !== -1 || q.url.indexOf(".mjs") !== -1 || q.url.indexOf("deepcave/") !== -1 || q.url.indexOf("village.json") !== -1)) {
@@ -155,19 +156,19 @@
     })();
   </script>
   <script src="./assets/vendor/supabase-2.119.0.js"></script>
-  <script src="./assets/user-auth.js?v=6.117"></script>
-  <script src="./assets/cloud-save.js?v=6.117"></script>
-  <script src="./assets/friends.js?v=6.117"></script>
+  <script src="./assets/user-auth.js?v=6.118"></script>
+  <script src="./assets/cloud-save.js?v=6.118"></script>
+  <script src="./assets/friends.js?v=6.118"></script>
   <script src="./assets/howler.min.js"></script>
   <script src="./assets/tone.min.js"></script>
-  <script src="./assets/abyss-puzzles.js?v=6.117"></script>
-  <script src="./assets/abyss-portals-and-pacts.js?v=6.117"></script>
-  <script src="./assets/abyss-cards.js?v=6.117"></script>
-  <script src="./assets/castle-floors.js?v=6.117"></script>
-  <script src="./assets/hall-of-fame-ui.js?v=6.117"></script>
-  <script src="./assets/network-coop.js?v=6.117"></script>
-  <script src="./assets/environmental-interactions.js?v=6.117"></script>
-  <script type="module" crossorigin src="./assets/index-D6qIWtA7-p209.js?v=6.117"></script>
+  <script src="./assets/abyss-puzzles.js?v=6.118"></script>
+  <script src="./assets/abyss-portals-and-pacts.js?v=6.118"></script>
+  <script src="./assets/abyss-cards.js?v=6.118"></script>
+  <script src="./assets/castle-floors.js?v=6.118"></script>
+  <script src="./assets/hall-of-fame-ui.js?v=6.118"></script>
+  <script src="./assets/network-coop.js?v=6.118"></script>
+  <script src="./assets/environmental-interactions.js?v=6.118"></script>
+  <script type="module" crossorigin src="./assets/index-D6qIWtA7-p209.js?v=6.118"></script>
 </head>
 <body>
   <div id="game"></div>

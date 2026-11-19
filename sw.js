@@ -1,9 +1,9 @@
-const CACHE = "ded-web-v6.11.7-ladina";
+const CACHE = "ded-web-v6.11.8-cache";
 /* Imagens, sons e dados ficam num cache que NÃO é apagado a cada versão. Ao ativar uma versão nova,
    o asset-versions.json (gerado por scripts/build_asset_versions.py antes de publicar) é comparado com o
    anterior e só os arquivos que mudaram são apagados (e baixados de novo quando o jogo pedir).
    A página e os scripts continuam vindo sempre da rede (cópia só para jogar offline). */
-const ASSETS = "ded-assets-v1";
+const ASSETS = "ded-assets-v2";   // v2 (p216.37): recomeça o cache — cópias antigas presas no v1 (ver abaixo) são descartadas
 const VKEY = "__asset-versions__";
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -36,12 +36,17 @@ self.addEventListener("activate", (e) => {
             })
           );
           await ac.put(vk, new Response(JSON.stringify(nv), { headers: { "content-type": "application/json" } }));
+          VMAP = nv;
         }
       } catch (err) {}
       await self.clients.claim();
     })()
   );
 });
+
+let VMAP = null;
+const verMap = (ac) => VMAP ? Promise.resolve(VMAP) :
+  ac.match(new URL(VKEY, self.registration.scope).href).then((r) => (r ? r.json() : null)).then((m) => (VMAP = m)).catch(() => null);
 
 self.addEventListener("fetch", (e) => {
   const req = e.request;
@@ -67,15 +72,21 @@ self.addEventListener("fetch", (e) => {
     );
     return;
   }
-  // imagens, sons, dados: do cache permanente; se não tiver, baixa e guarda
+  // imagens, sons, dados: do cache permanente; se não tiver, baixa e guarda.
+  // p216.37: baixa com "?v=<versão do arquivo>" — sem isso o CDN podia entregar a cópia antiga por alguns minutos
+  // logo depois de publicar, e essa cópia velha ficava guardada para sempre (herói alternando arte velha/nova).
   e.respondWith(
     caches.open(ASSETS).then((ac) =>
       ac.match(req).then(
         (hit) =>
           hit ||
-          fetch(req, { cache: "no-cache" }).then((res) => {
-            if (res.ok && res.status === 200) ac.put(req, res.clone());
-            return res;
+          verMap(ac).then((vm) => {
+            const u = new URL(req.url), h = vm && vm[relOf(req.url)];
+            if (h) u.searchParams.set("v", h);
+            return fetch(h ? u.href : req, { cache: "no-cache" }).then((res) => {
+              if (res.ok && res.status === 200) ac.put(req, res.clone());
+              return res;
+            });
           })
       )
     )
