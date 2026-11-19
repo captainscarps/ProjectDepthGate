@@ -1,0 +1,235 @@
+{
+ "frames": [
+  {
+   "filename": "m-fire 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 76,
+    "h": 76
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5
+   },
+   "duration": 111
+  },
+  {
+   "filename": "m-fire 1.png",
+   "frame": {
+    "x": 76,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 76,
+    "h": 76
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5
+   },
+   "duration": 111
+  },
+  {
+   "filename": "m-fire 2.png",
+   "frame": {
+    "x": 152,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 76,
+    "h": 76
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5
+   },
+   "duration": 111
+  },
+  {
+   "filename": "m-fire 3.png",
+   "frame": {
+    "x": 0,
+    "y": 76,
+    "w": 76,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 76,
+    "h": 76
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5
+   },
+   "duration": 111
+  },
+  {
+   "filename": "m-fire 4.png",
+   "frame": {
+    "x": 76,
+    "y": 76,
+    "w": 76,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 76,
+    "h": 76
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5
+   },
+   "duration": 111
+  },
+  {
+   "filename": "m-fire 5.png",
+   "frame": {
+    "x": 152,
+    "y": 76,
+    "w": 76,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 76,
+    "h": 76
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5
+   },
+   "duration": 111
+  },
+  {
+   "filename": "m-fire 6.png",
+   "frame": {
+    "x": 0,
+    "y": 152,
+    "w": 76,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 76,
+    "h": 76
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5
+   },
+   "duration": 111
+  },
+  {
+   "filename": "m-fire 7.png",
+   "frame": {
+    "x": 76,
+    "y": 152,
+    "w": 76,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 76,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 76,
+    "h": 76
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5
+   },
+   "duration": 111
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "m-fire.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 228,
+   "h": 228
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 38,
+   "y": 38
+  },
+  "frameTags": [
+   {
+    "name": "m-fire",
+    "from": 0,
+    "to": 7,
+    "direction": "forward"
+   }
+  ]
+ }
+}

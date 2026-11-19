@@ -1,0 +1,235 @@
+{
+ "frames": [
+  {
+   "filename": "a-explode 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 46,
+    "h": 41
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5853658536585366
+   },
+   "duration": 83
+  },
+  {
+   "filename": "a-explode 1.png",
+   "frame": {
+    "x": 46,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 46,
+    "h": 41
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5853658536585366
+   },
+   "duration": 83
+  },
+  {
+   "filename": "a-explode 2.png",
+   "frame": {
+    "x": 92,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 46,
+    "h": 41
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5853658536585366
+   },
+   "duration": 83
+  },
+  {
+   "filename": "a-explode 3.png",
+   "frame": {
+    "x": 0,
+    "y": 41,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 46,
+    "h": 41
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5853658536585366
+   },
+   "duration": 83
+  },
+  {
+   "filename": "a-explode 4.png",
+   "frame": {
+    "x": 46,
+    "y": 41,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 46,
+    "h": 41
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5853658536585366
+   },
+   "duration": 83
+  },
+  {
+   "filename": "a-explode 5.png",
+   "frame": {
+    "x": 92,
+    "y": 41,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 46,
+    "h": 41
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5853658536585366
+   },
+   "duration": 83
+  },
+  {
+   "filename": "a-explode 6.png",
+   "frame": {
+    "x": 0,
+    "y": 82,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 46,
+    "h": 41
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5853658536585366
+   },
+   "duration": 83
+  },
+  {
+   "filename": "a-explode 7.png",
+   "frame": {
+    "x": 46,
+    "y": 82,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 46,
+    "h": 41
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.5853658536585366
+   },
+   "duration": 83
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "a-explode.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 138,
+   "h": 123
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 23,
+   "y": 24
+  },
+  "frameTags": [
+   {
+    "name": "a-explode",
+    "from": 0,
+    "to": 7,
+    "direction": "forward"
+   }
+  ]
+ }
+}

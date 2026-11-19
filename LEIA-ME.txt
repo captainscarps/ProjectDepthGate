@@ -1,4 +1,17 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.34 · cache ded-web-v6.11.5-golpes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.35 · cache ded-web-v6.11.6-habilidades)
+
+P216.35 — GOLPES E HABILIDADES ANIMADOS PARA OS OUTROS HERÓIS REFEITOS · scripts/source/herois-skills.js
+· Arqueiro, Maga, Necromante, Druida e Araí: golpe básico fluido (8 quadros; quem ataca com magia também) e uma
+  animação por habilidade — Arqueiro: tiro triplo, tiro carregado, onda repulsora, cerca de flechas, chuva de
+  flechas; Maga: arremesso da bola de fogo, nova, gelo, magia grande; Necromante: invocação, ceifa, armadura de
+  ossos, ritual; Druida: raízes, chamado (águia/urso), uivo; Araí: raízes da jurema, dardos, dança de guerra,
+  garra da onça, chamado do gavião. Folhas <pacote>-pack-sk.png por scripts/build_herois_sk.py
+  (fontes scripts/art-src/<herói>/sk-*.png, PixelLab).
+· 23 efeitos novos do PixelLab (assets/pixel-art/fx-herois/): explosão da flecha, chuva de flechas, vento, carga
+  dourada; bola de fogo, explosão arcana, nova, gelo; nova maldita, portal de invocação, estilhaços de osso, ceifa,
+  armadura de ossos; raízes, transformação, uivo, penas; vinhas da jurema, veneno, dança, garras, gavião.
+  Aparecem na frente do herói, nos pés, no ponto do feitiço (habilidades de área) ou onde o projétil da habilidade
+  termina (acertou ou chegou no alcance).
 
 P216.34 — GOLPES E HABILIDADES ANIMADOS (piloto: Cavaleiro) · scripts/source/herois-skills.js
 · Golpe básico fluido: 8 quadros ao longo do golpe em vez de 5 poses paradas, com um corte prateado em pixel art.

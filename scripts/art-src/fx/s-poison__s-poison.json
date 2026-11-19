@@ -1,0 +1,183 @@
+{
+ "frames": [
+  {
+   "filename": "s-poison 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 29,
+    "h": 33
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 29,
+    "h": 33
+   },
+   "sourceSize": {
+    "w": 29,
+    "h": 33
+   },
+   "pivot": {
+    "x": 0.4482758620689655,
+    "y": 0.5151515151515151
+   },
+   "duration": 83
+  },
+  {
+   "filename": "s-poison 1.png",
+   "frame": {
+    "x": 29,
+    "y": 0,
+    "w": 29,
+    "h": 33
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 29,
+    "h": 33
+   },
+   "sourceSize": {
+    "w": 29,
+    "h": 33
+   },
+   "pivot": {
+    "x": 0.4482758620689655,
+    "y": 0.5151515151515151
+   },
+   "duration": 83
+  },
+  {
+   "filename": "s-poison 2.png",
+   "frame": {
+    "x": 58,
+    "y": 0,
+    "w": 29,
+    "h": 33
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 29,
+    "h": 33
+   },
+   "sourceSize": {
+    "w": 29,
+    "h": 33
+   },
+   "pivot": {
+    "x": 0.4482758620689655,
+    "y": 0.5151515151515151
+   },
+   "duration": 83
+  },
+  {
+   "filename": "s-poison 3.png",
+   "frame": {
+    "x": 0,
+    "y": 33,
+    "w": 29,
+    "h": 33
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 29,
+    "h": 33
+   },
+   "sourceSize": {
+    "w": 29,
+    "h": 33
+   },
+   "pivot": {
+    "x": 0.4482758620689655,
+    "y": 0.5151515151515151
+   },
+   "duration": 83
+  },
+  {
+   "filename": "s-poison 4.png",
+   "frame": {
+    "x": 29,
+    "y": 33,
+    "w": 29,
+    "h": 33
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 29,
+    "h": 33
+   },
+   "sourceSize": {
+    "w": 29,
+    "h": 33
+   },
+   "pivot": {
+    "x": 0.4482758620689655,
+    "y": 0.5151515151515151
+   },
+   "duration": 83
+  },
+  {
+   "filename": "s-poison 5.png",
+   "frame": {
+    "x": 58,
+    "y": 33,
+    "w": 29,
+    "h": 33
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 29,
+    "h": 33
+   },
+   "sourceSize": {
+    "w": 29,
+    "h": 33
+   },
+   "pivot": {
+    "x": 0.4482758620689655,
+    "y": 0.5151515151515151
+   },
+   "duration": 83
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "s-poison.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 87,
+   "h": 66
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 13,
+   "y": 17
+  },
+  "frameTags": [
+   {
+    "name": "s-poison",
+    "from": 0,
+    "to": 5,
+    "direction": "forward"
+   }
+  ]
+ }
+}

@@ -1,0 +1,183 @@
+{
+ "frames": [
+  {
+   "filename": "n-reap 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 84,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 84,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 84,
+    "h": 84
+   },
+   "pivot": {
+    "x": 0.38095238095238093,
+    "y": 0.6190476190476191
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-reap 1.png",
+   "frame": {
+    "x": 84,
+    "y": 0,
+    "w": 84,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 84,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 84,
+    "h": 84
+   },
+   "pivot": {
+    "x": 0.38095238095238093,
+    "y": 0.6190476190476191
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-reap 2.png",
+   "frame": {
+    "x": 168,
+    "y": 0,
+    "w": 84,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 84,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 84,
+    "h": 84
+   },
+   "pivot": {
+    "x": 0.38095238095238093,
+    "y": 0.6190476190476191
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-reap 3.png",
+   "frame": {
+    "x": 0,
+    "y": 84,
+    "w": 84,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 84,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 84,
+    "h": 84
+   },
+   "pivot": {
+    "x": 0.38095238095238093,
+    "y": 0.6190476190476191
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-reap 4.png",
+   "frame": {
+    "x": 84,
+    "y": 84,
+    "w": 84,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 84,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 84,
+    "h": 84
+   },
+   "pivot": {
+    "x": 0.38095238095238093,
+    "y": 0.6190476190476191
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-reap 5.png",
+   "frame": {
+    "x": 168,
+    "y": 84,
+    "w": 84,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 84,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 84,
+    "h": 84
+   },
+   "pivot": {
+    "x": 0.38095238095238093,
+    "y": 0.6190476190476191
+   },
+   "duration": 83
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "n-reap.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 252,
+   "h": 168
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 32,
+   "y": 52
+  },
+  "frameTags": [
+   {
+    "name": "n-reap",
+    "from": 0,
+    "to": 5,
+    "direction": "forward"
+   }
+  ]
+ }
+}

@@ -1,0 +1,183 @@
+{
+ "frames": [
+  {
+   "filename": "n-bone 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 62,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 62,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 62,
+    "h": 65
+   },
+   "pivot": {
+    "x": 0.41935483870967744,
+    "y": 0.13846153846153847
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-bone 1.png",
+   "frame": {
+    "x": 62,
+    "y": 0,
+    "w": 62,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 62,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 62,
+    "h": 65
+   },
+   "pivot": {
+    "x": 0.41935483870967744,
+    "y": 0.13846153846153847
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-bone 2.png",
+   "frame": {
+    "x": 124,
+    "y": 0,
+    "w": 62,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 62,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 62,
+    "h": 65
+   },
+   "pivot": {
+    "x": 0.41935483870967744,
+    "y": 0.13846153846153847
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-bone 3.png",
+   "frame": {
+    "x": 0,
+    "y": 65,
+    "w": 62,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 62,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 62,
+    "h": 65
+   },
+   "pivot": {
+    "x": 0.41935483870967744,
+    "y": 0.13846153846153847
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-bone 4.png",
+   "frame": {
+    "x": 62,
+    "y": 65,
+    "w": 62,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 62,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 62,
+    "h": 65
+   },
+   "pivot": {
+    "x": 0.41935483870967744,
+    "y": 0.13846153846153847
+   },
+   "duration": 83
+  },
+  {
+   "filename": "n-bone 5.png",
+   "frame": {
+    "x": 124,
+    "y": 65,
+    "w": 62,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 62,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 62,
+    "h": 65
+   },
+   "pivot": {
+    "x": 0.41935483870967744,
+    "y": 0.13846153846153847
+   },
+   "duration": 83
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "n-bone.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 186,
+   "h": 130
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 26,
+   "y": 9
+  },
+  "frameTags": [
+   {
+    "name": "n-bone",
+    "from": 0,
+    "to": 5,
+    "direction": "forward"
+   }
+  ]
+ }
+}

@@ -1,0 +1,235 @@
+{
+ "frames": [
+  {
+   "filename": "d-shift 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 68
+   },
+   "pivot": {
+    "x": 0.546875,
+    "y": 0.4852941176470588
+   },
+   "duration": 63
+  },
+  {
+   "filename": "d-shift 1.png",
+   "frame": {
+    "x": 64,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 68
+   },
+   "pivot": {
+    "x": 0.546875,
+    "y": 0.4852941176470588
+   },
+   "duration": 63
+  },
+  {
+   "filename": "d-shift 2.png",
+   "frame": {
+    "x": 128,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 68
+   },
+   "pivot": {
+    "x": 0.546875,
+    "y": 0.4852941176470588
+   },
+   "duration": 63
+  },
+  {
+   "filename": "d-shift 3.png",
+   "frame": {
+    "x": 0,
+    "y": 68,
+    "w": 64,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 68
+   },
+   "pivot": {
+    "x": 0.546875,
+    "y": 0.4852941176470588
+   },
+   "duration": 63
+  },
+  {
+   "filename": "d-shift 4.png",
+   "frame": {
+    "x": 64,
+    "y": 68,
+    "w": 64,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 68
+   },
+   "pivot": {
+    "x": 0.546875,
+    "y": 0.4852941176470588
+   },
+   "duration": 63
+  },
+  {
+   "filename": "d-shift 5.png",
+   "frame": {
+    "x": 128,
+    "y": 68,
+    "w": 64,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 68
+   },
+   "pivot": {
+    "x": 0.546875,
+    "y": 0.4852941176470588
+   },
+   "duration": 63
+  },
+  {
+   "filename": "d-shift 6.png",
+   "frame": {
+    "x": 0,
+    "y": 136,
+    "w": 64,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 68
+   },
+   "pivot": {
+    "x": 0.546875,
+    "y": 0.4852941176470588
+   },
+   "duration": 63
+  },
+  {
+   "filename": "d-shift 7.png",
+   "frame": {
+    "x": 64,
+    "y": 136,
+    "w": 64,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 68
+   },
+   "pivot": {
+    "x": 0.546875,
+    "y": 0.4852941176470588
+   },
+   "duration": 63
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "d-shift.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 192,
+   "h": 204
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 35,
+   "y": 33
+  },
+  "frameTags": [
+   {
+    "name": "d-shift",
+    "from": 0,
+    "to": 7,
+    "direction": "forward"
+   }
+  ]
+ }
+}

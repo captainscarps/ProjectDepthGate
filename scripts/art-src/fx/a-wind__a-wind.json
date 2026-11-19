@@ -1,0 +1,235 @@
+{
+ "frames": [
+  {
+   "filename": "a-wind 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 115,
+    "h": 94
+   },
+   "pivot": {
+    "x": 0.5217391304347826,
+    "y": 0.5106382978723404
+   },
+   "duration": 71
+  },
+  {
+   "filename": "a-wind 1.png",
+   "frame": {
+    "x": 115,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 115,
+    "h": 94
+   },
+   "pivot": {
+    "x": 0.5217391304347826,
+    "y": 0.5106382978723404
+   },
+   "duration": 71
+  },
+  {
+   "filename": "a-wind 2.png",
+   "frame": {
+    "x": 230,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 115,
+    "h": 94
+   },
+   "pivot": {
+    "x": 0.5217391304347826,
+    "y": 0.5106382978723404
+   },
+   "duration": 71
+  },
+  {
+   "filename": "a-wind 3.png",
+   "frame": {
+    "x": 0,
+    "y": 94,
+    "w": 115,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 115,
+    "h": 94
+   },
+   "pivot": {
+    "x": 0.5217391304347826,
+    "y": 0.5106382978723404
+   },
+   "duration": 71
+  },
+  {
+   "filename": "a-wind 4.png",
+   "frame": {
+    "x": 115,
+    "y": 94,
+    "w": 115,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 115,
+    "h": 94
+   },
+   "pivot": {
+    "x": 0.5217391304347826,
+    "y": 0.5106382978723404
+   },
+   "duration": 71
+  },
+  {
+   "filename": "a-wind 5.png",
+   "frame": {
+    "x": 230,
+    "y": 94,
+    "w": 115,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 115,
+    "h": 94
+   },
+   "pivot": {
+    "x": 0.5217391304347826,
+    "y": 0.5106382978723404
+   },
+   "duration": 71
+  },
+  {
+   "filename": "a-wind 6.png",
+   "frame": {
+    "x": 0,
+    "y": 188,
+    "w": 115,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 115,
+    "h": 94
+   },
+   "pivot": {
+    "x": 0.5217391304347826,
+    "y": 0.5106382978723404
+   },
+   "duration": 71
+  },
+  {
+   "filename": "a-wind 7.png",
+   "frame": {
+    "x": 115,
+    "y": 188,
+    "w": 115,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 115,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 115,
+    "h": 94
+   },
+   "pivot": {
+    "x": 0.5217391304347826,
+    "y": 0.5106382978723404
+   },
+   "duration": 71
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "a-wind.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 345,
+   "h": 282
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 60,
+   "y": 48
+  },
+  "frameTags": [
+   {
+    "name": "a-wind",
+    "from": 0,
+    "to": 7,
+    "direction": "forward"
+   }
+  ]
+ }
+}
