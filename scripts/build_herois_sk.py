@@ -27,6 +27,8 @@ HEROES = {
     "shaman": ("arai", ("arai-idle", 0), {"atk": ("arai-attack", [1, 1, 2, 2, 2, 2, 1, 0]), "cast": ("sk-spirit", EIGHT),
                "roots": ("sk-roots", EIGHT), "darts": ("sk-darts", EIGHT), "dance": ("sk-dance", EIGHT),
                "claw": ("sk-claw", EIGHT)}),
+    "rogue": ("ladina", ("idle", 1), {"atk": ("attack", [1, 2, 3, 4, 5, 6, 7, 8]), "cast": ("cast", EIGHT), "fan": ("sk-fan", EIGHT),
+              "stab": ("sk-stab", EIGHT), "smoke": ("sk-smoke", EIGHT), "blades": ("sk-blades", EIGHT), "mark": ("sk-mark", EIGHT)}),
 }
 
 TINT = {"druid": 28}                                  # o verde-limão da magia fica perto do verde do manto

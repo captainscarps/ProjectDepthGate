@@ -1,0 +1,183 @@
+{
+ "frames": [
+  {
+   "filename": "r-stab 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 65,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 65,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 65,
+    "h": 49
+   },
+   "pivot": {
+    "x": 0.4153846153846154,
+    "y": 0.5102040816326531
+   },
+   "duration": 83
+  },
+  {
+   "filename": "r-stab 1.png",
+   "frame": {
+    "x": 65,
+    "y": 0,
+    "w": 65,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 65,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 65,
+    "h": 49
+   },
+   "pivot": {
+    "x": 0.4153846153846154,
+    "y": 0.5102040816326531
+   },
+   "duration": 83
+  },
+  {
+   "filename": "r-stab 2.png",
+   "frame": {
+    "x": 130,
+    "y": 0,
+    "w": 65,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 65,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 65,
+    "h": 49
+   },
+   "pivot": {
+    "x": 0.4153846153846154,
+    "y": 0.5102040816326531
+   },
+   "duration": 83
+  },
+  {
+   "filename": "r-stab 3.png",
+   "frame": {
+    "x": 0,
+    "y": 49,
+    "w": 65,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 65,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 65,
+    "h": 49
+   },
+   "pivot": {
+    "x": 0.4153846153846154,
+    "y": 0.5102040816326531
+   },
+   "duration": 83
+  },
+  {
+   "filename": "r-stab 4.png",
+   "frame": {
+    "x": 65,
+    "y": 49,
+    "w": 65,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 65,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 65,
+    "h": 49
+   },
+   "pivot": {
+    "x": 0.4153846153846154,
+    "y": 0.5102040816326531
+   },
+   "duration": 83
+  },
+  {
+   "filename": "r-stab 5.png",
+   "frame": {
+    "x": 130,
+    "y": 49,
+    "w": 65,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 65,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 65,
+    "h": 49
+   },
+   "pivot": {
+    "x": 0.4153846153846154,
+    "y": 0.5102040816326531
+   },
+   "duration": 83
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "r-stab.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 195,
+   "h": 98
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 27,
+   "y": 25
+  },
+  "frameTags": [
+   {
+    "name": "r-stab",
+    "from": 0,
+    "to": 5,
+    "direction": "forward"
+   }
+  ]
+ }
+}
