@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.38 · cache ded-web-v6.11.9-samurai)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.39 · cache ded-web-v6.12.0-cacador)
+
+P216.39 — CAÇADOR NOVO (PixelLab) COM 8 DIREÇÕES, GOLPES E HABILIDADES ANIMADOS
+· Arte nova a partir da imagem de referência: chapéu cônico de palha, capa de palha laranja, katana e besta.
+  Parada, caminhada, corrida, tiro de besta, tiro para o alto, dano e morte nos 39 quadros
+  (scripts/build_cacador_pixellab.py); anda de frente, de costas e nas diagonais (hunter-pack-dirs.png; os
+  "raios" que a IA desenhou acima do chapéu são cortados por scripts/build_herois_dirs.py).
+· Golpe básico fluido e uma animação por habilidade: tiro certeiro ajoelhado, tiro duplo, armadilha, assobio
+  chamando o lobo (lobo, alcateia, coordenação, uivo protetor) e saraivada. Efeitos novos: impacto do virote,
+  armadilha fechando, assobio, fogueira e uivo protetor (mais carga dourada e chuva de flechas).
 
 P216.38 — SAMURAI NOVO (PixelLab) COM 8 DIREÇÕES, GOLPES E HABILIDADES ANIMADOS
 · Arte nova a partir da imagem de referência: armadura laqueada azul-marinho com dourado, kabuto, máscara e faixa

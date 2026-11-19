@@ -1,0 +1,235 @@
+{
+ "frames": [
+  {
+   "filename": "h-whistle 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 61,
+    "h": 74
+   },
+   "pivot": {
+    "x": 0.0,
+    "y": 0.4594594594594595
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-whistle 1.png",
+   "frame": {
+    "x": 61,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 61,
+    "h": 74
+   },
+   "pivot": {
+    "x": 0.0,
+    "y": 0.4594594594594595
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-whistle 2.png",
+   "frame": {
+    "x": 122,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 61,
+    "h": 74
+   },
+   "pivot": {
+    "x": 0.0,
+    "y": 0.4594594594594595
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-whistle 3.png",
+   "frame": {
+    "x": 0,
+    "y": 74,
+    "w": 61,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 61,
+    "h": 74
+   },
+   "pivot": {
+    "x": 0.0,
+    "y": 0.4594594594594595
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-whistle 4.png",
+   "frame": {
+    "x": 61,
+    "y": 74,
+    "w": 61,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 61,
+    "h": 74
+   },
+   "pivot": {
+    "x": 0.0,
+    "y": 0.4594594594594595
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-whistle 5.png",
+   "frame": {
+    "x": 122,
+    "y": 74,
+    "w": 61,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 61,
+    "h": 74
+   },
+   "pivot": {
+    "x": 0.0,
+    "y": 0.4594594594594595
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-whistle 6.png",
+   "frame": {
+    "x": 0,
+    "y": 148,
+    "w": 61,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 61,
+    "h": 74
+   },
+   "pivot": {
+    "x": 0.0,
+    "y": 0.4594594594594595
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-whistle 7.png",
+   "frame": {
+    "x": 61,
+    "y": 148,
+    "w": 61,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 61,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 61,
+    "h": 74
+   },
+   "pivot": {
+    "x": 0.0,
+    "y": 0.4594594594594595
+   },
+   "duration": 83
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "h-whistle.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 183,
+   "h": 222
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 0,
+   "y": 34
+  },
+  "frameTags": [
+   {
+    "name": "h-whistle",
+    "from": 0,
+    "to": 7,
+    "direction": "forward"
+   }
+  ]
+ }
+}

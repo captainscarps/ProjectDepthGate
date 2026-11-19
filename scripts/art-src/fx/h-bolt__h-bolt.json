@@ -1,0 +1,183 @@
+{
+ "frames": [
+  {
+   "filename": "h-bolt 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 40,
+    "h": 27
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.4074074074074074
+   },
+   "duration": 71
+  },
+  {
+   "filename": "h-bolt 1.png",
+   "frame": {
+    "x": 40,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 40,
+    "h": 27
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.4074074074074074
+   },
+   "duration": 71
+  },
+  {
+   "filename": "h-bolt 2.png",
+   "frame": {
+    "x": 80,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 40,
+    "h": 27
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.4074074074074074
+   },
+   "duration": 71
+  },
+  {
+   "filename": "h-bolt 3.png",
+   "frame": {
+    "x": 0,
+    "y": 27,
+    "w": 40,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 40,
+    "h": 27
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.4074074074074074
+   },
+   "duration": 71
+  },
+  {
+   "filename": "h-bolt 4.png",
+   "frame": {
+    "x": 40,
+    "y": 27,
+    "w": 40,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 40,
+    "h": 27
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.4074074074074074
+   },
+   "duration": 71
+  },
+  {
+   "filename": "h-bolt 5.png",
+   "frame": {
+    "x": 80,
+    "y": 27,
+    "w": 40,
+    "h": 27
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 40,
+    "h": 27
+   },
+   "sourceSize": {
+    "w": 40,
+    "h": 27
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.4074074074074074
+   },
+   "duration": 71
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "h-bolt.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 120,
+   "h": 54
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 20,
+   "y": 11
+  },
+  "frameTags": [
+   {
+    "name": "h-bolt",
+    "from": 0,
+    "to": 5,
+    "direction": "forward"
+   }
+  ]
+ }
+}

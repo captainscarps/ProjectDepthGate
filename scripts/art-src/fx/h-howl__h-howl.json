@@ -1,0 +1,235 @@
+{
+ "frames": [
+  {
+   "filename": "h-howl 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 80
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.6
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-howl 1.png",
+   "frame": {
+    "x": 112,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 80
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.6
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-howl 2.png",
+   "frame": {
+    "x": 224,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 80
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.6
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-howl 3.png",
+   "frame": {
+    "x": 0,
+    "y": 80,
+    "w": 112,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 80
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.6
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-howl 4.png",
+   "frame": {
+    "x": 112,
+    "y": 80,
+    "w": 112,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 80
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.6
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-howl 5.png",
+   "frame": {
+    "x": 224,
+    "y": 80,
+    "w": 112,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 80
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.6
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-howl 6.png",
+   "frame": {
+    "x": 0,
+    "y": 160,
+    "w": 112,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 80
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.6
+   },
+   "duration": 83
+  },
+  {
+   "filename": "h-howl 7.png",
+   "frame": {
+    "x": 112,
+    "y": 160,
+    "w": 112,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 80
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.6
+   },
+   "duration": 83
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "h-howl.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 336,
+   "h": 240
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 56,
+   "y": 48
+  },
+  "frameTags": [
+   {
+    "name": "h-howl",
+    "from": 0,
+    "to": 7,
+    "direction": "forward"
+   }
+  ]
+ }
+}

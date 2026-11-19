@@ -15,7 +15,8 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "assets/pixel-art/characters")
 F, S, NC = 192, 128, 9
-HEROES = {"druid": "druida", "shaman": "arai", "mage": "maga", "archer": "arqueiro", "necromancer": "necromante", "rogue": "ladina", "berserker": "samurai"}
+HEROES = {"druid": "druida", "shaman": "arai", "mage": "maga", "archer": "arqueiro", "necromancer": "necromante", "rogue": "ladina", "berserker": "samurai", "hunter": "cacador"}
+CLIP_TOP = {"hunter"}
 SMALL = {"mage": 6}                     # a Maga tem faíscas soltas do orbe: só apaga sujeira bem miúda
 
 def frames(path):
@@ -70,9 +71,16 @@ for cls, folder in HEROES.items():
     foot = meta["footY"]
     rows = []
     for name in ("south", "north", "se", "ne"):
-        fr = [clean(shrink(f), SMALL.get(cls, 40), white=cls in ("druid", "berserker")) for f in frames(os.path.join(ROOT, "scripts/art-src", folder, f"dirs-{name}.png"))][:NC]
+        fr = [clean(shrink(f), SMALL.get(cls, 40), white=cls in ("druid", "berserker", "hunter")) for f in frames(os.path.join(ROOT, "scripts/art-src", folder, f"dirs-{name}.png"))][:NC]
         mx, bot = body_mid(fr[0])
         dx, dy = round(64 - mx), foot - bot
+        if cls in CLIP_TOP:                                        # raios/fumaça que a IA pôs acima da cabeça
+            px0 = fr[0].load()                                     # topo de verdade = 1ª linha com 6+ pixels (o chapéu é largo; os raios são finos)
+            top0 = next(y for y in range(S) if sum(1 for x in range(S) if px0[x, y][3]) >= 6)
+            for f in fr:
+                a = f.load()
+                for y in range(max(0, top0 - 3)):
+                    for x in range(S): a[x, y] = (0, 0, 0, 0)
         row = []
         for f in fr:
             c = Image.new("RGBA", (S, S))

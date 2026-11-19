@@ -31,6 +31,8 @@ HEROES = {
               "stab": ("sk-stab", EIGHT), "smoke": ("sk-smoke", EIGHT), "blades": ("sk-blades", EIGHT), "mark": ("sk-mark", EIGHT)}),
     "berserker": ("samurai", ("idle", 1), {"atk": ("attack", EIGHT), "cast": ("cast", EIGHT), "draw": ("sk-draw", [2, 3, 4, 5, 6, 8, 8, 8]),
                   "spin": ("sk-spin", EIGHT), "slam": ("sk-slam", EIGHT), "parry": ("sk-parry", EIGHT), "kiai": ("sk-kiai", EIGHT)}),
+    "hunter": ("cacador", ("idle", 1), {"atk": ("attack", EIGHT), "cast": ("cast", EIGHT), "aim": ("sk-aim", EIGHT),
+               "double": ("sk-double", EIGHT), "trap": ("sk-trap", EIGHT), "whistle": ("sk-whistle", EIGHT)}),
 }
 
 TINT = {"druid": 28}                                  # o verde-limão da magia fica perto do verde do manto
