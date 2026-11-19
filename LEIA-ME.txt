@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.30 · cache ded-web-v6.11.1-maga)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.31 · cache ded-web-v6.11.2-cavaleiro)
+
+P216.31 — CAVALEIRO NOVO (PixelLab) COM AS 8 DIREÇÕES E AS 5 CAMADAS DE ARMADURA
+· Arte nova do Guerreiro a partir da imagem de referência: armadura de placas, elmo fechado, gola de pelo,
+  correias de couro com dourado, espada longa e escudo redondo. Parada, caminhada, corrida, golpe de espada,
+  guarda com o escudo, golpe forte, dano e morte nos 39 quadros do mapa de antes; anda de frente, de costas e nas
+  diagonais. Fontes em scripts/art-src/cavaleiro/; montagem: python3 scripts/build_cavaleiro_pixellab.py.
+· Conjuntos de armadura (Traje da Classe, Couro, Aço Cobalto, Arcano, Dourado): o metal da arte nova é repintado
+  nas rampas de cor de cada conjunto, no perfil e nas direções (warrior-pack-t0…t4-body.png e -dirs.png).
+· A IA desenhava uma capa escura nos movimentos; o script tira as manchas escuras grossas da borda da silhueta.
+· Caçador de Dragão e Vestes do Saqueador continuam com as folhas próprias (arte antiga, tamanho certo pelo
+  herois-hd.js; andam só de perfil).
 
 P216.30 — MAGA NOVA (PixelLab) COM AS 8 DIREÇÕES
 · Arte nova da Maga a partir da imagem de referência: capuz e capa roxo-escuros, túnica carmesim com faixa
