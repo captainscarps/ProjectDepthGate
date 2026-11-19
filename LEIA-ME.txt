@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.26 · cache ded-web-v6.10.7-druida)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.27 · cache ded-web-v6.10.8-direcoes)
+
+P216.27 — ARAÍ E DRUIDA ANDAM DE FRENTE E DE COSTAS
+· Andando para baixo aparecem de frente e para cima de costas (8 quadros de caminhada + pose parada em cada
+  direção); ao parar, continuam virados para onde andavam. Na diagonal e de lado fica o perfil.
+· Arte: rotações e caminhadas do PixelLab (generate-8-rotations-v3 + PixMiniMax), fontes em
+  scripts/art-src/{arai,druida}/dirs-*.png; montagem: python3 scripts/build_herois_dirs.py →
+  shaman-pack-dirs.png e druid-pack-dirs.png (uma folha para todas as camadas).
+· scripts/source/hero-dirs.js religado (python3 scripts/patch_hero_dirs.py) só para esses dois; respeita o
+  ajuste de altura do pé de herois-hd.js.
 
 P216.26 — DRUIDA NOVO (mais detalhe) + PÉ DOS HERÓIS EM ALTA NO LUGAR
 · Arte nova do Druida a partir da imagem de referência: capuz com chifres, manto de folhas, cajado de galho com
