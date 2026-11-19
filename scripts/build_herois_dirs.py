@@ -15,7 +15,7 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "assets/pixel-art/characters")
 F, S, NC = 192, 128, 9
-HEROES = {"druid": "druida", "shaman": "arai", "mage": "maga"}
+HEROES = {"druid": "druida", "shaman": "arai", "mage": "maga", "archer": "arqueiro"}
 SMALL = {"mage": 6}                     # a Maga tem faíscas soltas do orbe: só apaga sujeira bem miúda
 
 def frames(path):

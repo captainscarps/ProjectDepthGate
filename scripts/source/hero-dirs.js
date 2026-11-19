@@ -7,7 +7,7 @@
    p216.28: diagonais ligadas (↘ linha 2, ↗ linha 3; para a esquerda espelha).
    p216.27: religado só para a Araí e o Druida novos (PixelLab), uma folha "<classe>-pack-dirs.png" para todas as
    camadas (f); feita por scripts/build_herois_dirs.py. */
-const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"druid-pack-dirs.png"},shaman:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"shaman-pack-dirs.png"},mage:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"mage-pack-dirs.png"}};
+const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"druid-pack-dirs.png"},shaman:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"shaman-pack-dirs.png"},mage:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"mage-pack-dirs.png"},archer:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"archer-pack-dirs.png"}};
 {const P0=bo.prototype.preload;bo.prototype.preload=function(){const r=P0.apply(this,arguments);try{const L=this.load,op=L.path;L.setPath("");
  for(const[c,o]of Object.entries(__HDIRS))for(const t of o.t){const k=`mk4b-${c}-t${t}-dirs`;this.textures.exists(k)||L.spritesheet(k,`assets/pixel-art/characters/${o.f??`${c}-pack-t${t}-dirs.png`}`,{frameWidth:128,frameHeight:128})}L.setPath(op)}catch(e){}return r}}
 {const U0=Qe.prototype.update;Qe.prototype.update=function(i,t){const r=U0.apply(this,arguments);try{const m=this.mk2;if(!m||this.deadPose||window.__noHeroDirs)return r;

@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.31 · cache ded-web-v6.11.2-cavaleiro)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.32 · cache ded-web-v6.11.3-arqueiro)
+
+P216.32 — ARQUEIRO NOVO (samurai, PixelLab) COM AS 8 DIREÇÕES
+· Arte nova do Arqueiro a partir da imagem de referência: armadura samurai verde e preta com dourado, kabuto com
+  chifres, peitoral prateado, aljava nas costas, katana na cintura e arco longo. Parada, caminhada e corrida de 8
+  quadros, tiro com o arco (puxa a corda e solta a flecha), tiro especial para o alto, dano e morte, nos 55
+  quadros do mapa de archer-pack.json. Fontes em scripts/art-src/arqueiro/; montagem:
+  python3 scripts/build_arqueiro_pixellab.py.
+· Anda de frente, de costas e nas diagonais (archer-pack-dirs.png por scripts/build_herois_dirs.py).
 
 P216.31 — CAVALEIRO NOVO (PixelLab) COM AS 8 DIREÇÕES E AS 5 CAMADAS DE ARMADURA
 · Arte nova do Guerreiro a partir da imagem de referência: armadura de placas, elmo fechado, gola de pelo,
