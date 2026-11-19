@@ -25047,10 +25047,10 @@ function __haLook(L, r, g, b) {
   }
   L.cache.set(k, v); return v;
 }
-function __haDerive(scene, srcKey, key) {
+function __haDerive(scene, srcKey, key, inBase = srcKey, outBase = key, sufs = ["-dirs", "-sk"]) {
   if (!scene?.textures?.exists(srcKey) || !scene.textures.exists(key)) return;
-  for (const suf of ["-dirs", "-sk"]) {
-    const s = srcKey + suf, d = key + suf;
+  for (const suf of sufs) {
+    const s = inBase + suf, d = outBase + suf;
     if (!scene.textures.exists(s) || scene.textures.exists(d)) continue;
     const L = __haLut(scene, srcKey, key, key + "-glow"), X = __haCtx(scene, s), p = X.d.data;
     const gc = L.glow ? document.createElement("canvas") : null, gx = gc ? (gc.width = X.c.width, gc.height = X.c.height, gc.getContext("2d")) : null, GD = gx ? gx.createImageData(X.c.width, X.c.height) : null, q = GD?.data;
@@ -25071,9 +25071,35 @@ function __haDerive(scene, srcKey, key) {
 }
 {const S0 = __skinTex; __skinTex = function (scene, srcKey) { const k = S0.apply(this, arguments); try { k && __haDerive(scene, srcKey, k) } catch (e) {} return k }}
 {const F0 = __farmTex; __farmTex = function (scene, srcKey) { const k = F0.apply(this, arguments); try { k && __haDerive(scene, srcKey, k) } catch (e) {} return k }}
+/* lendárias na arte nova (p216.42): a "cabeça descoberta" é a folha <classe>-nh (herói sem capacete/capuz, com as
+   mesmas animações, direções e golpes), pintada com a cor da armadura copiando o que a pintura fez na folha base */
+const __HA_NH = ["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"];
+{const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
+  for (const c of __HA_NH) for (const suf of ["", "-dirs", "-sk"]) { const k = `mk4b-${c}-nh${suf}`; this.textures.exists(k) || L.spritesheet(k, `assets/pixel-art/characters/${c}-nh${suf ? suf : "-body"}.png`, { frameWidth: 128, frameHeight: 128 }) }
+  L.setPath(op) } catch (e) {} return r }}
+function __haAnims(scene, from, to) {
+  for (const A0 of scene.anims.anims?.getArray?.() ?? []) {
+    if (!A0.key.startsWith(from + "-") || A0.key.startsWith(to + "-")) continue;
+    const nk = to + A0.key.slice(from.length);
+    scene.anims.exists(nk) || scene.anims.create({ key: nk, frames: A0.frames.map(f => ({ key: to, frame: f.frame.name })), frameRate: A0.frameRate, repeat: A0.repeat });
+  }
+}
 {const H0 = __hmodTex; __hmodTex = function (scene, srcKey, cls) {
-  try { if (scene.cache.json.get(`mk4b-${cls}-layout`)?.hires) return null } catch (e) {}   // arte nova: sem troca de cabeça
-  return H0.apply(this, arguments) }}
+  let hd = !1; try { hd = !!scene.cache.json.get(`mk4b-${cls}-layout`)?.hires } catch (e) {}
+  if (!hd) return H0.apply(this, arguments);
+  try {
+    const base = `mk4b-${cls}-nh`, t0 = `mk4b-${cls}-t0`;
+    if (!scene.textures.exists(base) || !srcKey?.startsWith(`mk4b-${cls}-t`)) return null;   // armaduras únicas têm folha própria
+    if (srcKey === t0) { __haAnims(scene, t0, base); return base }
+    const key = srcKey + "-nh";
+    if (!scene.textures.exists(key)) {
+      __haDerive(scene, t0, srcKey, base, key, ["", "-dirs", "-sk"]);
+      if (!scene.textures.exists(key)) return null;
+      __haAnims(scene, srcKey, key);
+    }
+    return key;
+  } catch (e) { return null }
+}}
 /* brilho da forja na folha que estiver na tela — instalado na primeira cena, depois de todos os outros módulos
    (o das direções troca a folha no fim do update) */
 function __haGlowSync(V) {

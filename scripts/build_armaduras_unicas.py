@@ -77,7 +77,17 @@ def save(img, name, test):
     img.save(os.path.join(OUT, name + ".png"), optimize=True)
     if test: glow_of(img, test).save(os.path.join(OUT, name + "-glow.png"), optimize=True)
 
+# p216.42: cabeça descoberta das armaduras lendárias — versão sem capacete/capuz de cada herói refeito
+# (fontes nh-<classe>-*.png; saída <classe>-nh-body/-dirs/-sk; as linhas de golpes saem de "sk-<linha>")
+import sys
+for c in ["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"]:
+    ARM["nh-" + c] = (c, None, None)
+ONLY = sys.argv[1:]
 for nm, (cls, skrows, gtest) in ARM.items():
+    if ONLY and not any(nm.startswith(o) for o in ONLY): continue
+    if not os.path.exists(os.path.join(SRC, f"{nm}-idle.png")): continue
+    out = f"{cls}-nh" if nm.startswith("nh-") else f"{cls}-{nm}"
+    skrows = skrows or {"atk": "attack", "cast": "cast"}
     meta = json.load(open(os.path.join(OUT, f"{cls}-pack.json")))
     FOOT, MAP = meta["footY"], meta["map"]
     hero0 = Image.open(os.path.join(OUT, f"{cls}-pack-t0-body.png")).convert("RGBA").crop((0, 0, S, S))
@@ -96,8 +106,8 @@ for nm, (cls, skrows, gtest) in ARM.items():
     DX, DY = round(OX - px_.mean()), FOOT - py_.max()
     # ── perfil: mesmo mapa do herói ──
     I, W, R, K, C, H, D = (frames(nm, k) for k in ("idle", "walk", "run", "attack", "cast", "hurt", "death"))
-    pick = {"idle": [I[1], I[3], I[5], I[7]], "idlevar": [I[2], I[6]], "walk": [W[1], W[2], W[3], W[5], W[6], W[7]],
-            "run": [R[3], R[4], R[5], R[6], R[7], R[8]], "windupA": K[2], "windup": K[3], "hitA": K[4], "hit": K[5], "recovery": K[7],
+    pick = {"idle": [I[1], I[3], I[5], I[7]], "idlevar": [I[2], I[6]], "walk": W[1:9] if len(MAP["walk"]) == 8 else [W[1], W[2], W[3], W[5], W[6], W[7]],
+            "run": R[1:9] if len(MAP["run"]) == 8 else [R[3], R[4], R[5], R[6], R[7], R[8]], "windupA": K[2], "windup": K[3], "hitA": K[4], "hit": K[5], "recovery": K[7],
             "guardStart": K[2], "guard": K[2], "hurt": H[3], "hurtB": H[4], "stunA": H[3], "stunB": H[4], "dashA": R[4], "dash": R[5],
             "castA": C[3], "cast": C[5], "castC": C[7], "deathA": D[4], "deathB": D[7], "deathC": D[8], "upA": I[1], "upB": I[1]}
     n = max(max(v) if isinstance(v, list) else v for v in MAP.values()) + 1
@@ -108,7 +118,7 @@ for nm, (cls, skrows, gtest) in ARM.items():
         src = src if isinstance(src, list) else [src] * len(idx)
         for i, fr in zip(idx, src):
             prev = prep(fr, prev); body.alpha_composite(place(prev, DX, DY), (i * S, 0))
-    save(body, f"{cls}-{nm}-body", gtest)
+    save(body, f"{out}-body", gtest)
     # ── direções ──
     dirs = Image.new("RGBA", (S * 9, S * 4))
     for r, d in enumerate(("south", "north", "se", "ne")):
@@ -119,14 +129,14 @@ for nm, (cls, skrows, gtest) in ARM.items():
         dx, dy = round(64 - mid), FOOT - fy.max()
         for kk, f in enumerate(fr):
             prev = prep(f, prev); dirs.alpha_composite(place(solid(prev) if nm in FLOAT else prev, dx, dy), (kk * S, r * S))
-    save(dirs, f"{cls}-{nm}-dirs", gtest)
+    save(dirs, f"{out}-dirs", gtest)
     # ── golpes e habilidades: nas linhas da folha sk do herói ──
     rows = meta["sk"]["rows"]
     sk = Image.new("RGBA", (S * 8, S * len(rows)))
     for key, r in rows.items():
-        src = skrows.get(key) or "cast"
+        src = skrows.get(key) or (f"sk-{key}" if os.path.exists(os.path.join(SRC, f"{nm}-sk-{key}.png")) else "cast")
         fr = frames(nm, src); prev = p0
         for kk, i in enumerate(E8):
             prev = prep(fr[min(i, len(fr) - 1)], prev); sk.alpha_composite(place(prev, DX, DY), (kk * S, r * S))
-    save(sk, f"{cls}-{nm}-sk", gtest)
+    save(sk, f"{out}-sk", gtest)
     print(nm, "tamanho", size, "dx,dy", DX, DY, "linhas sk", list(rows))
