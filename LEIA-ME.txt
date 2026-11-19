@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.39 · cache ded-web-v6.12.0-cacador)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.40 · cache ded-web-v6.12.1-ajustes)
+
+P216.40 — AJUSTES: PAUSA DO REFÚGIO E TAMANHO DO ARQUEIRO
+· Pausa do Refúgio: a moldura tinha altura fixa e, com Inventário e Conta e amigos, o "Menu principal" saía para
+  fora; agora a altura acompanha o número de opções (scripts/source/hub-village.js, aplicado também no bundle).
+· Arqueiro: a escala tinha sido calculada pela altura da arte antiga com o arco erguido (103 px), então ele ficava
+  ~45% maior que os outros heróis no jogo e nos cartões de save. Agora usa a altura do corpo (70 px): scale .474,
+  hires .707 (scripts/build_arqueiro_pixellab.py), do mesmo tamanho dos demais.
 
 P216.39 — CAÇADOR NOVO (PixelLab) COM 8 DIREÇÕES, GOLPES E HABILIDADES ANIMADOS
 · Arte nova a partir da imagem de referência: chapéu cônico de palha, capa de palha laranja, katana e besta.

@@ -12,7 +12,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "scripts/art-src/arqueiro")
 OUT = os.path.join(ROOT, "assets/pixel-art/characters")
 S, F = 128, 192
-OLD_H, OLD_SCALE, OX = 103, .67, 59.3          # Arqueiro antigo: altura no quadro, escala do pacote, x médio parado
+OLD_H, OLD_SCALE, OX = 70, .67, 59.3          # Arqueiro antigo: altura do corpo (sem o arco erguido), escala do pacote, x médio parado
 
 def frames(name):
     im = Image.open(os.path.join(SRC, f"{name}.png")).convert("RGBA")
