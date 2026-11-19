@@ -1,5 +1,6 @@
 /* ══ Vestes do Vendaval — armadura do ferreiro só para a Maga (p216.21) ═══════════════════════════════════════
-   • Aba ARMADURAS da forja (Pedra Cobalto, durabilidade em runs); só aparece para a Maga.
+   • Aba ARMADURAS da forja (Pedra Cobalto, durabilidade em runs); só aparece para a Maga. Também cai de graça,
+     uma vez por heroína, quando a Maga passa da profundidade 20 do Infinito (ao chegar na 21).
    • Visual: sem capuz — cabelo azul-petróleo com trança, manto e vestido carmesim com bordado dourado que pulsa
      (folha mage-vendaval-body.png, feita por scripts/build_maga_vendaval.py).
    • Defesa mágica em dobro: projéteis e magias (dano que vem de longe) entram pela metade.
@@ -106,3 +107,18 @@ function __vdTick(S, dt) {
   S.events.on("postupdate", fn); S.events.once("shutdown", () => { S.events.off("postupdate", fn); S.__vd = null });
 } catch (e) {} return r }}
 window.__vendaval = { id: __VD_ID };
+/* recompensa do Infinito: a Maga que passa da profundidade 20 ganha as Vestes do Vendaval (uma vez por heroína) */
+function __vdKey(S) { return "depthgate:vendaval:" + (window.__heroTag ? window.__heroTag(S.game.registry, 1, S) : (S.game.registry.get("save:slot") ?? 1)) }
+function __vdReward(S) {
+  if (S.classDef?.id !== "MAGE" || S.game.registry.get("mode") !== "endless") return;
+  const run = S.endlessRun?.(); if (!run || (run.depth | 0) <= 20) return;
+  try { if (localStorage.getItem(__vdKey(S))) return } catch (e) { return }
+  const p = S.player, L = S.lootSystem; if (!p || !L) return;
+  try { localStorage.setItem(__vdKey(S), "1") } catch (e) {}
+  L.spawnItem(p.x, p.y + 34, L.makeItem(__VD_ID, "UNIQUE"));
+  S.effects?.shockwaveRing?.(p.x, p.y + 34, 60); S.effects?.burstTinted?.(p.x, p.y + 34, 0xdff4ff, 24);
+  S.game.events.emit("ui:banner", __L3("O VENTO DO ABISMO TE RECONHECE: VESTES DO VENDAVAL", "THE ABYSS WIND KNOWS YOU: GALE VESTMENTS", "EL VIENTO DEL ABISMO TE RECONOCE: VESTIDURAS DEL VENDAVAL"));
+}
+{const C0 = Sd.prototype.create; Sd.prototype.create = function () { const r = C0.apply(this, arguments); try {
+  const S = this; S.time.delayedCall(1800, () => { try { S.sys.isActive() && __vdReward(S) } catch (e) {} });
+} catch (e) {} return r }}
