@@ -24837,6 +24837,7 @@ const __HD_OLD = /-(javali|lobisomem)$/;
    linha 0 de frente (descendo), 1 de costas (subindo), 2 diagonal de frente (↘), 3 diagonal de costas (↗);
    coluna 0 parado, colunas 1… caminhada (n[linha] quadros: 6 na 1ª versão, 8 no prompt v2). As diagonais para a esquerda usam o espelho.
    Ataque, esquiva, magia, dano, guarda e morte continuam com o desenho de perfil.
+   p216.28: diagonais ligadas (↘ linha 2, ↗ linha 3; para a esquerda espelha).
    p216.27: religado só para a Araí e o Druida novos (PixelLab), uma folha "<classe>-pack-dirs.png" para todas as
    camadas (f); feita por scripts/build_herois_dirs.py. */
 const __HDIRS={druid:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"druid-pack-dirs.png"},shaman:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"shaman-pack-dirs.png"}};
@@ -24848,10 +24849,12 @@ const __HDIRS={druid:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"druid-pack-dirs.png"},sha
  const vx=t?.body?.velocity.x??0,vy=t?.body?.velocity.y??0,sp=Math.hypot(vx,vy),C=this.container;
  if(sp>20){const ax=Math.abs(vx)/sp,ay=Math.abs(vy)/sp,pr=this.__hd?.row,h=.07;
   /* troca de direção com folga, para não ficar piscando entre perfil/diagonal/frente no analógico */
-  /* só para cima e para baixo: na diagonal e de lado fica o desenho de perfil original */
-  const vert=pr==null?ax<.38:ax<.38+h,dg=!1;
-  if(!vert){this.__hd=null;return r}
-  const row=vy>0?(dg?2:0):(dg?3:1),sg=dg?(vx<0?-1:1):(this.lastSideSign??1);row!==pr&&(this.__hdD=0);this.__hd={row,sg}}
+  /* p216.28: de frente/costas (quase vertical), diagonais (entre ~22° e ~67° da vertical) e perfil (quase horizontal) */
+  const wasV=pr===0||pr===1,wasD=pr===2||pr===3,vert=ax<(wasV?.38+h:.38),side=ax>(wasD?.92+h:pr==null?.92:.92-h),dg=!vert&&!side;
+  /* soltar uma das duas teclas da diagonal dá um instante de lado: só vira perfil se durar mais de 0,12 s */
+  if(side){this.__hdS=(this.__hdS||0)+i;if(!this.__hd||this.__hdS>.12){this.__hd=null;return r}}
+  else{this.__hdS=0;
+  const row=vy>0?(dg?2:0):(dg?3:1),sg=dg?(vx<0?-1:1):(this.lastSideSign??1);row!==pr&&(this.__hdD=0);this.__hd={row,sg}}}
  else if(!this.__hd)return r;
  const{row,sg}=this.__hd,run=sp>230,CF=__HDIRS[this.animPrefix.replace(/^mk4b-|-t\d$/g,"")],N=CF?.n?.[row]??6,NC=CF?.c??9;
  /* um quadro a cada ~11 px andados (~14 quadros/s na velocidade normal); o desenho já tem o sobe-e-desce do corpo */

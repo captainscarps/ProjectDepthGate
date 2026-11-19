@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.27 · cache ded-web-v6.10.8-direcoes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.28 · cache ded-web-v6.10.9-diagonais)
+
+P216.28 — ARAÍ E DRUIDA ANDAM NAS DIAGONAIS
+· Diagonal para baixo (¾ de frente) e para cima (¾ de costas), 8 quadros cada; para a esquerda espelha.
+  Fontes: scripts/art-src/{arai,druida}/dirs-se.png e dirs-ne.png (PixelLab); scripts/build_herois_dirs.py
+  agora monta as 4 linhas e apaga sujeira solta da IA.
+· hero-dirs.js: frente/costas (quase vertical), diagonal (entre ~22° e ~67°) e perfil (quase horizontal), com
+  folga para não piscar. Ao soltar uma das duas teclas da diagonal o herói não vira de lado por um instante:
+  parado, continua na pose da direção em que andava.
 
 P216.27 — ARAÍ E DRUIDA ANDAM DE FRENTE E DE COSTAS
 · Andando para baixo aparecem de frente e para cima de costas (8 quadros de caminhada + pose parada em cada
