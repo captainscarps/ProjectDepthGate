@@ -24815,7 +24815,7 @@ function __sqSheet(sc) {
    escala menor para que fiquem do mesmo tamanho no jogo (mais nítidos). Com o sprite preso pelo meio, a escala
    menor subia o pé ~11 px: aqui o pé volta para a mesma altura dos outros heróis ("baseScale" no json = escala
    antiga). As formas do Druida (javali e lobisomem) e as Vestes do Vendaval da Maga continuam na escala antiga.                   */
-const __HD_OLD = /-(javali|lobisomem|vendaval|dh|saqueador)$/;      // folhas desenhadas sobre a arte antiga (formas do Druida, Vendaval, Caçador de Dragão, Saqueador)
+const __HD_OLD = /-(javali|lobisomem|vendaval|dh|saqueador|ossos)$/;      // folhas desenhadas sobre a arte antiga (formas do Druida, Vendaval, Caçador de Dragão, Saqueador)
 {const U0 = Qe.prototype.update; Qe.prototype.update = function () {
   const m = this.mk2, L = this.mk2Layout;
   if (!m || !L?.baseScale) return U0.apply(this, arguments);
@@ -24841,7 +24841,7 @@ const __HD_OLD = /-(javali|lobisomem|vendaval|dh|saqueador)$/;      // folhas de
    p216.28: diagonais ligadas (↘ linha 2, ↗ linha 3; para a esquerda espelha).
    p216.27: religado só para a Araí e o Druida novos (PixelLab), uma folha "<classe>-pack-dirs.png" para todas as
    camadas (f); feita por scripts/build_herois_dirs.py. */
-const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"druid-pack-dirs.png"},shaman:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"shaman-pack-dirs.png"},mage:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"mage-pack-dirs.png"},archer:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"archer-pack-dirs.png"}};
+const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"druid-pack-dirs.png"},shaman:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"shaman-pack-dirs.png"},mage:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"mage-pack-dirs.png"},archer:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"archer-pack-dirs.png"},necromancer:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"necromancer-pack-dirs.png"}};
 {const P0=bo.prototype.preload;bo.prototype.preload=function(){const r=P0.apply(this,arguments);try{const L=this.load,op=L.path;L.setPath("");
  for(const[c,o]of Object.entries(__HDIRS))for(const t of o.t){const k=`mk4b-${c}-t${t}-dirs`;this.textures.exists(k)||L.spritesheet(k,`assets/pixel-art/characters/${o.f??`${c}-pack-t${t}-dirs.png`}`,{frameWidth:128,frameHeight:128})}L.setPath(op)}catch(e){}return r}}
 {const U0=Qe.prototype.update;Qe.prototype.update=function(i,t){const r=U0.apply(this,arguments);try{const m=this.mk2;if(!m||this.deadPose||window.__noHeroDirs)return r;

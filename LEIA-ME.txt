@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.32 · cache ded-web-v6.11.3-arqueiro)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.33 · cache ded-web-v6.11.4-necromante)
+
+P216.33 — NECROMANTE NOVO (PixelLab) COM AS 8 DIREÇÕES
+· Arte nova do Necromante a partir da imagem de referência: manto marrom com capuz, rosto pálido de olhos
+  vermelhos, amuleto dourado, caneleiras de osso e cajado retorcido com um vórtice carmesim. Parada, caminhada,
+  corrida, raio vermelho do cajado, ritual com círculo de energia, dano e morte nos 39 quadros do mapa de antes;
+  anda de frente, de costas e nas diagonais (necromancer-pack-dirs.png). Fontes em scripts/art-src/necromante/;
+  montagem: python3 scripts/build_necromante_pixellab.py e scripts/build_herois_dirs.py.
+· As Vestes do Ossário continuam com a folha própria e no tamanho certo (herois-hd.js trata "-ossos" como antiga).
 
 P216.32 — ARQUEIRO NOVO (samurai, PixelLab) COM AS 8 DIREÇÕES
 · Arte nova do Arqueiro a partir da imagem de referência: armadura samurai verde e preta com dourado, kabuto com
