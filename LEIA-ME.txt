@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.28 · cache ded-web-v6.10.9-diagonais)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.29 · cache ded-web-v6.11.0-lado)
+
+P216.29 — HERÓI SEMPRE VIRADO PARA O LADO EM QUE ANDA
+· Araí e Druida: ao passar da diagonal, de frente ou de costas para andar de lado (inclusive invertendo o lado),
+  ficavam até 0,12 s virados para o lado antigo. Agora viram na hora; a folga só vale ao soltar uma das teclas da
+  diagonal continuando para o mesmo lado. Teste de teclado com trocas soltas e sobrepostas: 0 quadros virados
+  errado (Druida, Araí e Guerreiro). scripts/source/hero-dirs.js
 
 P216.28 — ARAÍ E DRUIDA ANDAM NAS DIAGONAIS
 · Diagonal para baixo (¾ de frente) e para cima (¾ de costas), 8 quadros cada; para a esquerda espelha.

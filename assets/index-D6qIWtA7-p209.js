@@ -24851,8 +24851,9 @@ const __HDIRS={druid:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"druid-pack-dirs.png"},sha
   /* troca de direção com folga, para não ficar piscando entre perfil/diagonal/frente no analógico */
   /* p216.28: de frente/costas (quase vertical), diagonais (entre ~22° e ~67° da vertical) e perfil (quase horizontal) */
   const wasV=pr===0||pr===1,wasD=pr===2||pr===3,vert=ax<(wasV?.38+h:.38),side=ax>(wasD?.92+h:pr==null?.92:.92-h),dg=!vert&&!side;
-  /* soltar uma das duas teclas da diagonal dá um instante de lado: só vira perfil se durar mais de 0,12 s */
-  if(side){this.__hdS=(this.__hdS||0)+i;if(!this.__hd||this.__hdS>.12){this.__hd=null;return r}}
+  /* soltar uma das duas teclas da diagonal dá um instante de lado: só vira perfil se durar mais de 0,12 s —
+     mas só vindo da diagonal e para o MESMO lado; mudou de lado (ou vinha de frente/costas) vira na hora (p216.29) */
+  if(side){this.__hdS=(this.__hdS||0)+i;if(!wasD||Math.sign(vx)!==this.__hd.sg||this.__hdS>.12){this.__hd=null;this.lastSideSign=Math.sign(vx)||this.lastSideSign;C.setScale(this.lastSideSign*Math.abs(C.scaleX),C.scaleY);return r}}
   else{this.__hdS=0;
   const row=vy>0?(dg?2:0):(dg?3:1),sg=dg?(vx<0?-1:1):(this.lastSideSign??1);row!==pr&&(this.__hdD=0);this.__hd={row,sg}}}
  else if(!this.__hd)return r;
