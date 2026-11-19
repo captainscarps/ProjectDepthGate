@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.42 · cache ded-web-v6.12.3-sem-elmo)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.43 · cache ded-web-v6.12.4-direcoes)
+
+P216.43 — CORREÇÕES: ARQUEIRO NA DIAGONAL PARA CIMA E SAMURAI ANDANDO DE COSTAS
+· Arqueiro: as linhas "para cima" e "diagonal para cima" estavam trocadas (para cima era um 3/4 de costas virado
+  para a esquerda). Agora para cima = costas retas e a diagonal = o 3/4 espelhado, virado para a direita
+  (scripts/art-src/arqueiro/dirs-north/ne.png; as antigas ficaram como *-antigo.png).
+· Samurai: a imagem de referência olha para a esquerda, então o perfil saiu virado para a esquerda e ele parecia
+  andar de costas. Parada, caminhada, corrida, golpe, magia, dano, morte e as 5 habilidades refeitas no PixelLab a
+  partir da imagem espelhada (scripts/art-src/samurai/), também na versão sem elmo das lendárias.
 
 P216.42 — LENDÁRIAS: CABEÇA DESCOBERTA NA ARTE NOVA
 · Versão sem capacete/capuz de 8 heróis refeitos (Cavaleiro, Samurai, Arqueiro, Caçador, Druida, Necromante, Maga,
