@@ -83,6 +83,12 @@ seq = [
     I[1], I[1],                                  # 37 upA 38 upB (de costas fica com hero-dirs)
 ]
 assert len(seq) == 39
+# p216.34 — folha extra por camada (warrior-pack-t<n>-sk.png, 8 colunas × 7 linhas, para não estourar o tamanho
+# máximo de textura do celular): linha 0 golpe básico fluido, 1… uma animação por habilidade. Lida por
+# scripts/source/herois-skills.js pelo "sk" do json.
+EXTRA = {"atk": [K[2], K[3], K[4], K[5], K[6], K[7], K[8], K[8]]}
+for key in ("slam", "bash", "draw", "spin", "quake", "cry"):
+    EXTRA[key] = [decape(f) for f in frames(f"sk-{key}")][1:9]
 small = [shrink(f) for f in seq]
 meta = json.load(open(os.path.join(OUT, "warrior-pack.json")))
 FOOT = meta["footY"]
@@ -100,6 +106,13 @@ for i, fr in enumerate(small):
     torso.append([round(float(xs[band].mean()), 1), round(float(ys[band].mean()), 1)])
 h0 = FOOT - head[0][1] + 7
 k = round(OLD_H / h0, 3)
+meta.pop("atk", None); meta.pop("skills", None)
+meta["sk"] = {"cols": 8, "rows": {k: r for r, k in enumerate(EXTRA)}}
+sk = Image.new("RGBA", (S * 8, S * len(EXTRA)))
+for r, fr in enumerate(EXTRA.values()):
+    for kk, f in enumerate(fr):
+        f = shrink(f); c = Image.new("RGBA", (S, S)); c.paste(f, (dx, dy), f)
+        sk.alpha_composite(c, (kk * S, r * S))
 meta.update(torso=torso, head=head, scale=round(OLD_SCALE * k, 3), hires=k, baseScale=OLD_SCALE,
             pcrop=[round(head[0][0] - 14), round(head[0][1] - 9), 28, 28])
 
@@ -151,6 +164,7 @@ def recolor(im, tier):
 for t in range(5):
     b = body if t == 0 else recolor(body, t)
     d = dirs if t == 0 else recolor(dirs, t)
+    (sk if t == 0 else recolor(sk, t)).save(os.path.join(OUT, f"warrior-pack-t{t}-sk.png"), optimize=True)
     b.save(os.path.join(OUT, f"warrior-pack-t{t}-body.png"), optimize=True)
     d.save(os.path.join(OUT, f"warrior-pack-t{t}-dirs.png"), optimize=True)
     if t == 0:

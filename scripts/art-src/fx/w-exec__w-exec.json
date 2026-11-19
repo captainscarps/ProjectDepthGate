@@ -1,0 +1,183 @@
+{
+ "frames": [
+  {
+   "filename": "w-exec 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 58,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 58,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 58,
+    "h": 67
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.3880597014925373
+   },
+   "duration": 125
+  },
+  {
+   "filename": "w-exec 1.png",
+   "frame": {
+    "x": 58,
+    "y": 0,
+    "w": 58,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 58,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 58,
+    "h": 67
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.3880597014925373
+   },
+   "duration": 125
+  },
+  {
+   "filename": "w-exec 2.png",
+   "frame": {
+    "x": 116,
+    "y": 0,
+    "w": 58,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 58,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 58,
+    "h": 67
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.3880597014925373
+   },
+   "duration": 125
+  },
+  {
+   "filename": "w-exec 3.png",
+   "frame": {
+    "x": 0,
+    "y": 67,
+    "w": 58,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 58,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 58,
+    "h": 67
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.3880597014925373
+   },
+   "duration": 125
+  },
+  {
+   "filename": "w-exec 4.png",
+   "frame": {
+    "x": 58,
+    "y": 67,
+    "w": 58,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 58,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 58,
+    "h": 67
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.3880597014925373
+   },
+   "duration": 125
+  },
+  {
+   "filename": "w-exec 5.png",
+   "frame": {
+    "x": 116,
+    "y": 67,
+    "w": 58,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 58,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 58,
+    "h": 67
+   },
+   "pivot": {
+    "x": 0.5,
+    "y": 0.3880597014925373
+   },
+   "duration": 125
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "w-exec.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 174,
+   "h": 134
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 29,
+   "y": 26
+  },
+  "frameTags": [
+   {
+    "name": "w-exec",
+    "from": 0,
+    "to": 5,
+    "direction": "forward"
+   }
+  ]
+ }
+}

@@ -12,7 +12,7 @@ const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8
  for(const[c,o]of Object.entries(__HDIRS))for(const t of o.t){const k=`mk4b-${c}-t${t}-dirs`;this.textures.exists(k)||L.spritesheet(k,`assets/pixel-art/characters/${o.f??`${c}-pack-t${t}-dirs.png`}`,{frameWidth:128,frameHeight:128})}L.setPath(op)}catch(e){}return r}}
 {const U0=Qe.prototype.update;Qe.prototype.update=function(i,t){const r=U0.apply(this,arguments);try{const m=this.mk2;if(!m||this.deadPose||window.__noHeroDirs)return r;
  const key=`${this.animPrefix}-dirs`;if(!this.scene.textures.exists(key)){this.__hd=null;return r}
- const busy=this.attackState==="attack"||(t?.dashTimer??0)>0||this.castTimer>0||this.hurtAnimT>0||!!t?.guarding;if(busy){return r}
+ const busy=this.attackState==="attack"||this.__skBusy||!!this.__skA||(t?.dashTimer??0)>0||this.castTimer>0||this.hurtAnimT>0||!!t?.guarding;if(busy){return r}
  const vx=t?.body?.velocity.x??0,vy=t?.body?.velocity.y??0,sp=Math.hypot(vx,vy),C=this.container;
  if(sp>20){const ax=Math.abs(vx)/sp,ay=Math.abs(vy)/sp,pr=this.__hd?.row,h=.07;
   /* troca de direção com folga, para não ficar piscando entre perfil/diagonal/frente no analógico */

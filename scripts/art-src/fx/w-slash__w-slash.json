@@ -1,0 +1,183 @@
+{
+ "frames": [
+  {
+   "filename": "w-slash 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 59,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 59,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 59,
+    "h": 60
+   },
+   "pivot": {
+    "x": 0.4576271186440678,
+    "y": 0.4666666666666667
+   },
+   "duration": 83
+  },
+  {
+   "filename": "w-slash 1.png",
+   "frame": {
+    "x": 59,
+    "y": 0,
+    "w": 59,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 59,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 59,
+    "h": 60
+   },
+   "pivot": {
+    "x": 0.4576271186440678,
+    "y": 0.4666666666666667
+   },
+   "duration": 83
+  },
+  {
+   "filename": "w-slash 2.png",
+   "frame": {
+    "x": 118,
+    "y": 0,
+    "w": 59,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 59,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 59,
+    "h": 60
+   },
+   "pivot": {
+    "x": 0.4576271186440678,
+    "y": 0.4666666666666667
+   },
+   "duration": 83
+  },
+  {
+   "filename": "w-slash 3.png",
+   "frame": {
+    "x": 0,
+    "y": 60,
+    "w": 59,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 59,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 59,
+    "h": 60
+   },
+   "pivot": {
+    "x": 0.4576271186440678,
+    "y": 0.4666666666666667
+   },
+   "duration": 83
+  },
+  {
+   "filename": "w-slash 4.png",
+   "frame": {
+    "x": 59,
+    "y": 60,
+    "w": 59,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 59,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 59,
+    "h": 60
+   },
+   "pivot": {
+    "x": 0.4576271186440678,
+    "y": 0.4666666666666667
+   },
+   "duration": 83
+  },
+  {
+   "filename": "w-slash 5.png",
+   "frame": {
+    "x": 118,
+    "y": 60,
+    "w": 59,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 59,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 59,
+    "h": 60
+   },
+   "pivot": {
+    "x": 0.4576271186440678,
+    "y": 0.4666666666666667
+   },
+   "duration": 83
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "w-slash.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 177,
+   "h": 120
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 27,
+   "y": 28
+  },
+  "frameTags": [
+   {
+    "name": "w-slash",
+    "from": 0,
+    "to": 5,
+    "direction": "forward"
+   }
+  ]
+ }
+}

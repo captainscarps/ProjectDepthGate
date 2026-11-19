@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.33 · cache ded-web-v6.11.4-necromante)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.34 · cache ded-web-v6.11.5-golpes)
+
+P216.34 — GOLPES E HABILIDADES ANIMADOS (piloto: Cavaleiro) · scripts/source/herois-skills.js
+· Golpe básico fluido: 8 quadros ao longo do golpe em vez de 5 poses paradas, com um corte prateado em pixel art.
+· Uma animação por habilidade do Guerreiro: pancada por cima (Golpe Pesado, Golpe Demolidor, Kaishaku), escudada,
+  saque rápido (Iaijutsu, Tsubame, Corte do Vento), giro (Redemoinho, Tsumuji), golpe no chão (Ruptura, Terremoto)
+  e grito de guerra (habilidades de reforço). Folha extra por camada de armadura warrior-pack-t0…t4-sk.png
+  (8 colunas × 7 linhas; "sk" no warrior-pack.json) montada por scripts/build_cavaleiro_pixellab.py.
+· Efeitos do PixelLab (/vfx) por cima dos efeitos de código: corte, impacto pesado com faíscas, onda rachando o
+  chão, redemoinho de lâminas, escudada, saque, X de execução e aura dourada. Em assets/pixel-art/fx-herois/
+  (scripts/build_fx_herois.py a partir de scripts/art-src/fx/).
+· Skins e armaduras sem a folha extra (Caçador de Dragão, Saqueador) continuam com as poses antigas.
 
 P216.33 — NECROMANTE NOVO (PixelLab) COM AS 8 DIREÇÕES
 · Arte nova do Necromante a partir da imagem de referência: manto marrom com capuz, rosto pálido de olhos
