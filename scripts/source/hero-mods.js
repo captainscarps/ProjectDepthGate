@@ -105,7 +105,7 @@ function __capeUpdate(V, dt) {
   const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, tk = m.texture?.key || "";
   // p216.41: nuca por folha (perfil, direções, golpes) — as folhas novas têm quadros diferentes
   // p216.51: pescando (folha "-fish", quadros de 208 com o herói no meio): nuca da folha de pesca da armadura
-  const fsh = tk.endsWith("-fish"), fv = fsh && (tk.includes("-nh") ? "nh" : ["ossos", "vendaval", "saqueador", "dh", "templario", "penas", "esmeralda", "oni"].find(n => tk.includes("-" + n + "-") || tk.includes("-" + n)));
+  const fsh = tk.endsWith("-fish"), fv = fsh && (tk.includes("-nh") ? "nh" : ["ossos", "vendaval", "saqueador", "dh", "templario", "penas", "esmeralda", "oni", "ronin"].find(n => tk.includes("-" + n + "-") || tk.includes("-" + n)));
   const arr = tk.endsWith("-dirs") ? info?.dirs : tk.endsWith("-sk") ? info?.sk : fsh ? (info?.fishv?.[fv] ?? info?.fish) : info?.frames, F = arr?.[fi] ?? V.__capeLastF, c0 = fsh ? 104 : 64;
   if (!F) { V.__cape?.g.setVisible(!1); return; }
   V.__capeLastF = F;      // quadro sem cabeça achada (de costas, atrás do escudo): a capa fica na última nuca

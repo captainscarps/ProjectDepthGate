@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.59 · cache ded-web-v6.14.0-oni)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.60 · cache ded-web-v6.14.1-ronin)
+
+P216.60 — ARMADURA DO RONIN (Samurai, armadura do Ferreiro) (PixelLab)
+· Segunda armadura da forja do Samurai: ronin sem elmo — coque preto, bigode e cavanhaque, faixa sobre um olho com
+  pontas soltas, manto de pele, armadura lamelar vermelho-escura gasta, cinto de corda branca, caneleiras listradas
+  e sandálias de palha; katana na cintura. Ferreiro → Armaduras: 160 Pedras Cobalto · +7 defesa · +5 vida · +3 dano
+  · +5% crítico.
+· Arte completa: perfil, as 5 habilidades, andar e correr nas direções (diagonal de costas refeita: a IA virava o
+  rosto) e pesca. Código: scripts/source/ronin.js (/*__RONIN__*/). Arte: build_armaduras_unicas.py ronin.
 
 P216.59 — ARMADURA DO ONI (Samurai, armadura do Ferreiro) (PixelLab)
 · Nova armadura da forja só para o Samurai: elmo-máscara de oni prateado com chifres dourados e olhos verdes,
