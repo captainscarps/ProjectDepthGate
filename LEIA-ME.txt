@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.43 · cache ded-web-v6.12.4-direcoes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.44 · cache ded-web-v6.12.5-guardia-rei)
+
+P216.44 — GUARDIÃ E REI REFEITOS (PixelLab)
+· Novas folhas story/guardia-sp-idle/-talk.png e rei-sp-idle/-talk.png a partir das imagens de referência (Guardiã
+  de vestido branco com corpete dourado e tiara; Rei de coroa, ombreiras douradas, túnica verde e capa branca e
+  lilás). Mesmo tamanho e posição das antigas (os diálogos, a cena do castelo, a fortaleza, as Cavernas Dorf e a
+  estátua do Refúgio continuam iguais). Montagem: python3 scripts/build_guardia_rei.py (fontes
+  scripts/art-src/historia/). Os retratos do diálogo (-p-*.png) não mudaram.
 
 P216.43 — CORREÇÕES: ARQUEIRO NA DIAGONAL PARA CIMA E SAMURAI ANDANDO DE COSTAS
 · Arqueiro: as linhas "para cima" e "diagonal para cima" estavam trocadas (para cima era um 3/4 de costas virado
