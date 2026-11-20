@@ -3,11 +3,14 @@
    linha 0 de frente (descendo), 1 de costas (subindo), 2 diagonal de frente (↘), 3 diagonal de costas (↗);
    coluna 0 parado, colunas 1… caminhada (n[linha] quadros: 6 na 1ª versão, 8 no prompt v2). As diagonais para a esquerda usam o espelho.
    Ataque, esquiva, magia, dano, guarda e morte continuam com o desenho de perfil.
+   p216.50: caminhadas refeitas e CORRIDA para baixo, para cima e nas diagonais: as folhas têm 8 linhas (4…7 = as
+   mesmas direções correndo, usadas quando a força do movimento passa de 60%, como no perfil). Folhas antigas de
+   4 linhas (armaduras únicas, cabeça descoberta) continuam andando. scripts/build_herois_dirs.py.
    p216.31: Guerreiro novo (PixelLab) com uma folha por camada de armadura (warrior-pack-t<n>-dirs.png).
    p216.28: diagonais ligadas (↘ linha 2, ↗ linha 3; para a esquerda espelha).
    p216.27: religado só para a Araí e o Druida novos (PixelLab), uma folha "<classe>-pack-dirs.png" para todas as
    camadas (f); feita por scripts/build_herois_dirs.py. */
-const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"druid-pack-dirs.png"},shaman:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"shaman-pack-dirs.png"},mage:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"mage-pack-dirs.png"},archer:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"archer-pack-dirs.png"},necromancer:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"necromancer-pack-dirs.png"},rogue:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"rogue-pack-dirs.png"},berserker:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"berserker-pack-dirs.png"},hunter:{t:[0,1,2,3,4],n:[8,8,8,8],c:9,f:"hunter-pack-dirs.png"}};
+const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9,f:"druid-pack-dirs.png"},shaman:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9,f:"shaman-pack-dirs.png"},mage:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9,f:"mage-pack-dirs.png"},archer:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9,f:"archer-pack-dirs.png"},necromancer:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9,f:"necromancer-pack-dirs.png"},rogue:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9,f:"rogue-pack-dirs.png"},berserker:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9,f:"berserker-pack-dirs.png"},hunter:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9,f:"hunter-pack-dirs.png"}};
 {const P0=bo.prototype.preload;bo.prototype.preload=function(){const r=P0.apply(this,arguments);try{const L=this.load,op=L.path;L.setPath("");
  for(const[c,o]of Object.entries(__HDIRS))for(const t of o.t){const k=`mk4b-${c}-t${t}-dirs`;this.textures.exists(k)||L.spritesheet(k,`assets/pixel-art/characters/${o.f??`${c}-pack-t${t}-dirs.png`}`,{frameWidth:128,frameHeight:128})}L.setPath(op)}catch(e){}return r}}
 {const U0=Qe.prototype.update;Qe.prototype.update=function(i,t){const r=U0.apply(this,arguments);try{const m=this.mk2;if(!m||this.deadPose||window.__noHeroDirs)return r;
@@ -24,9 +27,11 @@ const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8],c:9},druid:{t:[0,1,2,3,4],n:[8
   else{this.__hdS=0;
   const row=vy>0?(dg?2:0):(dg?3:1),sg=dg?(vx<0?-1:1):(this.lastSideSign??1);row!==pr&&(this.__hdD=0);this.__hd={row,sg}}}
  else if(!this.__hd)return r;
- const{row,sg}=this.__hd,run=sp>230,CF=__HDIRS[this.animPrefix.replace(/^mk4b-/,"").replace(/-.*$/,"")],N=CF?.n?.[row]??6,NC=CF?.c??9;
+ const CF=__HDIRS[this.animPrefix.replace(/^mk4b-/,"").replace(/-.*$/,"")],NC=CF?.c??9,mr=t?.moveRatio!=null&&!((t?.dashTimer??0)>0)?t.moveRatio:Math.min(1,Math.max(0,(sp-150)/120)),
+  /* p216.50: correndo (mesma regra do perfil: força do movimento > 60%) usa as linhas 4…7, se a folha tiver */
+  run=sp>20&&mr>.6&&this.scene.textures.get(key).frameTotal-1>=8*NC,row=this.__hd.row+(run?4:0),{sg}=this.__hd,N=CF?.n?.[row]??6;
  /* um quadro a cada ~11 px andados (~14 quadros/s na velocidade normal); o desenho já tem o sobe-e-desce do corpo */
- sp>20?(this.__hdD=(this.__hdD??0)+sp*i):(this.__hdD=0);const k=Math.floor(this.__hdD/(run?14:11))%N,fr=sp>20?row*NC+1+k:row*NC;
+ sp>20?(this.__hdD=(this.__hdD??0)+sp*i):(this.__hdD=0);const k=Math.floor(this.__hdD/(run?16:11))%N,fr=sp>20?row*NC+1+k:row*NC;
  m.anims.stop();m.setTexture(key,fr);m.y=this.__hdY||0;this.lastSideSign=sg;C.setScale(sg*Math.abs(C.scaleX),C.scaleY);
  /* poeira no momento em que o pé toca o chão (quadro 1 e metade do ciclo) */
  if(sp>20&&k!==this.__hdK&&(k===0||k===Math.round(N/2)))this.scene.effectsRef?.burstTinted(t.x+(k?4:-4),t.y+12,9076582,2);this.__hdK=sp>20?k:-1}catch(e){}return r}}

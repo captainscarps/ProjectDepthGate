@@ -166,7 +166,7 @@ for t in range(5):
     d = dirs if t == 0 else recolor(dirs, t)
     (sk if t == 0 else recolor(sk, t)).save(os.path.join(OUT, f"warrior-pack-t{t}-sk.png"), optimize=True)
     b.save(os.path.join(OUT, f"warrior-pack-t{t}-body.png"), optimize=True)
-    d.save(os.path.join(OUT, f"warrior-pack-t{t}-dirs.png"), optimize=True)
+    # (p216.50: as direções — andando e correndo — saem de scripts/build_herois_dirs.py)
     if t == 0:
         b.save(os.path.join(OUT, "warrior-pack-body.png"), optimize=True)
 json.dump(meta, open(os.path.join(OUT, "warrior-pack.json"), "w"), separators=(",", ":"))

@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.49 · cache ded-web-v6.13.0-pesca)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.50 · cache ded-web-v6.13.1-correr)
+
+P216.50 — ANDAR E CORRER PARA BAIXO, PARA CIMA E NAS DIAGONAIS (PixelLab)
+· Os 9 heróis refeitos ganharam caminhadas novas de frente, de costas e nas duas diagonais (passadas completas,
+  joelho dobrando, braços balançando) e CORRIDA nessas quatro direções (passadas longas, corpo inclinado).
+· As folhas de direções agora têm 8 linhas × 9: 0–3 andando (frente, costas, ↘, ↗), 4–7 correndo nas mesmas
+  direções. hero-dirs.js usa a corrida com a mesma regra do perfil (força do movimento acima de 60% — teclado e
+  analógico inteiro correm; analógico pela metade anda). Armaduras únicas e cabeça descoberta (folhas de 4 linhas)
+  continuam andando. Samurai: a IA virava o rosto de máscara vermelha para a câmera andando de costas — refeito.
+· Montagem: python3 scripts/build_herois_dirs.py (fontes scripts/art-src/<pasta>/dirs2-<direção>-walk/-run.png;
+  o Cavaleiro também sai daqui, com as 5 camadas) e python3 scripts/build_herois_nuca.py (capa).
 
 P216.49 — PESCA MAIS REALISTA: OS HERÓIS SEGURAM A VARA DE VERDADE (PixelLab)
 · Os 9 heróis refeitos ganharam uma folha de pesca (characters/<classe>-fish.png, quadros 208×208, 4 linhas × 8):
