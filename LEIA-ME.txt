@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.73 · cache ded-web-v6.15.4-barco-sul)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.74 · cache ded-web-v6.15.5-barcos-todos)
+
+P216.74 — BARCO REMANDO COM TODOS OS HERÓIS E CAMINHADA EM 8 DIREÇÕES NO PRÓLOGO
+· Barco do prólogo para os 9 heróis (Arqueiro, Maga, Necromante, Druida, Araí, Ladina, Samurai, Caçador além do
+  Guerreiro): as 5 poses do barco do Guerreiro (perfil, diagonal de frente, de frente, diagonal de costas, de
+  costas) com o herói trocado por edit-images-v2 (edit_with_reference, referência = quadro parado do herói) e a
+  remada de cada uma com animate-pixminimax. Fontes scripts/art-src/barco/<classe>-rema-<dir>.png;
+  folhas assets/pixel-art/barco/barco-<classe>.png (scripts/build_barco.py). A remada de costas do Samurai foi
+  refeita (a IA virava o rosto para a câmera).
+· A pé no prólogo (e na volta), o herói agora usa a mesma folha de direções da fase: andando para baixo, para cima e
+  nas diagonais (antes era só o perfil); de lado continua o perfil. Parado, fica virado para a última direção.
 
 P216.73 — BARCO DESCENDO, DIAGONAIS DO ARQUEIRO E ENIGMAS NA CAMPANHA NOVA
 · Barco do prólogo (Guerreiro): não havia desenho com a proa para baixo — descendo, aparecia a popa virada para a
