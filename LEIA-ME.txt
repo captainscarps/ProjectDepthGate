@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.62 · cache ded-web-v6.14.3-selvagem)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.63 · cache ded-web-v6.14.4-urso)
+
+P216.63 — DRUIDA: FORMAS ATACAM COMO ANIMAL · FORMA DE URSO PARDO (PixelLab)
+· Transformado (javali, lobisomem, urso), o golpe básico usava a arma: com cajado o Druida soltava magia. Agora, em
+  qualquer forma, o golpe é corpo a corpo (garra/mordida, alcance 54) com o mesmo dano e os bônus da forma.
+  scripts/source/druida-formas.js (/*__DRUIDAFORMAS__*/): arma "__fera" enquanto S.__form existir.
+· A Forma de Urso da árvore de talentos (Guardião da Šumava · ET_BEAR) usava o desenho do javali: agora é um
+  urso-pardo grande de pé (15% maior que o herói), com parado, andar, correr, garrada, rugido (usado nas
+  habilidades), dano, morte e andar/correr para cima, baixo e diagonais. Folhas druid-urso-body/-dirs/-sk.png
+  (build_armaduras_unicas.py urso; fontes scripts/art-src/armaduras/urso-*).
+· A capa das armaduras raras/lendárias não aparece mais em nenhuma forma animal.
 
 P216.62 — PINTURA DE GUERRA SELVAGEM (Druida, armadura do Ferreiro) (PixelLab)
 · Segunda armadura da forja do Druida: cabelo preto longo com pequenos chifres, rosto pintado de branco com faixa preta

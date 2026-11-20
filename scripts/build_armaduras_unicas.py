@@ -32,6 +32,7 @@ ARM = {
     "ronin": ("berserker", {"atk": "attack", "cast": "cast"}, None),                   # p216.60: Armadura do Ronin (Samurai)
     "corvo": ("druid", {"atk": "attack", "cast": "cast"}, None),                       # p216.61: Manto do Corvo-Lobo (Druida)
     "selvagem": ("druid", {"atk": "attack", "cast": "cast"}, None),                    # p216.62: Pintura de Guerra Selvagem (Druida)
+    "urso": ("druid", {"atk": "attack", "cast": "cast"}, None),                        # p216.63: Forma de Urso Pardo (Druida) — habilidades usam o rugido
 }
 DECAPE = {"nh-warrior"}                            # (o preto da armadura do Caçador de Dragão confundia o filtro de capa)
 FLOAT = {"saqueador"}                       # nas direções a IA deixou uma espada solta flutuando acima da cabeça
