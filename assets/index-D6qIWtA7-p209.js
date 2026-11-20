@@ -19202,7 +19202,7 @@ function __capeUpdate(V, dt) {
   const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, tk = m.texture?.key || "";
   // p216.41: nuca por folha (perfil, direções, golpes) — as folhas novas têm quadros diferentes
   // p216.51: pescando (folha "-fish", quadros de 208 com o herói no meio): nuca da folha de pesca da armadura
-  const fsh = tk.endsWith("-fish"), fv = fsh && (tk.includes("-nh") ? "nh" : ["ossos", "vendaval", "saqueador", "dh"].find(n => tk.includes("-" + n + "-") || tk.includes("-" + n)));
+  const fsh = tk.endsWith("-fish"), fv = fsh && (tk.includes("-nh") ? "nh" : ["ossos", "vendaval", "saqueador", "dh", "templario"].find(n => tk.includes("-" + n + "-") || tk.includes("-" + n)));
   const arr = tk.endsWith("-dirs") ? info?.dirs : tk.endsWith("-sk") ? info?.sk : fsh ? (info?.fishv?.[fv] ?? info?.fish) : info?.frames, F = arr?.[fi] ?? V.__capeLastF, c0 = fsh ? 104 : 64;
   if (!F) { V.__cape?.g.setVisible(!1); return; }
   V.__capeLastF = F;      // quadro sem cabeça achada (de costas, atrás do escudo): a capa fica na última nuca
@@ -22490,7 +22490,7 @@ function __tvBuild(H) {
    Vaga pelo Refúgio: um tempo lá fora, na frente da forja, correndo e pulando com a Mussarela (cachorra branca
    de manchas pretas); um tempo dentro da forja, brincando com o Fumaça (gato cinza). De tempos em tempos vai até
    a porta e troca de lugar; a Mussarela espera na porta. Falar com ela abre a caixa de fala com retrato (voz de
-   menina). Arte: scripts/build_olivia.py; falas e voz: scripts/olivia_lines.json + scripts/gravar_valdrak.py. */
+   menina). Arte: scripts/build_olivia_pixellab.py (p216.47; a antiga era scripts/build_olivia.py); falas e voz: scripts/olivia_lines.json + scripts/gravar_valdrak.py. */
 const __OL_K = .4167;   // p216.47: arte nova em 192×192, ~2,4× maior que a antiga (mesmo tamanho no jogo)
 const __OL_L = /*__OLINES__*/{"speakers":{"olivia":{"name":["OLIVIA","OLIVIA","OLIVIA"],"voice":"olivia"}},"scenes":{"o_hi":[["olivia","Oi! Eu sou a Olivia. O Rafael é o meu papai!","Hi! I'm Olivia. Rafael is my daddy!","¡Hola! Soy Olivia. ¡Rafael es mi papá!","smile"],["olivia","Eu adoro brincar com os bichinhos. Eles são os meus melhores amigos.","I love playing with the animals. They're my best friends.","Me encanta jugar con los animalitos. Son mis mejores amigos.","smile"]],"o_out1":[["olivia","Essa é a Mussarela! Ela é branquinha com bolinhas pretas, igual um queijo… quer dizer, quase.","This is Mussarela! She's all white with black spots, like a cheese… well, almost.","¡Esta es Mussarela! Es blanquita con manchitas negras, como un queso… bueno, casi.","special"]],"o_out2":[["olivia","Ei! Cuidado pra não pisar no rabo da Mussarela!","Hey! Careful not to step on Mussarela's tail!","¡Oye! ¡Cuidado con pisarle la cola a Mussarela!","aggression"]],"o_out3":[["olivia","O papai é o Rafael, o ferreiro. Ele bate o martelo bem forte, mas me dá abraço bem de leve.","My daddy is Rafael, the blacksmith. He swings the hammer really hard, but he hugs me really gently.","Mi papá es Rafael, el herrero. Golpea el martillo muy fuerte, pero me abraza muy suavecito.","smile"]],"o_in1":[["olivia","Aqui dentro eu brinco com o Fumaça. Ele dorme perto da fornalha porque é quentinho, por isso ficou cinza!","In here I play with Fumaça. He sleeps by the furnace because it's warm, that's why he turned gray!","Aquí dentro juego con Fumaça. Duerme cerca del horno porque está calentito, ¡por eso quedó gris!","calm"]],"o_in2":[["olivia","Sabia que o papai faz espadas? Mas a coisa mais bonita que ele fez fui eu. Foi ele que disse!","Did you know Daddy makes swords? But the prettiest thing he ever made is me. He said so!","¿Sabías que papá hace espadas? Pero lo más bonito que hizo fui yo. ¡Él lo dijo!","special"]],"o_in3":[["olivia","Eu gosto de todos os bichinhos: o Fumaça, a Mussarela, os patinhos do laguinho… até o sapo!","I like all the animals: Fumaça, Mussarela, the little ducks at the pond… even the frog!","Me gustan todos los animalitos: Fumaça, Mussarela, los patitos del laguito… ¡hasta el sapo!","smile"]],"o_sad":[["olivia","O papai fica preocupado quando você demora pra voltar dos portais. Eu também.","Daddy gets worried when you take long to come back from the gates. Me too.","Papá se preocupa cuando tardas en volver de los portales. Yo también.","sadness"]]}}/*__OLINES_END__*/;
 {
@@ -22655,7 +22655,7 @@ const __PZ_RAR = [["COMUM", "COMMON", "COMÚN", "#cfe0ff"], ["INCOMUM", "UNCOMMO
    têm folha de pesca própria (<armadura>-fish.png); as cores dessas também são copiadas. Só as formas do Druida e
    os heróis antigos continuam com a vara desenhada. */
 const __PQH = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"];
-const __PQU = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh"];
+const __PQU = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario"];
 const __PQV = [...__PQU, ...["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"].map(c => c + "-nh")];
 function __pqHeroFish(H) {
   const V = H.rig, m = V?.mk2; if (!m || !H.cache.json.exists("pq-hfish")) return null;
@@ -25059,7 +25059,7 @@ function __skhKey(V) { return V.animPrefix + "-sk" }
    • Lendárias: a troca do capacete pela cabeça descoberta usava máscaras da arte antiga e estragava a arte nova;
      nos heróis refeitos ela fica desligada (a capa continua, presa na nuca nova de mods/<classe>-mods.json).  */
 /* folhas extras das armaduras únicas refeitas (scripts/build_armaduras_unicas.py) */
-const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0]];
+const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0], ["warrior", "templario", 0]];
 {const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
   for (const [c, n, gl] of __HA_UNI) for (const suf of ["-dirs", "-sk"]) for (const g of gl ? ["", "-glow"] : [""]) {
     const k = `mk4b-${c}-${n}${suf}${g}`; this.textures.exists(k) || L.spritesheet(k, `assets/pixel-art/characters/${c}-${n}${suf}${g}.png`, { frameWidth: 128, frameHeight: 128 }) }
@@ -25171,12 +25171,70 @@ function __haGlowSync(V) {
   if (!Qe.prototype.__haG) { const U0 = Qe.prototype.update; Qe.prototype.update = function () { const r = U0.apply(this, arguments); try { __haGlowSync(this) } catch (e) {} return r }; Qe.prototype.__haG = 1 }
   return C0.apply(this, arguments) }}
 /*__HEROISARM__*/
+
+/*__TEMPLARIO__*/
+/* ══ Armadura do Templário — lendária do Guerreiro (p216.52) ═════════════════════════════════════════════════════
+   • Visual: cruzado de capuz de couro, barba escura, cota de malha, manto de couro com borda dourada, túnica branca
+     com a cruz vermelha, escudo alto de madeira (folhas warrior-templario-body/-dirs/-sk/-fish.png, feitas com
+     PixelLab por scripts/build_armaduras_unicas.py e scripts/build_pesca_herois.py; fontes em scripts/art-src).
+   • Duas formas de conseguir:
+     1) FERREIRO — aba ARMADURAS da forja (Pedra Cobalto, durabilidade em runs), só para o Guerreiro.
+     2) DROP — quando cai uma armadura (couraça) LENDÁRIA ou RELÍQUIA para o Guerreiro, 1 em 4 vezes ela vem como
+        "Armadura do Templário" (mesma raridade).
+   • Com qualquer uma das duas vestida, o Guerreiro usa a arte do Templário (andar, correr, golpes, pesca).        */
+const __TP_FORGE = "armor_forge_templario", __TP_DROP = "armor_templario", __TP_SHEET = "mk4b-warrior-templario";
+const __TP_NAME = ["Armadura do Templário", "Templar Armor", "Armadura del Templario"];
+const __TP_DESC = "Cota de malha sob a túnica branca da cruz vermelha, manto de couro com bordas douradas e o capuz de quem jurou não voltar atrás.";
+__FARM[__TP_FORGE] = {
+  name: __TP_NAME, price: 220, cls: "WARRIOR",
+  main: 0xe8e0cc, trim: 0xb02a24, glow: 0xffe0a0, pulse: 0, fx: "none",
+  stats: { defense: 12, maxHp: 8, blockChance: 4 },
+  st: ["+12 DEFESA · +8 VIDA · +4% BLOQUEIO", "+12 DEFENSE · +8 HEALTH · +4% BLOCK"],
+  desc: __TP_DESC,
+};
+{
+  const a = __FARM[__TP_FORGE];
+  Xt[__TP_FORGE] = { name: a.name[0], type: "armor", slot: "armor", icon: "icon-armor", minRarity: "LEGENDARY",
+    stats: a.stats, value: a.price * 2, tint: a.main, forgeArmor: __TP_FORGE, uniqueForge: !0, breaksOnDeath: !0, desc: __TP_DESC + " Quebra-se se morrer na run." };
+  Xt[__TP_DROP] = { name: __TP_NAME[0], type: "armor", slot: "armor", icon: "icon-armor", minRarity: "LEGENDARY", classRequirement: "WARRIOR",
+    stats: { defense: 9, maxHp: 5, blockChance: 2 }, value: 150, tint: 0xe8e0cc, bossOnly: !0, desc: __TP_DESC };
+  try { for (const id of [__TP_FORGE, __TP_DROP]) { _s["item." + id] = __TP_NAME[1]; Io["item." + id] = __TP_NAME[2] } } catch (e) {}
+}
+/* drop: couraça lendária (ou relíquia) do Guerreiro vira, às vezes, a do Templário */
+{const M0 = Bh.prototype.makeItem; Bh.prototype.makeItem = function (i, t, sd) {
+  const it = M0.apply(this, arguments);
+  try {
+    if (it && i !== __TP_DROP && it.slot === "armor" && (it.rarity === "LEGENDARY" || it.rarity === "RELIC") && !Xt[i]?.setId && !Xt[i]?.uniqueForge && !Xt[i]?.bossOnly
+      && this.scene?.classDef?.id === "WARRIOR" && Math.random() < .25) return M0.call(this, __TP_DROP, it.rarity, sd);
+  } catch (e) {}
+  return it }}
+{const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
+  this.textures.exists(__TP_SHEET) || L.spritesheet(__TP_SHEET, "assets/pixel-art/characters/warrior-templario-body.png", { frameWidth: 128, frameHeight: 128 });
+  L.setPath(op) } catch (e) {} return r }}
+function __tpSheet(sc) {
+  if (!sc.textures.exists(__TP_SHEET)) return null;
+  try { sc.textures.get(__TP_SHEET).setFilter(j.Textures.FilterMode.NEAREST) } catch (e) {}
+  const base = "mk4b-warrior-t0-";
+  for (const A0 of sc.anims.anims?.getArray?.() ?? []) {
+    if (!A0.key.startsWith(base)) continue;
+    const nk = __TP_SHEET + "-" + A0.key.slice(base.length);
+    sc.anims.exists(nk) || sc.anims.create({ key: nk, frames: A0.frames.map(f => ({ key: __TP_SHEET, frame: f.frame.name })), frameRate: A0.frameRate, repeat: A0.repeat });
+  }
+  return __TP_SHEET;
+}
+{const SK0 = __skinFor; __skinFor = function (scene, skin, classId, eq) {
+  try { const id = eq?.armor?.id; if (skin && classId === "WARRIOR" && (id === __TP_FORGE || id === __TP_DROP)) { const k = __tpSheet(scene); if (k) return { ...skin, sheet: k, __farm: __FARM[__TP_FORGE] } } } catch (e) {}
+  return SK0.apply(this, arguments) }}
+/*__TEMPLARIO__*/
 /*__HERODIRS__*/
 /* ══ Heróis andando para cima e para baixo ═══════════════════════════════════════════════════
    Folha extra "<classe>-pack-t<n>-dirs.png" (128×128 por quadro), 4 linhas × c colunas (13 na versão atual; 9 nas antigas):
    linha 0 de frente (descendo), 1 de costas (subindo), 2 diagonal de frente (↘), 3 diagonal de costas (↗);
    coluna 0 parado, colunas 1… caminhada (n[linha] quadros: 6 na 1ª versão, 8 no prompt v2). As diagonais para a esquerda usam o espelho.
    Ataque, esquiva, magia, dano, guarda e morte continuam com o desenho de perfil.
+   p216.50: caminhadas refeitas e CORRIDA para baixo, para cima e nas diagonais: as folhas têm 8 linhas (4…7 = as
+   mesmas direções correndo, usadas quando a força do movimento passa de 60%, como no perfil). Folhas antigas de
+   4 linhas (armaduras únicas, cabeça descoberta) continuam andando. scripts/build_herois_dirs.py.
    p216.31: Guerreiro novo (PixelLab) com uma folha por camada de armadura (warrior-pack-t<n>-dirs.png).
    p216.28: diagonais ligadas (↘ linha 2, ↗ linha 3; para a esquerda espelha).
    p216.27: religado só para a Araí e o Druida novos (PixelLab), uma folha "<classe>-pack-dirs.png" para todas as

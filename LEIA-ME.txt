@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.51 · cache ded-web-v6.13.2-pesca2)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.52 · cache ded-web-v6.13.3-templario)
+
+P216.52 — ARMADURA DO TEMPLÁRIO (Guerreiro, lendária) (PixelLab)
+· Nova armadura lendária só do Guerreiro, com visual próprio: capuz de couro, barba escura, cota de malha, manto de
+  couro com borda dourada, túnica branca com a cruz vermelha e escudo alto de madeira. Arte completa: perfil
+  (parado, andar, correr, golpe, habilidades, dano, morte), andar e CORRER de frente/costas/diagonais e pesca.
+· Como conseguir: (1) FERREIRO — aba Armaduras da forja, 220 Pedras Cobalto (+12 defesa · +8 vida · +4% bloqueio,
+  quebra se morrer na run, como as outras da forja); (2) DROP — quando cai uma couraça lendária ou relíquia para o
+  Guerreiro, 1 em 4 vezes ela vem como Armadura do Templário (+9 defesa · +5 vida · +2% bloqueio, × raridade).
+· Código: scripts/source/templario.js (bloco /*__TEMPLARIO__*/ em patch_book_ui.py). Arte:
+  build_armaduras_unicas.py templario (agora monta 8 linhas de direções quando há fontes dirs2-*-walk/-run) e
+  build_pesca_herois.py (warrior-templario-fish.png); fontes em scripts/art-src/armaduras/templario-* e pesca/.
 
 P216.51 — PESCA: NÃO TRAVA MAIS E RESPEITA AS ARMADURAS
 · Correção: depois de pegar (ou perder) o peixe o herói ficava preso no último quadro da pesca. A animação de

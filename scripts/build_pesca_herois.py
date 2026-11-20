@@ -22,11 +22,11 @@ BAD = {"archer": {"reel": (0, 1), "catch": (0, 1)}, "necromancer": {"reel": (1,)
        "necromancer-ossos": {"reel": (0, 1), "catch": (0,)}, "mage-vendaval": {"catch": (6,)},
        "warrior-saqueador": {"cast": (5,), "catch": (0,)}, "warrior-dh": {"reel": (0, 1)},
        "warrior-nh": {"reel": (0, 1)}, "necromancer-nh": {"wait": (1, 2), "reel": (0, 1, 2), "catch": (0,)},
-       "mage-nh": {"reel": (0, 1)}, "rogue-nh": {"catch": (0, 1, 2)}, "hunter-nh": {"catch": (4, 5)}}
+       "mage-nh": {"reel": (0, 1)}, "warrior-templario": {"reel": (0, 1), "catch": (0,)}, "rogue-nh": {"catch": (0, 1, 2)}, "hunter-nh": {"catch": (4, 5)}}
 CLS = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"]
 # p216.51: armaduras únicas e cabeça descoberta (lendárias) — folha própria <variante>-fish.png, alinhada à folha
 # de perfil da variante (<variante>-body.png)
-VARS = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh"] + \
+VARS = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario"] + \
        [c + "-nh" for c in ["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"]]
 
 def shrink(fr):

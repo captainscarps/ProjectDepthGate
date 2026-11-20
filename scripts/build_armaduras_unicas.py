@@ -25,6 +25,7 @@ ARM = {
                  lambda h, s, v: (32 <= h <= 56 and s > .35 and v > .62)),                      # bordado dourado
     "saqueador": ("warrior", WAR_SK, None),
     "dh": ("warrior", WAR_SK, None),
+    "templario": ("warrior", WAR_SK, None),                                            # p216.52: Armadura do Templário
 }
 DECAPE = {"nh-warrior"}                            # (o preto da armadura do Caçador de Dragão confundia o filtro de capa)
 FLOAT = {"saqueador"}                       # nas direções a IA deixou uma espada solta flutuando acima da cabeça
@@ -119,10 +120,17 @@ for nm, (cls, skrows, gtest) in ARM.items():
         for i, fr in zip(idx, src):
             prev = prep(fr, prev); body.alpha_composite(place(prev, DX, DY), (i * S, 0))
     save(body, f"{out}-body", gtest)
-    # ── direções ──
-    dirs = Image.new("RGBA", (S * 9, S * 4))
-    for r, d in enumerate(("south", "north", "se", "ne")):
-        fr = frames(nm, f"dirs-{d}")[:9]; prev = None
+    # ── direções (p216.52: com <nome>-dirs2-<dir>-walk/-run.png saem 8 linhas — 4 andando e 4 correndo) ──
+    two = os.path.exists(os.path.join(SRC, f"{nm}-dirs2-south-walk.png"))
+    seqs = []
+    for d in ("south", "north", "se", "ne"):
+        seqs.append(frames(nm, f"dirs2-{d}-walk")[:9] if two else frames(nm, f"dirs-{d}")[:9])
+    if two:
+        for d in ("south", "north", "se", "ne"):
+            w = frames(nm, f"dirs2-{d}-walk"); seqs.append([w[0]] + frames(nm, f"dirs2-{d}-run")[1:9])
+    dirs = Image.new("RGBA", (S * 9, S * len(seqs)))
+    for r, fr in enumerate(seqs):
+        prev = None
         f0 = prep(fr[0], None); fx, fy = bbox(f0)
         top = fy.min(); band = fx[(fy >= top + (fy.max() - top) * .25) & (fy <= top + (fy.max() - top) * .55)]; band.sort()
         mid = (band[len(band) // 10] + band[-len(band) // 10 - 1]) / 2
