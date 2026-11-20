@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.70 · cache ded-web-v6.15.1-barco)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.71 · cache ded-web-v6.15.2-barco-iso)
+
+P216.71 — BARCO DO PRÓLOGO EM VISÃO ISOMÉTRICA (Guerreiro)
+· O barco com o Guerreiro remando foi refeito em visão isométrica (vista de cima a ~35°, mostrando o fundo do barco,
+  os bancos e o herói de cima): pose base com generate-image-v2 em isométrico, as 8 direções com
+  generate-8-rotations-v2 ("high top-down"), as remadas com animate-pixminimax e o barco vazio com edit-images-v2.
+  Mesma folha e mesmo código da p216.70 (scripts/build_barco.py; fontes scripts/art-src/barco/).
 
 P216.70 — BARCO DO PRÓLOGO COM O HERÓI REMANDO (Guerreiro primeiro) (PixelLab)
 · O barco do prólogo (e da volta, no epílogo) era uma imagem vista de cima, vazia, que só girava. Agora, para o
