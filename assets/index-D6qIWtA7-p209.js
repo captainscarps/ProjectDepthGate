@@ -22681,8 +22681,8 @@ function __pqHeroFish(H) {
   const base = nh ? `mk4b-${cls}-nh` : uni ? `mk4b-${uni}` : t0, key = P === base ? base + "-fish" : P + "-fish";
   if (!H.textures.exists(base + "-fish")) return null;
   if (!H.textures.exists(key)) try {
-    if (nh) __haDerive(H, t0, P.slice(0, -3), base, P, ["-fish"]);      // mesmas cores que a lendária copiou da folha base
-    else if (uni || /^mk4b-[a-z]+-t\d/.test(P)) __haDerive(H, base, P, base, P, ["-fish"]);
+    if (nh) __haDerive(H, t0, P.slice(0, -3), base, P, ["-fish"], 1);      // mesmas cores que a lendária copiou da folha base
+    else if (uni || /^mk4b-[a-z]+-t\d/.test(P)) __haDerive(H, base, P, base, P, ["-fish"], 1);
   } catch (e) { }
   if (!H.textures.exists(key)) return null;
   const J = H.cache.json.get("pq-hfish"), tips = J.tips[id] || J.tips[cls]; return { V, m, key, tips, fs: J.fs };
@@ -25120,26 +25120,60 @@ function __haLook(L, r, g, b) {
   }
   L.cache.set(k, v); return v;
 }
-function __haDerive(scene, srcKey, key, inBase = srcKey, outBase = key, sufs = ["-dirs", "-sk"]) {
+/* p216.65: pintar as folhas grandes (direções, golpes) travava o jogo ~1 s a cada armadura colorida nova — ao voltar ao
+   Refúgio depois de uma run do infinito, com várias peças novas, a tela congelava alguns segundos. Agora só a folha de
+   perfil (a que aparece na hora) é pintada na hora; "-dirs" e "-sk" são pintadas aos poucos (≤ 5 ms por vez, entre
+   os quadros) e entram sozinhas quando ficam prontas — até lá o herói anda de perfil / sem a animação do golpe. */
+const __HA_Q = [], __HA_PEND = new Set();
+function __haFinish(TX, s, d, X, gc) {
+  const fw = TX.get(s).get(0)?.width ?? 128, fh = TX.get(s).get(0)?.height ?? 128;
+  for (const [k, cv] of [[d, X.c], ...(gc ? [[d + "-glow", gc]] : [])]) {
+    if (TX.exists(k)) continue;
+    const t = TX.addCanvas(k, cv), cols = Math.floor(cv.width / fw), rows = Math.floor(cv.height / fh);
+    for (let r = 0, n = 0; r < rows; r++) for (let c = 0; c < cols; c++, n++) t.add(n, 0, c * fw, r * fh, fw, fh);
+    t.setFilter(j.Textures.FilterMode.NEAREST);
+  }
+}
+function __haJob(scene, srcKey, key, s, d) {
+  const TX = scene.textures, L = __haLut(scene, srcKey, key, key + "-glow");
+  let X = null, p, gc, gx, GD, q, i = 0;
+  return budget => {                                   // devolve true quando terminou
+    const t0 = performance.now();
+    if (!X) { X = __haCtx(scene, s); p = X.d.data; gc = L.glow ? document.createElement("canvas") : null; gx = gc ? (gc.width = X.c.width, gc.height = X.c.height, gc.getContext("2d")) : null; GD = gx ? gx.createImageData(X.c.width, X.c.height) : null; q = GD?.data }
+    const n = p.length;
+    while (i < n) {
+      const e = Math.min(n, i + 16384);
+      for (; i < e; i += 4) {
+        if (p[i + 3] < 128) continue;
+        const v = __haLook(L, p[i], p[i + 1], p[i + 2]); if (!v) continue;
+        p[i] = v[0]; p[i + 1] = v[1]; p[i + 2] = v[2];
+        if (q && v[3] >= 0) { q[i] = v[3] >> 16; q[i + 1] = (v[3] >> 8) & 255; q[i + 2] = v[3] & 255; q[i + 3] = 255 }
+      }
+      if (budget && performance.now() - t0 > budget) return !1;
+    }
+    X.g.putImageData(X.d, 0, 0); gx && gx.putImageData(GD, 0, 0);
+    __haFinish(TX, s, d, X, gc);
+    return !0;
+  };
+}
+function __haPump() {
+  const t0 = performance.now();
+  while (__HA_Q.length && performance.now() - t0 < 5) {
+    const J = __HA_Q[0]; let done = !0;
+    try { done = J.run(5 - (performance.now() - t0)) } catch (e) { done = !0 }
+    if (done) { __HA_Q.shift(); __HA_PEND.delete(J.d) }
+  }
+  __HA_Q.length ? setTimeout(__haPump, 16) : (__haPump.on = 0);
+}
+function __haDerive(scene, srcKey, key, inBase = srcKey, outBase = key, sufs = ["-dirs", "-sk"], sync) {
   if (!scene?.textures?.exists(srcKey) || !scene.textures.exists(key)) return;
   for (const suf of sufs) {
     const s = inBase + suf, d = outBase + suf;
-    if (!scene.textures.exists(s) || scene.textures.exists(d)) continue;
-    const L = __haLut(scene, srcKey, key, key + "-glow"), X = __haCtx(scene, s), p = X.d.data;
-    const gc = L.glow ? document.createElement("canvas") : null, gx = gc ? (gc.width = X.c.width, gc.height = X.c.height, gc.getContext("2d")) : null, GD = gx ? gx.createImageData(X.c.width, X.c.height) : null, q = GD?.data;
-    for (let i = 0; i < p.length; i += 4) {
-      if (p[i + 3] < 128) continue;
-      const v = __haLook(L, p[i], p[i + 1], p[i + 2]); if (!v) continue;
-      p[i] = v[0]; p[i + 1] = v[1]; p[i + 2] = v[2];
-      if (q && v[3] >= 0) { q[i] = v[3] >> 16; q[i + 1] = (v[3] >> 8) & 255; q[i + 2] = v[3] & 255; q[i + 3] = 255 }
-    }
-    X.g.putImageData(X.d, 0, 0); gx && gx.putImageData(GD, 0, 0);
-    const fw = scene.textures.get(s).get(0)?.width ?? 128, fh = scene.textures.get(s).get(0)?.height ?? 128;
-    for (const [k, cv] of [[d, X.c], ...(gc ? [[d + "-glow", gc]] : [])]) {
-      const t = scene.textures.addCanvas(k, cv), cols = Math.floor(cv.width / fw), rows = Math.floor(cv.height / fh);
-      for (let r = 0, n = 0; r < rows; r++) for (let c = 0; c < cols; c++, n++) t.add(n, 0, c * fw, r * fh, fw, fh);
-      t.setFilter(j.Textures.FilterMode.NEAREST);
-    }
+    if (!scene.textures.exists(s) || scene.textures.exists(d) || __HA_PEND.has(d)) continue;
+    const run = __haJob(scene, srcKey, key, s, d);
+    if (sync || suf === "") { run(0); continue }        // a folha de perfil: na hora
+    __HA_PEND.add(d); __HA_Q.push({ d, run });
+    __haPump.on || (__haPump.on = 1, setTimeout(__haPump, 16));
   }
 }
 {const S0 = __skinTex; __skinTex = function (scene, srcKey) { const k = S0.apply(this, arguments); try { k && __haDerive(scene, srcKey, k) } catch (e) {} return k }}
@@ -25293,10 +25327,30 @@ function __atLog(kind, e) {
   try {
     const msg = `${kind}: ${e?.message ?? e}`.slice(0, 300);
     console.error("[DEPTHGATE] " + msg, e?.stack ?? "");
-    localStorage.setItem("depthgate:trava", JSON.stringify({ t: new Date().toISOString(), msg, stack: String(e?.stack ?? "").slice(0, 900) }));
+    const it = { t: new Date().toISOString(), msg, stack: String(e?.stack ?? "").slice(0, 900) };
+    localStorage.setItem("depthgate:trava", JSON.stringify(it));
+    let L = []; try { L = JSON.parse(localStorage.getItem("depthgate:erros") || "[]") } catch (x) {}
+    L.unshift(it); localStorage.setItem("depthgate:erros", JSON.stringify(L.slice(0, 12)));
   } catch (x) {}
 }
+/* p216.65: um erro na atualização do herói (rig) derrubava a atualização inteira da cena a cada quadro — na vila nada
+   se mexia (parecia congelado) até algo mudar o estado (abrir a pausa com START). Agora o erro do herói fica isolado:
+   a cena continua (o herói pula só aquele quadro) e o erro é registrado uma vez por tipo. Instalado no primeiro passo
+   do jogo, depois de todos os módulos (vira o invólucro mais de fora). */
+function __atGuardRig() {
+  if (typeof Qe === "undefined" || Qe.prototype.__atG) return;
+  const U0 = Qe.prototype.update, seen = new Set();
+  Qe.prototype.update = function () {
+    try { return U0.apply(this, arguments) } catch (e) {
+      const k = String(e?.message ?? e).slice(0, 80);
+      if (!seen.has(k) && seen.size < 20) { seen.add(k); __atLog("erro no herói (" + (this.animPrefix || "?") + ")", e) }
+      try { this.mk2?.anims?.isPaused && this.mk2.anims.resume() } catch (x) {}
+    }
+  };
+  Qe.prototype.__atG = 1;
+}
 {const SP = j.Scenes?.Systems?.prototype;
+ if (SP && !SP.__atG0) { const S0 = SP.step; SP.step = function () { __atGuardRig(); SP.step = S0; return S0.apply(this, arguments) }; SP.__atG0 = 1 }
  if (SP && !SP.__safeR) { const R0 = SP.render; SP.render = function () { try { return R0.apply(this, arguments) } catch (e) { (this.__errR = (this.__errR || 0) + 1) <= 3 && __atLog("erro ao desenhar " + (this.settings?.key ?? "?"), e) } }; SP.__safeR = 1 }}
 {const SM = j.Scenes?.SceneManager?.prototype;
  if (SM && !SM.__safeU) { const U0 = SM.update; SM.update = function () { try { return U0.apply(this, arguments) } catch (e) { (this.__errU = (this.__errU || 0) + 1) <= 3 && __atLog("erro no gerenciador de cenas", e) } }; SM.__safeU = 1 }}

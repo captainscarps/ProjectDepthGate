@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.64 · cache ded-web-v6.14.5-cacador-norte)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.65 · cache ded-web-v6.14.6-antitrava2)
+
+P216.65 — TRAVAMENTOS AO VOLTAR AO REFÚGIO (modo infinito)
+· Pintura das armaduras sem travar: cada armadura colorida/lendária/da forja nova pintava na hora as folhas grandes
+  (direções e golpes) — ~1 s por armadura (bem mais em PCs fracos), somando alguns segundos de tela congelada ao voltar
+  ao Refúgio com peças novas. Agora só a folha de perfil é pintada na hora; "-dirs"/"-sk" são pintadas aos poucos
+  (≤ 5 ms por vez) e entram sozinhas quando prontas (herois-armaduras.js: __haDerive/__haPump). Pesca continua na hora.
+· Erro no herói não congela mais a cena: um erro na atualização do herói abortava a atualização inteira da vila a
+  cada quadro (tudo parado até apertar START). anti-trava.js isola o erro (Qe.update protegido, instalado por último)
+  e registra. Os últimos erros ficam em localStorage "depthgate:erros" (console: localStorage.getItem("depthgate:erros")).
+· Bateria de testes (scratchpad t/bateria*.cjs): 9 heróis × armaduras lendária/relíquia/épica/forja, morrendo no
+  infinito e voltando ao Refúgio, teclado e toque: sem erro, herói anda, controles de toque presentes.
 
 P216.64 — MANTO DO CAÇADOR DO NORTE (Caçador, armadura do Ferreiro) (PixelLab)
 · Nova armadura da forja só para o Caçador: capuz cinza-escuro, barba ruiva, manto de pele de lobo cinza, túnica longa

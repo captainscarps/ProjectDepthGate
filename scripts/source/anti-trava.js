@@ -10,10 +10,30 @@ function __atLog(kind, e) {
   try {
     const msg = `${kind}: ${e?.message ?? e}`.slice(0, 300);
     console.error("[DEPTHGATE] " + msg, e?.stack ?? "");
-    localStorage.setItem("depthgate:trava", JSON.stringify({ t: new Date().toISOString(), msg, stack: String(e?.stack ?? "").slice(0, 900) }));
+    const it = { t: new Date().toISOString(), msg, stack: String(e?.stack ?? "").slice(0, 900) };
+    localStorage.setItem("depthgate:trava", JSON.stringify(it));
+    let L = []; try { L = JSON.parse(localStorage.getItem("depthgate:erros") || "[]") } catch (x) {}
+    L.unshift(it); localStorage.setItem("depthgate:erros", JSON.stringify(L.slice(0, 12)));
   } catch (x) {}
 }
+/* p216.65: um erro na atualização do herói (rig) derrubava a atualização inteira da cena a cada quadro — na vila nada
+   se mexia (parecia congelado) até algo mudar o estado (abrir a pausa com START). Agora o erro do herói fica isolado:
+   a cena continua (o herói pula só aquele quadro) e o erro é registrado uma vez por tipo. Instalado no primeiro passo
+   do jogo, depois de todos os módulos (vira o invólucro mais de fora). */
+function __atGuardRig() {
+  if (typeof Qe === "undefined" || Qe.prototype.__atG) return;
+  const U0 = Qe.prototype.update, seen = new Set();
+  Qe.prototype.update = function () {
+    try { return U0.apply(this, arguments) } catch (e) {
+      const k = String(e?.message ?? e).slice(0, 80);
+      if (!seen.has(k) && seen.size < 20) { seen.add(k); __atLog("erro no herói (" + (this.animPrefix || "?") + ")", e) }
+      try { this.mk2?.anims?.isPaused && this.mk2.anims.resume() } catch (x) {}
+    }
+  };
+  Qe.prototype.__atG = 1;
+}
 {const SP = j.Scenes?.Systems?.prototype;
+ if (SP && !SP.__atG0) { const S0 = SP.step; SP.step = function () { __atGuardRig(); SP.step = S0; return S0.apply(this, arguments) }; SP.__atG0 = 1 }
  if (SP && !SP.__safeR) { const R0 = SP.render; SP.render = function () { try { return R0.apply(this, arguments) } catch (e) { (this.__errR = (this.__errR || 0) + 1) <= 3 && __atLog("erro ao desenhar " + (this.settings?.key ?? "?"), e) } }; SP.__safeR = 1 }}
 {const SM = j.Scenes?.SceneManager?.prototype;
  if (SM && !SM.__safeU) { const U0 = SM.update; SM.update = function () { try { return U0.apply(this, arguments) } catch (e) { (this.__errU = (this.__errU || 0) + 1) <= 3 && __atLog("erro no gerenciador de cenas", e) } }; SM.__safeU = 1 }}

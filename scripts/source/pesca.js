@@ -63,8 +63,8 @@ function __pqHeroFish(H) {
   const base = nh ? `mk4b-${cls}-nh` : uni ? `mk4b-${uni}` : t0, key = P === base ? base + "-fish" : P + "-fish";
   if (!H.textures.exists(base + "-fish")) return null;
   if (!H.textures.exists(key)) try {
-    if (nh) __haDerive(H, t0, P.slice(0, -3), base, P, ["-fish"]);      // mesmas cores que a lendária copiou da folha base
-    else if (uni || /^mk4b-[a-z]+-t\d/.test(P)) __haDerive(H, base, P, base, P, ["-fish"]);
+    if (nh) __haDerive(H, t0, P.slice(0, -3), base, P, ["-fish"], 1);      // mesmas cores que a lendária copiou da folha base
+    else if (uni || /^mk4b-[a-z]+-t\d/.test(P)) __haDerive(H, base, P, base, P, ["-fish"], 1);
   } catch (e) { }
   if (!H.textures.exists(key)) return null;
   const J = H.cache.json.get("pq-hfish"), tips = J.tips[id] || J.tips[cls]; return { V, m, key, tips, fs: J.fs };
