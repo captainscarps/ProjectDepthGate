@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.63 · cache ded-web-v6.14.4-urso)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.64 · cache ded-web-v6.14.5-cacador-norte)
+
+P216.64 — MANTO DO CAÇADOR DO NORTE (Caçador, armadura do Ferreiro) (PixelLab)
+· Nova armadura da forja só para o Caçador: capuz cinza-escuro, barba ruiva, manto de pele de lobo cinza, túnica longa
+  cor de ardósia, cintos de couro, capa rasgada, botas de pele, espada na cintura e besta. Ferreiro → Armaduras:
+  170 Pedras Cobalto · +7 defesa · +5 vida · +3 dano · +4% crítico.
+· Arte completa: perfil (tiro de besta, recarga), as 4 habilidades (Tiro Mirado ajoelhado, Tiro Duplo, Armadilha,
+  Assobio), andar e correr nas direções (correr de costas refeito) e pesca. Código: scripts/source/lobo.js.
 
 P216.63 — DRUIDA: FORMAS ATACAM COMO ANIMAL · FORMA DE URSO PARDO (PixelLab)
 · Transformado (javali, lobisomem, urso), o golpe básico usava a arma: com cajado o Druida soltava magia. Agora, em
