@@ -33,6 +33,8 @@ ARM = {
     "corvo": ("druid", {"atk": "attack", "cast": "cast"}, None),                       # p216.61: Manto do Corvo-Lobo (Druida)
     "selvagem": ("druid", {"atk": "attack", "cast": "cast"}, None),                    # p216.62: Pintura de Guerra Selvagem (Druida)
     "lobo": ("hunter", {"atk": "attack", "cast": "cast"}, None),
+    "tigre": ("druid", {"atk": "attack", "cast": "cast"}, None),                       # p216.67: Forma de Tigre Branco (Druida)
+    "pantera": ("druid", {"atk": "attack", "cast": "cast"}, None),                     # p216.67: Forma de Pantera Negra (Druida)
     "rubro": ("archer", {"atk": "attack", "cast": "cast"}, None),                      # p216.66: Armadura da Lua Rubra (Arqueiro)                       # p216.64: Manto do Caçador do Norte (Caçador)
     "urso": ("druid", {"atk": "attack", "cast": "cast"}, None),                        # p216.63: Forma de Urso Pardo (Druida) — habilidades usam o rugido
 }

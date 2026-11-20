@@ -1,4 +1,17 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.66 · cache ded-web-v6.14.7-lua-rubra)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.67 · cache ded-web-v6.14.8-felinos)
+
+P216.67 — DRUIDA: FORMA DE TIGRE BRANCO E FORMA DE PANTERA NEGRA (PixelLab)
+· Duas habilidades NOVAS de transformação (Javali, Lobisomem e Urso continuam iguais). Entram como mais uma opção na
+  escolha de habilidade por nível (campanha e Infinito): Pantera Negra no nível 5, Tigre Branco no nível 10.
+  · Tigre Branco: 6 s · +60% de dano e +20% de velocidade · 25 de recurso · recarga 16 s.
+  · Pantera Negra: 6 s · +45% de velocidade, 30% de esquiva e +25% de crítico · 25 de recurso · recarga 16 s.
+  Transformado, o golpe é de garra (como as outras formas) e as passivas de forma da árvore valem para as duas.
+· Arte completa das duas formas, de pé como o Urso Pardo (com as braçadeiras e o colar de folhas do Druida): parado,
+  andar, correr, garrada, rugido (habilidades), dano, morte e andar/correr de frente, de costas e nas diagonais.
+  Pose base e direções com edit-images-v2 sobre o Urso; animações com animate-pixminimax. Folhas druid-tigre-* e
+  druid-pantera-* (build_armaduras_unicas.py tigre pantera; fontes scripts/art-src/armaduras/tigre-*, pantera-*).
+· Ícones próprios em medalhão no estilo dos ícones de forma (generate-image-v2 com o ícone do Lobisomem como
+  estilo): assets/pixel-art/ui/icons/TIGRE_FORM.png e PANTERA_FORM.png. Código: scripts/source/druida-felinos.js.
 
 P216.66 — ARMADURA DA LUA RUBRA (Arqueiro, armadura do Ferreiro) (PixelLab)
 · Nova armadura da forja só para o Arqueiro, feita a partir da arte de referência do Rafael (samurai arqueiro diante
