@@ -85,6 +85,9 @@ function __petPortalOut(S, x, y, tex, frame, sc, flip, nm) {
   S.game.events.emit("ui:banner", __PL(`${nm.toUpperCase()} CAIU E O PORTAL O LEVOU AO REFÚGIO · RECRUTE NO TREINO DE PETS`, `${nm.toUpperCase()} FELL AND A PORTAL TOOK IT TO THE REFUGE · RECRUIT IT AT PET TRAINING`, `${nm.toUpperCase()} CAYÓ Y UN PORTAL LO LLEVÓ AL REFUGIO · RECLÚTALO EN EL ENTRENAMIENTO`), "#9fd0ff");
 }
 /* get() → { x, y, h, spr } do pet agora; onFall() tira o pet de cena (o portal anima uma cópia) */
+/* p216.75: os bichos pequenos recrutados (gatos, ratos e aves) nunca são alvo dos inimigos: não perdem vida nem
+   caem pelo portal. As aves podem chamar a atenção dos inimigos, mas voam fora do alcance deles. */
+const __PET_SAFE = new Set(["oll", "rato", "corvo"]);
 function __petLife(S, id, L, get, onFall) {
   const max = __petMaxHp(id, L), cdm = new Map(), bar = S.add.graphics().setDepth(9001);
   let hp = max, gone = !1;
@@ -92,7 +95,7 @@ function __petLife(S, id, L, get, onFall) {
     if (gone) return;
     const p = get(); if (!p) return;
     const now = S.time.now;
-    if (S.player && !S.player.dead) for (const e of (S.enemies?.getChildren?.() || []).concat(S.boss ? [S.boss] : [])) {
+    if (S.player && !S.player.dead && !__PET_SAFE.has(id)) for (const e of (S.enemies?.getChildren?.() || []).concat(S.boss ? [S.boss] : [])) {
       if (!e || !e.active || e.dead || (e.hp ?? 1) <= 0 || Math.hypot(e.x - p.x, e.y - p.y) > 26 || (cdm.get(e) || 0) > now) continue;
       cdm.set(e, now + 1300);
       api.hit(Math.max(1, Math.round(e.damage || 1)));
@@ -104,7 +107,7 @@ function __petLife(S, id, L, get, onFall) {
   const api = {
     get dead() { return gone },
     hit(n) {
-      if (gone || !(n > 0)) return;
+      if (gone || !(n > 0) || __PET_SAFE.has(id)) return;   // p216.75: gatos, ratos e aves não são atacados
       hp -= n;
       const p = get();
       if (p) { S.effects?.floatText?.(p.x, p.y - p.h, `-${n}`, "#ff8a7a", 9); p.spr?.setTint?.(0xff7060); S.time.delayedCall(110, () => p.spr?.active && p.spr.clearTint()) }

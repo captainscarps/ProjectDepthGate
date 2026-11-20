@@ -80,7 +80,8 @@ for r in range(d.shape[0] // 32):
                         yy, xx = cy + dy, cx + dx - 1
                         if 0 <= yy < 32 and 0 <= xx < 32 and body[yy, xx]: g[yy, xx, :3] = (34, 32, 38)
         f[:] = g
-Image.fromarray(d).save(os.path.join(NPC, "mussarela.png"))
+# p216.75: a Mussarela nova sai de scripts/build_mussarela.py (PixelLab); esta versão recolorida não é mais gravada
+# Image.fromarray(d).save(os.path.join(NPC, "mussarela.png"))
 
 # ── Fumaça: gato cinza ──
 cat = np.array(Image.open(os.path.join(NPC, "gato-a.png")).convert("RGBA"))

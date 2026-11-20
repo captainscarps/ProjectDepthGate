@@ -12,7 +12,7 @@ const __OL_L = /*__OLINES__*/{"speakers":{"olivia":{"name":["OLIVIA","OLIVIA","O
     try {
       const L = this.load, op = L.path, N = "assets/pixel-art/npc/", ex = k => this.textures.exists(k); L.setPath("");
       ex("olivia") || L.spritesheet("olivia", N + "olivia.png", { frameWidth: 192, frameHeight: 192 });
-      ex("mussarela") || L.spritesheet("mussarela", N + "mussarela.png", { frameWidth: 32, frameHeight: 32 });
+      ex("mussarela") || L.spritesheet("mussarela", N + "mussarela.png", { frameWidth: 64, frameHeight: 64 });
       ex("gato-o") || L.spritesheet("gato-o", N + "gato-o.png", { frameWidth: 100, frameHeight: 50 });   // quadros de 100x50 (um gato por quadro)
       for (const e of ["talk", "calm", "smile", "sadness", "aggression", "special"]) ex("olivia-p-" + e) || L.image("olivia-p-" + e, `${N}olivia-p-${e}.png`);
       L.setPath(op);
@@ -32,7 +32,7 @@ function __olBuild(H) {
   const mk = (k, t, fr, rate, rep = -1) => A.exists(k) || A.create({ key: k, frames: A.generateFrameNumbers(t, fr), frameRate: rate, repeat: rep });
   mk("olivia-run", "olivia", { start: 0, end: 9 }, 12); mk("olivia-jump", "olivia", { start: 15, end: 29 }, 16, 0); mk("olivia-idle", "olivia", { frames: [15] }, 1);
   mk("olivia-reach", "olivia", { start: 30, end: 33 }, 8, 0);
-  ["d", "l", "r", "u"].forEach((d, i) => { mk("mz-w-" + d, "mussarela", { start: i * 6, end: i * 6 + 5 }, 10); mk("mz-i-" + d, "mussarela", { start: 24 + i * 6, end: 24 + i * 6 + 5 }, 5) });
+  ["d", "l", "r", "u"].forEach((d, i) => { mk("mz-w-" + d, "mussarela", { start: i * 8, end: i * 8 + 7 }, 12); mk("mz-i-" + d, "mussarela", { start: 32 + i * 8, end: 32 + i * 8 + 7 }, 7) });
   mk("gato-o-idle", "gato-o", { start: 0, end: 6 }, 6); mk("gato-o-walk", "gato-o", { start: 11, end: 21 }, 13);
   // regiões: lá fora (frente da forja) e dentro da forja; "pés" a FO px abaixo da posição lógica do herói
   const OUT = { cx: 520, cy: 372, rx: 110, ry: 52, door: [M.house.door[0], M.house.door[1] + 18], sc: .3, mz: 1, spd: 55, fo: 24, rows: () => M.coll, ox: 0, oy: 0 };
@@ -45,7 +45,7 @@ function __olBuild(H) {
   const s = H.add.sprite(O.x, O.y, "olivia", 15).setOrigin(.5, 1).setScale(OUT.sc * __OL_K).setDepth(O.y - OUT.fo).play("olivia-idle");
   const sh = H.add.ellipse(O.x, O.y, 12, 4, 0, .25).setDepth(O.y - OUT.fo - 1);
   // Mussarela (lá fora) e Fumaça (dentro)
-  const D = { x: O.x - 18, y: O.y + 4, dir: "d", s: H.add.sprite(O.x - 18, O.y + 4, "mussarela", 24).setOrigin(.5, .85).setDepth(O.y - 20).play("mz-i-d") };
+  const D = { x: O.x - 18, y: O.y + 4, dir: "d", s: H.add.sprite(O.x - 18, O.y + 4, "mussarela", 32).setOrigin(.5, .88).setScale(.42).setDepth(O.y - 20).play("mz-i-d") };
   const cs = H.add.sprite(IN.cx + 40, IN.cy, "gato-o", 0).setOrigin(.5, 1).setScale(.5).setDepth(IN.cy - IN.fo).play("gato-o-idle");
   const C = { x: cs.x, y: cs.y, tgt: null, t: 2, s: cs };
   const hearts = (x, y) => { for (let i = 0; i < 3; i++) { const h = H.add.text(x + (rnd() - .5) * 14, y, "♥", { fontFamily: "Georgia", fontSize: "9px", color: "#ff7a9a", stroke: "#3a0a14", strokeThickness: 2 }).setOrigin(.5).setScale(.6).setDepth(9200); H.tweens.add({ targets: h, y: y - 18 - rnd() * 8, alpha: 0, duration: 900 + rnd() * 300, delay: i * 120, onComplete: () => h.destroy() }) } };

@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.74 · cache ded-web-v6.15.5-barcos-todos)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.75 · cache ded-web-v6.15.6-mussarela)
+
+P216.75 — MUSSARELA NOVA E BICHOS PEQUENOS INTOCÁVEIS
+· Mussarela (a cachorra da Olivia, no Refúgio) refeita no PixelLab: terrier branca de pelo curto com as orelhas e as
+  manchas dos olhos pretas, faixa branca no meio da cara, pintinhas pretas no corpo e nas patas, rabo fino em pé e
+  a língua de fora. Andando e parada nas 4 direções (8 quadros cada, 64×64; a esquerda é o espelho).
+  scripts/build_mussarela.py (fontes scripts/art-src/mussarela/); o build_olivia.py não grava mais a versão antiga.
+· Pets: os bichos pequenos recrutados — gatos (Ollie), ratos (Migalha) e aves (Agouro) — não são mais atacados
+  pelos inimigos: não perdem vida, não aparece a barra e não caem pelo portal. As aves podem chamar a atenção dos
+  inimigos, mas voam fora do alcance. Lobo e cão continuam levando golpes (o cão segue bloqueando pelo herói).
 
 P216.74 — BARCO REMANDO COM TODOS OS HERÓIS E CAMINHADA EM 8 DIREÇÕES NO PRÓLOGO
 · Barco do prólogo para os 9 heróis (Arqueiro, Maga, Necromante, Druida, Araí, Ladina, Samurai, Caçador além do
