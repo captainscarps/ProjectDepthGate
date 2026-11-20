@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.57 · cache ded-web-v6.13.8-esmeralda)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.58 · cache ded-web-v6.13.9-forja-rolagem)
+
+P216.58 — FORJA COM ROLAGEM E PRÉVIA NO CURSOR DO CONTROLE
+· A lista da forja (Armas, Armaduras, Encomendas) não passa mais por cima do saldo de Pedra Cobalto: mostra só as
+  linhas que cabem, com barra de rolagem ao lado; rola com a roda do mouse e sozinha quando o cursor do controle/
+  teclado chega numa peça fora da vista.
+· Controle/teclado: só de pôr o cursor numa peça a página da direita já mostra o herói vestindo (antes precisava
+  apertar A). __fnDraw chama b.__onFocus() do item focado (hub-village.js).
 
 P216.57 — SEDAS DE ESMERALDA (Ladina, armadura do Ferreiro) (PixelLab)
 · Nova armadura da forja só para a Ladina: dançarina-assassina de cabelo preto longo, diadema dourado, corpete preto

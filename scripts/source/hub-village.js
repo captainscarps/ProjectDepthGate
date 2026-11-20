@@ -99,7 +99,7 @@ __fnAuto(o,closeObj,keepSel){
   this.panelRows=null;this.__padPv={a:!0,x:!0,s:!0,u:!0,d:!0,l:!0,r:!0};
   this.__fnDraw();
 }
-__fnDraw(){const F=this.__fn,g=this.__fnHl;if(!F||!g?.active)return;g.clear();const b=F.items[F.sel];if(!b?.active)return;
+__fnDraw(){const F=this.__fn,g=this.__fnHl;if(!F||!g?.active)return;g.clear();const b=F.items[F.sel];if(!b?.active)return;try{b.__onFocus?.()}catch(e){}
   const w=b.displayWidth||b.width||20,h=b.displayHeight||b.height||12,x=b.x-w*(b.originX??.5),y=b.y-h*(b.originY??.5);
   g.fillStyle(16765514,.1).fillRoundedRect(x-4,y-3,w+8,h+6,4);g.lineStyle(2,16765514,1).strokeRoundedRect(x-4,y-3,w+8,h+6,4);
   F.items.forEach(it=>it!==b&&it.emit?.("pointerout"));b.emit?.("pointerover")}
@@ -655,10 +655,22 @@ __forgeWeaponsShop(fromSmith,mode){
     z.on("pointerover",()=>draw(idx===sel,!0));
     z.on("pointerout",()=>draw(idx===sel));
     z.on("pointerdown",()=>{const pad=this.__fnByPad;select(idx);pad&&this.time.delayedCall(0,()=>focusOn(forgeBtn))});       // tocar escolhe e mostra; forjar só pelo botão, com confirmação (no controle, A leva o foco ao FORJAR)
-    rowsUi.push({z,draw});
+    const parts=[box,im,nm,stT,prT,z];
+    rowsUi.push({z,draw,parts,base:parts.map(p=>p.y)});
+    z.__onFocus=()=>{if(o.__wheel)return;showRow(idx);!confirming&&sel!==idx&&select(idx)};   // controle: o cursor na peça já mostra a prévia
     wp.locked||wp.special||((o.__prTs=o.__prTs||[]).push([prT,wp]),this.__alDisc()&&prT.setColor("#4ade80"));
-    o.add([box,im,nm,stT,prT,z]);
+    o.add(parts);
   });
+  // p216.58: lista com rolagem — nada passa por cima do saldo de Pedra Cobalto nem do rodapé
+  const LB=Y+HH-50,MAXV=Math.max(1,Math.floor((LB-R0+2)/RS));let top=0;
+  const sbT=this.add.graphics(),sbH=this.add.graphics();o.add([sbT,sbH]);
+  const layout=()=>{const dy=-top*RS;rowsUi.forEach((r,i)=>{const vis=i>=top&&i<top+MAXV;r.parts.forEach((p,k)=>{p.setVisible(vis);p.y=r.base[k]+dy+(vis||p!==r.z?0:5000)})});
+    sbT.clear();sbH.clear();if(list.length<=MAXV)return;const tx=LX+LW+5,th=MAXV*RS-2,hh=Math.max(14,th*MAXV/list.length),hy=R0+(th-hh)*top/(list.length-MAXV);
+    sbT.fillStyle(0x1a120b,.45).fillRoundedRect(tx,R0,4,th,2);sbH.fillStyle(0xb8862f,1).fillRoundedRect(tx,hy,4,hh,2)};
+  const showRow=i=>{const t0=top;if(i<top)top=i;else if(i>=top+MAXV)top=i-MAXV+1;top=Math.max(0,Math.min(top,Math.max(0,list.length-MAXV)));top!==t0&&layout()};
+  const wheel=(p,ob,dx,dyw)=>{if(!o.active||!o.visible||confirming||list.length<=MAXV)return;const t0=top;top=Math.max(0,Math.min(list.length-MAXV,top+Math.sign(dyw)));if(top!==t0){layout();const F=this.__fn;if(F?.o===o){o.__wheel=1;this.__fnDraw();o.__wheel=0}}};
+  this.input.on("wheel",wheel);o.once("destroy",()=>this.input.off("wheel",wheel));
+  layout();
 
   const bY=Y+HH-16;
   if(!isCamp){
@@ -683,6 +695,7 @@ __forgeWeaponsShop(fromSmith,mode){
   o.bringToTop(forgeBtn);o.bringToTop(yesBtn);o.bringToTop(noBtn);for(const b of[o.list.find(x=>x.type==="Text"&&/^(CONSERTAR|REPAIR|REPARAR)$/.test(x.text)),swBtn,cBtn])b&&o.bringToTop(b);
   this.__fixScroll?.(o);
   this.panel=o;
+  showRow(sel);
   paintRight();
   setConfirm(!1);
   // abrir já com o foco na primeira peça da lista
