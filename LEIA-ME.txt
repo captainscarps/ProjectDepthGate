@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.48 · cache ded-web-v6.12.9-taverna)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.49 · cache ded-web-v6.13.0-pesca)
+
+P216.49 — PESCA MAIS REALISTA: OS HERÓIS SEGURAM A VARA DE VERDADE (PixelLab)
+· Os 9 heróis refeitos ganharam uma folha de pesca (characters/<classe>-fish.png, quadros 208×208, 4 linhas × 8):
+  arremesso (leva a vara para trás da cabeça e chicoteia para a frente), esperando (vara parada, respirando),
+  brigando com o peixe (inclina para trás com a vara vergada; mais rápido quanto maior a tensão) e pegou (levanta
+  a vara). A arma fica guardada (espada na cintura, arco/besta nas costas…).
+· A linha sai da ponta da vara desenhada em cada quadro (characters/pesca-herois.json): frouxa esperando,
+  esticada na briga. A vara desenhada por código continua para os heróis antigos, armaduras únicas, cabeça
+  descoberta e formas do Druida. Cores de armadura (camadas, cores e forja) são copiadas da folha base.
+· Montagem: python3 scripts/build_pesca_herois.py (fontes scripts/art-src/pesca/). Código: pesca.js.
 
 P216.48 — FARIAS E MARIA DA TAVERNA REFEITOS (PixelLab)
 · Rostos iguais aos retratos das falas. Farias: careca com cabelo branco dos lados, óculos retangulares pretos,

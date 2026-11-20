@@ -22630,6 +22630,9 @@ const __PZ_RAR = [["COMUM", "COMMON", "COMÚN", "#cfe0ff"], ["INCOMUM", "UNCOMMO
       const L = this.load, op = L.path, P = "assets/pixel-art/hub/pesca/"; L.setPath("");
       for (let i = 1; i <= 10; i++) this.textures.exists("pq-f" + i) || L.spritesheet("pq-f" + i, P + "fish" + i + ".png", { frameWidth: 32, frameHeight: 32 });
       this.cache.json.exists("pq-info") || L.json("pq-info", P + "pesca.json");
+      // p216.49: heróis refeitos pescando com a vara no desenho (scripts/build_pesca_herois.py)
+      for (const c of __PQH) this.textures.exists(`mk4b-${c}-t0-fish`) || L.spritesheet(`mk4b-${c}-t0-fish`, `assets/pixel-art/characters/${c}-fish.png`, { frameWidth: 208, frameHeight: 208 });
+      this.cache.json.exists("pq-hfish") || L.json("pq-hfish", "assets/pixel-art/characters/pesca-herois.json");
       L.setPath(op);
     } catch (e) {}
     return r;
@@ -22640,6 +22643,25 @@ const __PZ_RAR = [["COMUM", "COMMON", "COMÚN", "#cfe0ff"], ["INCOMUM", "UNCOMMO
     try { this.M?.dockRect && this.textures.exists("pq-f1") && this.cache.json.exists("pq-info") && __pqBuild(this) } catch (e) { console.warn("[pesca]", e) }
     return r;
   };
+}
+/* ── herói pescando (p216.49) ──
+   Os heróis refeitos têm uma folha <classe>-fish.png (208×208, 4 linhas × 8): 0 arremesso, 1 esperando, 2 brigando com
+   o peixe, 3 pegou — o herói segura a vara de verdade no desenho e a linha sai da ponta (pesca-herois.json guarda a
+   ponta de cada quadro). Cores de armadura (camadas, cores e forja) são copiadas da folha base como nas direções.
+   Armaduras únicas, cabeça descoberta, formas do Druida e os heróis antigos continuam com a vara desenhada. */
+const __PQH = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"];
+function __pqHeroFish(H) {
+  const V = H.rig, m = V?.mk2; if (!m || !H.cache.json.exists("pq-hfish")) return null;
+  const P = V.animPrefix || "", cls = P.replace(/^mk4b-/, "").replace(/-.*$/, ""); if (!__PQH.includes(cls)) return null;
+  const t0 = `mk4b-${cls}-t0`, base = t0 + "-fish"; if (!H.textures.exists(base)) return null;
+  let key = base;
+  if (P !== t0 && P !== `mk4b-${cls}`) {
+    if (!/^mk4b-[a-z]+-t\d/.test(P) || /-(ossos|vendaval|saqueador|dh|nh)\b/.test(P) || !H.textures.exists(P)) return null;
+    key = P + "-fish";
+    if (!H.textures.exists(key)) try { __haDerive(H, t0, P, t0, P, ["-fish"]) } catch (e) { }
+    if (!H.textures.exists(key)) return null;
+  }
+  const J = H.cache.json.get("pq-hfish"); return { V, m, key, tips: J.tips[cls], fs: J.fs };
 }
 /* diário e cesto (por espaço de jogo salvo) */
 function __pqKey(H) { let sl = 1; try { sl = H.retSlot ?? H.game.registry.get("save:slot") ?? 1 } catch (e) { } return "depthgate:pesca:" + (H.fromForest ? "c" : "e") + sl }
@@ -22679,8 +22701,31 @@ function __pqBuild(H) {
   const rodPlay = (keys, dur, then) => { ROD.anim = { k: keys, t: 0, dur, then } };
   const lerpK = (k, t) => { for (let i = 1; i < k.length; i++) if (t <= k[i][0]) { const a = k[i - 1], b = k[i], u = (t - a[0]) / Math.max(1e-6, b[0] - a[0]), e = u * u * (3 - 2 * u); return [a[1] + (b[1] - a[1]) * e, a[2] + (b[2] - a[2]) * e] } const z = k[k.length - 1]; return [z[1], z[2]] };
   let nibT = 2 + rnd() * 3, nib = 0;
+  const spPlay = (row, fps, once, then) => { ROD.sp = { row, fps, once, then, t: 0, done: 0 } };
+  const heroRelease = () => { const HF = ROD.on; ROD.on = null; if (!HF?.m?.active) return; try { HF.m.setTexture(HF.V.animPrefix, 0); ROD.saved && HF.m.play(ROD.saved) } catch (e) { } };
+  const heroTick = ms => {   // quadro do herói com a vara e a ponta dela no mundo
+    const HF = ROD.hf, S = ROD.sp, m = HF?.m;
+    if (!m?.active || !S) return !1;
+    if (!ROD.on) { ROD.on = HF; ROD.saved = m.anims.currentAnim?.key }
+    if (F.st !== ROD.lastSt) { const was = ROD.lastSt; ROD.lastSt = F.st;
+      if (F.st === 1 && was !== 1 && S.row !== 0) spPlay(1, 5); else if (F.st === 2) spPlay(2, 14); else if (F.st === 3) spPlay(2, 9) }
+    const T = ROD.sp; if (F.st === 3 && T.row === 2) T.fps = 8 + ROD.tension * 10;
+    T.t += ms / 1000; let i = Math.floor(T.t * T.fps);
+    if (T.once) { if (i >= 8) { i = 7; if (!T.done) { T.done = 1; T.then?.() } } } else i %= 8;
+    const fr = ROD.sp.row === T.row ? T.row * 8 + i : ROD.sp.row * 8;
+    m.anims.stop(); m.setTexture(HF.key, fr);
+    const C = HF.V.container, sg = rdir(); C.setScale(sg * Math.abs(C.scaleX), C.scaleY);
+    const tp = HF.tips[fr] || HF.tips[8], W = m.getWorldTransformMatrix(), pt = W.transformPoint(tp[0] - m.displayOriginX, tp[1] - m.displayOriginY);
+    ROD.tip = [pt.x, pt.y]; return !0;
+  };
   const rodTick = (t, ms) => {
-    if (!ROD.vis) { rodG.clear(); return }
+    if (!ROD.vis) { rodG.clear(); ROD.on && heroRelease(); return }
+    if (ROD.hf && heroTick(ms)) {   // vara no desenho: só a linha, da ponta até a boia (frouxa esperando, esticada na briga)
+      rodG.clear().setDepth(H.playerY + 1.5);
+      if (bob.visible && ROD.launched) { const [tx, ty] = ROD.tip, bx = bob.x, by = bob.y, sag = F.st === 1 ? 9 : F.st === 3 ? 1.5 * (1 - ROD.tension) : 2, mx = (tx + bx) / 2, my = (ty + by) / 2 + sag;
+        rodG.lineStyle(1, 0xeef4f8, .85).beginPath().moveTo(tx, ty); for (let i = 1; i <= 10; i++) { const u = i / 10, w = 1 - u; rodG.lineTo(w * w * tx + 2 * w * u * mx + u * u * bx, w * w * ty + 2 * w * u * my + u * u * by) } rodG.strokePath() }
+      return;
+    }
     const dt = ms / 1000; let ang = ROD.ang, bend = ROD.bend, shake = 0;
     if (ROD.anim) { const A = ROD.anim; A.t += ms; const u = Math.min(1, A.t / A.dur); [ang, bend] = lerpK(A.k, u); A.onT?.(u); if (u >= 1) { ROD.anim = null; ROD.ang = ang; ROD.bend = bend; A.then?.() } }
     else if (F.st === 1) {   // esperando: balança de leve e às vezes um peixe belisca
@@ -22709,7 +22754,7 @@ function __pqBuild(H) {
     rodG.fillStyle(0x9aa0aa, 1).fillCircle(hx + ux / ul * 2.5 - uy / ul * 2, hy + uy / ul * 2.5 + ux / ul * 2, 1.7).fillStyle(0x3a3a44, 1).fillCircle(hx + ux / ul * 2.5 - uy / ul * 2, hy + uy / ul * 2.5 + ux / ul * 2, .7);
     ROD.tip = [tx, ty];
   };
-  H.events.on("update", rodTick); H.events.once("shutdown", () => H.events.off("update", rodTick));
+  H.events.on("postupdate", rodTick); H.events.once("shutdown", () => H.events.off("postupdate", rodTick));
   const rodHide = ms => H.time.delayedCall(ms, () => { if (!F.st) { ROD.vis = !1; rodG.clear() } });
   const drawLine = () => { };
   const drawLineOld = () => { if (!F.spot) return; const [hx, hy] = hand(); line.clear().lineStyle(1, 0x5a3a1c, 1).lineBetween(hx, hy, hx + (H.facing?.x || 0) * 6, hy - 10).lineStyle(1, 0xeef4f8, .75).lineBetween(hx + (H.facing?.x || 0) * 6, hy - 10, bob.x, bob.y - 2); line.setDepth(H.playerY + 2) };
@@ -22722,6 +22767,7 @@ function __pqBuild(H) {
     F.spot = sp; F.st = 1; const dx = sp.w[0] - H.playerX; H.facing = Math.abs(dx) > 8 ? { x: Math.sign(dx), y: 0 } : { x: 0, y: 1 };
     ROD.vis = !0; ROD.launched = !1; ROD.sag = 10; bob.setVisible(!1).setAlpha(1).setDepth(sp.w[1] - FO + 1);
     rodPlay([[0, -55, 0], [.38, -150, .12], [.6, -14, .3], [.8, -48, .06], [1, -45, .08]], 560);
+    ROD.hf = __pqHeroFish(H); ROD.lastSt = 1; ROD.hf && spPlay(0, 14.3, !0, () => spPlay(1, 5));
     H.time.delayedCall(330, () => { if (F.st !== 1 || F.spot !== sp) return;
     const [sx, sy] = ROD.tip || hand(); bob.setPosition(sx, sy).setVisible(!0); ROD.launched = !0; sfx("paddle", .12);
     const c = { u: 0 }; H.tweens.add({ targets: c, u: 1, duration: 520, ease: "Sine.easeOut", onUpdate: () => { bob.x = sx + (sp.w[0] - sx) * c.u; bob.y = sy + (sp.w[1] - sy) * c.u - Math.sin(Math.PI * c.u) * 26 }, onComplete: () => {
@@ -22771,6 +22817,7 @@ function __pqBuild(H) {
       H.tweens.add({ targets: o, alpha: 0, duration: 200, onComplete: () => o.destroy() });
       H.time.delayedCall(220, () => { H.__busy = !1; H.__pqReel = 0 });
       const sp = F.spot; end(!0);
+      if (ROD.hf) { ROD.lastSt = 0; win ? spPlay(3, 10, !0) : spPlay(1, 5) }
       if (win) rodPlay([[0, ROD.ang, .6], [.35, -88, .25], [.7, -80, .05], [1, -82, 0]], 700, () => rodHide(900));
       else rodPlay([[0, ROD.ang, .7], [.15, -20, -.35], [.35, -60, .25], [.55, -38, -.12], [.75, -50, .06], [1, -46, 0]], 650, () => rodHide(500));
       if (win) caught(S, sp); else { sfx("splash", .3); say(L3("A linha arrebentou… ele era forte!", "The line snapped… it was strong!", "Se rompió el sedal… ¡era fuerte!"), "#ffb0a0") }
