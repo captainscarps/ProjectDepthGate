@@ -1,4 +1,8 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.55 · cache ded-web-v6.13.6-buracos)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.56 · cache ded-web-v6.13.7-templario-capa)
+
+P216.56 — ARMADURA DO TEMPLÁRIO SEM A CAPA EXTRA
+· A capa desenhada pelo jogo (raras/épicas/lendárias) não aparece mais com a Armadura do Templário (forja ou drop):
+  ele já tem manto de couro no próprio desenho. hero-mods.js: __capeFor devolve null para ids com "templario".
 
 P216.55 — CAVALEIRO SEM BURACOS (todas as armaduras)
 · Ainda sobravam buracos: (1) o filtro de capa tirava pedaços na borda do corpo — agora só sai o escuro que fica fora

@@ -83,6 +83,7 @@ const __NOCAPE = new Set(["rogue", "druid", "berserker", "mage"]);
 function __capeFor(cls, eq) {
   const D = __NOCAPE.has(cls) ? null : __CAPE[cls], tier = __CAPE_TIER[eq?.armor?.rarity] ?? 0;
   if (!D || !tier) return null;
+  if (/templario/.test(eq?.armor?.id ?? "")) return null;   // p216.56: o Templário já tem manto no desenho (sem capa extra)
   if (tier === 1) return { n: 4, seg: 2.6, w0: 1.3, w1: 1.7, style: "scarf", tails: 1, tier };
   if (tier === 2) return D.style === "scarf" ? { ...D, n: Math.max(4, Math.round(D.n * .55)), tails: 1, tier }
     : { ...D, n: Math.max(4, Math.round(D.n * .5)), w1: D.w1 * .92, tier };
