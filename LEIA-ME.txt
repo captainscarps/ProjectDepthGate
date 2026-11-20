@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.76 · cache ded-web-v6.15.7-variantes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.77 · cache ded-web-v6.15.8-variantes-sec)
+
+P216.77 — VARIANTES RARAS: SÓ AS CORES SECUNDÁRIAS MUDAM
+· A pintura das variantes raras não mexe mais na pele nem na cor principal da armadura e não estoura as cores:
+  - a cor principal (o grupo de cor com mais área na folha, e os tons vizinhos) fica como está;
+  - pele (paleta da cabeça da classe), cabelo/rosto (topo de cada quadro), metal sem cor e contorno também ficam;
+  - só as cores secundárias (amarrações, faixas, bordados, detalhes) ganham o tom do padrão, mantendo o brilho
+    original de cada pixel e saturação moderada.
+  - os padrões passam a ser escolhidos pela distância da cor secundária original (acabamento) de cada armadura.
 
 P216.76 — VARIANTES RARAS DAS ARMADURAS ÚNICAS E ARMADURA NO SAVE
 · As 12 armaduras únicas do ferreiro com desenho próprio (Ossário, Vendaval, Saqueador, Templário, Penas, Esmeralda,
