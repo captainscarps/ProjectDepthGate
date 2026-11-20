@@ -47,7 +47,7 @@ for cls in ["warrior", "berserker", "archer", "hunter", "druid", "necromancer", 
            "sk": sheet(os.path.join(CH, sk), H), "hd": 1,
            # p216.51: pescando (quadros de 208; a cabeça descoberta e as armaduras únicas têm folha própria)
            "fish": sheet(os.path.join(CH, f"{cls}-fish.png"), H, 208),
-           "fishv": {v: sheet(os.path.join(CH, f"{cls}-{'nh' if v == 'nh' else v}-fish.png"), H, 208) for v in ("nh", "ossos", "vendaval", "saqueador", "dh", "templario", "penas", "esmeralda", "oni", "ronin")
+           "fishv": {v: sheet(os.path.join(CH, f"{cls}-{'nh' if v == 'nh' else v}-fish.png"), H, 208) for v in ("nh", "ossos", "vendaval", "saqueador", "dh", "templario", "penas", "esmeralda", "oni", "ronin", "corvo")
                      if os.path.exists(os.path.join(CH, f"{cls}-{v}-fish.png"))}}
     json.dump(out, open(os.path.join(CH, "mods", f"{cls}-mods.json"), "w"), separators=(",", ":"))
     print(cls, "H", H, "nuca parado", out["frames"][0])

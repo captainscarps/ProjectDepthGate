@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.60 · cache ded-web-v6.14.1-ronin)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.61 · cache ded-web-v6.14.2-corvo)
+
+P216.61 — MANTO DO CORVO-LOBO (Druida, armadura do Ferreiro) (PixelLab)
+· Nova armadura da forja só para o Druida: pele de lobo negro como capuz, cachecol ferrugem, manto longo de penas de
+  corvo, túnica de couro verde, um corvo no ombro e cajado alto entalhado. Ferreiro → Armaduras: 170 Pedras Cobalto
+  · +7 defesa · +6 vida · +5 dano mágico. As formas de javali e lobisomem continuam iguais.
+· Arte completa: perfil, as 3 animações de habilidade (Raízes, Chamado — o corvo levanta voo —, Uivo), andar e correr
+  nas direções e pesca. build_pesca_herois.py: novo unline() apaga a linha fina que a IA desenhou quando todos os
+  quadros da briga a têm (UNLINE). Código: scripts/source/corvo.js (/*__CORVO__*/).
 
 P216.60 — ARMADURA DO RONIN (Samurai, armadura do Ferreiro) (PixelLab)
 · Segunda armadura da forja do Samurai: ronin sem elmo — coque preto, bigode e cavanhaque, faixa sobre um olho com

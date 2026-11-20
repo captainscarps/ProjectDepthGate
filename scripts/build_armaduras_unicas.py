@@ -30,6 +30,7 @@ ARM = {
     "esmeralda": ("rogue", {"atk": "attack", "cast": "cast"}, None),                   # p216.57: Sedas de Esmeralda (Ladina)
     "oni": ("berserker", {"atk": "attack", "cast": "cast"}, None),                     # p216.59: Armadura do Oni (Samurai)
     "ronin": ("berserker", {"atk": "attack", "cast": "cast"}, None),                   # p216.60: Armadura do Ronin (Samurai)
+    "corvo": ("druid", {"atk": "attack", "cast": "cast"}, None),                       # p216.61: Manto do Corvo-Lobo (Druida)
 }
 DECAPE = {"nh-warrior"}                            # (o preto da armadura do Caçador de Dragão confundia o filtro de capa)
 FLOAT = {"saqueador"}                       # nas direções a IA deixou uma espada solta flutuando acima da cabeça

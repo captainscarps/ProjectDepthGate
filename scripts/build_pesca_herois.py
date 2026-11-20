@@ -22,11 +22,12 @@ BAD = {"archer": {"reel": (0, 1), "catch": (0, 1)}, "necromancer": {"reel": (1,)
        "necromancer-ossos": {"reel": (0, 1), "catch": (0,)}, "mage-vendaval": {"catch": (6,)},
        "warrior-saqueador": {"cast": (5,), "catch": (0,)}, "warrior-dh": {"reel": (0, 1)},
        "warrior-nh": {"reel": (0, 1)}, "necromancer-nh": {"wait": (1, 2), "reel": (0, 1, 2), "catch": (0,)},
-       "mage-nh": {"reel": (0, 1)}, "warrior-templario": {"reel": (0, 1), "catch": (0,)}, "shaman-penas": {"catch": (0,)}, "rogue-esmeralda": {"reel": (0, 1, 2), "catch": (0, 1)}, "berserker-oni": {"reel": (1, 2, 5), "catch": (0, 1, 2, 6)}, "berserker-ronin": {"cast": (4,), "reel": (1, 2), "catch": (0, 1, 5, 6, 7)}, "rogue-nh": {"catch": (0, 1, 2)}, "hunter-nh": {"catch": (4, 5)}}
+       "mage-nh": {"reel": (0, 1)}, "warrior-templario": {"reel": (0, 1), "catch": (0,)}, "shaman-penas": {"catch": (0,)}, "rogue-esmeralda": {"reel": (0, 1, 2), "catch": (0, 1)}, "berserker-oni": {"reel": (1, 2, 5), "catch": (0, 1, 2, 6)}, "berserker-ronin": {"cast": (4,), "reel": (1, 2), "catch": (0, 1, 5, 6, 7)}, "druid-corvo": {"reel": (0, 1, 2, 3, 4, 5, 6, 7), "catch": (0, 1)}, "rogue-nh": {"catch": (0, 1, 2)}, "hunter-nh": {"catch": (4, 5)}}
+UNLINE = {"druid-corvo"}
 CLS = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"]
 # p216.51: armaduras únicas e cabeça descoberta (lendárias) — folha própria <variante>-fish.png, alinhada à folha
 # de perfil da variante (<variante>-body.png)
-VARS = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin"] + \
+VARS = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin", "druid-corvo"] + \
        [c + "-nh" for c in ["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"]]
 
 def shrink(fr):
@@ -68,6 +69,14 @@ for c in CLS + VARS:
         """a IA desenhou a linha pendurada (pixels à frente do herói, abaixo das mãos): o jogo desenha a dele"""
         ys, xs = np.nonzero(a[..., 3] > 0); xs = xs + dx; ys = ys + dy
         return np.count_nonzero((xs > pm + M + 30) & (ys > pf + M - 40)) > 4
+    def unline(a):
+        """apaga traços de 1–2 px à frente do herói e abaixo do peito (a linha que a IA desenhou; a vara fica acima)"""
+        a = a.copy(); op = a[..., 3] > 0
+        thick = ndimage.binary_dilation(ndimage.binary_opening(op, structure=np.ones((3, 3))), structure=np.ones((3, 3)))
+        Y, X = np.mgrid[0:op.shape[0], 0:op.shape[1]]
+        kill = op & ~thick & (X + dx > pm + M + 18) & (Y + dy > pf + M - 70)
+        a[kill] = 0
+        return a
     def reach(a):
         ys, xs = np.nonzero(a[..., 3] > 0); xs = xs + dx; ys = ys + dy; ok = ys < pf + M - 30
         return np.sqrt(((xs[ok] - cx) ** 2 + (ys[ok] - cy) ** 2).max())
@@ -76,6 +85,8 @@ for c in CLS + VARS:
         clean = [not hanging(a) and i not in BAD.get(c, {}).get(k, ()) for i, a in enumerate(seq)]
         if any(clean):
             seq = [a if clean[i] else seq[min((j for j in range(8) if clean[j]), key=lambda j: (abs(j - i), -j))] for i, a in enumerate(seq)]
+        elif c in UNLINE:                              # p216.61: todos os quadros com linha — apaga só a linha fina
+            seq = [unline(a) for a in seq]
         for i in range(8):
             a = seq[i]; im = Image.new("RGBA", (FS, FS)); im.paste(Image.fromarray(a, "RGBA"), (dx, dy), Image.fromarray(a, "RGBA"))
             sheet.alpha_composite(im, (i * FS, r * FS))

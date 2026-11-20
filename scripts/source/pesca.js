@@ -51,7 +51,7 @@ const __PZ_RAR = [["COMUM", "COMMON", "COMÚN", "#cfe0ff"], ["INCOMUM", "UNCOMMO
    têm folha de pesca própria (<armadura>-fish.png); as cores dessas também são copiadas. Só as formas do Druida e
    os heróis antigos continuam com a vara desenhada. */
 const __PQH = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"];
-const __PQU = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin"];
+const __PQU = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin", "druid-corvo"];
 const __PQV = [...__PQU, ...["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"].map(c => c + "-nh")];
 function __pqHeroFish(H) {
   const V = H.rig, m = V?.mk2; if (!m || !H.cache.json.exists("pq-hfish")) return null;
