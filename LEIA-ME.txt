@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.75 · cache ded-web-v6.15.6-mussarela)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.76 · cache ded-web-v6.15.7-variantes)
+
+P216.76 — VARIANTES RARAS DAS ARMADURAS ÚNICAS E ARMADURA NO SAVE
+· As 12 armaduras únicas do ferreiro com desenho próprio (Ossário, Vendaval, Saqueador, Templário, Penas, Esmeralda,
+  Oni, Ronin, Corvo, Selvagem, Lobo, Lua Rubra) ganharam 2 variantes raras cada (24), com padrões de cor raros:
+  Obsidiana, Áurea, Glacial, Sanguínea, Jade, das Cinzas (as duas mais diferentes da cor original de cada uma).
+  - Caem só na CAMPANHA, como armadura ÉPICA, no lugar de uma armadura rara (7%) ou épica/lendária (14%) sorteada,
+    e só da classe do herói. Não quebram ao morrer; ~85% dos atributos da original; o poder especial da forja
+    fica só na original.
+  - O herói veste a armadura única repintada (perfil, direções e golpes; a pele é preservada pela paleta da cabeça
+    da classe) e o brilho da forja continua. scripts/source/armaduras-variantes.js.
+· Tela de saves (continuar / carregar): o herói aparece vestindo a armadura que está usando (cor comum, armadura
+  da forja, única ou variante) e o cartão mostra o nome da armadura na cor da raridade (campanha e infinito).
 
 P216.75 — MUSSARELA NOVA E BICHOS PEQUENOS INTOCÁVEIS
 · Mussarela (a cachorra da Olivia, no Refúgio) refeita no PixelLab: terrier branca de pelo curto com as orelhas e as
