@@ -22347,7 +22347,7 @@ const __TV_HEROES = [["BERSERKER", 128, 172, 1], ["ROGUE", 300, 176, -1], ["HUNT
       ex("tv-props") || L.atlas("tv-props", T + "props.png", T + "props.json"); this.cache.json.exists("tv-map") || L.json("tv-map", T + "taverna.json");
       for (const k of __TV_PATRONS) ex("vkv-" + k[0]) || L.spritesheet("vkv-" + k[0], "assets/pixel-art/valdrak/npc/" + k[0] + ".png", k[0].startsWith("menino") ? { frameWidth: 64, frameHeight: 77 } : { frameWidth: 128, frameHeight: 128 });
       for (const n of ["farias", "maria"]) {
-        ex(n) || L.spritesheet(n, N + n + ".png", { frameWidth: 128, frameHeight: 128 });
+        ex(n) || L.spritesheet(n, N + n + ".png", { frameWidth: 192, frameHeight: 192 });   // p216.48: arte nova em 192×192
         for (const e of ["talk", "calm", "smile", "sadness", "aggression", "special"]) ex(`${n}-p-${e}`) || L.image(`${n}-p-${e}`, `${N}${n}-p-${e}.png`);
       }
       L.setPath(op);
@@ -22410,14 +22410,14 @@ function __tvBuild(H) {
   for (const [lx, ly, s] of [[140, 92, .5], [276, 92, .5], [208, 120, .9]]) H.add.image(X + lx, Y + ly, "light").setBlendMode(j.BlendModes.ADD).setTint(0xffb860).setScale(s).setAlpha(.22).setDepth(Y + J.h + 61);
   const A = H.anims, mk = (k, t, a, b, fr, rep = -1) => A.exists(k) || A.create({ key: k, frames: A.generateFrameNumbers(t, { start: a, end: b }), frameRate: fr, repeat: rep });
   mk("farias-idle", "farias", 0, 6, 6); mk("farias-wipe", "farias", 16, 25, 8); mk("farias-idle2", "farias", 48, 54, 6);
-  mk("maria-idle", "maria", 0, 6, 6); mk("maria-idle2", "maria", 16, 22, 6); mk("maria-walk", "maria", 32, 43, 10); mk("maria-serve", "maria", 48, 57, 8, 0);
+  mk("maria-idle", "maria", 0, 6, 6); mk("maria-idle2", "maria", 16, 22, 6); mk("maria-walk", "maria", 32, 39, 8); mk("maria-serve", "maria", 48, 57, 8, 0);
   const SC = .46, rnd = Math.random;
   // Farias atrás do balcão
-  const fs = J.spots.farias, far = H.add.sprite(X + fs[0], Y + fs[1], "farias", 0).setOrigin(.5, 1).setScale(SC).setDepth(Y + fs[1] - FO + 2).play("farias-wipe");   // atrás do balcão, na frente dos barris
+  const fs = J.spots.farias, far = H.add.sprite(X + fs[0], Y + fs[1], "farias", 0).setOrigin(.5, 1).setScale(SC * .4201).setDepth(Y + fs[1] - FO + 2).play("farias-wipe");   // atrás do balcão, na frente dos barris
   H.time.addEvent({ delay: 5200, loop: !0, callback: () => { if (H.__tvTalk !== "farias") far.play(rnd() < .65 ? "farias-wipe" : rnd() < .5 ? "farias-idle" : "farias-idle2", !0); far.setFlipX(rnd() < .3) } });
   // Maria entre as mesas: anda de um ponto ao outro e serve
   const P = J.spots.maria.map(p => [X + p[0], Y + p[1]]), C0 = [X + J.spots.counter[0], Y + J.spots.counter[1]];
-  const mar = H.add.sprite(C0[0], C0[1], "maria", 0).setOrigin(.5, 1).setScale(SC).setDepth(C0[1] - FO).play("maria-idle");
+  const mar = H.add.sprite(C0[0], C0[1], "maria", 0).setOrigin(.5, 1).setScale(SC * .4161).setDepth(C0[1] - FO).play("maria-idle");
   const mp = { x: mar.x, y: mar.y - FO }; let route = 0;
   const go = () => {
     if (!mar.active) return; if (H.__tvTalk === "maria") { H.time.delayedCall(1200, go); return }

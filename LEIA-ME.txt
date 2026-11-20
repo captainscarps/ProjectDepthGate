@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.47 · cache ded-web-v6.12.8-olivia)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.48 · cache ded-web-v6.12.9-taverna)
+
+P216.48 — FARIAS E MARIA DA TAVERNA REFEITOS (PixelLab)
+· Rostos iguais aos retratos das falas. Farias: careca com cabelo branco dos lados, óculos retangulares pretos,
+  barba branca, camisa verde-escura e avental de couro, polindo a caneca. Maria: cabelo castanho ondulado com
+  mechas claras, lenço escuro de bolinhas, blusa marrom, saia ameixa com faixa vermelha e bandeja.
+· npc/farias.png e npc/maria.png agora em quadros de 192×192 (antes 128), mesmas posições; a caminhada da Maria
+  tem 8 quadros (era 12). taverna.js: escala SC × .4201 (Farias) e SC × .4161 (Maria) — mesmo tamanho no jogo,
+  mais nítidos. Montagem: python3 scripts/build_taverna_npcs_pixellab.py (fontes scripts/art-src/npcs/).
 
 P216.47 — OLIVIA REFEITA (PixelLab)
 · Rosto igual ao retrato das falas: cabelo castanho-escuro ondulado numa trança de lado, olhos castanhos grandes,
