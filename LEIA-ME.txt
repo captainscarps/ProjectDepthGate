@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.53 · cache ded-web-v6.13.4-penas)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.54 · cache ded-web-v6.13.5-antitrava)
+
+P216.54 — JOGO NÃO FICA MAIS PARADO AO VOLTAR AO REFÚGIO · BURACOS NA ARMADURA DO CAVALEIRO
+· Trava: às vezes, ao voltar ao Refúgio, a tela ficava parada até apertar START. O laço do Phaser pede o próximo
+  quadro só depois de terminar o atual; um erro fora da proteção das cenas cortava a corrente. Novo anti-trava.js:
+  protege o desenho de cada cena e o gerenciador de cenas, e um vigia (setInterval) religa o laço se nenhum quadro
+  passar em 1,5 s com a aba visível (fora de vídeos/cinemáticas e do aviso de girar o celular). O último erro fica
+  em localStorage "depthgate:trava" e no console como [DEPTHGATE].
+· Buracos transparentes: o filtro que tira a capa preta que a IA desenhava no Cavaleiro também apagava a couraça
+  escura (de costas, nas diagonais e em golpes) — inclusive na lendária sem capacete. Agora o que tem corpo dos dois
+  lados na mesma linha volta. Refeitas: warrior-pack-t0…t4-body/-sk/-dirs e warrior-nh-* (build_cavaleiro_pixellab.py,
+  build_herois_dirs.py, build_armaduras_unicas.py nh-warrior) e a nuca da capa (build_herois_nuca.py).
 
 P216.53 — VESTES DA PENA SAGRADA (Araí, armadura do Ferreiro) (PixelLab)
 · Nova armadura da forja só para a Araí (Xamã): grande cocar de penas brancas e marrons, cabelo solto, colar de

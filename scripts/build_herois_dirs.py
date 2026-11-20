@@ -89,6 +89,17 @@ def decape(fr, thr=48, it=2):
     tr = a[..., 3] == 0; lab, n = ndimage.label(tr)
     border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
     hole = tr & ~np.isin(lab, list(border)); a[hole] = orig[hole]
+    # p216.54: o que foi tirado e tem corpo dos DOIS lados na mesma linha (até 40 px) era armadura escura, não capa
+    # (de costas a couraça do Cavaleiro é quase preta): volta, para não deixar buracos transparentes no herói
+    for _ in range(6):                          # repete enquanto houver o que voltar
+      keep = a[..., 3] > 0; gone = rm & ~keep
+      if not gone.any(): break
+      for y in np.nonzero(gone.any(axis=1))[0]:
+        k = np.nonzero(keep[y])[0]
+        if not len(k): continue
+        for x in np.nonzero(gone[y])[0]:
+            l = k[k < x]; r = k[k > x]
+            if len(l) and len(r) and x - l[-1] <= 40 and r[0] - x <= 40: a[y, x] = orig[y, x]
     return Image.fromarray(a.astype(np.uint8), "RGBA")
 
 PAL = {   # mesmas camadas de build_cavaleiro_pixellab.py
