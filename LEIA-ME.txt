@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.72 · cache ded-web-v6.15.3-qa-controle)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.73 · cache ded-web-v6.15.4-barco-sul)
+
+P216.73 — BARCO DESCENDO, DIAGONAIS DO ARQUEIRO E ENIGMAS NA CAMPANHA NOVA
+· Barco do prólogo (Guerreiro): não havia desenho com a proa para baixo — descendo, aparecia a popa virada para a
+  câmera e o barco parecia subir; nas diagonais de baixo a proa apontava para cima. Novas linhas "s" (proa para
+  baixo, herói de frente) e "se" (proa para baixo-direita; a baixo-esquerda é o espelho), feitas com
+  edit-images-v2 a partir das poses existentes e remada com animate-pixminimax (scripts/art-src/barco/).
+· Arqueiro: as diagonais de costas (andando e correndo) estavam espelhadas — indo para cima-direita ele olhava
+  para a esquerda e vice-versa. Fontes dirs2-ne / rubro-dirs2-ne / nh-archer-dirs-ne espelhadas quadro a quadro;
+  archer-pack-dirs, archer-rubro-dirs e archer-nh-dirs refeitas (só as linhas das diagonais de costas mudaram).
+· Campanha nova: os enigmas (blocos, espelhos, alavancas das fases — depthgate:pz:<fase>:<slot> — e os do gelo —
+  depthgate:gspz:<slot>) ficavam salvos do jogo anterior no mesmo slot e já apareciam resolvidos. Agora são
+  apagados ao começar campanha nova e ao excluir o herói do slot.
 
 P216.72 — REVISÃO DE QA: BARCO MAIS SOLTO, TRAVAS DO CONTROLE E LIMPEZA DE SPRITES
 · Barco do prólogo: com o direcional apertado a velocidade vira junto com a proa (antes o barco derrapava de lado e
