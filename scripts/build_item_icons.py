@@ -207,6 +207,20 @@ def enc_icon(I, k):
         blunt(I, "hammer", "cobalt", "darkwood", "topaz", "#93c5fd", "gold")
 
 
+# ── Armadura da Lua Rubra (Arqueiro, PixelLab): ō-yoroi vermelha laqueada, amarração preta, kabuto com chifres ──
+def rubro_icon(I):
+    B = I.body.append
+    I.under.append('<circle cx="64" cy="58" r="46" fill="#c42b2b" opacity=".28"/>')
+    armor(I, "crimson", "gold", "plate", None)
+    for y in (66, 80, 94):
+        for x in range(42, 90, 8):
+            B(f'<path d="M{x} {y-6} L{x} {y+2}" stroke="#0b0d13" stroke-width="1.6" opacity=".75"/>')
+    B('<path d="M50 52 Q64 46 78 52 Q74 64 64 66 Q54 64 50 52Z" fill="#f2e6cf" stroke="#0b0d13" stroke-width="2"/>')
+    B('<path d="M58 54 L64 60 L70 54" stroke="#c42b2b" stroke-width="2.4" fill="none"/>')
+    B('<path d="M40 22 C30 10 26 4 22 2 C30 12 34 22 44 30Z" fill="#1d1f2d" stroke="#0b0d13" stroke-width="2"/>')
+    B('<path d="M88 22 C98 10 102 4 106 2 C98 12 94 22 84 30Z" fill="#1d1f2d" stroke="#0b0d13" stroke-width="2"/>')
+
+
 UNIQ = {
     # armas
     "bulwark_blade": lambda: U(lambda I: sword(I, "steel", "silver", "leather", "silver", "curved", "sapphire", "sapphire", "#4f8dff", None, None, "broad", 16), "#4f8dff"),
@@ -253,6 +267,7 @@ UNIQ = {
     "unique_forge_pilgrim_boots": lambda: U(shrink(lambda I: enc_icon(I, "boots"), .9, 2), "#86efac", None, 3, 124, 5),
     "unique_forge_origin_amulet": lambda: U(lambda I: enc_icon(I, "amulet"), "#fcd34d", "#ffae1e", 4, 125, 5),
     "enc_master_hammer": lambda: U(shrink(lambda I: enc_icon(I, "hammer"), .86, 4), "#93c5fd", "#60a5fa", 5, 126, 5),
+    "armor_forge_rubro": lambda: U(rubro_icon, "#ff5a4a", "#c42b2b", 4, 131, 5),
     "armor_forge_brasa": lambda: U(lambda I: forge_armor(I, "brasa"), "#ff8a2a", "#ff6a1a", 4, 111, 5),
     "armor_forge_geada": lambda: U(lambda I: forge_armor(I, "geada"), "#bfe8ff", "#8fd8ff", 5, 112, 5),
     "armor_forge_penumbra": lambda: U(lambda I: forge_armor(I, "penumbra"), "#a060ff", "#7a2cff", 3, 113, 5),

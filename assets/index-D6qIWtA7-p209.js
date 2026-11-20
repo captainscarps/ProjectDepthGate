@@ -19194,7 +19194,7 @@ const __NOCAPE = new Set(["rogue", "druid", "berserker", "mage"]);
 function __capeFor(cls, eq) {
   const D = __NOCAPE.has(cls) ? null : __CAPE[cls], tier = __CAPE_TIER[eq?.armor?.rarity] ?? 0;
   if (!D || !tier) return null;
-  if (/templario/.test(eq?.armor?.id ?? "")) return null;   // p216.56: o Templário já tem manto no desenho (sem capa extra)
+  if (/templario|rubro/.test(eq?.armor?.id ?? "")) return null;   // p216.56: o Templário já tem manto no desenho (sem capa extra); p216.66: nem a Lua Rubra
   if (tier === 1) return { n: 4, seg: 2.6, w0: 1.3, w1: 1.7, style: "scarf", tails: 1, tier };
   if (tier === 2) return D.style === "scarf" ? { ...D, n: Math.max(4, Math.round(D.n * .55)), tails: 1, tier }
     : { ...D, n: Math.max(4, Math.round(D.n * .5)), w1: D.w1 * .92, tier };
@@ -19216,7 +19216,7 @@ function __capeUpdate(V, dt) {
   const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, tk = m.texture?.key || "";
   // p216.41: nuca por folha (perfil, direções, golpes) — as folhas novas têm quadros diferentes
   // p216.51: pescando (folha "-fish", quadros de 208 com o herói no meio): nuca da folha de pesca da armadura
-  const fsh = tk.endsWith("-fish"), fv = fsh && (tk.includes("-nh") ? "nh" : ["ossos", "vendaval", "saqueador", "dh", "templario", "penas", "esmeralda", "oni", "ronin", "corvo", "selvagem", "lobo"].find(n => tk.includes("-" + n + "-") || tk.includes("-" + n)));
+  const fsh = tk.endsWith("-fish"), fv = fsh && (tk.includes("-nh") ? "nh" : ["ossos", "vendaval", "saqueador", "dh", "templario", "penas", "esmeralda", "oni", "ronin", "corvo", "selvagem", "lobo", "rubro"].find(n => tk.includes("-" + n + "-") || tk.includes("-" + n)));
   const arr = tk.endsWith("-dirs") ? info?.dirs : tk.endsWith("-sk") ? info?.sk : fsh ? (info?.fishv?.[fv] ?? info?.fish) : info?.frames, F = arr?.[fi] ?? V.__capeLastF, c0 = fsh ? 104 : 64;
   if (!F) { V.__cape?.g.setVisible(!1); return; }
   V.__capeLastF = F;      // quadro sem cabeça achada (de costas, atrás do escudo): a capa fica na última nuca
@@ -22669,7 +22669,7 @@ const __PZ_RAR = [["COMUM", "COMMON", "COMÚN", "#cfe0ff"], ["INCOMUM", "UNCOMMO
    têm folha de pesca própria (<armadura>-fish.png); as cores dessas também são copiadas. Só as formas do Druida e
    os heróis antigos continuam com a vara desenhada. */
 const __PQH = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"];
-const __PQU = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin", "druid-corvo", "druid-selvagem", "hunter-lobo"];
+const __PQU = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin", "druid-corvo", "druid-selvagem", "hunter-lobo", "archer-rubro"];
 const __PQV = [...__PQU, ...["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"].map(c => c + "-nh")];
 function __pqHeroFish(H) {
   const V = H.rig, m = V?.mk2; if (!m || !H.cache.json.exists("pq-hfish")) return null;
@@ -25073,7 +25073,7 @@ function __skhKey(V) { return V.animPrefix + "-sk" }
    • Lendárias: a troca do capacete pela cabeça descoberta usava máscaras da arte antiga e estragava a arte nova;
      nos heróis refeitos ela fica desligada (a capa continua, presa na nuca nova de mods/<classe>-mods.json).  */
 /* folhas extras das armaduras únicas refeitas (scripts/build_armaduras_unicas.py) */
-const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0], ["warrior", "templario", 0], ["shaman", "penas", 0], ["rogue", "esmeralda", 0], ["berserker", "oni", 0], ["berserker", "ronin", 0], ["druid", "corvo", 0], ["druid", "selvagem", 0], ["druid", "urso", 0], ["hunter", "lobo", 0]];
+const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0], ["warrior", "templario", 0], ["shaman", "penas", 0], ["rogue", "esmeralda", 0], ["berserker", "oni", 0], ["berserker", "ronin", 0], ["druid", "corvo", 0], ["druid", "selvagem", 0], ["druid", "urso", 0], ["hunter", "lobo", 0], ["archer", "rubro", 0]];
 {const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
   for (const [c, n, gl] of __HA_UNI) for (const suf of ["-dirs", "-sk"]) for (const g of gl ? ["", "-glow"] : [""]) {
     const k = `mk4b-${c}-${n}${suf}${g}`; this.textures.exists(k) || L.spritesheet(k, `assets/pixel-art/characters/${c}-${n}${suf}${g}.png`, { frameWidth: 128, frameHeight: 128 }) }
@@ -25691,3 +25691,45 @@ const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9},druid:{t:[0,1,2,3
  if(sp>20&&k!==this.__hdK&&(k===0||k===Math.round(N/2)))this.scene.effectsRef?.burstTinted(t.x+(k?4:-4),t.y+12,9076582,2);this.__hdK=sp>20?k:-1}catch(e){}return r}}
 
 /*__HERODIRS__*/
+/*__RUBRO__*/
+/* ══ Armadura da Lua Rubra — armadura do ferreiro só para o Arqueiro (p216.66) ═════════════════════════════════
+   • Aba ARMADURAS da forja (Pedra Cobalto, durabilidade em runs); só aparece para o Arqueiro.
+   • Visual (arte de referência do Rafael: samurai arqueiro diante da lua vermelha): ō-yoroi laqueada de vermelho
+     com amarração preta e acabamento dourado, kabuto preto com chifres longos curvos, máscara de oni vermelha com
+     presas, ombreiras vermelhas em camadas, mangas pretas, caneleiras vermelhas, arco yumi dourado e aljava com
+     flechas de penas vermelhas (folhas archer-rubro-body/-dirs/-sk/-fish.png, PixelLab: transfer-outfit-v2 para
+     a pose base e as direções, animate-pixminimax para as animações; build_armaduras_unicas.py rubro e
+     build_pesca_herois.py).                                                                                       */
+const __RB_ID = "armor_forge_rubro", __RB_SHEET = "mk4b-archer-rubro";
+__FARM[__RB_ID] = {
+  name: ["Armadura da Lua Rubra", "Crimson Moon Armor", "Armadura de la Luna Carmesí"], price: 180, cls: "ARCHER",
+  main: 0xb3202a, trim: 0xd6a851, glow: 0xff5a4a, pulse: 0, fx: "none",
+  stats: { defense: 8, maxHp: 5, damage: 4, critChance: 5 },
+  st: ["+8 DEFESA · +5 VIDA · +4 DANO · +5% CRÍTICO", "+8 DEFENSE · +5 HEALTH · +4 DAMAGE · +5% CRIT"],
+  desc: "Laca vermelha como a lua das noites de guerra e a máscara de um oni que sorri para o alvo. Dizem que suas flechas só voam quando a lua sangra.",
+};
+{
+  const a = __FARM[__RB_ID];
+  Xt[__RB_ID] = { name: a.name[0], type: "armor", slot: "armor", icon: "icon-armor", minRarity: "UNIQUE",
+    stats: a.stats, value: a.price * 2, tint: a.main, forgeArmor: __RB_ID, uniqueForge: !0, breaksOnDeath: !0, desc: a.desc + " Quebra-se se morrer na run." };
+  try { _s["item." + __RB_ID] = a.name[1]; Io["item." + __RB_ID] = a.name[2] } catch (e) {}
+  try { window.__FORGE_RUNS && (window.__FORGE_RUNS[__RB_ID] = 4) } catch (e) {}
+}
+{const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
+  this.textures.exists(__RB_SHEET) || L.spritesheet(__RB_SHEET, "assets/pixel-art/characters/archer-rubro-body.png", { frameWidth: 128, frameHeight: 128 });
+  L.setPath(op) } catch (e) {} return r }}
+function __rbSheet(sc) {
+  if (!sc.textures.exists(__RB_SHEET)) return null;
+  try { sc.textures.get(__RB_SHEET).setFilter(j.Textures.FilterMode.NEAREST) } catch (e) {}
+  const base = "mk4b-archer-t0-";
+  for (const A0 of sc.anims.anims?.getArray?.() ?? []) {
+    if (!A0.key.startsWith(base)) continue;
+    const nk = __RB_SHEET + "-" + A0.key.slice(base.length);
+    sc.anims.exists(nk) || sc.anims.create({ key: nk, frames: A0.frames.map(f => ({ key: __RB_SHEET, frame: f.frame.name })), frameRate: A0.frameRate, repeat: A0.repeat });
+  }
+  return __RB_SHEET;
+}
+{const SK0 = __skinFor; __skinFor = function (scene, skin, classId, eq) {
+  try { if (skin && classId === "ARCHER" && eq?.armor?.id === __RB_ID) { const k = __rbSheet(scene); if (k) return { ...skin, sheet: k, __farm: __FARM[__RB_ID] } } } catch (e) {}
+  return SK0.apply(this, arguments) }}
+/*__RUBRO__*/

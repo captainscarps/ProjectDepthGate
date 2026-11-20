@@ -1,4 +1,18 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.65 · cache ded-web-v6.14.6-antitrava2)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.66 · cache ded-web-v6.14.7-lua-rubra)
+
+P216.66 — ARMADURA DA LUA RUBRA (Arqueiro, armadura do Ferreiro) (PixelLab)
+· Nova armadura da forja só para o Arqueiro, feita a partir da arte de referência do Rafael (samurai arqueiro diante
+  da lua vermelha): ō-yoroi laqueada de vermelho com amarração preta e acabamento dourado, kabuto preto com chifres
+  longos, máscara de oni vermelha com presas, ombreiras em camadas, mangas pretas, caneleiras vermelhas, arco yumi
+  dourado e aljava de penas vermelhas. Ferreiro → Armaduras: 180 Pedras Cobalto · +8 defesa · +5 vida · +4 dano ·
+  +5% crítico · dura 4 runs no Infinito. Sem capa extra (como o Templário). Ícone HD próprio no atlas items-hd.
+· Arte completa: perfil (parado, andar, correr, tiro, disparo, dano, morte), as 4 habilidades (Tiro Carregado,
+  Cerca de Flechas, Disparo Múltiplo, Repulsão), andar e correr de frente, de costas e nas diagonais, e pesca.
+  Pose base e direções com transfer-outfit-v2 sobre o Arqueiro (mesmo tamanho e pé), animações com
+  animate-pixminimax. Fontes scripts/art-src/armaduras/rubro-* e pesca/archer-rubro-*; folhas archer-rubro-body/
+  -dirs/-sk/-fish.png (build_armaduras_unicas.py rubro, build_pesca_herois.py, build_herois_nuca.py).
+· scripts/pixellab_api.py: cliente da API v2 do PixelLab (chave PIXELLAB_API_KEY no .env, fora do Git).
+  Código: scripts/source/rubro.js (/*__RUBRO__*/).
 
 P216.65 — TRAVAMENTOS AO VOLTAR AO REFÚGIO (modo infinito)
 · Pintura das armaduras sem travar: cada armadura colorida/lendária/da forja nova pintava na hora as folhas grandes

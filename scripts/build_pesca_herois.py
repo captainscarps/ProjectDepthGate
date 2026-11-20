@@ -23,11 +23,11 @@ BAD = {"archer": {"reel": (0, 1), "catch": (0, 1)}, "necromancer": {"reel": (1,)
        "warrior-saqueador": {"cast": (5,), "catch": (0,)}, "warrior-dh": {"reel": (0, 1)},
        "warrior-nh": {"reel": (0, 1)}, "necromancer-nh": {"wait": (1, 2), "reel": (0, 1, 2), "catch": (0,)},
        "mage-nh": {"reel": (0, 1)}, "warrior-templario": {"reel": (0, 1), "catch": (0,)}, "shaman-penas": {"catch": (0,)}, "rogue-esmeralda": {"reel": (0, 1, 2), "catch": (0, 1)}, "berserker-oni": {"reel": (1, 2, 5), "catch": (0, 1, 2, 6)}, "berserker-ronin": {"cast": (4,), "reel": (1, 2), "catch": (0, 1, 5, 6, 7)}, "druid-corvo": {"reel": (0, 1, 2, 3, 4, 5, 6, 7), "catch": (0, 1)}, "druid-selvagem": {"reel": (0, 1, 2, 3, 4, 5, 6, 7), "catch": (0, 1, 2, 3)}, "hunter-lobo": {"reel": (0, 1, 2, 3, 4, 5, 6, 7), "catch": (0, 1, 2, 3)}, "rogue-nh": {"catch": (0, 1, 2)}, "hunter-nh": {"catch": (4, 5)}}
-UNLINE = {"druid-corvo", "druid-selvagem", "hunter-lobo"}
+UNLINE = {"druid-corvo", "druid-selvagem", "hunter-lobo", "archer-rubro"}
 CLS = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"]
 # p216.51: armaduras únicas e cabeça descoberta (lendárias) — folha própria <variante>-fish.png, alinhada à folha
 # de perfil da variante (<variante>-body.png)
-VARS = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin", "druid-corvo", "druid-selvagem", "hunter-lobo"] + \
+VARS = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin", "druid-corvo", "druid-selvagem", "hunter-lobo", "archer-rubro"] + \
        [c + "-nh" for c in ["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"]]
 
 def shrink(fr):
