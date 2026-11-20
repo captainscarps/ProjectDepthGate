@@ -37,7 +37,7 @@ function __qNpc(S, key, x, y, o = {}) {
   const idle = o.idle ?? key + "-idle", talk = o.talk ?? key + "-talk";
   S.anims.exists(idle) && s.play(idle);
   o.tint && s.setTint(o.tint); o.alpha != null && s.setAlpha(o.alpha);
-  const sh = S.add.ellipse(x, y, 24 * (o.scale ?? 1) + 6, 7, 0, o.ghost ? .12 : .32).setDepth(y - 1);
+  const sh = S.add.ellipse(x, y, 24 * (o.shw ?? o.scale ?? 1) + 6, 7, 0, o.ghost ? .12 : .32).setDepth(y - 1);
   let gl = null;
   if (o.ghost) { gl = S.add.image(x, y - 22, "light").setBlendMode(j.BlendModes.ADD).setTint(0x7ac8ff).setScale(.2).setAlpha(.35).setDepth(y + 1); S.tweens.add({ targets: s, y: y - 4, duration: 1400, yoyo: !0, repeat: -1, ease: "Sine.easeInOut" }) }
   const U = () => {

@@ -17,7 +17,7 @@ function __gtAnims(S) {
   for (const t in __GT_TEX) { mk(t + "-idle", t, 0, 7, 6); mk(t + "-walk", t, 11, 11, 13); mk(t + "-run", t, 22, 10, 17); mk(t + "-hiss", t, 33, 4, 7, 0) }
   mk("aprendiz-idle", "aprendiz", 50, 6, 6); mk("aprendiz-scared", "aprendiz", 0, 6, 6); mk("aprendiz-walk", "aprendiz", 10, 10, 12); mk("aprendiz-run", "aprendiz", 20, 10, 15);
   mk("aprendiz-hurt", "aprendiz", 30, 3, 10, 0); mk("aprendiz-dead", "aprendiz", 40, 4, 7, 0); mk("aprendiz-talk", "aprendiz", 50, 6, 8);
-  mk("alline-idle", "alline", 0, 7, 6); mk("alline-idle2", "alline", 12, 7, 6); mk("alline-walk", "alline", 24, 12, 12); mk("alline-talk", "alline", 36, 8, 8); mk("alline-special", "alline", 48, 7, 8, 0);
+  mk("alline-idle", "alline", 0, 7, 6); mk("alline-idle2", "alline", 12, 7, 6); mk("alline-walk", "alline", 24, 8, 8); mk("alline-talk", "alline", 36, 8, 8); mk("alline-special", "alline", 48, 7, 8, 0);
 }
 /* segue o herói pelo caminho que ele fez (migalhas), então não atravessa parede */
 function __qFollow(S, spr, o = {}) {
@@ -110,7 +110,7 @@ function __gtHub(S, arrive) {
     const lines = [L3("A casa nunca esteve tão cheia de pelo. E de felicidade.", "The house has never been this full of fur. Or of happiness.", "La casa nunca estuvo tan llena de pelo. Ni de felicidad."), L3("Cuide bem do Ollie. Ele gosta de peixe e de ouro, nessa ordem.", "Take good care of Ollie. He likes fish and gold, in that order.", "Cuida bien a Ollie. Le gustan el pescado y el oro, en ese orden.")];
     __dlg(S, [__GT.M(lines[(Math.random() * lines.length) | 0], "smile")]);
   };
-  const npc = __qNpc(S, "alline", mx, my, { scale: .62, label: L3("Falar com a Alline", "Talk to Alline", "Hablar con Alline"), onTalk: talk });
+  const npc = __qNpc(S, "alline", mx, my, { scale: .2473, shw: .62, label: L3("Falar com a Alline", "Talk to Alline", "Hablar con Alline"), onTalk: talk });
   if (!npc) return;
   S.__gtNpc = npc;
   S.events.once("shutdown", () => { S.__gtNpc = null; S.__gtCats = null });
@@ -290,7 +290,7 @@ function __gtPet(S) {
       const L = this.load, op = L.path, D = "assets/pixel-art/npc/"; L.setPath("");
       for (const t in __GT_TEX) this.textures.exists(t) || L.spritesheet(t, D + t + ".png", { frameWidth: __GT_TEX[t], frameHeight: 50 });
       this.textures.exists("aprendiz") || L.spritesheet("aprendiz", D + "aprendiz.png", { frameWidth: 92, frameHeight: 66 });
-      this.textures.exists("alline") || L.spritesheet("alline", D + "alline.png", { frameWidth: 46, frameHeight: 72 });
+      this.textures.exists("alline") || L.spritesheet("alline", D + "alline.png", { frameWidth: 120, frameHeight: 180 });
       for (const ex of ["talk", "calm", "smile", "sadness", "aggression", "special"]) this.textures.exists(`alline-p-${ex}`) || L.image(`alline-p-${ex}`, `${D}alline-p-${ex}.png`);
       for (const ex of ["talk", "calm", "smile", "sadness", "aggression", "special"]) this.textures.exists(`aprendiz-p-${ex}`) || L.image(`aprendiz-p-${ex}`, `${D}aprendiz-p-${ex}.png`);
       L.setPath(op);

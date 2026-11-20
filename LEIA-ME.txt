@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.44 · cache ded-web-v6.12.5-guardia-rei)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.45 · cache ded-web-v6.12.6-npcs)
+
+P216.45 — FERREIRO RAFAEL E ALLINE REFEITOS (PixelLab)
+· Rostos iguais aos retratos das falas: Rafael de cabelo grisalho penteado para trás, óculos redondos, barba
+  escura com fios brancos e avental de couro; Alline de cabelo ruivo ondulado, coroa de folhas, sardas, brinco e
+  túnica oliva com bordas douradas.
+· Folhas em resolução ~2,5× maior (npc/ferreiro.png em quadros de 192×192; npc/alline.png em 120×180), nas
+  mesmas posições de quadro; o jogo usa escala menor, então ficam do mesmo tamanho e mais nítidos. A caminhada da
+  Alline passou a ter 8 quadros. Montagem: python3 scripts/build_npcs_pixellab.py (fontes scripts/art-src/npcs/).
 
 P216.44 — GUARDIÃ E REI REFEITOS (PixelLab)
 · Novas folhas story/guardia-sp-idle/-talk.png e rei-sp-idle/-talk.png a partir das imagens de referência (Guardiã
