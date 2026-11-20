@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.69 · cache ded-web-v6.15.0-javali-lobisomem)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.70 · cache ded-web-v6.15.1-barco)
+
+P216.70 — BARCO DO PRÓLOGO COM O HERÓI REMANDO (Guerreiro primeiro) (PixelLab)
+· O barco do prólogo (e da volta, no epílogo) era uma imagem vista de cima, vazia, que só girava. Agora, para o
+  Guerreiro, é um barco de madeira no estilo novo com o herói sentado remando: 8 direções (leste, sudeste, sul,
+  nordeste e norte desenhados; o oeste é o espelho) e a remada animada enquanto o jogador rema (parado, fica na pose).
+  Ao desembarcar no píer o barco fica vazio, com os remos dentro; ao embarcar na volta o herói reaparece remando.
+· Arte: generate-image-v2 (barco + Guerreiro de referência), generate-8-rotations-v2, edit-images-v2 (barco vazio)
+  e animate-pixminimax (remada em cada direção). Fontes scripts/art-src/barco/; folhas assets/pixel-art/barco/
+  barco-<classe>.png e barco-vazio.png (scripts/build_barco.py). As outras classes continuam com o barco antigo até
+  ganharem a folha delas (lista __BARCO em scripts/source/arctic-prologue.js).
 
 P216.69 — DRUIDA: FORMA DE JAVALI E FORMA DE LOBISOMEM REFEITAS (PixelLab)
 · As duas formas antigas (desenhadas sobre a arte antiga, em escala menor) foram refeitas na arte nova, no mesmo
