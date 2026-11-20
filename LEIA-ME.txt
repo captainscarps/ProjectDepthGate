@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.52 · cache ded-web-v6.13.3-templario)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.53 · cache ded-web-v6.13.4-penas)
+
+P216.53 — VESTES DA PENA SAGRADA (Araí, armadura do Ferreiro) (PixelLab)
+· Nova armadura da forja só para a Araí (Xamã): grande cocar de penas brancas e marrons, cabelo solto, colar de
+  osso, top e tanga de camurça com franjas, braçadeiras de contas, perneiras com pele; mantém a lança.
+· Ferreiro → aba Armaduras: 170 Pedras Cobalto · +8 defesa · +6 vida · +4 dano (quebra se morrer na run).
+· Arte completa: perfil (parado, andar, correr, ataque de lança, feitiço, dano, morte), habilidades (Raízes da
+  Jurema, Dardos de Curare, Dança dos Espíritos, Garra da Onça), andar e correr nas direções e pesca.
+· Código: scripts/source/penas.js (bloco /*__PENAS__*/). Arte: build_armaduras_unicas.py penas (novo: <nome>-ref.png
+  mede o tamanho pela heroína sem o cocar) e build_pesca_herois.py (shaman-penas-fish.png).
 
 P216.52 — ARMADURA DO TEMPLÁRIO (Guerreiro, lendária) (PixelLab)
 · Nova armadura lendária só do Guerreiro, com visual próprio: capuz de couro, barba escura, cota de malha, manto de

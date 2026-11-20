@@ -26,6 +26,7 @@ ARM = {
     "saqueador": ("warrior", WAR_SK, None),
     "dh": ("warrior", WAR_SK, None),
     "templario": ("warrior", WAR_SK, None),                                            # p216.52: Armadura do Templário
+    "penas": ("shaman", {"atk": "attack", "cast": "cast"}, None),                      # p216.53: Vestes da Pena Sagrada (Araí)
 }
 DECAPE = {"nh-warrior"}                            # (o preto da armadura do Caçador de Dragão confundia o filtro de capa)
 FLOAT = {"saqueador"}                       # nas direções a IA deixou uma espada solta flutuando acima da cabeça
@@ -94,7 +95,10 @@ for nm, (cls, skrows, gtest) in ARM.items():
     hero0 = Image.open(os.path.join(OUT, f"{cls}-pack-t0-body.png")).convert("RGBA").crop((0, 0, S, S))
     hx, hy = bbox(hero0); HH, OX = hy.max() - hy.min(), hx.mean()
     ref = frames(nm, "idle")[0]
-    r0 = shrink(ref, S); rx, ry = bbox(r0)
+    # <nome>-ref.png: a imagem do herói que a IA repintou (mesmo tamanho e lugar) — mede por ela quando a roupa
+    # nova muda o contorno (o cocar de penas da Araí deixaria a heroína menor)
+    rp = os.path.join(SRC, f"{nm}-ref.png"); meas = Image.open(rp).convert("RGBA").crop((0, 0, F, F)) if os.path.exists(rp) else ref
+    r0 = shrink(meas, S); rx, ry = bbox(r0)
     size = round(S * HH / (ry.max() - ry.min()))                       # mesmo tamanho do herói parado
     base = mean_col(shrink(ref, size))
     def prep(fr, prev):
@@ -103,7 +107,7 @@ for nm, (cls, skrows, gtest) in ARM.items():
         return f
     def place(f, dx, dy):
         c = Image.new("RGBA", (S, S)); c.paste(f, (dx, dy), f); return c
-    p0 = prep(ref, None); px_, py_ = bbox(p0)
+    p0 = prep(ref, None); px_, py_ = bbox(shrink(meas, size))
     DX, DY = round(OX - px_.mean()), FOOT - py_.max()
     # ── perfil: mesmo mapa do herói ──
     I, W, R, K, C, H, D = (frames(nm, k) for k in ("idle", "walk", "run", "attack", "cast", "hurt", "death"))
