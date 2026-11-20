@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.56 · cache ded-web-v6.13.7-templario-capa)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.57 · cache ded-web-v6.13.8-esmeralda)
+
+P216.57 — SEDAS DE ESMERALDA (Ladina, armadura do Ferreiro) (PixelLab)
+· Nova armadura da forja só para a Ladina: dançarina-assassina de cabelo preto longo, diadema dourado, corpete preto
+  e dourado, mangas e saia longa de seda verde-esmeralda com correntes douradas, perneiras pretas e douradas; mantém
+  as duas adagas curvas. Ferreiro → Armaduras: 170 Pedras Cobalto · +6 defesa · +4 vida · +6% crítico.
+· Arte completa: perfil (parada, andar, correr, golpe, giro, dano, morte), as 5 habilidades (Leque de Facas,
+  Apunhalada, Bomba de Fumaça, Dança das Lâminas, Marca), andar e correr nas direções e pesca.
+· Código: scripts/source/esmeralda.js (bloco /*__ESMERALDA__*/). Arte: build_armaduras_unicas.py esmeralda e
+  build_pesca_herois.py (rogue-esmeralda-fish.png); fontes em scripts/art-src/armaduras/esmeralda-* e pesca/.
 
 P216.56 — ARMADURA DO TEMPLÁRIO SEM A CAPA EXTRA
 · A capa desenhada pelo jogo (raras/épicas/lendárias) não aparece mais com a Armadura do Templário (forja ou drop):
