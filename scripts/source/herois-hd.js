@@ -3,7 +3,8 @@
    escala menor para que fiquem do mesmo tamanho no jogo (mais nítidos). Com o sprite preso pelo meio, a escala
    menor subia o pé ~11 px: aqui o pé volta para a mesma altura dos outros heróis ("baseScale" no json = escala
    antiga). As formas do Druida (javali e lobisomem) e as Vestes do Vendaval da Maga continuam na escala antiga.                   */
-const __HD_OLD = /-(javali|lobisomem)$/;   // p216.41: Vendaval, Ossário, Saqueador e Caçador de Dragão refeitos na arte nova      // folhas desenhadas sobre a arte antiga (formas do Druida, Vendaval, Caçador de Dragão, Saqueador)
+const __HD_OLD = /-(__nenhuma__)$/;   // p216.69: javali e lobisomem refeitos na arte nova (antes: /-(javali|lobisomem)$/)
+   // p216.41: Vendaval, Ossário, Saqueador e Caçador de Dragão refeitos na arte nova      // folhas desenhadas sobre a arte antiga (formas do Druida, Vendaval, Caçador de Dragão, Saqueador)
 /* deslocamento do pé que este módulo aplica depois do update (a capa, calculada no meio do update, precisa somar) */
 function __hdOff(V) {
   const L = V?.mk2Layout, m = V?.mk2; if (!L?.baseScale || !m || __HD_OLD.test(V.animPrefix || "")) return 0;

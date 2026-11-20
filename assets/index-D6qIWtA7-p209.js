@@ -24892,7 +24892,8 @@ function __sqSheet(sc) {
    escala menor para que fiquem do mesmo tamanho no jogo (mais nítidos). Com o sprite preso pelo meio, a escala
    menor subia o pé ~11 px: aqui o pé volta para a mesma altura dos outros heróis ("baseScale" no json = escala
    antiga). As formas do Druida (javali e lobisomem) e as Vestes do Vendaval da Maga continuam na escala antiga.                   */
-const __HD_OLD = /-(javali|lobisomem)$/;   // p216.41: Vendaval, Ossário, Saqueador e Caçador de Dragão refeitos na arte nova      // folhas desenhadas sobre a arte antiga (formas do Druida, Vendaval, Caçador de Dragão, Saqueador)
+const __HD_OLD = /-(__nenhuma__)$/;   // p216.69: javali e lobisomem refeitos na arte nova (antes: /-(javali|lobisomem)$/)
+   // p216.41: Vendaval, Ossário, Saqueador e Caçador de Dragão refeitos na arte nova      // folhas desenhadas sobre a arte antiga (formas do Druida, Vendaval, Caçador de Dragão, Saqueador)
 /* deslocamento do pé que este módulo aplica depois do update (a capa, calculada no meio do update, precisa somar) */
 function __hdOff(V) {
   const L = V?.mk2Layout, m = V?.mk2; if (!L?.baseScale || !m || __HD_OLD.test(V.animPrefix || "")) return 0;
@@ -25073,7 +25074,7 @@ function __skhKey(V) { return V.animPrefix + "-sk" }
    • Lendárias: a troca do capacete pela cabeça descoberta usava máscaras da arte antiga e estragava a arte nova;
      nos heróis refeitos ela fica desligada (a capa continua, presa na nuca nova de mods/<classe>-mods.json).  */
 /* folhas extras das armaduras únicas refeitas (scripts/build_armaduras_unicas.py) */
-const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0], ["warrior", "templario", 0], ["shaman", "penas", 0], ["rogue", "esmeralda", 0], ["berserker", "oni", 0], ["berserker", "ronin", 0], ["druid", "corvo", 0], ["druid", "selvagem", 0], ["druid", "urso", 0], ["hunter", "lobo", 0], ["archer", "rubro", 0], ["druid", "tigre", 0], ["druid", "pantera", 0]];
+const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0], ["warrior", "templario", 0], ["shaman", "penas", 0], ["rogue", "esmeralda", 0], ["berserker", "oni", 0], ["berserker", "ronin", 0], ["druid", "corvo", 0], ["druid", "selvagem", 0], ["druid", "urso", 0], ["hunter", "lobo", 0], ["archer", "rubro", 0], ["druid", "tigre", 0], ["druid", "pantera", 0], ["druid", "javali", 0], ["druid", "lobisomem", 0]];
 {const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
   for (const [c, n, gl] of __HA_UNI) for (const suf of ["-dirs", "-sk"]) for (const g of gl ? ["", "-glow"] : [""]) {
     const k = `mk4b-${c}-${n}${suf}${g}`; this.textures.exists(k) || L.spritesheet(k, `assets/pixel-art/characters/${c}-${n}${suf}${g}.png`, { frameWidth: 128, frameHeight: 128 }) }
@@ -25779,6 +25780,8 @@ try { __SKH_FX.DRUID.TIGRE_FORM = __SKH_FX.DRUID.PANTERA_FORM = ["d-shift", "c",
 {const SH = Yh.prototype.execShapeshift; Yh.prototype.execShapeshift = function (i) {
   const F = Object.values(__DFL).find(f => f.form === i?.form);
   const r = SH.apply(this, arguments);
+  // p216.69: o Javali dava o +80% só no dano mágico (o do cajado), mas a forma ataca com as presas (dano físico)
+  try { if (i?.form === "javali" && i.damageMult > 1) { const S = this.scene, St0 = S.stats; if (S.classDef?.basicProjectile?.damageType === "magical") { St0.addBuff("damage", Math.max(1, Math.round((St0.total.damage ?? 1) * (i.damageMult - 1))), 9999); St0.buffs[St0.buffs.length - 1].__form = !0; St0.recompute?.() } } } catch (e) {}
   if (!F) return r;
   try {
     const S = this.scene, V = S.playerVisual, St0 = S.stats, tot = St0.total, mk = () => { St0.buffs[St0.buffs.length - 1].__form = !0 };

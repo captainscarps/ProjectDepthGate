@@ -43,6 +43,8 @@ try { __SKH_FX.DRUID.TIGRE_FORM = __SKH_FX.DRUID.PANTERA_FORM = ["d-shift", "c",
 {const SH = Yh.prototype.execShapeshift; Yh.prototype.execShapeshift = function (i) {
   const F = Object.values(__DFL).find(f => f.form === i?.form);
   const r = SH.apply(this, arguments);
+  // p216.69: o Javali dava o +80% só no dano mágico (o do cajado), mas a forma ataca com as presas (dano físico)
+  try { if (i?.form === "javali" && i.damageMult > 1) { const S = this.scene, St0 = S.stats; if (S.classDef?.basicProjectile?.damageType === "magical") { St0.addBuff("damage", Math.max(1, Math.round((St0.total.damage ?? 1) * (i.damageMult - 1))), 9999); St0.buffs[St0.buffs.length - 1].__form = !0; St0.recompute?.() } } } catch (e) {}
   if (!F) return r;
   try {
     const S = this.scene, V = S.playerVisual, St0 = S.stats, tot = St0.total, mk = () => { St0.buffs[St0.buffs.length - 1].__form = !0 };

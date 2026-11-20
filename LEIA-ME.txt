@@ -1,4 +1,19 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.68 · cache ded-web-v6.14.9-felinos4patas)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.69 · cache ded-web-v6.15.0-javali-lobisomem)
+
+P216.69 — DRUIDA: FORMA DE JAVALI E FORMA DE LOBISOMEM REFEITAS (PixelLab)
+· As duas formas antigas (desenhadas sobre a arte antiga, em escala menor) foram refeitas na arte nova, no mesmo
+  padrão do Urso, do Tigre e da Pantera:
+  · Javali: javali-selvagem de quatro patas, pelo marrom eriçado, crina preta, presas curvas e olhos vermelhos.
+  · Lobisomem: lobisomem enorme de pé, pelo cinza-escuro, olhos âmbar, garras e cauda, com as braçadeiras e o colar
+    de folhas do Druida.
+  Arte completa: parado, andar, correr, golpe (chifrada com as presas / garrada), grito/uivo (habilidades), dano,
+  morte e andar/correr de frente, de costas e nas diagonais (antes as formas não tinham direções nem golpes próprios).
+  Folhas druid-javali-* e druid-lobisomem-* (build_armaduras_unicas.py javali lobisomem; fontes art-src/armaduras/
+  javali-*, lobisomem-*). herois-hd.js: as duas saem da "escala antiga".
+· Ícones novos em medalhão, no mesmo estilo do Tigre e da Pantera (icons/JAVALI_FORM.png, LOBISOMEM_FORM.png e
+  icon-javali-form / icon-lobisomem-form).
+· Javali: o +80% de dano agora vale também para o dano físico (a forma ataca com as presas, não com o cajado).
+· Atributos, custos e recargas das duas formas continuam os mesmos.
 
 P216.68 — TIGRE BRANCO E PANTERA NEGRA EM FORMA ANIMAL DE VERDADE (PixelLab)
 · As duas formas novas do Druida agora são os animais de quatro patas (antes ficavam de pé como o Urso): tigre-branco
