@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.58 · cache ded-web-v6.13.9-forja-rolagem)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.59 · cache ded-web-v6.14.0-oni)
+
+P216.59 — ARMADURA DO ONI (Samurai, armadura do Ferreiro) (PixelLab)
+· Nova armadura da forja só para o Samurai: elmo-máscara de oni prateado com chifres dourados e olhos verdes,
+  peitoral e ombreiras de prata gravada com dourado, mangas vermelho-escuras, saiote de placas preto e dourado,
+  caneleiras de prata e sandálias de palha; katana na cintura. Ferreiro → Armaduras: 180 Pedras Cobalto ·
+  +10 defesa · +6 vida · +4 dano.
+· Arte completa: perfil, as 5 habilidades (Saque Relâmpago, Giro, Golpe Pesado, Aparar, Kiai), andar e correr nas
+  direções (de costas refeito: a IA virava a máscara para a câmera) e pesca.
+· Código: scripts/source/oni.js (bloco /*__ONI__*/). Arte: build_armaduras_unicas.py oni e build_pesca_herois.py.
 
 P216.58 — FORJA COM ROLAGEM E PRÉVIA NO CURSOR DO CONTROLE
 · A lista da forja (Armas, Armaduras, Encomendas) não passa mais por cima do saldo de Pedra Cobalto: mostra só as

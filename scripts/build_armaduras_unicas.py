@@ -28,6 +28,7 @@ ARM = {
     "templario": ("warrior", WAR_SK, None),                                            # p216.52: Armadura do Templário
     "penas": ("shaman", {"atk": "attack", "cast": "cast"}, None),                      # p216.53: Vestes da Pena Sagrada (Araí)
     "esmeralda": ("rogue", {"atk": "attack", "cast": "cast"}, None),                   # p216.57: Sedas de Esmeralda (Ladina)
+    "oni": ("berserker", {"atk": "attack", "cast": "cast"}, None),                     # p216.59: Armadura do Oni (Samurai)
 }
 DECAPE = {"nh-warrior"}                            # (o preto da armadura do Caçador de Dragão confundia o filtro de capa)
 FLOAT = {"saqueador"}                       # nas direções a IA deixou uma espada solta flutuando acima da cabeça
