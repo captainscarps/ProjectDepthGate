@@ -5,17 +5,18 @@
    Os bônus extras (dano / crítico) duram enquanto a forma durar (saem junto com as outras marcas __form).
    • Tigre Branco: 6 s · +60% de dano e +20% de velocidade · golpes de garra (corpo a corpo, como as outras formas).
    • Pantera Negra: 6 s · +45% de velocidade, 30% de esquiva e +25% de crítico.
-   Arte (PixelLab): o Druida vira um tigre-branco / uma pantera-negra de pé, do mesmo jeito do Urso — parado, andar,
-   correr, garrada, rugido (usado ao transformar), dano, morte e andar/correr nas quatro direções; folhas
+   Arte (PixelLab): o Druida vira o ANIMAL de verdade, de quatro patas (p216.68; antes ficava de pé como o Urso) —
+   parado, andar, correr (galope), bote com a pata, rugido (habilidades), dano, morte e andar/correr nas quatro
+   direções; folhas
    druid-tigre-* e druid-pantera-* (build_armaduras_unicas.py tigre / pantera; fontes scripts/art-src/armaduras/
    tigre-* e pantera-*). Ícones próprios: assets/pixel-art/ui/icons/TIGRE_FORM.png e PANTERA_FORM.png (ix-<ID>). */
 const __DFL = {
-  TIGRE_FORM: { form: "tigre", sheet: "mk4b-druid-tigre", big: 1.1, tint: 0xd8ecff,
+  TIGRE_FORM: { form: "tigre", sheet: "mk4b-druid-tigre", big: 1, tint: 0xd8ecff,
     pt: ["Forma de Tigre Branco", "Vira tigre-branco por 6s: +60% de dano e +20% de velocidade, com garras. Recarrega 10s depois de voltar."],
     en: ["White Tiger Form", "Become a white tiger for 6s: +60% damage and +20% speed, with claws. Recharges 10s after returning."],
     es: ["Forma de Tigre Blanco", "Te conviertes en tigre blanco durante 6s: +60% de daño y +20% de velocidad, con garras. Recarga 10s después de volver."],
     def: { cost: 25, cooldown: 16, duration: 6, speedMult: 1.2, damageMult: 1, dmgUp: .6 } },
-  PANTERA_FORM: { form: "pantera", sheet: "mk4b-druid-pantera", big: 1.08, tint: 0x6a4aa8,
+  PANTERA_FORM: { form: "pantera", sheet: "mk4b-druid-pantera", big: 1, tint: 0x6a4aa8,
     pt: ["Forma de Pantera Negra", "Vira pantera-negra por 6s: +45% de velocidade, 30% de chance de esquivar e +25% de crítico. Recarrega 10s depois de voltar."],
     en: ["Black Panther Form", "Become a black panther for 6s: +45% speed, 30% dodge chance and +25% crit. Recharges 10s after returning."],
     es: ["Forma de Pantera Negra", "Te conviertes en pantera negra durante 6s: +45% de velocidad, 30% de esquiva y +25% de crítico. Recarga 10s después de volver."],
@@ -45,8 +46,8 @@ try { __SKH_FX.DRUID.TIGRE_FORM = __SKH_FX.DRUID.PANTERA_FORM = ["d-shift", "c",
   if (!F) return r;
   try {
     const S = this.scene, V = S.playerVisual, St0 = S.stats, tot = St0.total, mk = () => { St0.buffs[St0.buffs.length - 1].__form = !0 };
-    const dk = S.classDef?.basicProjectile?.damageType === "magical" ? "magicDamage" : "damage";
-    if (i.dmgUp) { St0.addBuff(dk, Math.max(1, Math.round((tot[dk] ?? 1) * i.dmgUp)), 9999); mk() }
+    // a garrada é corpo a corpo (dano físico) e as habilidades do Druida usam o mágico: o bônus vale para os dois
+    if (i.dmgUp) for (const k of ["damage", "magicDamage"]) { St0.addBuff(k, Math.max(1, Math.round((tot[k] ?? 1) * i.dmgUp)), 9999); mk() }
     if (i.critUp) { St0.addBuff("critChance", i.critUp, 9999); mk() }
     St0.recompute?.();
     const k = __dfSheet(S, F.sheet); k && V?.setSkin?.({ sheet: k });

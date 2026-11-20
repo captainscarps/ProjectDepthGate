@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.67 · cache ded-web-v6.14.8-felinos)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.68 · cache ded-web-v6.14.9-felinos4patas)
+
+P216.68 — TIGRE BRANCO E PANTERA NEGRA EM FORMA ANIMAL DE VERDADE (PixelLab)
+· As duas formas novas do Druida agora são os animais de quatro patas (antes ficavam de pé como o Urso): tigre-branco
+  de listras pretas e olhos azuis, pantera-negra de pelo preto azulado e olhos amarelo-esverdeados.
+· Arte refeita do zero: pose de perfil com generate-image-v2 (estilo da arte do Urso), as 8 direções com
+  generate-8-rotations-v2 e as animações com animate-pixminimax — parado, andar (passo de felino), correr (galope),
+  bote com a pata, rugido (habilidades), dano, morte e andar/correr de frente, de costas e nas diagonais.
+· Tigre Branco: o +60% de dano agora vale para o dano físico (a garrada da forma) e para o mágico (as habilidades).
 
 P216.67 — DRUIDA: FORMA DE TIGRE BRANCO E FORMA DE PANTERA NEGRA (PixelLab)
 · Duas habilidades NOVAS de transformação (Javali, Lobisomem e Urso continuam iguais). Entram como mais uma opção na
