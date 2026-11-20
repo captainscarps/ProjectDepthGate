@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.45 · cache ded-web-v6.12.6-npcs)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.46 · cache ded-web-v6.12.7-ferreiro)
+
+P216.46 — FERREIRO RAFAEL: UM POUCO MAIOR E COM O BRAÇO TATUADO
+· O braço do martelo agora é todo tatuado (manga de tinta escura com chamas, martelo e runas); forjando e
+  conversando foram refeitos com a tatuagem (scripts/art-src/npcs/ferreiro-*.png; a base sem tatuagem ficou no
+  scratchpad). Escala ~12% maior: dentro da forja .2608 → .292, fora .1806 → .2023 (hub-village.js).
 
 P216.45 — FERREIRO RAFAEL E ALLINE REFEITOS (PixelLab)
 · Rostos iguais aos retratos das falas: Rafael de cabelo grisalho penteado para trás, óculos redondos, barba
