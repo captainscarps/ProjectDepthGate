@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.61 · cache ded-web-v6.14.2-corvo)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.62 · cache ded-web-v6.14.3-selvagem)
+
+P216.62 — PINTURA DE GUERRA SELVAGEM (Druida, armadura do Ferreiro) (PixelLab)
+· Segunda armadura da forja do Druida: cabelo preto longo com pequenos chifres, rosto pintado de branco com faixa preta
+  nos olhos, peito nu com pintura de guerra, manto de couro cru com símbolo tribal, faixa verde, saiote de tiras com
+  presas, botas de pele e cajado com folhas. Ferreiro → Armaduras: 160 Pedras Cobalto · +5 defesa · +8 vida · +3 dano
+  · +3 dano mágico. O lobo e o gavião da imagem não entram (o Druida já tem os companheiros nas habilidades).
+· Arte completa: perfil, Raízes, Chamado, Uivo, andar e correr nas direções (diagonal de costas refeita) e pesca.
+  Código: scripts/source/selvagem.js (/*__SELVAGEM__*/).
 
 P216.61 — MANTO DO CORVO-LOBO (Druida, armadura do Ferreiro) (PixelLab)
 · Nova armadura da forja só para o Druida: pele de lobo negro como capuz, cachecol ferrugem, manto longo de penas de
