@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.54 · cache ded-web-v6.13.5-antitrava)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.55 · cache ded-web-v6.13.6-buracos)
+
+P216.55 — CAVALEIRO SEM BURACOS (todas as armaduras)
+· Ainda sobravam buracos: (1) o filtro de capa tirava pedaços na borda do corpo — agora só sai o escuro que fica fora
+  do contorno fechado do herói; (2) a própria remoção de fundo da IA tinha comido sombra/armadura escura (ex.: de
+  costas parado, entre o escudo e o quadril) — novo scripts/fix_buracos_herois.py tapa buracos pequenos rodeados de
+  escuro com a cor mais escura vizinha (já existente na folha, as pinturas de armadura continuam valendo) e, nos
+  quadros listados em FORTE (Cavaleiro de costas parado), buracos maiores acima dos joelhos; (3) pontinhos soltos nas
+  armaduras únicas/lendária sem capacete somem (dust() em build_armaduras_unicas.py).
+· Aplicado em todas as folhas do Cavaleiro: camadas t0…t4, Templário, Saqueador, Caçador de Dragão, lendária sem
+  capacete e pesca. Rodar fix_buracos_herois.py depois de qualquer build_* do Guerreiro.
 
 P216.54 — JOGO NÃO FICA MAIS PARADO AO VOLTAR AO REFÚGIO · BURACOS NA ARMADURA DO CAVALEIRO
 · Trava: às vezes, ao voltar ao Refúgio, a tela ficava parada até apertar START. O laço do Phaser pede o próximo

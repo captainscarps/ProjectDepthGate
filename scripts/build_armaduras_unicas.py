@@ -39,6 +39,15 @@ def solid(im):
     a[~np.isin(lab, [i + 1 for i, s in enumerate(sz) if s >= big * .2])] = 0
     return Image.fromarray(a, "RGBA")
 
+def dust(im, small=30):
+    """p216.54b: pontinhos soltos (sujeira da IA) somem"""
+    a = np.array(im); op = a[..., 3] > 0
+    lab, n = ndimage.label(op, structure=np.ones((3, 3)))
+    if n < 2: return im
+    sz = ndimage.sum(op, lab, range(1, n + 1))
+    a[np.isin(lab, [i + 1 for i, s in enumerate(sz) if s < small])] = 0
+    return Image.fromarray(a, "RGBA")
+
 def frames(name, key):
     im = Image.open(os.path.join(SRC, f"{name}-{key}.png")).convert("RGBA")
     return [im.crop((i * F, 0, i * F + F, F)) for i in range(im.width // F)]
@@ -52,17 +61,11 @@ def decape(fr, thr=40):
     tr = a[..., 3] == 0; lab, n = ndimage.label(tr)
     border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
     hole = tr & ~np.isin(lab, list(border)); a[hole] = orig[hole]
-    # p216.54: o que foi tirado e tem corpo dos DOIS lados na mesma linha (até 40 px) era armadura escura, não capa
-    # (de costas a couraça do Cavaleiro é quase preta): volta, para não deixar buracos transparentes no herói
-    for _ in range(6):                          # repete enquanto houver o que voltar
-      keep = a[..., 3] > 0; gone = rm & ~keep
-      if not gone.any(): break
-      for y in np.nonzero(gone.any(axis=1))[0]:
-        k = np.nonzero(keep[y])[0]
-        if not len(k): continue
-        for x in np.nonzero(gone[y])[0]:
-            l = k[k < x]; r = k[k > x]
-            if len(l) and len(r) and x - l[-1] <= 40 and r[0] - x <= 40: a[y, x] = orig[y, x]
+    # p216.54b: só sai o escuro que fica FORA do contorno do corpo (capa pendurada); o que está dentro do contorno
+    # fechado do corpo (couraça escura de costas, sombra entre escudo e perna) volta — sem buracos transparentes
+    body = (a[..., 3] > 0)
+    hull = ndimage.binary_fill_holes(ndimage.binary_closing(np.pad(body, 8), structure=np.ones((3, 3)), iterations=4))[8:-8, 8:-8]
+    back = rm & hull & (orig[..., 3] > 0); a[back] = orig[back]
     return Image.fromarray(a.astype(np.uint8), "RGBA")
 
 def shrink(fr, size):
@@ -115,7 +118,7 @@ for nm, (cls, skrows, gtest) in ARM.items():
     def prep(fr, prev):
         f = shrink(decape(fr) if nm in DECAPE else fr, size)
         if prev is not None and np.abs(mean_col(f) - base).max() > 40: return prev
-        return f
+        return dust(f)
     def place(f, dx, dy):
         c = Image.new("RGBA", (S, S)); c.paste(f, (dx, dy), f); return c
     p0 = prep(ref, None); px_, py_ = bbox(shrink(meas, size))

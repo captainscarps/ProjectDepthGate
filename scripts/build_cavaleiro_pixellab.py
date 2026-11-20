@@ -41,16 +41,11 @@ def decape(fr, thr=48, it=2):
     border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
     hole = tr & ~np.isin(lab, list(border))
     a[hole] = orig[hole]
-    # p216.54: o que foi tirado e tem corpo dos DOIS lados na mesma linha (até 40 px) era armadura escura, não capa
-    for _ in range(6):
-      keep = a[..., 3] > 0; gone = rm & ~keep
-      if not gone.any(): break
-      for y in np.nonzero(gone.any(axis=1))[0]:
-        k = np.nonzero(keep[y])[0]
-        if not len(k): continue
-        for x in np.nonzero(gone[y])[0]:
-            l = k[k < x]; r = k[k > x]
-            if len(l) and len(r) and x - l[-1] <= 40 and r[0] - x <= 40: a[y, x] = orig[y, x]
+    # p216.54b: só sai o escuro que fica FORA do contorno do corpo (capa pendurada); o que está dentro do contorno
+    # fechado do corpo (couraça escura de costas, sombra entre escudo e perna) volta — sem buracos transparentes
+    body = (a[..., 3] > 0)
+    hull = ndimage.binary_fill_holes(ndimage.binary_closing(np.pad(body, 8), structure=np.ones((3, 3)), iterations=4))[8:-8, 8:-8]
+    back = rm & hull & (orig[..., 3] > 0); a[back] = orig[back]
     op = a[..., 3] > 0                                    # sobras soltas
     lab, n = ndimage.label(op)
     if n > 1:
