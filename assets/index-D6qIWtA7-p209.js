@@ -22489,6 +22489,7 @@ function __tvBuild(H) {
    de manchas pretas); um tempo dentro da forja, brincando com o Fumaça (gato cinza). De tempos em tempos vai até
    a porta e troca de lugar; a Mussarela espera na porta. Falar com ela abre a caixa de fala com retrato (voz de
    menina). Arte: scripts/build_olivia.py; falas e voz: scripts/olivia_lines.json + scripts/gravar_valdrak.py. */
+const __OL_K = .4167;   // p216.47: arte nova em 192×192, ~2,4× maior que a antiga (mesmo tamanho no jogo)
 const __OL_L = /*__OLINES__*/{"speakers":{"olivia":{"name":["OLIVIA","OLIVIA","OLIVIA"],"voice":"olivia"}},"scenes":{"o_hi":[["olivia","Oi! Eu sou a Olivia. O Rafael é o meu papai!","Hi! I'm Olivia. Rafael is my daddy!","¡Hola! Soy Olivia. ¡Rafael es mi papá!","smile"],["olivia","Eu adoro brincar com os bichinhos. Eles são os meus melhores amigos.","I love playing with the animals. They're my best friends.","Me encanta jugar con los animalitos. Son mis mejores amigos.","smile"]],"o_out1":[["olivia","Essa é a Mussarela! Ela é branquinha com bolinhas pretas, igual um queijo… quer dizer, quase.","This is Mussarela! She's all white with black spots, like a cheese… well, almost.","¡Esta es Mussarela! Es blanquita con manchitas negras, como un queso… bueno, casi.","special"]],"o_out2":[["olivia","Ei! Cuidado pra não pisar no rabo da Mussarela!","Hey! Careful not to step on Mussarela's tail!","¡Oye! ¡Cuidado con pisarle la cola a Mussarela!","aggression"]],"o_out3":[["olivia","O papai é o Rafael, o ferreiro. Ele bate o martelo bem forte, mas me dá abraço bem de leve.","My daddy is Rafael, the blacksmith. He swings the hammer really hard, but he hugs me really gently.","Mi papá es Rafael, el herrero. Golpea el martillo muy fuerte, pero me abraza muy suavecito.","smile"]],"o_in1":[["olivia","Aqui dentro eu brinco com o Fumaça. Ele dorme perto da fornalha porque é quentinho, por isso ficou cinza!","In here I play with Fumaça. He sleeps by the furnace because it's warm, that's why he turned gray!","Aquí dentro juego con Fumaça. Duerme cerca del horno porque está calentito, ¡por eso quedó gris!","calm"]],"o_in2":[["olivia","Sabia que o papai faz espadas? Mas a coisa mais bonita que ele fez fui eu. Foi ele que disse!","Did you know Daddy makes swords? But the prettiest thing he ever made is me. He said so!","¿Sabías que papá hace espadas? Pero lo más bonito que hizo fui yo. ¡Él lo dijo!","special"]],"o_in3":[["olivia","Eu gosto de todos os bichinhos: o Fumaça, a Mussarela, os patinhos do laguinho… até o sapo!","I like all the animals: Fumaça, Mussarela, the little ducks at the pond… even the frog!","Me gustan todos los animalitos: Fumaça, Mussarela, los patitos del laguito… ¡hasta el sapo!","smile"]],"o_sad":[["olivia","O papai fica preocupado quando você demora pra voltar dos portais. Eu também.","Daddy gets worried when you take long to come back from the gates. Me too.","Papá se preocupa cuando tardas en volver de los portales. Yo también.","sadness"]]}}/*__OLINES_END__*/;
 {
   const P0 = bo.prototype.preload;
@@ -22496,7 +22497,7 @@ const __OL_L = /*__OLINES__*/{"speakers":{"olivia":{"name":["OLIVIA","OLIVIA","O
     const r = P0.apply(this, arguments);
     try {
       const L = this.load, op = L.path, N = "assets/pixel-art/npc/", ex = k => this.textures.exists(k); L.setPath("");
-      ex("olivia") || L.spritesheet("olivia", N + "olivia.png", { frameWidth: 128, frameHeight: 128 });
+      ex("olivia") || L.spritesheet("olivia", N + "olivia.png", { frameWidth: 192, frameHeight: 192 });
       ex("mussarela") || L.spritesheet("mussarela", N + "mussarela.png", { frameWidth: 32, frameHeight: 32 });
       ex("gato-o") || L.spritesheet("gato-o", N + "gato-o.png", { frameWidth: 100, frameHeight: 50 });   // quadros de 100x50 (um gato por quadro)
       for (const e of ["talk", "calm", "smile", "sadness", "aggression", "special"]) ex("olivia-p-" + e) || L.image("olivia-p-" + e, `${N}olivia-p-${e}.png`);
@@ -22515,7 +22516,7 @@ function __olBuild(H) {
   const M = H.M, FI = M.interior, A = H.anims, rnd = Math.random, L3 = __L3, g = M.g;
   if (!FI || !M.house) return;
   const mk = (k, t, fr, rate, rep = -1) => A.exists(k) || A.create({ key: k, frames: A.generateFrameNumbers(t, fr), frameRate: rate, repeat: rep });
-  mk("olivia-run", "olivia", { start: 0, end: 11 }, 14); mk("olivia-jump", "olivia", { start: 15, end: 29 }, 16, 0); mk("olivia-idle", "olivia", { frames: [15] }, 1);
+  mk("olivia-run", "olivia", { start: 0, end: 9 }, 12); mk("olivia-jump", "olivia", { start: 15, end: 29 }, 16, 0); mk("olivia-idle", "olivia", { frames: [15] }, 1);
   mk("olivia-reach", "olivia", { start: 30, end: 33 }, 8, 0);
   ["d", "l", "r", "u"].forEach((d, i) => { mk("mz-w-" + d, "mussarela", { start: i * 6, end: i * 6 + 5 }, 10); mk("mz-i-" + d, "mussarela", { start: 24 + i * 6, end: 24 + i * 6 + 5 }, 5) });
   mk("gato-o-idle", "gato-o", { start: 0, end: 6 }, 6); mk("gato-o-walk", "gato-o", { start: 11, end: 21 }, 13);
@@ -22527,7 +22528,7 @@ function __olBuild(H) {
   const pick = (R, from) => { for (let i = 0; i < 30; i++) { const p = [R.cx + (rnd() * 2 - 1) * R.rx, R.cy + (rnd() * 2 - 1) * R.ry]; if (free(R, p[0], p[1]) && (!from || pathOk(R, from, p))) return p } return null };
   let start = pick(OUT) || [OUT.cx, OUT.cy];
   const O = { area: "out", R: OUT, x: start[0], y: start[1], tgt: null, t: 1, mode: "idle", swap: 40 + rnd() * 30, going: 0 };
-  const s = H.add.sprite(O.x, O.y, "olivia", 15).setOrigin(.5, 1).setScale(OUT.sc).setDepth(O.y - OUT.fo).play("olivia-idle");
+  const s = H.add.sprite(O.x, O.y, "olivia", 15).setOrigin(.5, 1).setScale(OUT.sc * __OL_K).setDepth(O.y - OUT.fo).play("olivia-idle");
   const sh = H.add.ellipse(O.x, O.y, 12, 4, 0, .25).setDepth(O.y - OUT.fo - 1);
   // Mussarela (lá fora) e Fumaça (dentro)
   const D = { x: O.x - 18, y: O.y + 4, dir: "d", s: H.add.sprite(O.x - 18, O.y + 4, "mussarela", 24).setOrigin(.5, .85).setDepth(O.y - 20).play("mz-i-d") };
@@ -22550,7 +22551,7 @@ function __olBuild(H) {
     const to = O.area === "out" ? IN : OUT;
     H.tweens.add({ targets: [s, sh], alpha: 0, duration: 250, onComplete: () => {
       O.area = O.area === "out" ? "in" : "out"; O.R = to; O.x = to.door[0]; O.y = to.door[1] + (to === IN ? -10 : 8);
-      s.setScale(to.sc).setPosition(O.x, O.y); sh.setPosition(O.x, O.y).setScale(to.sc / .3);
+      s.setScale(to.sc * __OL_K).setPosition(O.x, O.y); sh.setPosition(O.x, O.y).setScale(to.sc / .3);
       H.tweens.add({ targets: [s, sh], alpha: { from: 0, to: 1 }, duration: 300 });
       O.going = 0; O.swap = 45 + rnd() * 35; O.t = .5; O.mode = "idle"; s.play("olivia-idle", !0);
     } });

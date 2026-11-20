@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.46 · cache ded-web-v6.12.7-ferreiro)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.47 · cache ded-web-v6.12.8-olivia)
+
+P216.47 — OLIVIA REFEITA (PixelLab)
+· Rosto igual ao retrato das falas: cabelo castanho-escuro ondulado numa trança de lado, olhos castanhos grandes,
+  pele morena, blusa branca com laço vinho, saia azul-marinho pregueada, meias escuras e sapatos pretos.
+· npc/olivia.png agora em quadros de 192×192 (antes 128), mesmas posições: correndo 0–9 (10 quadros, era 12),
+  parada 15, brincando/pulando 16–29, acenando 30–33. olivia.js multiplica a escala por __OL_K = .4167, então ela
+  fica do mesmo tamanho no jogo e mais nítida. Montagem: python3 scripts/build_olivia_pixellab.py
+  (fontes scripts/art-src/npcs/olivia-*.png).
 
 P216.46 — FERREIRO RAFAEL: UM POUCO MAIOR E COM O BRAÇO TATUADO
 · O braço do martelo agora é todo tatuado (manga de tinta escura com chamas, martelo e runas); forjando e
