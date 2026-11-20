@@ -19,7 +19,7 @@ def runs(row):
         if not v and st is not None: out.append((st, x)); st = None
     return out
 
-def neck(a, H):
+def neck(a, H, S=S):
     for y in range(S):
         r = [q for q in runs(a[y]) if q[1] - q[0] >= 5]
         if r:
@@ -29,11 +29,11 @@ def neck(a, H):
             return [round((b[0] + b[1]) / 2), int(ny)]
     return None
 
-def sheet(path, H):
+def sheet(path, H, S=S):
     if not os.path.exists(path): return None
     im = np.array(Image.open(path).convert("RGBA"))[..., 3] > 0
     rows, cols = im.shape[0] // S, im.shape[1] // S
-    return [(lambda n: {"neck": n} if n else None)(neck(im[r * S:(r + 1) * S, c * S:(c + 1) * S], H)) for r in range(rows) for c in range(cols)]
+    return [(lambda n: {"neck": n} if n else None)(neck(im[r * S:(r + 1) * S, c * S:(c + 1) * S], H, S)) for r in range(rows) for c in range(cols)]
 
 for cls in ["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue", "shaman"]:
     meta = json.load(open(os.path.join(CH, f"{cls}-pack.json")))
@@ -44,6 +44,10 @@ for cls in ["warrior", "berserker", "archer", "hunter", "druid", "necromancer", 
     sk = f"{cls}-pack-t0-sk.png" if os.path.exists(os.path.join(CH, f"{cls}-pack-t0-sk.png")) else f"{cls}-pack-sk.png"
     dr = f"{cls}-pack-t0-dirs.png" if os.path.exists(os.path.join(CH, f"{cls}-pack-t0-dirs.png")) else f"{cls}-pack-dirs.png"
     out = {"frames": sheet(os.path.join(CH, f"{cls}-pack-t0-body.png"), H), "dirs": sheet(os.path.join(CH, dr), H),
-           "sk": sheet(os.path.join(CH, sk), H), "hd": 1}
+           "sk": sheet(os.path.join(CH, sk), H), "hd": 1,
+           # p216.51: pescando (quadros de 208; a cabeça descoberta e as armaduras únicas têm folha própria)
+           "fish": sheet(os.path.join(CH, f"{cls}-fish.png"), H, 208),
+           "fishv": {v: sheet(os.path.join(CH, f"{cls}-{'nh' if v == 'nh' else v}-fish.png"), H, 208) for v in ("nh", "ossos", "vendaval", "saqueador", "dh")
+                     if os.path.exists(os.path.join(CH, f"{cls}-{v}-fish.png"))}}
     json.dump(out, open(os.path.join(CH, "mods", f"{cls}-mods.json"), "w"), separators=(",", ":"))
     print(cls, "H", H, "nuca parado", out["frames"][0])

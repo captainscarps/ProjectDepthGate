@@ -103,11 +103,13 @@ function __capeUpdate(V, dt) {
   if (!on) { V.__cape?.g.setVisible(!1); return; }
   const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, tk = m.texture?.key || "";
   // p216.41: nuca por folha (perfil, direções, golpes) — as folhas novas têm quadros diferentes
-  const arr = tk.endsWith("-dirs") ? info?.dirs : tk.endsWith("-sk") ? info?.sk : info?.frames, F = arr?.[fi] ?? V.__capeLastF;
+  // p216.51: pescando (folha "-fish", quadros de 208 com o herói no meio): nuca da folha de pesca da armadura
+  const fsh = tk.endsWith("-fish"), fv = fsh && (tk.includes("-nh") ? "nh" : ["ossos", "vendaval", "saqueador", "dh"].find(n => tk.includes("-" + n + "-") || tk.includes("-" + n)));
+  const arr = tk.endsWith("-dirs") ? info?.dirs : tk.endsWith("-sk") ? info?.sk : fsh ? (info?.fishv?.[fv] ?? info?.fish) : info?.frames, F = arr?.[fi] ?? V.__capeLastF, c0 = fsh ? 104 : 64;
   if (!F) { V.__cape?.g.setVisible(!1); return; }
   V.__capeLastF = F;      // quadro sem cabeça achada (de costas, atrás do escudo): a capa fica na última nuca
   const par = C.parentContainer, sx = C.scaleX, sy = C.scaleY, u = Math.abs(sx) * Math.abs(m.scaleX) / .69 / (V.mk2Layout?.hires ?? 1);
-  const ax = C.x + (m.x + (F.neck[0] - 2 - 64) * m.scaleX) * sx, ay = C.y + (m.y + (typeof __hdOff === "function" ? __hdOff(V) : 0) + (F.neck[1] - 64) * m.scaleY) * sy;
+  const ax = C.x + (m.x + (F.neck[0] - 2 - c0) * m.scaleX) * sx, ay = C.y + (m.y + (typeof __hdOff === "function" ? __hdOff(V) : 0) + (F.neck[1] - c0) * m.scaleY) * sy;
   let K = V.__cape;
   if (K && K.D !== D) { K.g.destroy(); K = V.__cape = null; }     // trocou a armadura: outra capa (outro tamanho)
   if (!K) {

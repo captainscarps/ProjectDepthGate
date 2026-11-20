@@ -30,6 +30,7 @@ const __PZ_RAR = [["COMUM", "COMMON", "COMÚN", "#cfe0ff"], ["INCOMUM", "UNCOMMO
       this.cache.json.exists("pq-info") || L.json("pq-info", P + "pesca.json");
       // p216.49: heróis refeitos pescando com a vara no desenho (scripts/build_pesca_herois.py)
       for (const c of __PQH) this.textures.exists(`mk4b-${c}-t0-fish`) || L.spritesheet(`mk4b-${c}-t0-fish`, `assets/pixel-art/characters/${c}-fish.png`, { frameWidth: 208, frameHeight: 208 });
+      for (const v of __PQV) this.textures.exists(`mk4b-${v}-fish`) || L.spritesheet(`mk4b-${v}-fish`, `assets/pixel-art/characters/${v}-fish.png`, { frameWidth: 208, frameHeight: 208 });
       this.cache.json.exists("pq-hfish") || L.json("pq-hfish", "assets/pixel-art/characters/pesca-herois.json");
       L.setPath(op);
     } catch (e) {}
@@ -46,20 +47,27 @@ const __PZ_RAR = [["COMUM", "COMMON", "COMÚN", "#cfe0ff"], ["INCOMUM", "UNCOMMO
    Os heróis refeitos têm uma folha <classe>-fish.png (208×208, 4 linhas × 8): 0 arremesso, 1 esperando, 2 brigando com
    o peixe, 3 pegou — o herói segura a vara de verdade no desenho e a linha sai da ponta (pesca-herois.json guarda a
    ponta de cada quadro). Cores de armadura (camadas, cores e forja) são copiadas da folha base como nas direções.
-   Armaduras únicas, cabeça descoberta, formas do Druida e os heróis antigos continuam com a vara desenhada. */
+   p216.51: armaduras únicas (Ossário, Vendaval, Saqueador, Caçador de Dragão) e a cabeça descoberta das lendárias
+   têm folha de pesca própria (<armadura>-fish.png); as cores dessas também são copiadas. Só as formas do Druida e
+   os heróis antigos continuam com a vara desenhada. */
 const __PQH = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"];
+const __PQU = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh"];
+const __PQV = [...__PQU, ...["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"].map(c => c + "-nh")];
 function __pqHeroFish(H) {
   const V = H.rig, m = V?.mk2; if (!m || !H.cache.json.exists("pq-hfish")) return null;
-  const P = V.animPrefix || "", cls = P.replace(/^mk4b-/, "").replace(/-.*$/, ""); if (!__PQH.includes(cls)) return null;
-  const t0 = `mk4b-${cls}-t0`, base = t0 + "-fish"; if (!H.textures.exists(base)) return null;
-  let key = base;
-  if (P !== t0 && P !== `mk4b-${cls}`) {
-    if (!/^mk4b-[a-z]+-t\d/.test(P) || /-(ossos|vendaval|saqueador|dh|nh)\b/.test(P) || !H.textures.exists(P)) return null;
-    key = P + "-fish";
-    if (!H.textures.exists(key)) try { __haDerive(H, t0, P, t0, P, ["-fish"]) } catch (e) { }
-    if (!H.textures.exists(key)) return null;
-  }
-  const J = H.cache.json.get("pq-hfish"); return { V, m, key, tips: J.tips[cls], fs: J.fs };
+  let P = V.animPrefix || ""; const cls = P.replace(/^mk4b-/, "").replace(/-.*$/, ""); if (!__PQH.includes(cls)) return null;
+  const t0 = `mk4b-${cls}-t0`; if (P === `mk4b-${cls}`) P = t0;
+  if (!H.textures.exists(P)) return null;
+  // de qual folha de pesca vem: cabeça descoberta (lendária), armadura única ou a base do herói
+  const nh = /-nh$/.test(P), uni = __PQU.find(u => P.startsWith(`mk4b-${u}`)), id = nh ? cls + "-nh" : uni || cls;
+  const base = nh ? `mk4b-${cls}-nh` : uni ? `mk4b-${uni}` : t0, key = P === base ? base + "-fish" : P + "-fish";
+  if (!H.textures.exists(base + "-fish")) return null;
+  if (!H.textures.exists(key)) try {
+    if (nh) __haDerive(H, t0, P.slice(0, -3), base, P, ["-fish"]);      // mesmas cores que a lendária copiou da folha base
+    else if (uni || /^mk4b-[a-z]+-t\d/.test(P)) __haDerive(H, base, P, base, P, ["-fish"]);
+  } catch (e) { }
+  if (!H.textures.exists(key)) return null;
+  const J = H.cache.json.get("pq-hfish"), tips = J.tips[id] || J.tips[cls]; return { V, m, key, tips, fs: J.fs };
 }
 /* diário e cesto (por espaço de jogo salvo) */
 function __pqKey(H) { let sl = 1; try { sl = H.retSlot ?? H.game.registry.get("save:slot") ?? 1 } catch (e) { } return "depthgate:pesca:" + (H.fromForest ? "c" : "e") + sl }
@@ -119,6 +127,7 @@ function __pqBuild(H) {
   const rodTick = (t, ms) => {
     if (!ROD.vis) { rodG.clear(); ROD.on && heroRelease(); return }
     if (ROD.hf && heroTick(ms)) {   // vara no desenho: só a linha, da ponta até a boia (frouxa esperando, esticada na briga)
+      if (ROD.anim) { const A = ROD.anim; A.t += ms; const u = Math.min(1, A.t / A.dur); const [a1, b1] = lerpK(A.k, u); if (u >= 1) { ROD.anim = null; ROD.ang = a1; ROD.bend = b1; A.then?.() } }   // p216.51: o fim (recolher a vara) continua valendo
       rodG.clear().setDepth(H.playerY + 1.5);
       if (bob.visible && ROD.launched) { const [tx, ty] = ROD.tip, bx = bob.x, by = bob.y, sag = F.st === 1 ? 9 : F.st === 3 ? 1.5 * (1 - ROD.tension) : 2, mx = (tx + bx) / 2, my = (ty + by) / 2 + sag;
         rodG.lineStyle(1, 0xeef4f8, .85).beginPath().moveTo(tx, ty); for (let i = 1; i <= 10; i++) { const u = i / 10, w = 1 - u; rodG.lineTo(w * w * tx + 2 * w * u * mx + u * u * bx, w * w * ty + 2 * w * u * my + u * u * by) } rodG.strokePath() }

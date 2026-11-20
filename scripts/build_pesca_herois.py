@@ -18,8 +18,16 @@ G, S2, FS, M = 256, 170, 208, 40
 ROWS = ["cast", "wait", "reel", "catch"]
 # quadros (0–7) em que a IA desenhou a linha esticada ou o peixe: trocados pelo quadro bom mais perto
 BAD = {"archer": {"reel": (0, 1), "catch": (0, 1)}, "necromancer": {"reel": (1,)}, "shaman": {"catch": (0, 1)},
-       "rogue": {"catch": (0,)}, "berserker": {"reel": (0, 1), "catch": (0, 1)}}
+       "rogue": {"catch": (0,)}, "berserker": {"reel": (0, 1), "catch": (0, 1)},
+       "necromancer-ossos": {"reel": (0, 1), "catch": (0,)}, "mage-vendaval": {"catch": (6,)},
+       "warrior-saqueador": {"cast": (5,), "catch": (0,)}, "warrior-dh": {"reel": (0, 1)},
+       "warrior-nh": {"reel": (0, 1)}, "necromancer-nh": {"wait": (1, 2), "reel": (0, 1, 2), "catch": (0,)},
+       "mage-nh": {"reel": (0, 1)}, "rogue-nh": {"catch": (0, 1, 2)}, "hunter-nh": {"catch": (4, 5)}}
 CLS = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"]
+# p216.51: armaduras únicas e cabeça descoberta (lendárias) — folha própria <variante>-fish.png, alinhada à folha
+# de perfil da variante (<variante>-body.png)
+VARS = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh"] + \
+       [c + "-nh" for c in ["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"]]
 
 def shrink(fr):
     a = np.array(fr.crop((0, 0, 255, 255)).resize((S2, S2), Image.LANCZOS, reducing_gap=None))
@@ -46,8 +54,10 @@ def legs(a):
     xx = np.sort(xs[sel]); return (xx[len(xx) // 10] + xx[-len(xx) // 10 - 1]) / 2, bot
 
 out = {}
-for c in CLS:
-    pack = np.array(Image.open(os.path.join(CH, f"{c}-pack-t0-body.png")).convert("RGBA").crop((0, 0, 128, 128)))
+for c in CLS + VARS:
+    if not os.path.exists(os.path.join(SRC, f"{c}-catch.png")): continue
+    body = f"{c}-pack-t0-body.png" if c in CLS else f"{c}-body.png"
+    pack = np.array(Image.open(os.path.join(CH, body)).convert("RGBA").crop((0, 0, 128, 128)))
     pm, pf = legs(pack)
     fr = {k: [shrink(Image.open(os.path.join(SRC, f"{c}-{k}.png")).convert("RGBA").crop((i * G, 0, i * G + G, G))) for i in range(9)] for k in ROWS}
     fm, ff = legs(fr["wait"][0])

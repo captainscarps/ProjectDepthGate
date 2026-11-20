@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.50 · cache ded-web-v6.13.1-correr)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.51 · cache ded-web-v6.13.2-pesca2)
+
+P216.51 — PESCA: NÃO TRAVA MAIS E RESPEITA AS ARMADURAS
+· Correção: depois de pegar (ou perder) o peixe o herói ficava preso no último quadro da pesca. A animação de
+  recolher a vara não terminava quando o herói segurava a vara no desenho; agora termina e ele volta ao normal.
+· Armaduras únicas (Ossário, Vendaval, Saqueador, Caçador de Dragão) e a cabeça descoberta das lendárias (8 heróis)
+  ganharam folha de pesca própria (characters/<armadura>-fish.png); antes voltavam para a vara desenhada com o
+  herói parado. Cores (camadas, cores de loja, forja) são copiadas da folha de cada uma.
+· A capa das armaduras raras para cima acompanha a nuca nos quadros de pesca (mods/<classe>-mods.json: fish/fishv).
+· Montagem: python3 scripts/build_pesca_herois.py e python3 scripts/build_herois_nuca.py.
 
 P216.50 — ANDAR E CORRER PARA BAIXO, PARA CIMA E NAS DIAGONAIS (PixelLab)
 · Os 9 heróis refeitos ganharam caminhadas novas de frente, de costas e nas duas diagonais (passadas completas,
