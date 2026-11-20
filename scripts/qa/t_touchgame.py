@@ -8,7 +8,8 @@ def clean(s): return not s['o'] and not s['sc'] and not s['ui']
 def tapText(q,scene,pred):
     cl=[c for c in clickables(q,scene) if pred(c['t'])]
     if not cl: return False
-    q.tap(cl[0]['x'],cl[0]['y']); return True
+    c=cl[-1] if len(cl)>1 and any(x in cl[-1]['t'] for x in ('✕','◀')) else cl[0]   # o ✕ da janela de cima vem por último
+    q.tap(c['x'],c['y']); return True
 with sync_playwright() as p:
     q=QA(p,touch=True); q.boot()
     q.start('Game',{'levelId':'forest','classId':'WARRIOR','slot':1}); time.sleep(13)
@@ -31,8 +32,8 @@ with sync_playwright() as p:
             if clean(s): closed=True; break
             done=False
             for sc in (s['sc'][::-1]+['UI']):
-                if tapText(q,sc,lambda t:any(w in t.upper() for w in ('VOLTAR','✕','FECHAR','CONTINUAR','BACK'))): done=True; break
-            if not done: q.tap(30,30)
+                if tapText(q,sc,lambda t:'AO MENU' not in t.upper() and any(w in t.upper() for w in ('VOLTAR','✕','FECHAR','CONTINUAR','BACK'))): done=True; break
+            if not done and not tapText(q,'UI',lambda t:'PAUSA' in t): q.tap(30,30)   # sem ✕: o botão PAUSA da tela fecha a janela de cima
             time.sleep(.9)
         ok(f"toque: pausa → {it} → fecha", a['o']==['pauseMenu'] and hit and closed, {'abriu':b,'fim':q.ev(OPEN)})
         if not closed:
@@ -40,11 +41,11 @@ with sync_playwright() as p:
     tapText(q,'UI',lambda t:'INVENT' in t); time.sleep(.8); a=q.ev(OPEN); q.shot('tg_inv')
     tabs=[c['t'] for c in clickables(q,'UI') if c['t']][:20]; print('inventário toque:',tabs)
     for t in tabs[:6]:
-        if any(w in t.upper() for w in ('VOLTAR','✕','FECHAR')): continue
+        if any(w in t.upper() for w in ('VOLTAR','✕','FECHAR','PAUSA','INVENT')): continue
         tapText(q,'UI',lambda x,t=t:x==t); time.sleep(.5)
     for _ in range(4):
         if clean(q.ev(OPEN)): break
-        tapText(q,'UI',lambda t:any(w in t.upper() for w in ('VOLTAR','✕','FECHAR'))); time.sleep(.8)
+        tapText(q,'UI',lambda t:any(w in t.upper() for w in ('VOLTAR','✕','FECHAR'))) or tapText(q,'UI',lambda t:'INVENT' in t); time.sleep(.8)
     ok("toque: inventário abre, troca abas, fecha", 'inventoryUI' in a['o'] and clean(q.ev(OPEN)), (a,q.ev(OPEN)))
     json.dump({"R":R,"errs":q.errs},open('/tmp/qa/r_touchgame.json','w'),ensure_ascii=False)
     print("ERROS:",q.errs[:20]); q.close()

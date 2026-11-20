@@ -74,7 +74,9 @@ const __RPA=["river-flow","river-rapids","river-wind","boat-glide","boat-sfx"];
    oeste é o espelho. Sem a folha da classe, fica o barco antigo visto de cima (que gira). */
 const __BARCO=["warrior"],__BSC=.6;
 function __barcoFrame(S,B,row,dt){let d=S.bang*180/Math.PI;while(d>180)d-=360;while(d<=-180)d+=360;
- const ad=Math.abs(d),fl=ad>112.5,dd=fl?180-ad:ad,r=dd<22.5?0:dd<67.5?(d>0?1:3):(d>0?2:4);
+ /* p216.72: setor de 8 direções com folga de 10° (o barco não pisca entre duas direções na fronteira) */
+ const raw=((Math.round(d/45)%8)+8)%8;if(S.bsec==null)S.bsec=raw;else if(raw!==S.bsec){let off=d-S.bsec*45;while(off>180)off-=360;while(off<-180)off+=360;Math.abs(off)>32&&(S.bsec=raw)}
+ const sec=S.bsec,fl=sec>=3&&sec<=5,r=[0,1,2,1,0,3,4,3][sec];
  S.bfr=(S.bfr||0)+dt*(row?9:4);const f=row||S.bfr%8>.5?1+Math.floor(S.bfr)%8:0;
  B.setFrame(r*9+(row?f:0)).setFlipX(fl&&r!==2&&r!==4).setRotation(0).setScale(__BSC,__BSC*(1+Math.sin(S.bt*2.3)*.012))}
 const __RPZL={m1:11,bank:12,g1:13,m2:14};
@@ -335,7 +337,7 @@ disembark(){const S=this;if(S.mode!=="boat")return;S.mode="land";S.bv={x:0,y:0};
  S.sfx("splash",.8);S.sfx("bump",.6);S.time.delayedCall(250,()=>S.sfx("step",.7));S.time.delayedCall(480,()=>S.sfx("step",.7));
  const Lp=S.M.land,hx=Lp[0],hy=Lp[1];S.hx=hx;S.hy=hy;S.hero&&S.hero.setPosition(hx,hy).setVisible(!0).setAlpha(0).setDepth(hy+1);S.hero&&S.tweens.add({targets:S.hero,alpha:1,duration:400});S.hsh.setPosition(hx,hy).setVisible(!0);
  S.hero&&S.anims.exists(S.hkey+"-idle")&&S.hero.play(S.hkey+"-idle");S.cameras.main.startFollow(S.hero||S.boat,!0,.08,.08);S.cameras.main.setFollowOffset(0,0);S.time.delayedCall(700,()=>S.say(4));S.time.delayedCall(900,()=>S.title("dock"))}
-axis(){const S=this,im=S.game.inputManager;try{im?.update?.()}catch(e){}let a=im?.axis?.()||{x:0,y:0};const k=im?.keyboardAxis?.()||{x:0,y:0};Math.hypot(k.x,k.y)>Math.hypot(a.x,a.y)&&(a=k);if(S.joy.on&&Math.hypot(S.joy.x,S.joy.y)>Math.hypot(a.x,a.y))a={x:S.joy.x,y:S.joy.y};const m=Math.hypot(a.x,a.y);return m<.15?{x:0,y:0}:{x:a.x/Math.max(1,m),y:a.y/Math.max(1,m)}}
+axis(){const S=this,im=S.game.inputManager;try{im?.update?.()}catch(e){}let a=im?.axis?.()||{x:0,y:0};const k=im?.keyboardAxis?.()||{x:0,y:0};Math.hypot(k.x,k.y)>Math.hypot(a.x,a.y)&&(a=k);/* p216.72: direcional (D-pad) também rema/anda */try{const P=im?.pad?.(),b=i=>!!(P?.buttons?.[i]?.pressed);if(P){let dx=(b(15)?1:0)-(b(14)?1:0),dy=(b(13)?1:0)-(b(12)?1:0);dx&&dy&&(dx*=Math.SQRT1_2,dy*=Math.SQRT1_2);(dx||dy)&&(a={x:dx,y:dy},im.setDevice?.("gamepad"))}}catch(e){}if(S.joy.on&&Math.hypot(S.joy.x,S.joy.y)>Math.hypot(a.x,a.y))a={x:S.joy.x,y:S.joy.y};const m=Math.hypot(a.x,a.y);return m<.15?{x:0,y:0}:{x:a.x/Math.max(1,m),y:a.y/Math.max(1,m)}}
 push(o,list,rad){for(const q of list){const dx=o.x-q.x,dy=o.y-q.y,d=Math.hypot(dx,dy),m=rad+q.r;if(d<m&&d>.01){o.x=q.x+dx/d*m;o.y=q.y+dy/d*m}}}
 /* anda deslizando pela borda: tenta o passo inteiro, depois só x, depois só y */
 step(px,py,nx,ny,ok){if(ok(nx,ny))return[nx,ny];if(ok(nx,py))return[nx,py];if(ok(px,ny))return[px,ny];return[px,py]}
@@ -349,16 +351,16 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
  for(const e of S.streaks){if(e.life<=0){const x=v.x+Math.random()*v.width,y=v.y+Math.random()*v.height;if(S.cell(x,y)===2&&S.cell(x+12,y)===2&&S.cell(x-12,y)===2){const k=S.near(x,y);if(k>=0){const tn=S.tan(k);e.setPosition(x,y);e.vx=tn.x;e.vy=tn.y;e.sp=(S.flow[k]||30)*(.9+Math.random()*.5);e.setRotation(Math.atan2(tn.y,tn.x));e.max=e.life=1.4+Math.random()*1.4}}continue}
   e.life-=dt;e.x+=e.vx*e.sp*dt;e.y+=e.vy*e.sp*dt;const q=e.life/e.max;e.setAlpha(Math.sin(q*Math.PI)*(e.sp>55?.55:.3));if(S.cell(e.x,e.y)!==2)e.life=0}
  let act=null,flowNear=0;
- if(S.mode==="boat"){const B=S.boat,talk=S.speaking?.75:1,acc=110*talk,max=58*talk;S.pi=S.near(B.x,B.y,S.pi);const tn=S.pi>=0?S.tan(S.pi):{x:0,y:0},fl=S.pi>=0?(S.flow[S.pi]||28):0;flowNear=fl;
-  S.bv.x+=a.x*acc*dt;S.bv.y+=a.y*acc*dt;const sp=Math.hypot(S.bv.x,S.bv.y);if(sp>max){S.bv.x*=max/sp;S.bv.y*=max/sp}const dr=Math.pow(.4,dt);S.bv.x*=dr;S.bv.y*=dr;
+ if(S.mode==="boat"){const B=S.boat,talk=S.speaking?.75:1,acc=(S.bhd?175:110)*talk,max=(S.bhd?66:58)*talk;S.pi=S.near(B.x,B.y,S.pi);const tn=S.pi>=0?S.tan(S.pi):{x:0,y:0},fl=S.pi>=0?(S.flow[S.pi]||28):0;flowNear=fl;
+  /* p216.72: com direção, a velocidade vira junto (leme firme), sem derrapar de lado */const st_=S.bhd&&Math.hypot(a.x,a.y)>.15;if(st_){const k=Math.min(1,dt*4.5);S.bv.x+=(a.x*max-S.bv.x)*k;S.bv.y+=(a.y*max-S.bv.y)*k}else{S.bv.x+=a.x*acc*dt;S.bv.y+=a.y*acc*dt}const sp=Math.hypot(S.bv.x,S.bv.y);if(sp>max){S.bv.x*=max/sp;S.bv.y*=max/sp}if(!st_){const dr=Math.pow(.4,dt);S.bv.x*=dr;S.bv.y*=dr}
   /* correnteza: empurra rio abaixo e puxa de leve para o meio do canal */
-  const cf=(S.ret?-.3:.5)*talk;let cx=tn.x*fl*cf,cy=tn.y*fl*cf;if(S.pi>=0){const p=S.P[S.pi],ox=p[0]-B.x,oy=p[1]-B.y,lat=ox*-tn.y+oy*tn.x;cx+=-tn.y*lat*.35;cy+=tn.x*lat*.35}
+  const cf=(S.ret?-.3:.5)*talk*(st_?.45:1);let cx=tn.x*fl*cf,cy=tn.y*fl*cf;if(S.pi>=0){const p=S.P[S.pi],ox=p[0]-B.x,oy=p[1]-B.y,lat=ox*-tn.y+oy*tn.x;cx+=-tn.y*lat*(st_?.12:.35);cy+=tn.x*lat*(st_?.12:.35)}
   if(S.ret?S.pi<=3:S.pi>=S.P.length-4){cx*=.2;cy*=.2}
   const vx=S.bv.x+cx,vy=S.bv.y+cy;const tx=B.x+vx*dt,ty=B.y+vy*dt;let[nx,ny]=S.step(B.x,B.y,tx,ty,(x,y)=>S.okArea(x,y,2,14));
   const o={x:nx,y:ny};S.push(o,S.wobs,12);S.okArea(o.x,o.y,2,12)&&(nx=o.x,ny=o.y);
   const hit=Math.abs(nx-tx)+Math.abs(ny-ty)>.3;if(hit){S.bv.x*=.7;S.bv.y*=.7;if(sp>45&&(S.bumpT||0)<t){S.bumpT=t+900;S.sfx("bump",Math.min(.8,sp/120));S.cameras.main.shake(120,.0015)}}
   B.setPosition(nx,ny).setDepth(ny);const tv=Math.hypot(vx,vy);S.bspd=tv;
-  if(tv>6){const ang=Math.atan2(vy,vx);let d=ang-S.bang;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;S.bang+=d*Math.min(1,dt*2.6)}
+  /* p216.72: com o direcional apertado, o barco vira para onde o jogador aponta (rápido); solto, segue o rumo da correnteza */const inp=Math.hypot(a.x,a.y)>.3;if(inp||tv>6){const ang=inp?Math.atan2(a.y,a.x):Math.atan2(vy,vx);let d=ang-S.bang;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;S.bang+=d*Math.min(1,dt*(inp?(S.bhd?10:4):(S.bhd?1.6:2.6)))}
   S.bt+=dt;S.bhd&&B.texture.key===S.bhd?__barcoFrame(S,B,Math.hypot(a.x,a.y)>.3,dt):B.setRotation(S.bang+Math.PI/2+Math.sin(S.bt*1.7)*.035).setScale(.5,.5*(1+Math.sin(S.bt*2.3)*.012));
   S.wakeT+=dt;if(tv>18&&S.wakeT>.11){S.wakeT=0;for(const sd of[-1,1]){const bx=B.x-Math.cos(S.bang)*26+Math.sin(S.bang)*sd*7,by=B.y-Math.sin(S.bang)*26-Math.cos(S.bang)*sd*7,e=S.w(S.add.ellipse(bx,by,8,4,0xcfeee4,.45).setDepth(.95).setRotation(S.bang));S.tweens.add({targets:e,x:bx+Math.sin(S.bang)*sd*10,y:by-Math.cos(S.bang)*sd*10,scaleX:2.6,scaleY:1.6,alpha:0,duration:1100,onComplete:()=>e.destroy()})}}
   /* remadas (som + respingo dos dois lados) e rangidos da madeira */

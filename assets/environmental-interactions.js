@@ -212,7 +212,7 @@ class EnvironmentalTrap {
   }
 
   trigger(player) {
-    if (!this.canTrigger || !this.active || this.state !== 'idle') return false;
+    if (!this.canTrigger || !this.active || this.state !== 'idle' || !this.spikes?.scene) return false;
     this.canTrigger = false;
     this.state = 'arming';
 

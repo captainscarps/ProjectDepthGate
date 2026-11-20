@@ -1,4 +1,23 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.71 · cache ded-web-v6.15.2-barco-iso)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.72 · cache ded-web-v6.15.3-qa-controle)
+
+P216.72 — REVISÃO DE QA: BARCO MAIS SOLTO, TRAVAS DO CONTROLE E LIMPEZA DE SPRITES
+· Barco do prólogo: com o direcional apertado a velocidade vira junto com a proa (antes o barco derrapava de lado e
+  a correnteza puxava contra), acelera mais rápido e a proa segue o analógico na hora; o D-pad também rema/anda
+  no prólogo; troca de direção do desenho com folga para não ficar piscando entre duas direções.
+· Travas que só o toque/mouse soltava:
+  - as falas (e as páginas do prólogo em quadrinhos) agora leem o A/B do controle direto; antes dependiam do
+    teclado da cena, que podia ficar desligado depois de um vídeo;
+  - a trava de entrada dos vídeos religava só as cenas ativas: a cena que estava pausada/dormindo ficava sem
+    controle para sempre. Agora religa todas, e um vigia solta a trava se não houver vídeo na tela;
+  - a pausa não abre mais por cima de uma fala (o véu da fala roubava os toques e o A fazia as duas coisas);
+  - vigia do controle (resgate-controle.js): START/ESC com a fase presa sem nenhuma janela solta a fase; no
+    Refúgio, o herói preso sem painel nem diálogo é solto e a pausa abre; campo de texto escondido devolve o foco.
+· Armadilha de espinhos: não quebra mais quando o sprite já foi destruído (erro em catacumbas/bosque).
+· Sprites removidos (160 arquivos sem uso, conferidos no código e no registro de carregamento dos testes):
+  folhas antigas mk2/mk4 dos heróis (corpo e tiers) e os .json delas, brilhos "-body-glow" do Ossário e do
+  Vendaval, warrior-pack-dragon, peças trav-sky "-a"/caverna, ícones de habilidades piratas que nunca entraram,
+  ui2-mm-ring/ui2-qt e duas animações do Valdrak fora das listas.
+· Testes: t_touchgame.py fecha pela janela de cima (✕/◀ VOLTAR) e não pelo "VOLTAR AO MENU" de trás.
 
 P216.71 — BARCO DO PRÓLOGO EM VISÃO ISOMÉTRICA (Guerreiro)
 · O barco com o Guerreiro remando foi refeito em visão isométrica (vista de cima a ~35°, mostrando o fundo do barco,
