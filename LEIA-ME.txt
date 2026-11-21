@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.80 · cache ded-web-v6.16.1-bruxa-raposa)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.81 · cache ded-web-v6.16.2-ambiente)
+
+P216.81 — MÚSICA MAIS BAIXA E SISTEMA DE SONS AMBIENTES POR BIOMA
+· Música: o volume real fica em 35% do que a barra de MÚSICA marca (a barra continua valendo; diálogos dublados
+  ainda abaixam a música por cima disso).
+· Ambiente por bioma (scripts/source/ambiente-sons.js): cada bioma ganha um FUNDO em laço sem emenda e EVENTOS
+  soltos sorteados (volume, tom e lado do estéreo), com fade cruzado na troca de fase, no canal AMBIENTE. Temas:
+  Floresta (brisa, pássaros, riacho), Catacumbas (ventania nos túneis, pingos com eco, mistério, ratos, sussurros),
+  Ruínas, Templo de lava, Glacial, Fortaleza do Dragão, Bosque amazônico, Rio, Floresta Morta (vento em galhos
+  secos, corvos, coruja, lobo, rangidos), Cemitério/Cripta/Bruxa, Vulcão, Castelo e Refúgio (fogueira, grilos,
+  sinos de vento, um cachorro ao longe). Fora das fases e do Refúgio o fundo para.
+· Os sons são gerados no ElevenLabs por scripts/gerar_ambientes_elevenlabs.py (assets/audio/ambient/bioma/); a
+  chave atual ainda não tem a permissão "Sound Effects" — até os arquivos existirem, o ambiente antigo continua.
 
 P216.80 — BRUXA DA RAPOSA DE VOLTA NA FLORESTA MORTA, COM MOVIMENTO
 · A chefe da Floresta Morta volta a ser a Bruxa da Raposa (nove caudas douradas, fogo-fátuo azul), como na tabela
