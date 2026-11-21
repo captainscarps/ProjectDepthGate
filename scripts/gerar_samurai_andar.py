@@ -1,6 +1,7 @@
 """Samurai: caminhada e corrida refeitas em todas as direções (p216.96) — PixelLab.
 Poses paradas de cada direção: generate-8-rotations-v3 a partir do quadro parado de perfil (walk.png[0]) → v2/rot-*.png
-(rot-7 frente, rot-3 costas, rot-6 diagonal de frente ↘, rot-4 diagonal de costas ↗). Perfil usa o próprio walk.png[0].
+(rot-7 frente, rot-3 costas, rot-6 diagonal de frente ↘, rot-4 diagonal de costas ↗). p216.99: o perfil usa rot-5 espelhado (rot-leste.png) — walk.png[0] olhava para trás (rosto virado para a esquerda).
+Ordem das rotações: 0 entrada, 1 ↘, 2 ↗, 3 costas, 4 ↖, 5 ←, 6 ↙, 7 frente.
 animate-pixminimax: perfil com 12 quadros (o jogo usa 6, um sim um não → ciclo uniforme), direções com 8 quadros.
 Saída (substitui as fontes de build_samurai_pixellab.py e build_herois_dirs.py): walk.png, run.png e
 dirs2-<dir>-walk/run.png em scripts/art-src/samurai/ (originais em scripts/art-src/samurai/v1/).
@@ -13,12 +14,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 S = os.path.join(ROOT, "scripts/art-src/samurai"); V1 = os.path.join(S, "v1"); V2 = os.path.join(S, "v2")
 os.makedirs(V1, exist_ok=True)
 SUBJ = "a samurai warrior in dark navy blue o-yoroi armour with gold trim, a kabuto helmet and a red menpo face mask, katana sheathed at his left hip"
-WALK = "walking forward at a steady calm pace, natural alternating leg steps with clear foot lifts, arms swinging slightly, armour skirt plates bouncing gently, the katana stays sheathed at the left hip, no weapon drawn"
-RUN = "running forward fast with long strides, body leaning forward, one hand steadying the sheathed katana at the hip, armour plates bouncing, no weapon drawn"
+WALK = "walking forward to the right, head and eyes facing the walking direction, at a steady calm pace, natural alternating leg steps with clear foot lifts, arms swinging slightly, armour skirt plates bouncing gently, the katana stays sheathed at the left hip, no weapon drawn"
+RUN = "running forward fast to the right, head facing the running direction, with long strides, body leaning forward, one hand steadying the sheathed katana at the hip, armour plates bouncing, no weapon drawn"
 prof = Image.open(os.path.join(V1 if os.path.exists(os.path.join(V1, "walk.png")) else S, "walk.png")).convert("RGBA").crop((0, 0, 192, 192))
 JOBS = {
- "walk": (prof, WALK, 12, "east", "standing in three-quarter view facing right"),
- "run": (prof, RUN, 12, "east", "standing in three-quarter view facing right"),
+ "walk": ("rot-leste", WALK, 12, "east", "standing in side view facing right, looking forward to the right"),
+ "run": ("rot-leste", RUN, 12, "east", "standing in side view facing right, looking forward to the right"),
  "dirs2-south-walk": ("rot-7", WALK, 8, "south", "standing facing the viewer"),
  "dirs2-north-walk": ("rot-3", WALK, 8, "north", "standing with his back to the viewer"),
  "dirs2-se-walk": ("rot-6", WALK, 8, "south-east", "standing facing down-right"),

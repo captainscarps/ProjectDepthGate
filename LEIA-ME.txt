@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.98 · cache ded-web-v6.17.9-lobo-palco)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.99 · cache ded-web-v6.18.0-samurai-perfil)
+
+P216.99 — SAMURAI ANDANDO DE LADO SEM OLHAR PARA TRÁS
+· A caminhada/corrida de perfil nascia da pose antiga, que tem o rosto virado para a esquerda: andando para a direita
+  ele parecia olhar para trás (desde a arte original). Refeitas a partir da rotação de perfil de verdade (rot-5
+  espelhada → olhando para onde anda), 12 quadros, e o fiapo branco que a rotação punha nas costas foi limpo.
+  Frente, costas e diagonais já olhavam para o lado certo (conferido pela posição da máscara vermelha).
 
 P216.98 — ESCOLHA DE HERÓIS: LOBO DO CAÇADOR SEMPRE DENTRO DO PALCO
 · O recorte (máscara) não funcionava no celular e o lobo passava por cima da lista de classes. Agora não há máscara:
