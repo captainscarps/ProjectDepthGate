@@ -1,56 +1,91 @@
 {
+ "_x": {
+  "esqueleto": {
+   "w": 224,
+   "h": 224,
+   "frames": 9,
+   "foot": 224
+  },
+  "lobo-corre": {
+   "w": 256,
+   "h": 176,
+   "frames": 9,
+   "foot": 176
+  },
+  "lobo-idle": {
+   "w": 256,
+   "h": 176,
+   "frames": 9,
+   "foot": 176
+  },
+  "urso-idle": {
+   "w": 256,
+   "h": 256,
+   "frames": 17,
+   "foot": 248
+  }
+ },
  "archer": {
   "size": 256,
   "frames": 9,
   "foot": 248,
-  "top": 10
+  "top": 10,
+  "acao": 25
  },
  "berserker": {
   "size": 256,
   "frames": 9,
   "foot": 253,
-  "top": 14
+  "top": 14,
+  "acao": 25
  },
  "druid": {
   "size": 256,
   "frames": 9,
   "foot": 246,
-  "top": 21
+  "top": 21,
+  "acao": 17
  },
  "hunter": {
   "size": 256,
   "frames": 9,
   "foot": 240,
-  "top": 20
+  "top": 20,
+  "acao": 17
  },
  "mage": {
   "size": 256,
   "frames": 9,
   "foot": 243,
-  "top": 17
+  "top": 17,
+  "acao": 25
  },
  "necromancer": {
   "size": 256,
   "frames": 9,
   "foot": 253,
-  "top": 9
+  "top": 9,
+  "acao": 25
  },
  "rogue": {
   "size": 256,
   "frames": 9,
   "foot": 237,
-  "top": 30
+  "top": 30,
+  "acao": 25
  },
  "shaman": {
   "size": 256,
   "frames": 9,
   "foot": 231,
-  "top": 31
+  "top": 31,
+  "acao": 25
  },
  "warrior": {
   "size": 256,
   "frames": 9,
   "foot": 247,
-  "top": 19
+  "top": 19,
+  "acao": 25
  }
 }

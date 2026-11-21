@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.91 · cache ded-web-v6.17.2-selecao-hd)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.92 · cache ded-web-v6.17.3-selecao-acoes)
+
+P216.92 — ESCOLHA DE HERÓIS: AÇÃO ESPECIAL DE CADA HERÓI
+· ~3 s depois de escolher o herói e depois a cada ~10 s ele faz a sua ação e volta a respirar: Cavaleiro tira a espada
+  do chão e limpa a lâmina · Arqueiro arma, mira e alivia o arco · Maga ergue o orbe e solta uma espiral de magia ·
+  Ladina cruza as adagas e some numa nuvem de sombra, voltando em seguida · Necromante bate o cajado no chão e uma
+  caveira sai da terra ao lado dele (e afunda de novo) · Araí se ajoelha e toca a terra (folhas e vagalumes) ·
+  Samurai saca a katana num corte rápido e guarda devagar · Caçador assobia e o lobo chega correndo, fica e vai embora ·
+  Druida é envolvido por energia verde, vira urso (que ruge) e volta.
+· PixelLab animate-pixminimax com a pose como primeiro E último quadro (a ação sempre termina na pose), correção de cor
+  em todos os quadros e descrição com a quantidade exata de armas (o 1º teste do Cavaleiro mostrava duas espadas).
+  Extras gerados no mesmo estilo: caveira, lobo (correr e parado) e urso. Um quadro do Samurai com borrão foi trocado
+  e o corte virou efeito no código. scripts/gerar_selecao_acoes.py → build_selecao_herois.py; selecao-herois.js.
 
 P216.91 — ESCOLHA DE HERÓIS EM RESOLUÇÃO MAIOR E LADINA REFEITA
 · Os 9 heróis refeitos em 256×256 (antes 144×144) e mostrados em escala 1: o pixel ficou com metade do tamanho e o
