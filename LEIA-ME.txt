@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.77 · cache ded-web-v6.15.8-variantes-sec)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.78 · cache ded-web-v6.15.9-chefes)
+
+P216.78 — CHEFES: GOLPES REFEITOS (ANIMAÇÃO + EFEITOS EM PIXEL ART)
+· 15 chefes (Minotauro, Górgona, Golem de Lava, Titã de Magma, Guardião de Gelo, Dragão Ancestral, Anhangá, Górgona
+  da Floresta, Rainha Necromante, Cérbero, Dragão Pálido, Ent, Observador, Elyndra, Tengu) ganharam animação nova de
+  PREPARO (toca enquanto o aviso no chão enche) e de GOLPE (toca no instante do golpe), feitas no PixelLab
+  (animate-pixminimax a partir do quadro parado). A IA às vezes já fazia o golpe dentro do preparo: os quadros de
+  cada parte foram escolhidos chefe a chefe (scripts/build_chefes_golpes.py; fontes scripts/art-src/chefes/anim/).
+· Efeitos em pixel art (scripts/build_chefes_fx.py; assets/pixel-art/fx/boss/): impacto no chão com rachaduras e
+  pedras, onda de choque, garras/corte, rocha caindo, explosão de fogo, estilhaços de gelo, magia sombria, poeira da
+  investida e uma runa por baixo dos avisos circulares (pintada com a cor do aviso). Cada chefe usa o seu tema: os
+  golens de lava e os dragões soltam fogo, o de gelo estilhaços, a Rainha/Observador/Elyndra/Tengu/Anhangá magia
+  sombria. Avisos e dano continuam os mesmos (scripts/source/chefes-golpes.js).
 
 P216.77 — VARIANTES RARAS: SÓ AS CORES SECUNDÁRIAS MUDAM
 · A pintura das variantes raras não mexe mais na pele nem na cor principal da armadura e não estoura as cores:
