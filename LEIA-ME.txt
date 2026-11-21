@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.79 · cache ded-web-v6.16.0-inimigos-mov)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.80 · cache ded-web-v6.16.1-bruxa-raposa)
+
+P216.80 — BRUXA DA RAPOSA DE VOLTA NA FLORESTA MORTA, COM MOVIMENTO
+· A chefe da Floresta Morta volta a ser a Bruxa da Raposa (nove caudas douradas, fogo-fátuo azul), como na tabela
+  de dificuldade da fase. A folha dela (boss-witch.png) estava sem uso e sem caminhada: a caminhada foi feita no
+  PixelLab (animate-pixminimax) e entra no fim da folha nova boss-witch-v2.png (scripts/build_bruxa_raposa.py).
+  Animações ligadas: parada (caudas balançando), andando, preparo invocando raposas-de-fogo, golpe de cauda com
+  rajada de vento, dano, morte sumindo em fogo-fátuo e troca de fase; efeitos de golpe no tema sombrio.
+  Golpes, vida e invocações continuam os mesmos (chefes-golpes.js). Sala "Trono da Bruxa da Raposa"; bestiário:
+  Sombra Invocada "Invocada pela Bruxa da Raposa".
+· Atenção: as falas narradas da história da Floresta Morta ainda citam a "Rainha Necromante" (texto e dublagem).
 
 P216.79 — INIMIGOS DO CEMITÉRIO COM MOVIMENTO
 · Zumbi, Coveiro Esqueleto, Espectro do Sudário, Espantalho, Múmia, Bruxa das Sepulturas, Lobisomem, Abominação

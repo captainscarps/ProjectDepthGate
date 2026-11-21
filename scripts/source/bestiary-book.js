@@ -12,7 +12,7 @@ const __BK_ENDLESS_BOSS = new Set(["ABYSS_GUARDIAN", "ANCIENT_COLOSSUS", "FROST_
 const __BK_SPOILER = new Set(["GUARDIAN_FALLEN"]);
 const __BK_PORTRAIT_BOOST = { GUARDIAN_FALLEN: 1.9 };   // ilustração maior no livro
 const __BK_EXTRA_WHERE = {
-  NECRO_SHADE: "Invocada pela Rainha Necromante",
+  NECRO_SHADE: "Invocada pela Bruxa da Raposa",
   GHOST: "Invocado pelo Anhangá",
   GUARDIAN_FALLEN: "Castelo de Valdrak — o confronto final",
 };

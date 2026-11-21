@@ -71,3 +71,21 @@ function __bgStrike(B) {
   const S = this, TG = S.telegraphs; __bgAnims(S);
   if (TG && !TG.__bg && typeof TG.circle === "function") { const c0 = TG.circle.bind(TG); TG.circle = function (x, y, rad, ms, col, cb) { try { rad > 16 && __bfx(S, "warn", x, y, rad * 2.15, { ms: Math.max(120, ms - 40), alpha: .6, tint: col, add: !0, depth: y - 40 }) } catch (e) {} return c0(x, y, rad, ms, col, cb) }; TG.__bg = 1 }
 } catch (e) {} return r }}
+/* ══ Bruxa da Raposa volta a ser a chefe da Floresta Morta (p216.80) ══
+   A folha da bruxa-raposa (nove caudas, fogo-fátuo azul) estava sem uso e sem caminhada; agora tem caminhada
+   (PixelLab) e todas as animações ligadas: parada (caudas balançando), andando, preparo invocando raposas-de-fogo,
+   golpe de cauda com rajada de vento, dano, morte sumindo em fogo-fátuo e troca de fase. Golpes e vida continuam os
+   da chefe da Floresta Morta (que antes aparecia como Rainha Necromante). scripts/build_bruxa_raposa.py */
+{const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath(""); this.textures.exists("boss-witch-v2") || L.spritesheet("boss-witch-v2", "assets/pixel-art/bosses/boss-witch-v2.png", { frameWidth: 128, frameHeight: 128 }); L.setPath(op) } catch (e) {} return r }}
+function __bgFox(sc) {
+  if (!Yt.FOX_WITCH || Yt.FOX_WITCH.texture === "boss-witch-v2" || !sc?.textures?.exists("boss-witch-v2")) return;
+  const R = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+  Object.assign(Yt.FOX_WITCH, { name: "Bruxa da Raposa", subtitle: "Senhora das Nove Caudas", texture: "boss-witch-v2", scale: 1.35,
+    anims: { idle: { frames: R(0, 9), frameRate: 8, repeat: -1 }, walk: { frames: R(32, 39), frameRate: 11, repeat: -1 }, attack: { frames: R(10, 15), frameRate: 11, repeat: 0 },
+      hurt: { frames: [16, 3], frameRate: 10, repeat: 0 }, death: { frames: R(20, 25), frameRate: 7, repeat: 0 }, windup: { frames: [16, 17, 26, 27], frameRate: 7, repeat: 0 },
+      strike: { frames: R(12, 15), frameRate: 13, repeat: 0 }, phase: { frames: R(20, 27), frameRate: 9, repeat: 0 }, special: { frames: [26, 27], frameRate: 6, repeat: -1 } } });
+  __BG_FLAV["boss-witch-v2"] = "dark";
+  for (const [a, d] of Object.entries(Yt.FOX_WITCH.anims)) { const k = "boss-witch-v2-" + a; sc.anims.exists(k) && sc.anims.remove(k); sc.anims.create({ key: k, frames: d.frames.map(f => ({ key: "boss-witch-v2", frame: f })), frameRate: d.frameRate, repeat: d.repeat }) }
+}
+{const SB = Sd.prototype.spawnBoss; Sd.prototype.spawnBoss = function (k) { try { k === "FOX_WITCH" && __bgFox(this) } catch (e) {} return SB.apply(this, arguments) }}
+{const C1 = Sd.prototype.create; Sd.prototype.create = function () { const r = C1.apply(this, arguments); try { __bgFox(this) } catch (e) {} return r }}
