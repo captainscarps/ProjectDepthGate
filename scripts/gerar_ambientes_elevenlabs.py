@@ -2,11 +2,12 @@
 """Sons ambientes por bioma (p216.81) — ElevenLabs Sound Effects (eleven_text_to_sound_v2).
 Para cada bioma: um FUNDO em laço sem emenda (loop=true, ~22 s) e alguns EVENTOS curtos que o jogo toca de vez em
 quando, em posições diferentes do estéreo (scripts/source/ambiente-sons.js).
-Saída: assets/audio/ambient/bioma/<bioma>-bed.mp3 e <bioma>-e<n>.mp3. A chave vem de ELEVENLABS_API_KEY (.env) e
+Saída bruta: scripts/art-src/ambiente/<bioma>-bed.mp3 e <bioma>-e<n>.mp3 (depois: python3 scripts/build_ambientes.py). A chave vem de ELEVENLABS_API_KEY (.env) e
 precisa da permissão "Sound Effects". Uso: python3 scripts/gerar_ambientes_elevenlabs.py [bioma…]  (pula o que já existe)"""
 import json, os, sys, time, urllib.request, urllib.error
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, "assets/audio/ambient/bioma")
+OUT = os.path.join(ROOT, "scripts/art-src/ambiente")          # brutos; scripts/build_ambientes.py normaliza para assets/audio/ambient/bioma/
+MAN = os.path.join(ROOT, "assets/audio/ambient/bioma/manifest.json")
 NO = " No music, no voices, no melody."
 B = {
     "forest": ("Peaceful daytime fantasy forest ambience: gentle breeze rustling leaves, many distant songbirds chirping, a small stream far away.",
@@ -58,5 +59,5 @@ for b, (bed, evs) in B.items():
         f = os.path.join(OUT, f"{b}-e{i}.mp3")
         os.path.exists(f) or (sfx(e, f, None, False, .55) and print("evento", b, i, flush=True))
     man[b] = len(evs)
-json.dump(man, open(os.path.join(OUT, "manifest.json"), "w"))
+os.makedirs(os.path.dirname(MAN), exist_ok=True); json.dump(man, open(MAN, "w"))
 print("ok", man)

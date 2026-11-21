@@ -26208,5 +26208,5 @@ function __asPlay(E, biome) {
     if (!["Game", "Hub", "Traversal", "ValdrakAntiga"].some(k => g.scene.isActive(k))) __asStop(1.2) } catch (e) {} }, 800);
   /* aba escondida: o fundo continua tocando baixo; ao voltar, nada a fazer (o laço não para) */
 }
-window.__asPlay = __asPlay; window.__asStop = __asStop;
+window.__asPlay = __asPlay; window.__asStop = __asStop; window.__AS = __AS;
 /*__AMBSONS__*/

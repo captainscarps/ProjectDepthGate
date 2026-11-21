@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.81 · cache ded-web-v6.16.2-ambiente)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.82 · cache ded-web-v6.16.3-ambiente-sons)
+
+P216.82 — SONS AMBIENTES DOS 13 BIOMAS (ElevenLabs)
+· Gerados no ElevenLabs (Sound Effects v2) com scripts/gerar_ambientes_elevenlabs.py: para cada bioma um fundo de
+  22 s em laço sem emenda e 4–5 eventos (68 sons; brutos em scripts/art-src/ambiente/). scripts/build_ambientes.py
+  iguala os volumes (fundos −26 dB, eventos −20 dB, pico −1 dB; eventos longos cortados em 6 s) para
+  assets/audio/ambient/bioma/. Dois eventos do Castelo que vieram quase mudos foram refeitos.
+· Com os arquivos no lugar, os bipes sintetizados antigos do ambiente ficam desligados nesses biomas.
 
 P216.81 — MÚSICA MAIS BAIXA E SISTEMA DE SONS AMBIENTES POR BIOMA
 · Música: o volume real fica em 35% do que a barra de MÚSICA marca (a barra continua valendo; diálogos dublados
