@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.78 · cache ded-web-v6.15.9-chefes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.79 · cache ded-web-v6.16.0-inimigos-mov)
+
+P216.79 — INIMIGOS DO CEMITÉRIO COM MOVIMENTO
+· Zumbi, Coveiro Esqueleto, Espectro do Sudário, Espantalho, Múmia, Bruxa das Sepulturas, Lobisomem, Abominação
+  Costurada e Vampiro: as folhas antigas só tinham as 8 direções do boneco parado, e a "caminhada" girava o
+  inimigo em volta de si mesmo enquanto ele deslizava. Agora cada um anda de perfil, respira parado e tem golpe
+  (preparo + ataque), feitos no PixelLab (animate-pixminimax a partir do quadro de perfil, em 128 px e reduzidos
+  para 64). Folhas assets/pixel-art/enemies/v2/ (scripts/build_inimigos_gw.py; fontes scripts/art-src/inimigos-gw/),
+  ligadas em scripts/source/inimigos-gw.js (textura <inimigo>-v2; tamanho na tela igual ao de antes).
+· A Velha da Cabana (chefe da missão da bruxa) tinha um quadro só: agora usa a bruxa nova recolorida (manto
+  verde-podre) andando, parada e golpeando (witch-quest.js, textura gw-crone2).
 
 P216.78 — CHEFES: GOLPES REFEITOS (ANIMAÇÃO + EFEITOS EM PIXEL ART)
 · 15 chefes (Minotauro, Górgona, Golem de Lava, Titã de Magma, Guardião de Gelo, Dragão Ancestral, Anhangá, Górgona

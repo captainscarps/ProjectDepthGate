@@ -15582,6 +15582,14 @@ function __wqTex(S) {
     const t = T.get("gw-crone"); if (!t.has(7)) for (let k = 0; k < 8; k++) t.add(k, 0, k * 64, 0, 64, 64);
     for (const a of ["idle", "walk", "attack", "hurt", "death", "windup", "strike", "phase", "special"]) { const ak = "gw-crone-" + a, an = S.anims.get(ak); if (an && !(an.frames?.length > 0)) S.anims.remove(ak); S.anims.exists(ak) || S.anims.create({ key: "gw-crone-" + a, frames: [{ key: "gw-crone", frame: 0 }], frameRate: 4, repeat: a === "idle" || a === "walk" ? -1 : 0 }) }
   }
+  /* p216.79: a Velha com movimento — mesma recoloração sobre a bruxa nova (andando, parada e golpe de perfil) */
+  if (recolor("gw-witch-v2", "gw-crone2", (r, g, b) => { const [h, s, l] = __wqHsl(r, g, b); return s < .34 && l > .05 && l < .56 ? __wqRgb(96, .32 + s * .3, Math.min(.6, l * 1.08)) : null })) {
+    const t = T.get("gw-crone2"); if (!t.has(23)) for (let k = 0; k < 24; k++) t.add(k, 0, (k % 8) * 64, Math.floor(k / 8) * 64, 64, 64);
+    const R = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => ({ key: "gw-crone2", frame: a + i }));
+    const D = { idle: [R(8, 15), 6, -1], walk: [R(0, 7), 10, -1], attack: [R(16, 23), 12, 0], windup: [R(16, 19), 8, 0], strike: [R(20, 23), 14, 0], hurt: [R(8, 8), 8, 0], death: [R(8, 8), 4, 0], phase: [R(16, 23), 10, 0], special: [R(8, 15), 8, -1] };
+    for (const [a, [fr, rate, rep]] of Object.entries(D)) S.anims.exists("gw-crone2-" + a) || S.anims.create({ key: "gw-crone2-" + a, frames: fr, frameRate: rate, repeat: rep });
+    Yt.WITCH_CRONE && (Yt.WITCH_CRONE.texture = "gw-crone2");
+  }
   // retrato para os diálogos (rosto ampliado do quadro de frente)
   const face = T.exists("velha-face");
   if ((face || T.exists("gw-crone")) && !T.exists("velha-p-talk")) {
@@ -26072,3 +26080,27 @@ function __bgStrike(B) {
   if (TG && !TG.__bg && typeof TG.circle === "function") { const c0 = TG.circle.bind(TG); TG.circle = function (x, y, rad, ms, col, cb) { try { rad > 16 && __bfx(S, "warn", x, y, rad * 2.15, { ms: Math.max(120, ms - 40), alpha: .6, tint: col, add: !0, depth: y - 40 }) } catch (e) {} return c0(x, y, rad, ms, col, cb) }; TG.__bg = 1 }
 } catch (e) {} return r }}
 /*__CHEFES__*/
+/*__GWV2__*/
+/* ══ Inimigos do cemitério com movimento de verdade (p216.79) ══════════════════════════════════════════════════════
+   As folhas gw-* (zumbi, coveiro, sudário, espantalho, múmia, bruxa, lobisomem, abominação, vampiro) tinham só as 8
+   direções do personagem parado: a "caminhada" girava o boneco em volta de si mesmo e ele deslizava pelo chão.
+   Agora cada um tem caminhada, respiração parado e golpe (preparo + ataque) desenhados de perfil — PixelLab
+   animate-pixminimax a partir do quadro de perfil (scripts/build_inimigos_gw.py → assets/pixel-art/enemies/v2/).
+   Folha nova <textura>-v2: linha 0 andando, 1 parado, 2 golpe (0–3 preparo, 4–7 ataque); quadros de 64 px.   */
+const __GW_V2 = ["gw-zombie", "gw-skeleton-gravedigger", "gw-sheet-ghost", "gw-pumpkin-scarecrow", "gw-mummy", "gw-witch", "gw-werewolf", "gw-stitched-brute", "gw-vampire"];
+{
+  const R = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+  for (const d of Object.values(ee)) {
+    if (!d || !__GW_V2.includes(d.texture)) continue;
+    const t = d.texture + "-v2";
+    try { Si[t] = Si[d.texture] ?? 1 } catch (e) {}
+    d.texture = t;
+    d.anims = { idle: { frames: R(8, 15), frameRate: 6, repeat: -1 }, walk: { frames: R(0, 7), frameRate: 10, repeat: -1 }, hurt: { frames: [8], frameRate: 8, repeat: 0 },
+      death: { frames: [8], frameRate: 4, repeat: 0 }, alert: { frames: [8, 9], frameRate: 6, repeat: 0 }, windup: { frames: R(16, 19), frameRate: 8, repeat: 0 },
+      strike: { frames: R(20, 23), frameRate: 14, repeat: 0 }, attack: { frames: R(16, 23), frameRate: 12, repeat: 0 } };
+  }
+}
+{const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
+  for (const k of __GW_V2) this.textures.exists(k + "-v2") || L.spritesheet(k + "-v2", `assets/pixel-art/enemies/v2/${k}.png`, { frameWidth: 64, frameHeight: 64 });
+  L.setPath(op) } catch (e) {} return r }}
+/*__GWV2__*/
