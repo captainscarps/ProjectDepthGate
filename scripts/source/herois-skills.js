@@ -10,7 +10,7 @@ const __FXH = {"a-charge":{"w":67,"h":67,"n":8,"fps":12,"ax":33,"ay":33},"a-expl
 const __SKH_CLS = { WARRIOR: ["warrior", 1], ARCHER: ["archer"], MAGE: ["mage"], NECROMANCER: ["necromancer"], DRUID: ["druid"], SHAMAN: ["shaman"], ROGUE: ["rogue"], BERSERKER: ["berserker"], HUNTER: ["hunter"] };
 /* habilidade → linha da folha (por classe); sem linha própria: por tipo; senão "cast" */
 const __SKH_MAP = {
-  WARRIOR: { HEAVY_STRIKE: "slam", DEMOLISHING_BLOW: "slam", KAISHAKU: "slam", HOLY_SMITE: "slam", SHIELD_BASH: "bash",
+  WARRIOR: { HEAVY_STRIKE: "slam", DEMOLISHING_BLOW: "slam", KAISHAKU: "slam", HOLY_SMITE: "slam", SHIELD_BASH: "draw", SHIELD_COUNTER: "cry", SHIELD_WALL: "spin", GUARDIAN_WAVE: "quake", GUARDIAN_VENGEANCE: "slam",   // p216.101: técnicas sem escudo
     IAIJUTSU: "draw", ET_TSUBAME: "draw", KAZE_GIRI: "draw", WHIRLWIND: "spin", TSUMUJI: "spin", RUPTURE: "quake", ET_QUAKE: "quake",
     _t: { "melee-heavy": "slam", "aoe-self": "spin", buff: "cry", execute: "slam", "shadow-strike": "draw" }, _d: "cry" },
   ARCHER: { MULTI_SHOT: "multi", ET_DART_HAIL: "multi", EXPLOSIVE_ARROW: "charge", ET_CHARGED: "charge", PIERCING_ARROW: "charge", AIMED_SHOT: "charge",
@@ -35,7 +35,8 @@ const __SKH_MAP = {
 const __SKH_FX = {
   WARRIOR: { _atk: ["w-slash", "f", 0, .55, 18, -20],
     HEAVY_STRIKE: ["w-heavy", "f", .24, .45, 2, -24], DEMOLISHING_BLOW: ["w-heavy", "f", .24, .5, 2, -24],
-    KAISHAKU: ["w-exec", "f", .24, .6, 18, -22], SHIELD_BASH: ["w-bash", "f", .16, .6, 20, -22],
+    KAISHAKU: ["w-exec", "f", .24, .6, 18, -22], SHIELD_BASH: ["w-iai", "f", .2, .6, 30, -18], GUARDIAN_VENGEANCE: ["w-exec", "f", .24, .65, 18, -22],
+    SHIELD_WALL: ["w-spin", "c", .06, .65, 0, -10], GUARDIAN_WAVE: ["w-quake", "p", .3, .7, 40, 0],
     IAIJUTSU: ["w-iai", "f", .2, .6, 30, -18], ET_TSUBAME: ["w-iai", "f", .2, .6, 30, -18], KAZE_GIRI: ["w-iai", "f", .2, .6, 30, -18],
     WHIRLWIND: ["w-spin", "c", .06, .65, 0, -10], TSUMUJI: ["w-spin", "c", .06, .65, 0, -10],
     RUPTURE: ["w-quake", "p", .3, .7, 14, 0], ET_QUAKE: ["w-quake", "p", .3, .75, 14, 0], _buff: ["w-cry", "p", .04, .55, 0, 0] },

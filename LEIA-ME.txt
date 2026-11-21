@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.100 · cache ded-web-v6.18.1-samurai-foco)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.101 · cache ded-web-v6.18.2-guerreiro-armaduras)
+
+P216.101 — GUERREIRO SEM ESCUDO · ÍCONES NOVOS DE TODAS AS ARMADURAS
+- Guerreiro: as técnicas de escudo viraram técnicas de guerra (o Golpe Pesado de nível 1 continua):
+  Investida (avança e golpeia no caminho), Grito de Guerra (+3 dano e +10% crítico por 6 s e retarda os inimigos
+  perto), Redemoinho de Aço (giro em área), Fenda Sísmica (abre o chão à frente e atordoa 1 s) e Juízo do Campeão
+  (golpe executor em arco, ×3,5 contra inimigos abaixo de 40% de vida). Ícones, animações e efeitos novos.
+  Os IDs internos continuam os mesmos, então saves e a Árvore do Infinito seguem compatíveis.
+  Código: scripts/source/guerreiro-tecnicas.js; ícones: scripts/gerar_guerreiro_icones.py.
+- Armaduras: ícones novos em pixel art (PixelLab) para as 37 armaduras base, as 6 raridades da Armadura comum e as
+  24 variantes de forja (recoloridas a partir da base). Manto Sombrio e Couro Negro ganham brilho por raridade.
+  Fontes: scripts/gerar_armaduras_icones.py → scripts/art-src/armaduras-icones/; montagem no atlas items-hd:
+  scripts/build_armaduras_icones.py (re-executável, guarda o atlas original).
 
 P216.100 — SAMURAI COM FOCO E TÉCNICAS NOVAS · ESCOLHA DE HERÓIS FIEL AO JOGO
 · Samurai (scripts/source/samurai-foco.js): Fúria (começava em 0, custos 25–45) → FOCO: começa cheio, recupera 9/s,
