@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.85 · cache ded-web-v6.16.6-sem-recarga)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.86 · cache ded-web-v6.16.7-barco-costas)
+
+P216.86 — BARCO: REMANDO PARA CIMA SEM VIRAR O ROSTO
+· Revisei quadro a quadro as remadas de costas (para cima) e na diagonal de cima dos 9 heróis. No Necromante, os
+  quadros 5–8 da remada para cima viravam de frente (a caveira aparecia, como se ele olhasse para trás). Esses
+  quadros agora repetem a remada de volta (4, 3, 2, 1), sempre de costas. Original guardado em
+  scripts/art-src/barco/orig/. A direção usada no jogo foi conferida (para cima → linha de costas).
 
 P216.85 — O JOGO NÃO RECARREGA MAIS SOZINHO AO REDIMENSIONAR
 · No PC, qualquer mudança no tamanho da janela com o Refúgio, o Menu ou a escolha de herói na tela (entrar/sair da
