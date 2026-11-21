@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.86 · cache ded-web-v6.16.7-barco-costas)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.87 · cache ded-web-v6.16.8-tela-morte)
+
+P216.87 — TELA DE MORTE NO MODO INFINITO (botão IR PARA O REFÚGIO)
+· O herói morre no Infinito → 1,4 s depois abre a tela "VOCÊ CAIU" (scripts/source/tela-morte.js): profundidade e
+  bioma, selo de NOVO RECORDE, uma de 4 frases da Guardiã (sorteada), salas · pontos · abates · tempo, o que volta
+  com o herói (ouro, arma inicial, peças do ferreiro), o que fica no Abismo e as peças do ferreiro que quebraram.
+· Só sai pelo botão IR PARA O REFÚGIO: clique/toque, Enter/Espaço/E ou A/START do controle (lido direto do gamepad).
+  O botão só responde depois de 1,2 s. Não volta mais sozinho para o Refúgio.
+· Feita em HTML por cima do jogo, então abre e responde mesmo se o Phaser engasgar; ao confirmar chama a volta
+  normal (onRestart) e, se em 6 s o Refúgio não tiver aberto, abre direto.
 
 P216.86 — BARCO: REMANDO PARA CIMA SEM VIRAR O ROSTO
 · Revisei quadro a quadro as remadas de costas (para cima) e na diagonal de cima dos 9 heróis. No Necromante, os
