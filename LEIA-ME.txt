@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.87 · cache ded-web-v6.16.8-tela-morte)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.88 · cache ded-web-v6.16.9-tela-morte-pixel)
+
+P216.88 — TELA DE MORTE REDESENHADA EM PIXEL ART
+· Fundo: a pintura do bioma onde o herói caiu (vis-*.jpg) em tons de sangue, zoom lento, vinheta, linhas de varredura
+  e cinzas/brasas quadradas subindo (canvas em 1/4 da resolução, ampliado sem suavizar).
+· Emblema novo (PixelLab, scripts/gerar_tela_morte.py → assets/pixel-art/ui/tela-morte/emblema.png): espada partida
+  cravada nos escombros com caveiras, elmo rachado e estandarte rasgado, flutuando sobre brilho vermelho.
+· "VOCÊ CAIU" em PixelifySans, letra por letra; a Guardiã (retrato) fala a frase sorteada, escrita na hora; placas
+  salas · pontos · abates · tempo com números subindo; molduras e botão pixelados (degraus de 4 px), animações em
+  degraus como sprite. Celular: emblema menor e tudo empilhado.
 
 P216.87 — TELA DE MORTE NO MODO INFINITO (botão IR PARA O REFÚGIO)
 · O herói morre no Infinito → 1,4 s depois abre a tela "VOCÊ CAIU" (scripts/source/tela-morte.js): profundidade e
