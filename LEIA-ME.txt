@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.92 · cache ded-web-v6.17.3-selecao-acoes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.93 · cache ded-web-v6.17.4-necro-valthor)
+
+P216.93 — ESCOLHA DE HERÓIS: NECROMANTE COM A APARÊNCIA PADRÃO (VALTHOR)
+· O Necromante da escolha tinha saído com cara de caveira (parecia a skin Ossos). Refeito usando também o retrato do
+  HUD como referência do rosto: Valthor, homem pálido de olhos vermelhos sob o capuz preto, manto escuro e cajado com
+  a runa carmesim. Pose, respiração e ação refeitas; a caveira agora sai da terra quando o cajado bate no chão.
+  Versão anterior guardada em scripts/art-src/selecao-hd/v1/.
 
 P216.92 — ESCOLHA DE HERÓIS: AÇÃO ESPECIAL DE CADA HERÓI
 · ~3 s depois de escolher o herói e depois a cada ~10 s ele faz a sua ação e volta a respirar: Cavaleiro tira a espada

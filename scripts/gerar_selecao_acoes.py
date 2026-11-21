@@ -20,7 +20,7 @@ ACT = {
  "rogue": (24, "an agile rogue woman in a dark brown leather hood, scarf and corset, holding exactly two curved daggers",
            "in a slight crouch facing the viewer, one dagger raised in reverse grip near her shoulder, the other held low",
            "crouches lower and crosses her two daggers in front of her face, pulls the hood forward, holds still for a moment, then rises back to her ready stance. Only two daggers."),
- "necromancer": (24, "a necromancer in a tattered dark brown hooded robe with a skull face, holding exactly one staff topped with a glowing crimson rune",
+ "necromancer": (24, "Valthor, a gaunt pale man with glowing red eyes under a black hood, dark hooded robe, holding exactly one staff topped with a glowing crimson rune orb",
                  "standing facing the viewer, staff upright in one hand, other hand raised",
                  "raises his one staff high, the crimson rune flares, he swings the staff down and points it at the ground beside him releasing a pulse of dark crimson magic, then straightens up and returns to his stance. Only one staff."),
  "shaman": (24, "an indigenous warrior woman with long black hair, red face paint, green loincloth, holding exactly one sword with a glowing blue blade",

@@ -26768,7 +26768,7 @@ window.__caveScreen = __caveScreen;
    S.tweens.add({ targets: o, t: 1, duration: 420, ease: "Quad.easeOut", onUpdate: draw, onComplete: () => g.destroy() });
    bits(S, X + 70, Y - 110, 14, [0xffffff, 0xcfe4ff], { up: 10, dx: 120, w: 90, h: 6, t: 380, spread: 60, size: 2 });
   };
-  if (c === "necromancer") hooks[13] = () => {                               // caveira sai da terra
+  if (c === "necromancer") hooks[15] = () => {                               // caveira sai da terra
    const xm = MAN._x?.esqueleto; if (!xm || !S.textures.exists("selx-esqueleto")) return;
    const gx = X - 72, sk = S.add.sprite(gx, Y, "selx-esqueleto", 0).setOrigin(.5, 0).setScale(.64).setDepth(2.5);   // do lado onde o cajado bate no chão S.__selFx.push(sk);
    const ia = anim(S, "selx-esqueleto-a", "selx-esqueleto", 1, xm.frames - 1, 8, -1, !0);

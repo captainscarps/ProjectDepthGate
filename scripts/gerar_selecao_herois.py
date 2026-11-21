@@ -26,7 +26,7 @@ HERO = {
  "rogue": ("an agile rogue woman with long dark auburn hair, a dark brown leather hood and scarf, fitted brown leather corset, bracers, belts with pouches, leather trousers and tall boots, two curved steel daggers",
            "dynamic heroic presentation pose facing the viewer three-quarter, slight crouch, one dagger raised in reverse grip near her shoulder, the other dagger held low and forward, determined sly look",
            "slow idle breathing in a ready crouch, hair and scarf ends swaying, a glint running along the dagger blades"),
- "necromancer": ("a necromancer in a tattered dark brown hooded robe with a pale skull-like face shadowed by the hood, a staff topped with a glowing crimson rune",
+ "necromancer": ("Valthor the necromancer: a gaunt pale-skinned man with sharp features and glowing red eyes under a deep black hood (a living human face, not a skull), long dark brown-black hooded robe and cloak, leather wraps, holding a staff topped with a glowing crimson rune orb",
                  "heroic presentation pose facing the viewer, staff held upright beside him, free hand raised with faint dark energy, ominous stance",
                  "slow idle breathing, tattered robe hem drifting, the crimson rune on the staff pulsing, wisps of dark mist"),
  "shaman": ("an indigenous warrior woman with long black hair, red face paint, bare shoulders, green loincloth and leg wraps, holding a sword with a glowing blue blade",
@@ -46,11 +46,15 @@ for c in sys.argv[1:] or HERO:
     subj, pose, motion = HERO[c]
     ref = Image.open(os.path.join(ROOT, "scripts/art-src/selecao", f"{c}-ref.png")).convert("RGBA")
     R = {"image": b64(ref), "size": {"width": ref.width, "height": ref.height}}
+    EXTRA = []
+    hp = os.path.join(ROOT, "assets/pixel-art/heroes-p", f"{c}-hud.png")
+    if c in ("necromancer",) and os.path.exists(hp):
+        hi = Image.open(hp).convert("RGBA"); EXTRA.append({"image": b64(hi), "size": {"width": hi.width, "height": hi.height}, "usage_description": "this is the character's face: keep exactly this face, skin tone, eyes and hood"})
     pp, ip = os.path.join(D, f"{c}-pose.png"), os.path.join(D, f"{c}-idle.png")
     if not os.path.exists(pp):
         r = post("/generate-image-v2", {"description": f"{subj}, {pose}, full body filling the whole canvas from head to feet, highly detailed pixel art game character with fine pixels, same design and colours as the reference",
                  "image_size": {"width": N, "height": N}, "no_background": True,
-                 "reference_images": [{**R, "usage_description": "this is the exact character: keep the same outfit, colours and equipment"}],
+                 "reference_images": [{**R, "usage_description": "this is the exact character: keep the same outfit, colours and equipment"}] + EXTRA,
                  **({} if NOSTYLE else {"style_image": R, "style_options": {"color_palette": True, "outline": True, "detail": True, "shading": True}})})
         images_of(job(r))[0].save(pp); print(c, "pose ok", flush=True)
     if os.path.exists(ip): continue
