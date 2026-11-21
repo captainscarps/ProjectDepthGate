@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.88 · cache ded-web-v6.16.9-tela-morte-pixel)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.89 · cache ded-web-v6.17.0-caverna-telas)
+
+P216.89 — TELAS DA CAVERNA (QUEDA E VOLTA) E PORTAL DO REFÚGIO DIRETO PARA A CORRIDA
+· Cavernas da Montanha Dorf — queda: tela "VOCÊ CAIU" com a Guardiã, Pedra Cobalto juntada · perdida (metade) ·
+  que ficou · saldo, e a lista dos itens achados na caverna que se perderam (riscados, com ícone e cor da raridade).
+  Regra agora explícita: quem cai perde os itens achados lá dentro (antes isso só acontecia sem querer no Infinito
+  porque o save não gravava) e volta com o que já tinha; o equipamento trocado na caverna volta ao anterior.
+· Volta pelo portal: tela "DE VOLTA AO REFÚGIO" (azul) com pedras trazidas, nº de itens, saldo e a lista dos itens
+  encontrados. Na campanha os itens achados na caverna agora são gravados de verdade (antes o inventário não era
+  salvo nessa volta). Arte nova (PixelLab): carrinho de cobalto, picareta e lampião caídos, fundo da mina.
+· As duas usam o mesmo construtor da tela de morte do Infinito (tela-morte.js: __dmScreen) — A/START, Enter ou toque.
+· Portal do Refúgio: sem save do Infinito ligado ao Refúgio (ex.: depois de voltar da caverna), ia para a escolha de
+  heróis e carregava de novo. Agora continua pelo save do espaço atual ou começa a corrida direto com o herói do Refúgio.
 
 P216.88 — TELA DE MORTE REDESENHADA EM PIXEL ART
 · Fundo: a pintura do bioma onde o herói caiu (vis-*.jpg) em tons de sangue, zoom lento, vinheta, linhas de varredura

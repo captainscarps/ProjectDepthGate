@@ -1984,6 +1984,27 @@ function __dorfReturnToRefuge(S, fell = false) {
   if (lostStone > 0) { try { __setForgeCoins(__getForgeCoins(S) - lostStone, S) } catch (e) {} }
   S.__cobaltRun = 0;
 
+  // p216.89: itens achados dentro da caverna (comparando com o que o herói tinha ao entrar). Quem cai perde esses itens;
+  // quem sai pelo portal leva tudo. A lista vai para a tela de queda / de volta ao Refúgio.
+  let found = [];
+  try {
+    const base = S.__dorfBase, inv = S.inventory;
+    if (base && inv) {
+      const cur = [...inv.items, ...Object.values(inv.equipment)].filter(Boolean);
+      found = cur.filter((it) => !base.items.has(it) && it.type !== "quest" && it.type !== "potion");
+      if (fell && found.length) {
+        for (const it of found) {
+          const k = inv.items.indexOf(it); if (k >= 0) inv.items.splice(k, 1);
+          for (const sl in inv.equipment) if (inv.equipment[sl] === it) {
+            const prev = base.eq[sl], pi = prev ? inv.items.indexOf(prev) : -1;
+            if (pi >= 0) { inv.items.splice(pi, 1); inv.equipment[sl] = prev } else inv.equipment[sl] = null;
+          }
+        }
+        try { inv.stats?.recompute?.() } catch (e) {}
+      }
+    }
+  } catch (e) { console.warn("[dorf_cave] itens da caverna:", e) }
+
   // Descongelar timers, física, tweens e flags de UI para evitar qualquer travamento
   try {
     S.uiOpen = false;
@@ -2033,6 +2054,12 @@ function __dorfReturnToRefuge(S, fell = false) {
           if (inv.items) d.player.items = inv.items;
           if (inv.equipment) d.player.equipment = inv.equipment;
           if (typeof inv.potions === "number") d.player.potions = inv.potions;
+        } else if (S.inventory) {
+          // p216.89: o inventário não tem serialize — grava no mesmo formato do save da campanha (antes os itens achados
+          // na caverna se perdiam mesmo saindo pelo portal)
+          const inv = S.inventory, m = (a) => a ? { id: a.id, rarity: a.rarity, seed: a.seed ?? 0 } : null;
+          d.player.items = inv.items.map(m).filter(Boolean);
+          d.player.equipment = Object.fromEntries(Object.entries(inv.equipment).map(([k, v]) => [k, m(v)]));
         }
         if (typeof S.stats?.xp === "number") d.player.xp = S.stats.xp;
         if (typeof S.stats?.level === "number") d.player.level = S.stats.level;
@@ -2058,7 +2085,7 @@ function __dorfReturnToRefuge(S, fell = false) {
     {
       const msg = lostStone > 0 ? L3f(`-${lostStone} ◆ PEDRA COBALTO PERDIDA NA QUEDA (FICOU ${runStone - lostStone})`, `-${lostStone} ◆ COBALT STONE LOST IN THE FALL (KEPT ${runStone - lostStone})`, `-${lostStone} ◆ PIEDRA COBALTO PERDIDA (QUEDARON ${runStone - lostStone})`)
         : (!fell && runStone > 0) ? L3f(`+${runStone} ◆ PEDRA COBALTO TRAZIDA DA CAVERNA`, `+${runStone} ◆ COBALT STONE BROUGHT BACK`, `+${runStone} ◆ PIEDRA COBALTO TRAÍDA DE LA CAVERNA`) : null;
-      if (msg) {
+      if (msg && !S.__cvShown) {
         const tryMsg = (n) => { const H = S.game.scene.getScene("Hub"); if (H?.sys?.isActive?.() && H.add) H.time.delayedCall(fell ? 7200 : 900, () => { try { const t = H.add.text(H.cameras.main.width / 2, 90, msg, { fontFamily: "'Cinzel', Georgia, serif", fontSize: "12px", fontStyle: "bold", color: lostStone ? "#f87171" : "#9cc2ff", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5).setScrollFactor(0).setDepth(99999); H.tweens.add({ targets: t, alpha: 0, y: 70, delay: 3200, duration: 900, onComplete: () => t.destroy() }) } catch (e) {} }); else if (n < 80) setTimeout(() => tryMsg(n + 1), 150) };
         setTimeout(() => tryMsg(0), 300);
       }
@@ -2091,8 +2118,14 @@ function __dorfReturnToRefuge(S, fell = false) {
     S.game.registry.set("hub:classId", S.classDef?.id || "WARRIOR");
     S.scene.start("Hub");
   };
-  try { S.cameras?.main?.fadeEffect?.reset?.(); } catch (e) {}
-  S.cameraSys?.fadeOut(350, doReturn);
-  setTimeout(doReturn, 400);
+  const go = () => {
+    try { S.cameras?.main?.fadeEffect?.reset?.(); } catch (e) {}
+    S.cameraSys?.fadeOut(350, doReturn);
+    setTimeout(doReturn, 400);
+  };
+  // p216.89: antes de voltar, a tela de queda / de volta ao Refúgio (tela-morte.js); o jogador confirma com o botão
+  if (typeof window !== "undefined" && typeof window.__caveScreen === "function") {
+    try { S.__cvShown = true; window.__caveScreen(S, { fell, runStone, lostStone, total: curForgeCoins, found, onGo: go }) } catch (e) { console.warn("[dorf_cave] tela:", e); go() }
+  } else go();
 }
 try { if (typeof window !== "undefined") window.__dorfReturnToRefuge = __dorfReturnToRefuge; } catch (e) {}

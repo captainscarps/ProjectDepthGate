@@ -10,7 +10,8 @@
    • botão com moldura pixelada e o A do controle. Animações em degraus (steps), como sprite.
    Feita em HTML por cima do jogo (não depende do laço do Phaser). Aceita clique/toque, Enter/Espaço/E e A/START do
    controle; só responde depois de 1,2 s. Ao confirmar chama a volta normal (onRestart); se em 6 s o Refúgio não
-   abriu, abre direto. */
+   abriu, abre direto.
+   p216.89: o miolo virou __dmScreen (reaproveitado pelas telas das Cavernas de Dorf: queda e volta vitoriosa). */
 function __dmL(pt, en, es) { try { return __L3(pt, en, es) } catch (e) { return pt } }
 const __DM_MSG = [
   ["A escuridão venceu desta vez. Abri o portal branco e trouxe você de volta — o Abismo continua lá, esperando.",
@@ -77,6 +78,18 @@ function __dmCss() {
 #dm-btn i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;font:14px NeoDunggeunmo,monospace;color:#9cff8a;background:#1a1008;
  box-shadow:0 -2px 0 0 #1a1008,0 2px 0 0 #1a1008,-2px 0 0 0 #1a1008,2px 0 0 0 #1a1008}
 #dm-hint{margin:14px 8px 0;font-size:11px;letter-spacing:1px;color:#7a6c52}
+#dm-items{margin:16px 8px 0;padding:8px 10px;background:#100a09;box-shadow:${px("#3a2a1a", "#080504")}}
+#dm-items h4{margin:0 0 6px;font-weight:normal;font-size:11px;letter-spacing:3px;color:#9a8a6a;text-transform:uppercase}
+#dm-items ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 8px;max-height:96px;overflow:auto}
+#dm-items li{display:flex;align-items:center;gap:6px;padding:3px 8px 3px 4px;background:#1a1210;font-size:12px;box-shadow:inset 0 0 0 1px #2e2016}
+#dm-items li img{width:20px;height:20px;image-rendering:pixelated}
+#dm-items li.lost{text-decoration:line-through;text-decoration-color:#e05a4a;opacity:.85}
+#dm-items .none{font-size:12px;color:#7a6c52}
+#dm-ov.win #dm-tit{color:#8fd0ff;text-shadow:4px 4px 0 #0a2448,8px 8px 0 #030a16,0 0 26px rgba(90,170,255,.35)}
+#dm-ov.win #dm-glow{background:radial-gradient(ellipse at center,rgba(70,140,255,.5),rgba(20,60,140,.18) 45%,transparent 70%)}
+#dm-ov.win #dm-btn{background:#8fd0ff;box-shadow:inset 0 -5px 0 0 #3a78b8,inset 0 4px 0 0 #d8f0ff,${px("#071a33", "#000")};color:#071a33}
+#dm-ov.win #dm-btn.ok{animation:dmPulseB 1.4s steps(2) infinite}
+@keyframes dmPulseB{50%{background:#b8e2ff}}
 @keyframes dmZoom{from{transform:scale(1)}to{transform:scale(1.12)}}
 @keyframes dmBob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
 @keyframes dmGlow{from{opacity:.6}to{opacity:1}}
@@ -89,7 +102,7 @@ function __dmCss() {
   document.head.appendChild(st);
 }
 /* cinzas e brasas quadradas subindo (resolução baixa, ampliada sem suavizar) */
-function __dmEmbers(cv) {
+function __dmEmbers(cv, blue) {
   const g = cv.getContext("2d"), P = [];
   let W = 0, H = 0, run = !0;
   const fit = () => { W = cv.width = Math.ceil(innerWidth / 4); H = cv.height = Math.ceil(innerHeight / 4) };
@@ -102,7 +115,7 @@ function __dmEmbers(cv) {
       p.y -= p.v; p.w += .02; p.x += Math.sin(p.w) * .12;
       if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W }
       const a = Math.max(0, Math.min(1, p.y / H * 1.3));
-      g.fillStyle = p.e ? `rgba(255,${90 + (p.w * 40 % 80) | 0},40,${a})` : `rgba(170,150,140,${a * .5})`;
+      g.fillStyle = p.e ? (blue ? `rgba(${90 + (p.w * 40 % 80) | 0},170,255,${a})` : `rgba(255,${90 + (p.w * 40 % 80) | 0},40,${a})`) : `rgba(170,150,140,${a * .5})`;
       g.fillRect(p.x | 0, p.y | 0, p.s, p.s);
     }
     requestAnimationFrame(step);
@@ -110,53 +123,48 @@ function __dmEmbers(cv) {
   requestAnimationFrame(step);
   return () => { run = !1; removeEventListener("resize", fit) };
 }
-function __deathScreen(S, t) {
-  const g = S.game, e = t?.entry || {}, info = S.__deathInfo || {};
+/* ícone do item tirado da textura do Phaser (quando der) */
+function __dmIcon(S, it) {
+  try {
+    const k = it?.icon || it?.def?.icon; if (!k || !S?.textures?.exists?.(k)) return "";
+    return S.textures.getBase64(k) || "";
+  } catch (e) { return "" }
+}
+function __dmItemName(it) { try { return _t(it) || it.name || it.id } catch (e) { return it?.name || it?.id || "?" } }
+function __dmItemCol(it) { try { return "#" + (bt[it.rarity]?.color ?? 0xd8cdb4).toString(16).padStart(6, "0") } catch (e) { return "#d8cdb4" } }
+/* monta a tela (o = { S, cls, bg, bgFilter, emblem, title, sub, rec, msg, stats:[[valor,rótulo,numérico]], lines:[[classe,ícone,html]],
+   items:{title, list, lost, none}, btn, hint, onGo }) */
+function __dmScreen(o) {
+  const S = o.S, g = S.game;
   if (document.getElementById("dm-ov")) return;
   __dmCss();
-  const ov = document.createElement("div"); ov.id = "dm-ov";
-  const msg = __dmL(...__DM_MSG[Math.floor(Math.random() * __DM_MSG.length)]);
-  const depth = info.depth || e.depth || 1;
-  let biome = "";
-  try { biome = St(`lvl.${S.levelId}`, S.level?.name || "") || "" } catch (x) { biome = S.level?.name || "" }
-  biome = /^endless-/i.test(biome) ? "" : String(biome).replace(/^\s*prof(undidade|\.)?\s*\d+\s*·\s*/i, "");
-  const bk = String(S.level?.biome || S.level?.themeId || S.level?.theme?.id || S.levelId || "").toLowerCase();
-  let vis = "catacombs"; for (const k in __DM_VIS) if (bk.includes(k)) { vis = __DM_VIS[k]; break }
-  const broke = info.broke || 0;
-  const tit = __dmL("VOCÊ CAIU", "YOU FELL", "HAS CAÍDO");
-  ov.innerHTML = `<div id="dm-bg" style="background-image:url('./assets/pixel-art/story/vis-${vis}.jpg')"></div><canvas id="dm-fx"></canvas><div id="dm-vig"></div>
-  <div id="dm-wrap" role="dialog" aria-modal="true" aria-label="${tit}">
-   <div id="dm-left"><div id="dm-glow"></div><img id="dm-emb" alt="" src="./assets/pixel-art/ui/tela-morte/emblema.png"></div>
+  const ov = document.createElement("div"); ov.id = "dm-ov"; o.cls && ov.classList.add(o.cls);
+  const msg = o.msg || "";
+  const it = o.items;
+  const itemsHtml = it ? `<div id="dm-items"><h4>${it.title}</h4>${it.list.length ? `<ul>${it.list.slice(0, 24).map((x) => { const ic = __dmIcon(S, x); return `<li class="${it.lost ? "lost" : ""}">${ic ? `<img alt="" src="${ic}">` : ""}<span style="color:${__dmItemCol(x)}">${__dmItemName(x)}</span></li>` }).join("")}${it.list.length > 24 ? `<li>+${it.list.length - 24}</li>` : ""}</ul>` : `<div class="none">${it.none}</div>`}</div>` : "";
+  ov.innerHTML = `<div id="dm-bg" style="background-image:url('${o.bg}');${o.bgFilter ? "filter:" + o.bgFilter : ""}"></div><canvas id="dm-fx"></canvas><div id="dm-vig"></div>
+  <div id="dm-wrap" role="dialog" aria-modal="true" aria-label="${o.title}">
+   <div id="dm-left"><div id="dm-glow"></div><img id="dm-emb" alt="" src="${o.emblem}"></div>
    <div id="dm-right">
-    <h1 id="dm-tit">${[...tit].map((c, i) => `<span style="animation-delay:${(.25 + i * .07).toFixed(2)}s">${c === " " ? "&nbsp;" : c}</span>`).join("")}</h1>
-    <div id="dm-sub">${__dmL("Profundidade", "Depth", "Profundidad")} <b>${depth}</b>${biome ? " · " + biome : ""}</div>
-    <div id="dm-rec">★ ${__dmL("NOVO RECORDE", "NEW RECORD", "NUEVO RÉCORD")} ★</div>
-    <div id="dm-say"><img id="dm-por" alt="" src="./assets/pixel-art/story/guardia-p-sadness.png"><div><div id="dm-nm">${__dmL("A GUARDIÃ", "THE GUARDIAN", "LA GUARDIANA")}</div><div id="dm-msg"></div></div></div>
-    <div id="dm-st">
-     <div><b data-n="${e.roomsCleared ?? 0}">0</b><span>${__dmL("Salas", "Rooms", "Salas")}</span></div>
-     <div><b data-n="${e.score ?? 0}">0</b><span>${__dmL("Pontos", "Score", "Puntos")}</span></div>
-     <div><b data-n="${e.enemiesKilled ?? 0}">0</b><span>${__dmL("Abates", "Kills", "Bajas")}</span></div>
-     <div><b>${__dmTime(e.elapsedMs)}</b><span>${__dmL("Tempo", "Time", "Tiempo")}</span></div>
-    </div>
-    <div id="dm-keep">
-     <p><i class="g">●</i>${__dmL("Volta com você", "You keep", "Vuelve contigo")}: <span class="g">${info.gold ?? 0} ${__dmL("de ouro", "gold", "de oro")}</span>, ${__dmL("a arma inicial e as peças do ferreiro", "your starting weapon and blacksmith pieces", "el arma inicial y las piezas del herrero")}</p>
-     <p><i class="x">✖</i><span class="x">${__dmL("Fica no Abismo: nível do herói, itens achados e pactos", "Left in the Abyss: hero level, found items and pacts", "Se queda en el Abismo: nivel del héroe, objetos y pactos")}</span></p>
-     ${broke ? `<p><i class="k">⚒</i><span class="k">${broke} ${__dmL("peça(s) do ferreiro quebraram — conserte na forja", "blacksmith piece(s) broke — repair them at the forge", "pieza(s) del herrero se rompieron — repáralas en la forja")}</span></p>` : ""}
-    </div>
-    <button id="dm-btn" type="button"><i>A</i>${__dmL("IR PARA O REFÚGIO", "GO TO THE REFUGE", "IR AL REFUGIO")}</button>
+    <h1 id="dm-tit"${o.title.length > 11 ? ' style="font-size:clamp(30px,4vw,48px);white-space:normal;line-height:1.15"' : ""}>${(() => { let n = 0; return o.title.split(" ").map((w) => `<em style="display:inline-block;white-space:nowrap;font-style:normal">${[...w].map((c) => `<span style="animation-delay:${(.25 + (n++) * .06).toFixed(2)}s">${c}</span>`).join("")}</em>`).join(" ") })()}</h1>
+    <div id="dm-sub">${o.sub || ""}</div>
+    <div id="dm-rec">★ ${o.rec || __dmL("NOVO RECORDE", "NEW RECORD", "NUEVO RÉCORD")} ★</div>
+    ${msg ? `<div id="dm-say"><img id="dm-por" alt="" src="./assets/pixel-art/story/guardia-p-${o.face || "sadness"}.png"><div><div id="dm-nm">${__dmL("A GUARDIÃ", "THE GUARDIAN", "LA GUARDIANA")}</div><div id="dm-msg"></div></div></div>` : ""}
+    <div id="dm-st" style="grid-template-columns:repeat(${o.stats.length},1fr)">${o.stats.map(([v, l, num]) => `<div><b ${num ? `data-n="${v}"` : ""}>${num ? 0 : v}</b><span>${l}</span></div>`).join("")}</div>
+    ${itemsHtml}
+    <div id="dm-keep">${(o.lines || []).map(([c, ic, h]) => `<p><i class="${c}">${ic}</i><span class="${c}">${h}</span></p>`).join("")}</div>
+    <button id="dm-btn" type="button"><i>A</i>${o.btn || __dmL("IR PARA O REFÚGIO", "GO TO THE REFUGE", "IR AL REFUGIO")}</button>
     <div id="dm-hint">${__dmL("A ou START no controle · Enter no teclado · ou toque no botão", "A or START on the controller · Enter on the keyboard · or tap the button", "A o START en el mando · Enter en el teclado · o toca el botón")}</div>
    </div>
   </div>`;
   document.body.appendChild(ov);
-  t?.newRecord && (ov.querySelector("#dm-rec").style.display = "block");
-  const stopFx = __dmEmbers(ov.querySelector("#dm-fx"));
+  o.showRec && (ov.querySelector("#dm-rec").style.display = "block");
+  const stopFx = __dmEmbers(ov.querySelector("#dm-fx"), o.cls === "win");
   requestAnimationFrame(() => ov.classList.add("on"));
   window.__padUI = (window.__padUI || 0) + 1;
-  // fala da Guardiã sendo escrita
   const mEl = ov.querySelector("#dm-msg"); let mi = 0;
-  const typer = setInterval(() => { mi += 2; mEl.textContent = msg.slice(0, mi); mi >= msg.length && clearInterval(typer) }, 28);
-  setTimeout(() => { try { window.__dubHas?.(msg) && window.__dub?.(msg) } catch (x) {} }, 900);
-  // números das placas sobem
+  const typer = mEl ? setInterval(() => { mi += 2; mEl.textContent = msg.slice(0, mi); mi >= msg.length && clearInterval(typer) }, 28) : 0;
+  msg && setTimeout(() => { try { window.__dubHas?.(msg) && window.__dub?.(msg) } catch (x) {} }, 900);
   const t0 = performance.now() + 700, nums = [...ov.querySelectorAll("#dm-st b[data-n]")];
   const count = () => { const k = Math.min(1, Math.max(0, (performance.now() - t0) / 1100)), q = 1 - (1 - k) ** 3; for (const b of nums) b.textContent = Math.round(+b.dataset.n * q).toLocaleString("pt-BR"); k < 1 && document.body.contains(ov) && requestAnimationFrame(count) };
   requestAnimationFrame(count);
@@ -167,14 +175,11 @@ function __deathScreen(S, t) {
     if (!ready || gone) return; gone = !0;
     try { g.audioEngine?.sfx?.("sfx-ui-confirm") } catch (x) {}
     try { window.__dubStop?.() } catch (x) {}
-    window.removeEventListener("keydown", kd, !0); clearInterval(pad); clearInterval(typer);
+    window.removeEventListener("keydown", kd, !0); clearInterval(pad); typer && clearInterval(typer);
     window.__padUI = Math.max(0, (window.__padUI || 0) - 1);
     try { g.inputManager && (g.inputManager.padButtons = []) } catch (x) {}
     ov.classList.remove("on"); setTimeout(() => { stopFx(); ov.remove() }, 1150);
-    try {
-      if (S.sys?.isActive?.()) S.onRestart();
-      else { g.scene.getScenes(!0).forEach((q) => { const k = q.sys.settings.key; k !== "LazyMaps" && g.scene.stop(k) }); g.scene.start("Hub") }
-    } catch (x) { console.warn("[tela de morte]", x); try { g.scene.start("Hub") } catch (y) {} }
+    try { o.onGo() } catch (x) { console.warn("[tela]", x); try { g.scene.start("Hub") } catch (y) {} }
     // garantia: se em 6 s o Refúgio não abriu, abre direto
     setTimeout(() => { try { const H = g.scene.getScene("Hub"); if (!H?.sys?.isActive?.()) { g.scene.getScenes(!0).forEach((q) => { const k = q.sys.settings.key; k !== "LazyMaps" && g.scene.stop(k) }); g.scene.start("Hub") } } catch (x) {} }, 6000);
   };
@@ -187,4 +192,108 @@ function __deathScreen(S, t) {
     a && !pv && go(); pv = a;
   }, 50);
 }
+
+/* morte no Modo Infinito */
+function __deathScreen(S, t) {
+  const g = S.game, e = t?.entry || {}, info = S.__deathInfo || {};
+  const depth = info.depth || e.depth || 1;
+  let biome = "";
+  try { biome = St(`lvl.${S.levelId}`, S.level?.name || "") || "" } catch (x) { biome = S.level?.name || "" }
+  biome = /^endless-/i.test(biome) ? "" : String(biome).replace(/^\s*prof(undidade|\.)?\s*\d+\s*·\s*/i, "");
+  const bk = String(S.level?.biome || S.level?.themeId || S.level?.theme?.id || S.levelId || "").toLowerCase();
+  let vis = "catacombs"; for (const k in __DM_VIS) if (bk.includes(k)) { vis = __DM_VIS[k]; break }
+  const broke = info.broke || 0;
+  __dmScreen({ S, bg: `./assets/pixel-art/story/vis-${vis}.jpg`, emblem: "./assets/pixel-art/ui/tela-morte/emblema.png",
+    title: __dmL("VOCÊ CAIU", "YOU FELL", "HAS CAÍDO"),
+    sub: `${__dmL("Profundidade", "Depth", "Profundidad")} <b>${depth}</b>${biome ? " · " + biome : ""}`, showRec: !!t?.newRecord,
+    msg: __dmL(...__DM_MSG[Math.floor(Math.random() * __DM_MSG.length)]),
+    stats: [[e.roomsCleared ?? 0, __dmL("Salas", "Rooms", "Salas"), 1], [e.score ?? 0, __dmL("Pontos", "Score", "Puntos"), 1], [e.enemiesKilled ?? 0, __dmL("Abates", "Kills", "Bajas"), 1], [__dmTime(e.elapsedMs), __dmL("Tempo", "Time", "Tiempo")]],
+    lines: [["g", "●", `${__dmL("Volta com você", "You keep", "Vuelve contigo")}: ${info.gold ?? 0} ${__dmL("de ouro", "gold", "de oro")}, ${__dmL("a arma inicial e as peças do ferreiro", "your starting weapon and blacksmith pieces", "el arma inicial y las piezas del herrero")}`],
+      ["x", "✖", __dmL("Fica no Abismo: nível do herói, itens achados e pactos", "Left in the Abyss: hero level, found items and pacts", "Se queda en el Abismo: nivel del héroe, objetos y pactos")],
+      ...(broke ? [["k", "⚒", `${broke} ${__dmL("peça(s) do ferreiro quebraram — conserte na forja", "blacksmith piece(s) broke — repair them at the forge", "pieza(s) del herrero se rompieron — repáralas en la forja")}`]] : [])],
+    onGo: () => {
+      if (S.sys?.isActive?.()) S.onRestart();
+      else { g.scene.getScenes(!0).forEach((q) => { const k = q.sys.settings.key; k !== "LazyMaps" && g.scene.stop(k) }); g.scene.start("Hub") }
+    } });
+}
 window.__deathScreen = __deathScreen;
+
+/* Cavernas da Montanha Dorf (p216.89): queda (perde metade da Pedra Cobalto e os itens achados lá dentro) e volta
+   vitoriosa pelo portal (tudo o que juntou). r = { fell, runStone, lostStone, total, found, onGo } */
+const __CV_FELL = [
+  ["Você caiu, herói. Eu te trouxe de volta para se recuperar — mas a caverna ficou com parte do que você juntou.",
+   "You fell, hero. I brought you back to recover — but the cave kept part of what you gathered.",
+   "Caíste, héroe. Te traje de vuelta para que te recuperes — pero la caverna se quedó con parte de lo que juntaste."],
+  ["As profundezas de Dorf não perdoam. Descanse no Refúgio; o cobalto que ficou lá embaixo ainda pode ser seu.",
+   "The depths of Dorf show no mercy. Rest at the Refuge; the cobalt left down there can still be yours.",
+   "Las profundidades de Dorf no perdonan. Descansa en el Refugio; el cobalto que quedó allá abajo aún puede ser tuyo."],
+];
+const __CV_WIN = [
+  ["Que bela colheita! O ferreiro vai ficar feliz com essa Pedra Cobalto.",
+   "What a haul! The blacksmith will be glad to see this Cobalt Stone.",
+   "¡Qué buena cosecha! El herrero se alegrará con esta Piedra Cobalto."],
+  ["Você voltou inteiro e com os bolsos cheios. A forja do Refúgio espera por você.",
+   "You came back in one piece and with full pockets. The Refuge forge awaits.",
+   "Volviste entero y con los bolsillos llenos. La forja del Refugio te espera."],
+];
+function __caveScreen(S, r) {
+  const fell = !!r.fell, kept = Math.max(0, (r.runStone | 0) - (r.lostStone | 0)), pick = (a) => __dmL(...a[Math.floor(Math.random() * a.length)]);
+  const CO = __dmL("Pedra Cobalto", "Cobalt Stone", "Piedra Cobalto");
+  __dmScreen({ S, cls: fell ? "" : "win", bg: "./assets/pixel-art/ui/tela-morte/caverna-fundo.png",
+    bgFilter: fell ? "grayscale(.6) contrast(1.1) brightness(.4) sepia(.6) hue-rotate(-30deg) saturate(1.6)" : "brightness(.5) contrast(1.05) saturate(1.1)",
+    emblem: `./assets/pixel-art/ui/tela-morte/${fell ? "caverna-queda" : "caverna-volta"}.png`,
+    title: fell ? __dmL("VOCÊ CAIU", "YOU FELL", "HAS CAÍDO") : __dmL("DE VOLTA AO REFÚGIO", "BACK TO THE REFUGE", "DE VUELTA AL REFUGIO"),
+    sub: __dmL("Cavernas da Montanha Dorf", "Dorf Mountain Caves", "Cavernas de la Montaña Dorf"),
+    face: fell ? "sadness" : "smile",
+    msg: fell ? pick(__CV_FELL) : pick(__CV_WIN),
+    stats: fell
+      ? [[r.runStone | 0, __dmL("Juntou", "Gathered", "Juntó"), 1], [r.lostStone | 0, __dmL("Perdeu", "Lost", "Perdió"), 1], [kept, __dmL("Ficou", "Kept", "Quedó"), 1], [r.total | 0, __dmL("Saldo ◆", "Total ◆", "Saldo ◆"), 1]]
+      : [[r.runStone | 0, __dmL("◆ Trazidas", "◆ Brought", "◆ Traídas"), 1], [r.found.length, __dmL("Itens", "Items", "Objetos"), 1], [r.total | 0, __dmL("Saldo ◆", "Total ◆", "Saldo ◆"), 1]],
+    items: fell
+      ? { title: __dmL("Itens perdidos na queda", "Items lost in the fall", "Objetos perdidos en la caída"), list: r.found, lost: !0, none: __dmL("Nenhum item achado na caverna foi perdido.", "No item found in the cave was lost.", "Ningún objeto hallado en la caverna se perdió.") }
+      : { title: __dmL("Itens encontrados", "Items found", "Objetos encontrados"), list: r.found, none: __dmL("Nenhum item novo desta vez.", "No new items this time.", "Ningún objeto nuevo esta vez.") },
+    lines: fell
+      ? [["x", "◆", `${__dmL("Metade da", "Half of the", "La mitad de la")} ${CO} ${__dmL("ficou caída na caverna", "was left in the cave", "quedó en la caverna")} (−${r.lostStone | 0})`],
+         ["g", "●", __dmL("Seu ouro, o equipamento que você já tinha e o resto da Pedra Cobalto voltam com você", "Your gold, the gear you already had and the rest of the Cobalt Stone come back with you", "Tu oro, el equipo que ya tenías y el resto de la Piedra Cobalto vuelven contigo")]]
+      : [["k", "◆", `+${r.runStone | 0} ${CO} ${__dmL("guardadas para a forja do Refúgio", "stored for the Refuge forge", "guardadas para la forja del Refugio")}`]],
+    btn: __dmL("IR PARA O REFÚGIO", "GO TO THE REFUGE", "IR AL REFUGIO"),
+    onGo: r.onGo });
+}
+window.__caveScreen = __caveScreen;
+
+/* o que o herói tinha ao entrar na caverna (para saber o que foi achado lá dentro) */
+{
+ const C0 = Sd.prototype.create;
+ Sd.prototype.create = function () {
+  const r = C0.apply(this, arguments), S = this;
+  try {
+   S.__dorfBase = null;
+   const snap = () => { try { if (!S.isDorfCave || S.__dorfBase || !S.inventory) return; const inv = S.inventory; S.__dorfBase = { items: new Set([...inv.items, ...Object.values(inv.equipment)].filter(Boolean)), eq: { ...inv.equipment } } } catch (e) {} };
+   setTimeout(snap, 900); setTimeout(snap, 2500);
+  } catch (e) {}
+  return r;
+ };
+}
+
+/* ══ Portal do Refúgio direto para a corrida (p216.89) ══
+   Sem save do Infinito ligado ao Refúgio (ex.: voltou da caverna, ou o registro perdeu o espaço), o portal levava à
+   escolha de heróis e depois carregava de novo. Agora: acha o save do espaço atual e continua por ele; se não houver
+   save, começa uma corrida nova direto com o herói que está no Refúgio. */
+{
+ const EP0 = Fl.prototype.enterPortal;
+ Fl.prototype.enterPortal = function () {
+  try {
+   if (this.fromForest) return EP0.apply(this, arguments);
+   const R = this.game.registry, sl = R.get("hub:endlessSlot") || R.get("save:slot") || 1;
+   const sv = typeof Nn === "function" ? Nn(sl) : null;
+   if (sv?.ok) { R.set("hub:endlessSlot", sl); return EP0.apply(this, arguments) }
+   const cls = String(R.get("hub:classId") || window.__heroCls || "").toUpperCase();
+   if (!cls || typeof pe === "undefined" || !pe[cls]) return EP0.apply(this, arguments);
+   R.set("mode", "endless"); R.set("save:slot", sl); R.set("hub:endlessSlot", sl);
+   R.remove("endless:run"); R.set("endless:coop", !1); R.remove("endless:netRole");
+   this.game.audioEngine?.sfx("sfx-endless-start");
+   this.cameras.main.fadeOut(500, 0, 0, 0);
+   this.cameras.main.once("camerafadeoutcomplete", () => this.scene.start("Game", { endless: !0, classId: cls }));
+  } catch (e) { console.warn("[portal]", e); return EP0.apply(this, arguments) }
+ };
+}
