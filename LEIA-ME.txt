@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.95 · cache ded-web-v6.17.6-selecao-toque)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.96 · cache ded-web-v6.17.7-samurai-andar)
+
+P216.96 — SAMURAI: CAMINHADA E CORRIDA REFEITAS EM TODAS AS DIREÇÕES
+· Poses paradas de cada direção geradas a partir do perfil (PixelLab generate-8-rotations-v3) — a "frente" antiga era
+  de três-quartos; agora é de frente de verdade, e costas/diagonais saem do mesmo desenho. Caminhada e corrida novas
+  (animate-pixminimax, correção de cor em todos os quadros): passos alternados com o pé saindo do chão, braços e saia
+  da armadura balançando, katana embainhada. Perfil com 12 quadros (o jogo usa 6, um sim um não → ciclo uniforme);
+  frente, costas e as duas diagonais com 8. As diagonais vieram viradas para a esquerda e foram espelhadas.
+· scripts/gerar_samurai_andar.py (fontes novas em scripts/art-src/samurai/v2, antigas em v1) → build_samurai_pixellab.py
+  (só os quadros de andar/correr/dash mudaram) e build_herois_dirs.py berserker (aceita a classe como argumento agora).
 
 P216.95 — ESCOLHA DE HERÓIS: HERÓI SUMIA AO TOCAR NA LISTA
 · No toque (celular/tablet) o tap chama a atualização da tela duas vezes; a 2ª passava pelo hero-art.js, que esconde

@@ -121,7 +121,10 @@ def prep(cls, f):
     if cls == "warrior": f = decape(f)
     return clean(shrink(f), SMALL.get(cls, 40), white=cls in ("druid", "berserker", "hunter"))
 
+import sys
+ONLY = set(sys.argv[1:])                       # p216.96: python3 scripts/build_herois_dirs.py berserker → só essa classe
 for cls, folder in HEROES.items():
+    if ONLY and cls not in ONLY: continue
     meta = json.load(open(os.path.join(OUT, f"{cls}-pack.json")))
     foot = meta["footY"]
     rows = []

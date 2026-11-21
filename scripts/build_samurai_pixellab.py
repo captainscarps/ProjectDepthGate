@@ -23,8 +23,8 @@ def frames(name):
 I, W, R, K, C, H, D = (frames(n) for n in ("idle", "walk", "run", "attack", "cast", "hurt", "death"))
 seq = [
     I[1], I[3], I[5], I[7], I[2], I[6],          # 0-3 parada · 4,5 idlevar
-    W[1], W[2], W[3], W[5], W[6], W[7],          # 6-11 caminhada
-    R[3], R[4], R[5], R[6], R[7], R[8],          # 12-17 corrida
+    *([W[2], W[4], W[6], W[8], W[10], W[12]] if len(W) >= 13 else [W[1], W[2], W[3], W[5], W[6], W[7]]),   # 6-11 caminhada (p216.96: 12 quadros → um sim um não)
+    *([R[2], R[4], R[6], R[8], R[10], R[12]] if len(R) >= 13 else [R[3], R[4], R[5], R[6], R[7], R[8]]),   # 12-17 corrida
     K[2], K[3], K[4], K[5], K[7],                # 18 windupA 19 windup 20 hitA 21 hit 22 recovery (saca a katana e corta)
     K[1], K[1],                                  # 23 guardStart 24 guard
     H[3], H[4], H[3], H[4],                      # 25 hurt 26 hurtB 27 stunA 28 stunB
