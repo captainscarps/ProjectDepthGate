@@ -1,0 +1,56 @@
+{
+ "archer": {
+  "size": 144,
+  "frames": 9,
+  "foot": 128,
+  "top": 16
+ },
+ "berserker": {
+  "size": 144,
+  "frames": 9,
+  "foot": 123,
+  "top": 20
+ },
+ "druid": {
+  "size": 144,
+  "frames": 9,
+  "foot": 122,
+  "top": 21
+ },
+ "hunter": {
+  "size": 144,
+  "frames": 9,
+  "foot": 126,
+  "top": 18
+ },
+ "mage": {
+  "size": 144,
+  "frames": 9,
+  "foot": 123,
+  "top": 21
+ },
+ "necromancer": {
+  "size": 144,
+  "frames": 9,
+  "foot": 122,
+  "top": 21
+ },
+ "rogue": {
+  "size": 144,
+  "frames": 9,
+  "foot": 121,
+  "top": 22
+ },
+ "shaman": {
+  "size": 144,
+  "frames": 9,
+  "foot": 122,
+  "top": 22
+ },
+ "warrior": {
+  "size": 144,
+  "frames": 9,
+  "foot": 124,
+  "top": 22
+ }
+}

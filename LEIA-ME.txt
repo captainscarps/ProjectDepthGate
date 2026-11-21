@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.89 · cache ded-web-v6.17.0-caverna-telas)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.90 · cache ded-web-v6.17.1-selecao-herois)
+
+P216.90 — ESCOLHA DE HERÓIS: OS 9 HERÓIS EM PIXEL ART, POSE DE APRESENTAÇÃO E ANIMADOS
+· PixelLab (scripts/gerar_selecao_herois.py): cada herói gerado a partir do próprio sprite do jogo (quadro de frente,
+  usado como referência e como estilo — mesma roupa, cores, contorno e tamanho de pixel), numa pose de apresentação,
+  e animado parado respirando (8 quadros, vai e volta). Brutos em scripts/art-src/selecao/.
+· scripts/build_selecao_herois.py → assets/pixel-art/heroes-sel/<classe>.png (9 quadros de 144×144) + manifest.json
+  (pé de cada herói). selecao-herois.js carrega na tela de escolha e troca a ilustração antiga pelo herói animado
+  (escala 2, pé na sombra do palco, entra com um fade curto). Bloqueado: silhueta escura e parada, como antes.
 
 P216.89 — TELAS DA CAVERNA (QUEDA E VOLTA) E PORTAL DO REFÚGIO DIRETO PARA A CORRIDA
 · Cavernas da Montanha Dorf — queda: tela "VOCÊ CAIU" com a Guardiã, Pedra Cobalto juntada · perdida (metade) ·
