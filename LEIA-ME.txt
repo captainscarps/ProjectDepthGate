@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.94 · cache ded-web-v6.17.5-ladina-druida)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.95 · cache ded-web-v6.17.6-selecao-toque)
+
+P216.95 — ESCOLHA DE HERÓIS: HERÓI SUMIA AO TOCAR NA LISTA
+· No toque (celular/tablet) o tap chama a atualização da tela duas vezes; a 2ª passava pelo hero-art.js, que esconde
+  o sprite do palco, e o herói novo não voltava a aparecer (mesmo herói = nada a refazer). Agora, mesmo sem trocar de
+  herói, o sprite volta a ficar visível. Testado no toque e no mouse.
 
 P216.94 — ESCOLHA DE HERÓIS: LADINA E DRUIDA IGUAIS AO RETRATO
 · Ladina (Seris) refeita com o retrato do HUD como referência: capuz roxo com friso dourado e máscara roxa cobrindo

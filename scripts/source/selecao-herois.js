@@ -130,7 +130,8 @@
    S.__heroT?.forEach((q) => q.remove()); S.__heroT = [];
    S.__art?.setVisible(!1);                                        // ilustração antiga (hero-art.js) sai do palco
    const lk = S.__ok?.(C) === !1, changed = S.__selK !== k || S.__selL !== lk;
-   if (!changed) return;                                           // mesmo herói: não interrompe a animação
+   if (!changed) { h.setVisible(!0); return }                       // mesmo herói: não interrompe a animação (mas hero-art.js
+                                                                    // esconde o sprite a cada refreshDetails — no toque isso roda 2×)
    S.__selK = k; S.__selL = lk;
    stop(S); h.anims.stop();
    const a = anim(S, k + "-idle", k, 1, m.frames - 1, 7, -1, !0);
