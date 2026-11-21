@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.99 · cache ded-web-v6.18.0-samurai-perfil)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.100 · cache ded-web-v6.18.1-samurai-foco)
+
+P216.100 — SAMURAI COM FOCO E TÉCNICAS NOVAS · ESCOLHA DE HERÓIS FIEL AO JOGO
+· Samurai (scripts/source/samurai-foco.js): Fúria (começava em 0, custos 25–45) → FOCO: começa cheio, recupera 9/s,
+  +3 por golpe acertado, levar dano tira 8, com Foco ≥ 80 os golpes causam +15%.
+· Técnicas novas nas mesmas vagas (IDs internos mantidos para saves, árvore do Infinito e animações):
+  Kesa-giri (Nv1, corte diagonal que faz sangrar 3 s, 12 Foco) · Zanshin (Nv5, +20% crítico +4 defesa, recupera 25
+  Foco, 10) · Sen no Sen (Nv5, +10 defesa e o próximo golpe é contra-ataque, 8) · Shippū (Nv10, avanço de vendaval, 15)
+  · Sakura Arashi (Nv10, giro com tempestade de pétalas, 18) · Musō no Ken (Nv15, seis cortes, ×4 em quem tem pouca
+  vida, 30). Ícones novos (PixelLab, scripts/gerar_samurai_icones.py; originais em scripts/art-src/samurai-foco/orig)
+  e efeitos em pixel. Textos da árvore do Infinito trocados para os nomes novos. Arma inicial agora se chama Katana.
+· Tela de escolha (todas as classes): o recurso mostra o nome do jogo (Espírito, Natureza, Foco…) e os ícones mostram
+  a habilidade inicial e as duas opções do nível 5 (antes era uma lista que não batia com o que o herói ganha).
 
 P216.99 — SAMURAI ANDANDO DE LADO SEM OLHAR PARA TRÁS
 · A caminhada/corrida de perfil nascia da pose antiga, que tem o rosto virado para a esquerda: andando para a direita

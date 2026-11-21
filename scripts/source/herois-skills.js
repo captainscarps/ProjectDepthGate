@@ -57,7 +57,7 @@ const __SKH_FX = {
   BERSERKER: { _atk: ["w-slash", "f", 0, .55, 18, -20], IAIJUTSU: ["w-iai", "f", .2, .6, 30, -18], ET_TSUBAME: ["w-iai", "f", .2, .6, 30, -18],
     KAZE_GIRI: ["k-wind", "f", .1, .7, 30, -18], TSUMUJI: ["w-spin", "c", .06, .65, 0, -10], ET_QUAKE: ["w-quake", "p", .3, .75, 14, 0],
     KAISHAKU: ["w-exec", "f", .24, .6, 18, -22], ET_PARRY: ["k-parry", "f", .1, .6, 14, -24], MIKIRI: ["k-parry", "f", .1, .6, 14, -24],
-    ET_IRON_WALL: ["k-parry", "c", .1, .7, 0, -18], KIAI: ["k-kiai", "c", .15, .7, 0, -16], _buff: ["k-kiai", "c", .15, .6, 0, -16] },
+    ET_IRON_WALL: ["k-parry", "c", .1, .7, 0, -18], KIAI: ["k-parry", "c", .1, .75, 0, -18], _buff: ["k-kiai", "c", .15, .6, 0, -16] },
   ROGUE: { _atk: ["r-slash", "f", 0, .55, 16, -22], FAN_OF_BLADES: ["r-hit", "j", 0, .6, 0, 0], BACKSTAB: ["r-stab", "f", .2, .6, 18, -22],
     SMOKE_BOMB: ["r-smoke", "p", .25, .8, 0, 0], ET_TOXIC_SMOKE: ["r-poison", "p", .25, .8, 0, 0], ET_DECOY: ["r-blink", "c", .1, .7, 0, -16],
     SHADOW_STEP: ["r-blink", "c", 0, .7, 0, -16], SHADOW_BLINK: ["r-blink", "c", 0, .7, 0, -16], ET_ROLL: ["r-blink", "p", 0, .5, 0, 0],
