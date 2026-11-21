@@ -68,14 +68,15 @@
     const reg = scene.registry || scene.game?.registry;
     const run = scene.endlessRun?.() || reg?.get?.("endless:run");
     if (run) {
-      if (!Array.isArray(run.pacts)) {
-        const regPacts = reg?.get?.("endless:activePacts");
-        run.pacts = Array.isArray(regPacts) ? [...regPacts] : [];
-      }
+      // p216.84: uma corrida nova começa SEM pactos (antes herdava os da corrida anterior guardados no registro,
+      // e o deck continuava no herói depois de morrer e voltar ao Refúgio)
+      if (!Array.isArray(run.pacts)) run.pacts = [];
       reg?.set?.("endless:activePacts", run.pacts);
       return run.pacts;
     }
     if (!reg) return [];
+    // fora de uma corrida do Infinito não há pacto ativo
+    if (!(scene.level?.endless || scene.mode === "endless")) { reg.set("endless:activePacts", []); return reg.get("endless:activePacts"); }
     if (!reg.has("endless:activePacts")) {
       reg.set("endless:activePacts", []);
     }

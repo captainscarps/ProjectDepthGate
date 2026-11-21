@@ -1,4 +1,20 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.83 · cache ded-web-v6.16.4-visual)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.84 · cache ded-web-v6.16.5-salas-pactos)
+
+P216.84 — SEM CAPAS, SALA PRESA, TRAVA NO REFÚGIO (CONTROLE) E PACTOS QUE FICAVAM DEPOIS DA MORTE
+· Capas: a capa/manto/lenço que o jogo desenhava por cima das armaduras incomuns, raras, épicas, lendárias e
+  relíquia (e das variantes novas) foi desligada para todos os heróis (hero-mods.js: __capeFor). A raridade continua
+  na cor da roupa. Capas que fazem parte do desenho da própria armadura (Manto do Caçador do Norte, Corvo do Druida)
+  não mudaram.
+· Sala presa (resgate-controle.js): vigia de 1 s na sala ativa sem chefe — remove inimigo "fantasma" (fora da sala,
+  sem vida, sem corpo ou invisível por mais de 8 s), traz para perto do herói o inimigo parado sem levar dano há 25 s
+  (preso na parede) e, sem nenhum inimigo vivo por 2 s, conclui a sala (portas abrem, portal do Infinito aparece).
+  Sala de SOBREVIVER cujo tempo acabou também conclui.
+· Trava ao voltar ao Refúgio: START do controle sem reação nenhuma (a pausa não abriu em 0,5 s) agora destrava tudo o
+  que pode segurar a vila — fade de câmera parado, relógio/tweens/física pausados, entrada desligada, cena pausada,
+  fala "fantasma" sem caixa na tela, trava de vídeo vazada e __busy — e abre a pausa, igual ao botão START da tela.
+· Deck de pactos: ao morrer no Infinito o save limpava só a lista antiga (run.pacts), mas a mão de cartas (run.cards,
+  abyss-cards.js) continuava e voltava na corrida seguinte. Agora a morte zera as cartas no save e na memória, o
+  Refúgio zera a mão quando não há corrida viva, e uma corrida nova não herda mais os pactos guardados no registro.
 
 P216.83 — DESERTO POLIDO, TEXTOS SEM SOBREPOSIÇÃO E GUARDIÃ SEM BURACOS
 · Deserto (campanha e Infinito): ganhou ambiente próprio em vez de herdar o das Ruínas — sem relevo de tocha

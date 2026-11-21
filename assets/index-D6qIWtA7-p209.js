@@ -3692,7 +3692,7 @@ const eq0=sv.player.equipment||{},eq={};for(const k in eq0){const it=eq0[k];eq[k
 if(!eq.weapon)eq.weapon={id:__sw,rarity:"COMMON",seed:0};if(__so&&!eq.offhand)eq.offhand={id:__so,rarity:"COMMON",seed:0};
 sv.player.equipment=eq;sv.player.items=(Array.isArray(sv.player.items)?sv.player.items:[]).filter(it=>isForge(it)&&wear(it));
 if(eq.weapon&&eq.weapon.id!==__sw&&!sv.player.items.some(it=>it&&it.id===__sw))sv.player.items.unshift({id:__sw,rarity:"COMMON",seed:0});
-sv.player.potions=1;sv.player.lastPact=null;sv.run.pacts=[];sv.run.__kills=0;sv.atRefuge=!0;
+sv.player.potions=1;sv.player.lastPact=null;sv.run.pacts=[];sv.run.cards=[];sv.run.__kills=0;sv.atRefuge=!0;try{i.cards=[];i.pacts=[];this.game.registry.set("endless:activePacts",[])}catch(e){}
 window.__forgeDurSet?.(sl,FD);broke.length&&window.__forgeBrokenAdd?.(sl,broke);localStorage.setItem(Wt("endless",sl),JSON.stringify(sv));const L3=typeof __L3==="function"?__L3:(pt,en)=>pt;try{window.dispatchEvent(new CustomEvent("depthgate:endlessDeath",{detail:{slot:sl}}))}catch(e){}
 const __dep=i.depth||1;this.game.events.emit("ui:banner",L3(`VOCÊ CAIU NA PROFUNDIDADE ${__dep} · O HERÓI VOLTA AO NÍVEL 1`,`YOU FELL AT DEPTH ${__dep} · THE HERO RETURNS TO LEVEL 1`,`CAÍSTE EN LA PROFUNDIDAD ${__dep} · EL HÉROE VUELVE AL NIVEL 1`),"#e05a4a");
 this.time.delayedCall(1700,()=>this.game.events.emit("ui:banner",L3(`VOCÊ VOLTA COM SEU OURO (● ${sv.player.gold|0}), A ARMA INICIAL E AS PEÇAS DO FERREIRO`,`YOU RETURN WITH YOUR GOLD (● ${sv.player.gold|0}), THE STARTING WEAPON AND BLACKSMITH PIECES`,`VUELVES CON TU ORO (● ${sv.player.gold|0}), EL ARMA INICIAL Y LAS PIEZAS DEL HERRERO`),"#f2d9a0"));
@@ -19213,6 +19213,7 @@ const __CAPE_TIER = { UNCOMMON: 1, RARE: 2, EPIC: 3, LEGENDARY: 4, RELIC: 4 };
 // ladina, druida, samurai (berserker) e maga não usam capa nem lenço — só a cabeça descoberta no lendário
 const __NOCAPE = new Set(["rogue", "druid", "berserker", "mage"]);
 function __capeFor(cls, eq) {
+  return null;   // p216.84: nenhuma armadura desenha capa/manto/lenço extra no herói (pedido do Rafael) — a raridade aparece na cor
   const D = __NOCAPE.has(cls) ? null : __CAPE[cls], tier = __CAPE_TIER[eq?.armor?.rarity] ?? 0;
   if (!D || !tier) return null;
   if (/templario|rubro/.test(eq?.armor?.id ?? "")) return null;   // p216.56: o Templário já tem manto no desenho (sem capa extra); p216.66: nem a Lua Rubra
@@ -25881,6 +25882,26 @@ try { __SKH_FX.DRUID.TIGRE_FORM = __SKH_FX.DRUID.PANTERA_FORM = ["d-shift", "c",
   try { if (H.cameras.main.fadeEffect?.isRunning) return !1 } catch (e) {}
   H.__busy = !1; H.__stPv = !0; H.__slPv = !0; log("refúgio solto (" + why + ")"); return !0
  };
+ /* p216.84: START do controle no Refúgio sem nenhuma reação (a pausa não abriu) → destrava tudo o que pode segurar a
+    vila — fade de câmera parado, relógio/tweens/física pausados, entrada desligada, cena em pausa, fala "fantasma"
+    (sem caixa na tela) e __busy — e abre a pausa, igual ao botão START da tela. */
+ const forceHub = (g) => {
+  const H = g.scene.getScene("Hub"); if (!H?.sys?.isActive?.() && !H?.sys?.isPaused?.()) return;
+  if (H.panel || H.__pz || domOv() || otherScene(g)) return;
+  const U = g.scene.getScene("HubUI"); if (U?.__hiOpen) return;
+  const dl = H.__hubDlgO; if (dl && dl.active !== !1 && dl.visible !== !1 && dl.scene) return;     // fala de verdade: o A avança
+  try { H.__hubDlgO = null } catch (e) {}
+  try { H.sys.isPaused?.() && H.scene.resume() } catch (e) {}
+  try { const c = H.cameras.main; c.fadeEffect?.isRunning && c.fadeEffect.reset(); c.resetFX?.(); c.setAlpha?.(1) } catch (e) {}
+  try { H.time.paused = !1; H.tweens.resumeAll?.(); H.anims?.resumeAll?.(); H.physics?.resume?.() } catch (e) {}
+  try { H.input.enabled = !0; H.input.keyboard && (H.input.keyboard.enabled = !0); H.input.gamepad && (H.input.gamepad.enabled = !0) } catch (e) {}
+  try { const L = window.__vlk; L && (L.n = 0, L.sc = []) } catch (e) {}
+  try { g.inputManager && (g.inputManager.padButtons = []) } catch (e) {}
+  try { g.loop && !g.loop.running && g.loop.start?.(g.loop.callback) } catch (e) {}
+  H.__busy = !1; H.__stPv = !0; H.__slPv = !0;
+  try { H.__pzOpen?.() } catch (e) {}
+  log("refúgio forçado (start sem reação)");
+ };
  let stPv = !1, hubT = 0;
  window.addEventListener("keydown", e => { if (e.isTrusted && e.key === "Escape") { const g = G(); if (!g) return; setTimeout(() => { freeHub(g, "esc") && H_open(g); freeGame(g, "esc") }, 200) } }, !0);
  const H_open = g => { try { const H = g.scene.getScene("Hub"); H.time.delayedCall(30, () => H.__pzOpen?.()) } catch (e) {} };
@@ -25895,7 +25916,7 @@ try { __SKH_FX.DRUID.TIGRE_FORM = __SKH_FX.DRUID.PANTERA_FORM = ["d-shift", "c",
   /* START do gamepad */
   let p = null; try { p = [...(navigator.getGamepads?.() || [])].find(x => x && x.connected) } catch (e) {}
   const st = !!p && !!(p.buttons[9]?.pressed);
-  if (st && !stPv) { freeHub(g, "start") && H_open(g); setTimeout(() => freeGame(g, "start"), 180) }
+  if (st && !stPv) { freeHub(g, "start") && H_open(g); setTimeout(() => freeGame(g, "start"), 180); { const H0 = g.scene.getScene("Hub"), was = !!(H0?.panel || H0?.__pz || H0?.__hubDlgO); was || setTimeout(() => forceHub(g), 500) } }
   stPv = st;
   /* trava de vídeo vazada: nenhum vídeo/cinemática na tela e as cenas continuam sem controle */
   try { const L = window.__vlk; if (L && (L.n > 0 || L.sc?.length) && !domOv()) { L.__z ||= now; if (now - L.__z > 3000) { for (const sc of L.sc || []) { const I = sc.input; if (!I || !sc.sys || (sc.sys.settings?.status ?? 0) > 7) continue; I.enabled = !0; I.keyboard && (I.keyboard.enabled = !0, I.keyboard.resetKeys?.()) } log("trava de vídeo solta (" + L.n + ")"); L.n = 0; L.sc = []; L.__z = 0 } } else if (L) L.__z = 0 } catch (e) {}
@@ -25924,6 +25945,70 @@ try { __SKH_FX.DRUID.TIGRE_FORM = __SKH_FX.DRUID.PANTERA_FORM = ["d-shift", "c",
    }
   }
  }, 300);
+}
+
+/* ══ Pactos do Abismo não sobrevivem à morte (p216.84) ══
+   Ao chegar no Refúgio sem uma corrida viva do Infinito (morreu / terminou), o deck de pactos é zerado. */
+{
+ const C0 = Fl.prototype.create;
+ Fl.prototype.create = function () {
+  const r = C0.apply(this, arguments);
+  try {
+   const reg = this.game.registry, run = reg.get("endless:run");
+   if (!run || run.finished) { if (run) { run.pacts = []; run.cards = [] } reg.set("endless:activePacts", []) }
+  } catch (e) {}
+  return r;
+ };
+}
+
+/* ══ Sala presa (p216.84) ══
+   Às vezes a sala ficava trancada com todos os inimigos já mortos (o último morreu por um caminho que não avisava a
+   sala, nenhum inimigo chegou a nascer, ou sobrou um inimigo fora da sala / invisível / preso na parede).
+   Vigia de 1 s fora do laço do Phaser: sala ativa sem chefe e sem objetivo pendente →
+   • inimigo "fantasma" (invisível, sem corpo, sem vida ou longe da sala) é removido;
+   • inimigo parado no mesmo lugar sem levar dano por 25 s, longe do herói, é trazido para perto dele;
+   • sem nenhum inimigo de verdade por 2 s, a sala é concluída (portas abrem, portal do Infinito aparece). */
+{
+ let room = null, emptyT = 0;
+ const track = new WeakMap();
+ setInterval(() => {
+  const g = window.__DED_GAME; if (!g || document.visibilityState !== "visible") return;
+  const S = g.scene.getScene("Game");
+  if (!S?.sys?.isActive?.() || S.state !== "playing" || S.uiOpen) return;
+  const rm = S.roomManager, r = rm?.activeRoom;
+  if (!r || r.state !== "active" || r.hasBoss || S.boss?.active) { room = null; emptyT = 0; return }
+  if (room !== r) { room = r; emptyT = 0 }
+  try {
+   if (r.def?.cdObj && !r.cdDone) {
+    if (r.def.cdObj === "SURVIVE" && r.cdUntil && S.time.now > r.cdUntil + 3000 && typeof __cdObjDone === "function") __cdObjDone(S, r);
+    return;
+   }
+   const T = typeof dt === "number" ? dt : 32, rc = r.def?.rect || r.rect, now = performance.now(), p = S.player;
+   const inRoom = (e) => !rc || (e.x > (rc.x - 3) * T && e.x < (rc.x + rc.w + 3) * T && e.y > (rc.y - 3) * T && e.y < (rc.y + rc.h + 3) * T);
+   const al = S.enemies?.getChildren?.().filter((e) => e.active && !e.dead) || [];
+   const real = []; let pend = 0;
+   for (const e of al) {
+    // invisível pode ser inimigo que se enterra/some por um tempo: só conta depois de 8 s; fora da sala ou sem vida, 3 s
+    const lim = (e.hp != null && e.hp <= 0) || !inRoom(e) || (!e.body && e.type !== "Container") ? 3000 : !e.visible ? 8000 : 0;
+    if (!lim) { real.push(e); continue }
+    let t = track.get(e); if (!t) { t = { ghost0: now }; track.set(e, t) } else t.ghost0 ||= now;
+    if (now - t.ghost0 > lim) { try { e.dead = !0; e.setActive(!1).setVisible(!1); e.body && (e.body.enable = !1); e.destroy() } catch (x) {} console.warn("[resgate] inimigo fantasma removido da sala", e.texture?.key) }
+    else pend++;
+   }
+   for (const e of real) {
+    let t = track.get(e); if (!t) { t = {}; track.set(e, t) }
+    t.ghost0 = 0;
+    if (t.x == null || Math.hypot(e.x - t.x, e.y - t.y) > 6 || e.hp !== t.hp) { t.x = e.x; t.y = e.y; t.hp = e.hp; t.since = now; continue }
+    if (p && now - t.since > 25000 && Math.hypot(e.x - p.x, e.y - p.y) > T * 3) {
+     const a = Math.random() * Math.PI * 2; e.setPosition(p.x + Math.cos(a) * T * 2, p.y + Math.sin(a) * T * 2); t.since = now; t.x = e.x; t.y = e.y;
+     console.warn("[resgate] inimigo preso trazido para perto do herói", e.texture?.key);
+    }
+   }
+   if (real.length || pend) { emptyT = 0; return }
+   emptyT ||= now;
+   if (now - emptyT > 2000 && r.state === "active") { emptyT = 0; rm.completeRoom(r, !1); console.warn("[resgate] sala concluída (sem inimigos vivos)") }
+  } catch (e) { console.warn("[resgate] sala", e) }
+ }, 1000);
 }
 /*__RESGATE__*/
 /*__ARMVAR__*/

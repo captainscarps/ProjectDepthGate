@@ -81,6 +81,7 @@ const __CAPE_TIER = { UNCOMMON: 1, RARE: 2, EPIC: 3, LEGENDARY: 4, RELIC: 4 };
 // ladina, druida, samurai (berserker) e maga não usam capa nem lenço — só a cabeça descoberta no lendário
 const __NOCAPE = new Set(["rogue", "druid", "berserker", "mage"]);
 function __capeFor(cls, eq) {
+  return null;   // p216.84: nenhuma armadura desenha capa/manto/lenço extra no herói (pedido do Rafael) — a raridade aparece na cor
   const D = __NOCAPE.has(cls) ? null : __CAPE[cls], tier = __CAPE_TIER[eq?.armor?.rarity] ?? 0;
   if (!D || !tier) return null;
   if (/templario|rubro/.test(eq?.armor?.id ?? "")) return null;   // p216.56: o Templário já tem manto no desenho (sem capa extra); p216.66: nem a Lua Rubra
