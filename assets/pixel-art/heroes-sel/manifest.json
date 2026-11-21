@@ -42,8 +42,8 @@
  "druid": {
   "size": 256,
   "frames": 9,
-  "foot": 246,
-  "top": 21,
+  "foot": 248,
+  "top": 11,
   "acao": 17
  },
  "hunter": {
@@ -70,8 +70,8 @@
  "rogue": {
   "size": 256,
   "frames": 9,
-  "foot": 237,
-  "top": 30,
+  "foot": 242,
+  "top": 34,
   "acao": 25
  },
  "shaman": {

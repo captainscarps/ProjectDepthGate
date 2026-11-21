@@ -23,7 +23,7 @@ HERO = {
  "mage": ("a sorceress in a dark purple hooded cloak and a long crimson robe with a gold sash, a swirling violet arcane orb",
           "heroic presentation pose facing the viewer, one hand raised holding a swirling violet arcane orb above her palm, other hand at her side, cloak flowing, confident stance",
           "slow idle breathing, cloak hem gently fluttering, the violet orb swirling and pulsing above her palm"),
- "rogue": ("an agile rogue woman with long dark auburn hair, a dark brown leather hood and scarf, fitted brown leather corset, bracers, belts with pouches, leather trousers and tall boots, two curved steel daggers",
+ "rogue": ("Seris the rogue: an agile woman wearing a deep purple hood with a thin gold trim and a purple cloth mask covering her nose and mouth (only her eyes visible), fitted dark brown leather corset and outfit, bracers, belts with pouches, leather trousers and tall boots, two curved steel daggers",
            "dynamic heroic presentation pose facing the viewer three-quarter, slight crouch, one dagger raised in reverse grip near her shoulder, the other dagger held low and forward, determined sly look",
            "slow idle breathing in a ready crouch, hair and scarf ends swaying, a glint running along the dagger blades"),
  "necromancer": ("Valthor the necromancer: a gaunt pale-skinned man with sharp features and glowing red eyes under a deep black hood (a living human face, not a skull), long dark brown-black hooded robe and cloak, leather wraps, holding a staff topped with a glowing crimson rune orb",
@@ -38,7 +38,7 @@ HERO = {
  "hunter": ("a wandering hunter with a wide conical straw hat, a bulky orange straw rain cape, dark trousers, a crossbow and a katana",
             "heroic presentation pose facing the viewer, crossbow resting on one shoulder, other hand on the katana hilt, calm stance",
             "slow idle breathing, straw cape fibres gently swaying in the wind, hat brim tilting slightly"),
- "druid": ("a druid in a green leafy hooded cloak with small antlers, brown leather belts, holding a gnarled wooden staff with a glowing green tip",
+ "druid": ("an old druid with a weathered face and a long grey beard, wearing a green leafy hooded cloak with small antlers, brown leather belts, holding a gnarled wooden staff with a glowing green tip",
            "heroic presentation pose facing the viewer, staff planted at his side with one hand, other hand open with a tiny green glow, serene stance",
            "slow idle breathing, leafy cloak rustling gently, green glow on the staff pulsing, a few leaves drifting"),
 }
@@ -48,7 +48,7 @@ for c in sys.argv[1:] or HERO:
     R = {"image": b64(ref), "size": {"width": ref.width, "height": ref.height}}
     EXTRA = []
     hp = os.path.join(ROOT, "assets/pixel-art/heroes-p", f"{c}-hud.png")
-    if c in ("necromancer",) and os.path.exists(hp):
+    if c in ("necromancer", "rogue", "druid") and os.path.exists(hp):
         hi = Image.open(hp).convert("RGBA"); EXTRA.append({"image": b64(hi), "size": {"width": hi.width, "height": hi.height}, "usage_description": "this is the character's face: keep exactly this face, skin tone, eyes and hood"})
     pp, ip = os.path.join(D, f"{c}-pose.png"), os.path.join(D, f"{c}-idle.png")
     if not os.path.exists(pp):

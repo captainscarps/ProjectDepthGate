@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.93 · cache ded-web-v6.17.4-necro-valthor)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.94 · cache ded-web-v6.17.5-ladina-druida)
+
+P216.94 — ESCOLHA DE HERÓIS: LADINA E DRUIDA IGUAIS AO RETRATO
+· Ladina (Seris) refeita com o retrato do HUD como referência: capuz roxo com friso dourado e máscara roxa cobrindo
+  nariz e boca. Druida refeito como no retrato: homem mais velho de barba grisalha, manto verde de folhas com chifres.
+  Pose, respiração e ação de cada um refeitas. Versões anteriores em scripts/art-src/selecao-hd/v1/.
 
 P216.93 — ESCOLHA DE HERÓIS: NECROMANTE COM A APARÊNCIA PADRÃO (VALTHOR)
 · O Necromante da escolha tinha saído com cara de caveira (parecia a skin Ossos). Refeito usando também o retrato do
