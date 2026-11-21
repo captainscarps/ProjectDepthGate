@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.101 · cache ded-web-v6.18.2-guerreiro-armaduras)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.102 · cache ded-web-v6.18.3-memoria-herois)
+
+P216.102 — JOGO REINICIANDO NO CELULAR AO ABRIR A FASE (MEMÓRIA)
+- Causa: já no menu o jogo carregava as folhas de andar para cima/baixo (-dirs), de golpes (-sk) e de pesca (-fish)
+  de todas as classes, armaduras únicas e cabeças descobertas (~650 MB de textura). Ao abrir a fase o total passava
+  de 1,6 GB e o Safari do iPhone matava a aba: tela preta, flash branco e o jogo recarregando.
+- Agora essas folhas só são baixadas quando o herói daquela classe aparece em jogo (Refúgio, fase, barco) e as da
+  classe anterior são liberadas ao trocar de herói. A arte da tela de escolha de heróis é liberada quando a tela
+  fecha. Medido: menu 1.470 → 920 MB; ao entrar na floresta 1.640 → 1.040 MB.
+- Enquanto a folha extra chega (fração de segundo) o herói usa o desenho de perfil; as pinturas de armadura que
+  dependem dela são refeitas quando ela chega. Código: scripts/source/memoria-herois.js.
 
 P216.101 — GUERREIRO SEM ESCUDO · ÍCONES NOVOS DE TODAS AS ARMADURAS
 - Guerreiro: as técnicas de escudo viraram técnicas de guerra (o Golpe Pesado de nível 1 continua):
