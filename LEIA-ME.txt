@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.84 · cache ded-web-v6.16.5-salas-pactos)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.85 · cache ded-web-v6.16.6-sem-recarga)
+
+P216.85 — O JOGO NÃO RECARREGA MAIS SOZINHO AO REDIMENSIONAR
+· No PC, qualquer mudança no tamanho da janela com o Refúgio, o Menu ou a escolha de herói na tela (entrar/sair da
+  tela cheia, maximizar, zoom do navegador, barra de downloads, F12) recarregava a página inteira para recalcular a
+  largura ultrawide — parecia que o jogo "reiniciava". Agora o redimensionamento só ajusta a tela (com faixas nas
+  laterais se precisar); a largura nova entra quando o Menu Principal abrir ou ao trocar "Proporção" nas
+  Configurações.
 
 P216.84 — SEM CAPAS, SALA PRESA, TRAVA NO REFÚGIO (CONTROLE) E PACTOS QUE FICAVAM DEPOIS DA MORTE
 · Capas: a capa/manto/lenço que o jogo desenhava por cima das armaduras incomuns, raras, épicas, lendárias e
