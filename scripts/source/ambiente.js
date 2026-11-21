@@ -35,10 +35,19 @@ const __AMB = {
     amb: 0x627494, hero: 0xffe0b8, heroI: .4, torchI: .55, torch: 0xffb070, stain: "150,190,230", wet: "190,225,255", crack: "60,90,130",
     webs: 0, drips: 0, dust: 0, frost: 1, ice: 1, breath: 1, fog: 1,
   },
+  /* deserto (p216.83): céu aberto — sem relevo de tocha, sem musgo nem fachos; sombras de contato macias e quentes,
+     halos de luz contidos (areia clara estoura com brilho ADD) e uma correção de cor que tira o excesso de saturação */
+  desert: {
+    tiles: "tiles-ruins", top: "walltop-ruins", face: "wallface-ruins",
+    amb: 0xd8ccb8, hero: 0xfff0d8, torch: 0xffc080, stain: "120,86,52", wet: "112,82,52", crack: "90,62,38", ink: "64,40,22",
+    webs: 0, drips: 0, dust: 0, soft: 1, noRelief: 1, noCrack: 1, dimHalo: 1, grade: 1,
+  },
 };
 
 function __ambBiome(S) {
   const D = S.dungeon, k = D?.groundLayer?.tileset?.[0]?.image?.key || "";
+  const id = String(S.levelId || D?.level?.id || ""), bt = String(D?.level?.biome || S.level?.biome || "").toLowerCase();
+  if (id === "temple" || /desert/.test(id + bt)) return "desert";
   for (const b in __AMB) if (__AMB[b].tiles === k) return b;
   return null;
 }
@@ -95,7 +104,7 @@ function __ambPaint(S, C, R) {
     if (solid(c, r)) continue;
     const x = c * t, y = r * t;
     // contato com as paredes: em cima (a face da parede faz sombra comprida), dos lados e embaixo
-    const ink = C.frost ? "70,100,160" : "0,0,0", fk = C.frost ? .55 : 1;      // na neve a sombra é azul
+    const ink = C.frost ? "70,100,160" : C.ink || "0,0,0", fk = C.frost ? .55 : C.soft ? .6 : 1;      // na neve a sombra é azul
     const sh = (x0, y0, x1, y1, a) => { const q = g.createLinearGradient(x0, y0, x1, y1); q.addColorStop(0, `rgba(${ink},${a * fk})`); q.addColorStop(1, `rgba(${ink},0)`); g.fillStyle = q; g.fillRect(x, y, t, t) };
     if (solid(c, r - 1)) sh(x, y, x, y + t * .9, .5);
     if (solid(c - 1, r)) sh(x, y, x + t * .55, y, .38);
@@ -115,7 +124,7 @@ function __ambPaint(S, C, R) {
         g.fillStyle = q; g.fillRect(ox - rr, oy - rr, rr * 2, rr * 2);
       }
     }
-    if (R() < .05) {
+    if (!C.noCrack && R() < .05) {
       g.strokeStyle = `rgba(${C.crack},.55)`; g.lineWidth = .6; g.beginPath();
       let px = x + R() * t, py = y + R() * t; g.moveTo(px, py);
       for (let k = 0; k < 4 + R() * 4; k++) { px += (R() - .5) * 7; py += (R() - .5) * 7; g.lineTo(px, py) }
@@ -179,6 +188,15 @@ function __ambPaint(S, C, R) {
     const x = p.x * K, y = p.y * K, rx = 7 * p.s, ry = 3.2 * p.s;
     g.fillStyle = "rgba(14,18,22,.55)"; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); g.fill();
     g.fillStyle = "rgba(120,150,170,.18)"; g.beginPath(); g.ellipse(x - rx * .25, y - ry * .3, rx * .5, ry * .35, 0, 0, Math.PI * 2); g.fill();
+  }
+  // deserto: desfoca a camada inteira (reduz e amplia com suavização, 2 vezes) — sem quadrados de azulejo
+  if (C.soft) {
+    for (const f of [4, 3]) {
+      const sw = Math.max(1, Math.ceil(W / f)), sh2 = Math.max(1, Math.ceil(H / f)), tmp = document.createElement("canvas");
+      tmp.width = sw; tmp.height = sh2; const tg = tmp.getContext("2d"); tg.imageSmoothingEnabled = true; tg.imageSmoothingQuality = "high";
+      tg.drawImage(tex.getSourceImage(), 0, 0, sw, sh2);
+      g.save(); g.globalCompositeOperation = "copy"; g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high"; g.drawImage(tmp, 0, 0, W, H); g.restore();
+    }
   }
   tex.refresh();
   const im = S.add.image(0, 0, key).setOrigin(0).setScale(1 / K).setDepth(.5);
@@ -247,8 +265,19 @@ function __ambSetup(S) {
     }
   }
 
+  // deserto: correção de cor na câmera do mundo (menos saturação, um pouco menos de contraste quente)
+  if (C.grade) {
+    try {
+      const cam = S.cameras.main, fx = cam.filters?.internal?.addColorMatrix?.();
+      if (fx) {
+        fx.colorMatrix.saturate(-.24); fx.colorMatrix.brightness(.97, true);
+        A.grade = fx;
+        S.events.once("shutdown", () => { try { cam.filters.internal.remove(fx) } catch (e) {} });
+      }
+    } catch (e) { console.warn("[ambiente] cor deserto", e) }
+  }
   // glacial: os halos de luz da fase (feitos para piso escuro) estouram na neve branca — ficam bem mais fracos
-  if (C.frost) {
+  if (C.frost || C.dimHalo) {
     const dim = () => { for (const o of S.children.list) if (o.texture?.key === "light" && (o.blendMode === 1 || o.blendMode === "ADD") && !o.__ambDim) { o.__ambDim = 1; if (o.displayWidth > 140) { o.setVisible(false); A.hidden = (A.hidden || []).concat(o) } else o.setScale(o.scaleX * .5, o.scaleY * .5) } };
     dim(); S.time.delayedCall(1500, dim);
   }
@@ -360,7 +389,7 @@ function __ambSetup(S) {
   };
   // relevo: só no gráfico alto e fora de celular/tablet (ou em aparelho com 8+ núcleos)
   const strong = () => !(("ontouchstart" in window) || (navigator.maxTouchPoints || 0) > 0) || (navigator.hardwareConcurrency || 4) >= 8;
-  A.apply = () => { const q = Q(); relief(q >= 2 && strong()); for (const o of A.objs) o.setVisible(q >= 1) };
+  A.apply = () => { const q = Q(); relief(q >= 2 && strong() && !C.noRelief); for (const o of A.objs) o.setVisible(q >= 1) };
   try { A.apply() } catch (e) { console.warn("[ambiente] relevo", e); A.relief = false }
 
   // tudo o que está no mundo (herói, inimigos, objetos) recebe a mesma luz: sem isso ficariam "acesos" no escuro

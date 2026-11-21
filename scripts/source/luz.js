@@ -26,7 +26,9 @@ const __LZ = {
   bosque: { d: 0, c: 0x03120a, r: 170, a: "spore", g: 0xd8ffa0 },
   forest: { d: 0, c: 0x061006, r: 190, a: "spore", g: 0xfff0b0 },
   rio: { d: 0, c: 0x041018, r: 200, a: null, g: 0xfff0c0 },
-  temple: { d: 0, c: 0x201206, r: 200, a: null, g: 0xffd080 },
+  temple: { d: 0, c: 0x201206, r: 200, a: "dust", g: 0xffe8c8 },
+  edesert: { d: 0, c: 0x201206, r: 200, a: "dust", g: 0xffe8c8 },
+  desert: { d: 0, c: 0x201206, r: 200, a: "dust", g: 0xffe8c8 },
   glacial: { d: 0, c: 0x0a1630, r: 180, a: "snow", g: 0xbfe4ff },
   frozen: { d: .32, c: 0x0c1a38, r: 170, a: "snow", g: 0xbfe4ff },     // Cidadela Congelada do Infinito
 };

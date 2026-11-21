@@ -151,7 +151,7 @@ let busy=0,last=-1;const say=t=>{const p=S.player;if(!p)return;const tx=S.add.te
 bg.fillStyle(15660798,.94).lineStyle(1.5,4877680,.9).fillRoundedRect(-w/2,-h/2,w,h,7).strokeRoundedRect(-w/2,-h/2,w,h,7).fillStyle(15660798,.94).fillTriangle(-6,h/2-1,6,h/2-1,0,h/2+7).lineStyle(1.5,4877680,.9).lineBetween(-6,h/2,0,h/2+7).lineBetween(6,h/2,0,h/2+7);
 const box=S.add.container(p.x,p.y-74-h/2,[bg,tx]).setDepth(9600).setAlpha(0).setScale(.85),fol=()=>{const q=S.player;q&&box.active&&box.setPosition(q.x,q.y-74-h/2)};S.events.on("update",fol);busy=1;
 S.tweens.add({targets:box,alpha:1,scale:1,duration:220,ease:"Back.easeOut"});S.time.delayedCall(3200,()=>S.tweens.add({targets:box,alpha:0,duration:350,onComplete:()=>{S.events.off("update",fol);box.destroy();busy=0}}))};
-(S.__gsDbg??={}).say=say;const chk=()=>{const p=S.player;if(!p||busy||!S.sys.isActive())return;for(const[id,cr]of BK){if(done[id]||said.has(id))continue;const[x,y]=C(cr[0],cr[1]);if(Math.hypot(p.x-x,p.y-y)<T*4.5){said.add(id);let k=said.size-1;if(k>1)do k=Math.floor(R()*LN.length);while(k===last);last=k;say(L3(...LN[k]));break}}};
+(S.__gsDbg??={}).say=say;const chk=()=>{const p=S.player;if(!p||busy||S.__rtOn||!S.sys.isActive())return;for(const[id,cr]of BK){if(done[id]||said.has(id))continue;const[x,y]=C(cr[0],cr[1]);if(Math.hypot(p.x-x,p.y-y)<T*4.5){said.add(id);let k=said.size-1;if(k>1)do k=Math.floor(R()*LN.length);while(k===last);last=k;say(L3(...LN[k]));break}}};
 S.__gsBarkEv?.remove?.();const ev=S.__gsBarkEv=S.time.addEvent({delay:250,loop:!0,callback:chk});S.events.once("shutdown",()=>{ev.remove();S.__gsSaid=null;S.__gsBarkEv=null})}
 __gsLit(S);S.__gsPZ={done};const host=S.add.zone(-99,-99,1,1);return host}
 

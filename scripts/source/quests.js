@@ -512,7 +512,10 @@ function __qContract(S) {
     try { if (!c.done) { c.t1 = S.time.now; if (def.ok(c)) { c.done = !0; __Q.frag(c.rw); S.game.events.emit("ui:banner", `CONTRATO CUMPRIDO: +${c.rw} CRISTAIS DO REFÚGIO`, "#8fcf8a") } else { c.done = !0; S.game.events.emit("ui:banner", "CONTRATO PERDIDO", "#c07060") } paint() } } catch (e) {}
     return r;
   };
-  S.events.once("shutdown", () => { S.game.events.off("enemy:died", onDie); txt?.destroy() });
+  // p216.83: com o cronômetro de DESAFIO na tela, o contrato desce para baixo dele (nunca um texto sobre o outro)
+  const lay = () => { if (!txt?.active) return; const ch = ui?.challengeText, y = ch?.visible && ch.text ? ch.y + ch.height / 2 + 4 : 52; txt.y !== y && txt.setY(y) };
+  ui?.events?.on("update", lay);
+  S.events.once("shutdown", () => { S.game.events.off("enemy:died", onDie); ui?.events?.off("update", lay); txt?.destroy() });
 }
 {
   // dano levado pelo herói (contrato "sem dano")

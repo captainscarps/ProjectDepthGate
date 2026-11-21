@@ -49,3 +49,24 @@
   if (H?.sys?.isActive?.() && H.__busy && !H.panel && !H.__hubDlgO) { hubT ||= now; if (now - hubT > 6000) { freeHub(g, "tempo"); hubT = 0 } } else hubT = 0;
  }, 250);
 }
+
+/* ══ Textos do mundo sempre na frente (p216.83) ══
+   Nomes, placas e avisos escritos no cenário nunca ficam atrás de herói, inimigo ou NPC: todo texto solto do mundo
+   (ou rótulo feito só de texto + fundo) abaixo da camada 9000 sobe para 9000+, mantendo a ordem entre eles. */
+{
+ const SC = ["Game", "Hub", "Traversal", "ValdrakAntiga"];
+ const isLabel = (o) => o.type === "Container" && o.list?.some((c) => c.type === "Text") && o.list.every((c) => c.type === "Text" || c.type === "Graphics" || c.type === "Rectangle" || c.type === "NineSlice");
+ setInterval(() => {
+  const g = window.__DED_GAME; if (!g) return;
+  for (const k of SC) {
+   const S = g.scene.getScene(k);
+   if (!S?.sys?.isActive?.() || !S.children) continue;
+   for (const o of S.children.list) {
+    if (o.__txtFront || !o.visible || o.depth >= 9000 || o.__txtKeep) continue;
+    if (o.type !== "Text" && !isLabel(o)) continue;
+    if (o.scrollFactorX === 0) continue;                 // texto preso na tela (HUD da cena) não entra
+    o.__txtFront = 1; o.setDepth(9000 + Math.max(0, Math.min(999, o.depth)) / 1000);
+   }
+  }
+ }, 300);
+}

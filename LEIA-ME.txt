@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.82 · cache ded-web-v6.16.3-ambiente-sons)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.83 · cache ded-web-v6.16.4-visual)
+
+P216.83 — DESERTO POLIDO, TEXTOS SEM SOBREPOSIÇÃO E GUARDIÃ SEM BURACOS
+· Deserto (campanha e Infinito): ganhou ambiente próprio em vez de herdar o das Ruínas — sem relevo de tocha
+  (era o que deixava a areia amarela estourada), sem musgo, fachos de luz e rachaduras extras; sombras de contato
+  quentes e desfocadas (acabaram os quadrados de azulejo), halos de luz grandes contidos e uma correção de cor na
+  câmera (−24% de saturação). No Infinito, o escurecimento longe do chão virou gradiente macio (antes eram blocos
+  de 1 tile — vale para todos os biomas abertos).
+· Textos: o "◆ Contrato" desce para baixo do cronômetro de DESAFIO quando ele aparece; falas do herói nos enigmas
+  esperam o título da região sumir; todo texto do mundo (placas, nomes, rótulos) fica sempre na frente de
+  heróis, inimigos e NPCs; nome da sala e contagem no canto ganharam contorno para ler sobre areia clara.
+· Guardiã: os buracos transparentes do vestido (idle e fala) foram preenchidos (scripts/fix_buracos_sprite.py;
+  originais em scripts/art-src/guardia-orig/). A varredura dos outros personagens não achou outro caso.
 
 P216.82 — SONS AMBIENTES DOS 13 BIOMAS (ElevenLabs)
 · Gerados no ElevenLabs (Sound Effects v2) com scripts/gerar_ambientes_elevenlabs.py: para cada bioma um fundo de
