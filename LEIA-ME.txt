@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.90 · cache ded-web-v6.17.1-selecao-herois)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.91 · cache ded-web-v6.17.2-selecao-hd)
+
+P216.91 — ESCOLHA DE HERÓIS EM RESOLUÇÃO MAIOR E LADINA REFEITA
+· Os 9 heróis refeitos em 256×256 (antes 144×144) e mostrados em escala 1: o pixel ficou com metade do tamanho e o
+  herói com o dobro de detalhe (rosto, metal, tecido). O sprite do jogo continua como referência do desenho, mas não
+  mais como "estilo" (era ele que prendia o pixel grande). Brutos em scripts/art-src/selecao-hd/
+  (SEL_DIR/SEL_N/SEL_NOSTYLE em gerar_selecao_herois.py).
+· Ladina com pose nova: meio agachada, uma adaga invertida perto do ombro e a outra baixa à frente, capuz e cachecol.
 
 P216.90 — ESCOLHA DE HERÓIS: OS 9 HERÓIS EM PIXEL ART, POSE DE APRESENTAÇÃO E ANIMADOS
 · PixelLab (scripts/gerar_selecao_herois.py): cada herói gerado a partir do próprio sprite do jogo (quadro de frente,

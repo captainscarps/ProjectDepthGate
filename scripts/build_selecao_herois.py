@@ -1,5 +1,5 @@
 """Monta os heróis animados da tela de escolha (p216.90).
-Entrada: scripts/art-src/selecao/<classe>-idle.png (tira de 9 quadros de 144×144: 0 = pose, 1–8 = parado respirando).
+Entrada: scripts/art-src/selecao-hd/<classe>-idle.png (tira de 9 quadros de 256×256 — p216.91; a 1ª versão 144×144 fica em selecao/: 0 = pose, 1–8 = parado respirando).
 Saída: assets/pixel-art/heroes-sel/<classe>.png (mesma tira, alfa em degrau, sem pontinhos soltos) e manifest.json
 com o pé de cada herói (linha mais baixa com pixel em todos os quadros) para alinhar na sombra do palco.
 Uso: python3 scripts/build_selecao_herois.py"""
@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 from scipy import ndimage
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-S = os.path.join(ROOT, "scripts/art-src/selecao"); O = os.path.join(ROOT, "assets/pixel-art/heroes-sel")
+S = os.path.join(ROOT, os.environ.get("SEL_DIR", "scripts/art-src/selecao-hd")); O = os.path.join(ROOT, "assets/pixel-art/heroes-sel")
 os.makedirs(O, exist_ok=True)
 man = {}
 for f in sorted(os.listdir(S)):

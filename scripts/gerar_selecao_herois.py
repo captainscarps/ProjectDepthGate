@@ -10,8 +10,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pixellab_api import post, job, images_of, b64
 from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-D = os.path.join(ROOT, "scripts/art-src/selecao")
-N = 144
+D = os.path.join(ROOT, os.environ.get("SEL_DIR", "scripts/art-src/selecao"))
+N = int(os.environ.get("SEL_N", "144"))
+NOSTYLE = os.environ.get("SEL_NOSTYLE") == "1"
 HERO = {
  "warrior": ("a knight in full silver plate armour with a closed great helm, white fur collar, brown leather cross straps and tasset, round steel shield and a longsword",
              "heroic presentation pose facing the viewer, longsword planted point-down in front of him with both hands resting on the pommel, round shield strapped on his back, proud stance",
@@ -22,9 +23,9 @@ HERO = {
  "mage": ("a sorceress in a dark purple hooded cloak and a long crimson robe with a gold sash, a swirling violet arcane orb",
           "heroic presentation pose facing the viewer, one hand raised holding a swirling violet arcane orb above her palm, other hand at her side, cloak flowing, confident stance",
           "slow idle breathing, cloak hem gently fluttering, the violet orb swirling and pulsing above her palm"),
- "rogue": ("a nimble rogue woman in a fitted brown leather outfit with a hooded scarf and boots, holding two curved daggers",
-           "heroic presentation pose facing the viewer, daggers held low and ready in both hands, weight on one leg, sly confident stance",
-           "slow idle breathing, scarf and hair gently swaying, daggers twirling slightly in her hands"),
+ "rogue": ("an agile rogue woman with long dark auburn hair, a dark brown leather hood and scarf, fitted brown leather corset, bracers, belts with pouches, leather trousers and tall boots, two curved steel daggers",
+           "dynamic heroic presentation pose facing the viewer three-quarter, slight crouch, one dagger raised in reverse grip near her shoulder, the other dagger held low and forward, determined sly look",
+           "slow idle breathing in a ready crouch, hair and scarf ends swaying, a glint running along the dagger blades"),
  "necromancer": ("a necromancer in a tattered dark brown hooded robe with a pale skull-like face shadowed by the hood, a staff topped with a glowing crimson rune",
                  "heroic presentation pose facing the viewer, staff held upright beside him, free hand raised with faint dark energy, ominous stance",
                  "slow idle breathing, tattered robe hem drifting, the crimson rune on the staff pulsing, wisps of dark mist"),
@@ -43,14 +44,14 @@ HERO = {
 }
 for c in sys.argv[1:] or HERO:
     subj, pose, motion = HERO[c]
-    ref = Image.open(os.path.join(D, f"{c}-ref.png")).convert("RGBA")
+    ref = Image.open(os.path.join(ROOT, "scripts/art-src/selecao", f"{c}-ref.png")).convert("RGBA")
     R = {"image": b64(ref), "size": {"width": ref.width, "height": ref.height}}
     pp, ip = os.path.join(D, f"{c}-pose.png"), os.path.join(D, f"{c}-idle.png")
     if not os.path.exists(pp):
-        r = post("/generate-image-v2", {"description": f"{subj}, {pose}, full body filling the canvas from head to feet, pixel art game character, same design and colours as the reference",
+        r = post("/generate-image-v2", {"description": f"{subj}, {pose}, full body filling the whole canvas from head to feet, highly detailed pixel art game character with fine pixels, same design and colours as the reference",
                  "image_size": {"width": N, "height": N}, "no_background": True,
                  "reference_images": [{**R, "usage_description": "this is the exact character: keep the same outfit, colours and equipment"}],
-                 "style_image": R, "style_options": {"color_palette": True, "outline": True, "detail": True, "shading": True}})
+                 **({} if NOSTYLE else {"style_image": R, "style_options": {"color_palette": True, "outline": True, "detail": True, "shading": True}})})
         images_of(job(r))[0].save(pp); print(c, "pose ok", flush=True)
     if os.path.exists(ip): continue
     im = Image.open(pp).convert("RGBA")

@@ -1,6 +1,6 @@
 /* ══ Tela de escolha: heróis em pixel art, pose de apresentação e animados (p216.90) ══
    Arte: PixelLab a partir do sprite de cada herói (scripts/gerar_selecao_herois.py → build_selecao_herois.py →
-   assets/pixel-art/heroes-sel/<classe>.png, 9 quadros de 144×144: 0 = pose, 1–8 = parado respirando).
+   assets/pixel-art/heroes-sel/<classe>.png, 9 quadros: 0 = pose, 1–8 = parado respirando; p216.91: 256×256 em escala 1).
    Carrega sob demanda na tela de escolha; quando a folha do herói existe, ela substitui a ilustração antiga no palco
    (mesmo lugar, pé na sombra, escala 2). Herói bloqueado fica escurecido e parado, como antes. */
 {
@@ -30,8 +30,9 @@
    const lk = S.__ok?.(C) === !1, changed = S.__selK !== k || S.__selL !== lk; S.__selK = k; S.__selL = lk;
    h.setTexture(k, 0).setVisible(!0).setOrigin(.5, m.foot / m.size);
    if (lk) { h.setTint(1379848) } else { h.clearTint(); h.play(a, !0) }
-   if (changed) { S.tweens.killTweensOf(h); h.setScale(1.9).setAlpha(0); S.tweens.add({ targets: h, scale: 2, alpha: lk ? .92 : 1, duration: 260, ease: "Cubic.easeOut" }) }
-   else h.setScale(2);
+   const sc = m.size > 200 ? 1 : 2;                                 // p216.91: folhas 256×256 (pixel mais fino) em escala 1
+   if (changed) { S.tweens.killTweensOf(h); h.setScale(sc * .95).setAlpha(0); S.tweens.add({ targets: h, scale: sc, alpha: lk ? .92 : 1, duration: 260, ease: "Cubic.easeOut" }) }
+   else h.setScale(sc);
   } catch (e) { console.warn("[seleção]", e) }
  };
  const R0 = bl.prototype.refreshDetails;
