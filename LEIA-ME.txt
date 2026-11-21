@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.96 · cache ded-web-v6.17.7-samurai-andar)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.97 · cache ded-web-v6.17.8-selecao-ajustes)
+
+P216.97 — ESCOLHA DE HERÓIS: AJUSTES DA APRESENTAÇÃO
+· Sprite pequeno do jogo aparecendo ao escolher: no toque a tela atualiza 2× e a 2ª punha o sprite de gameplay no
+  palco. Agora o estado da animação é guardado antes e devolvido (mesmo quadro e animação).
+· Cavaleiro escorregava ~60 px para o lado na ação: build_selecao_herois.py alinha cada quadro da ação pelas pernas
+  com a pose (só corrige deslocamentos ≥ 30 px; trocas de base naturais ficam).
+· Lobo do Caçador maior (0,72), parado à frente do herói, e lobo/caveira/efeitos recortados no palco (não passam por
+  cima dos painéis). Efeitos marcados e varridos ao trocar de herói (a caveira podia ficar na tela de outro herói).
+· Samurai: ação nova sem sacar a katana (guardava ao contrário) — medita de cabeça baixa, respira, o vento balança a
+  armadura e passam pétalas de cerejeira. Ação antiga em scripts/art-src/selecao-hd/v1/berserker-acao-saque.png.
 
 P216.96 — SAMURAI: CAMINHADA E CORRIDA REFEITAS EM TODAS AS DIREÇÕES
 · Poses paradas de cada direção geradas a partir do perfil (PixelLab generate-8-rotations-v3) — a "frente" antiga era
