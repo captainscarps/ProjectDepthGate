@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.97 · cache ded-web-v6.17.8-selecao-ajustes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.98 · cache ded-web-v6.17.9-lobo-palco)
+
+P216.98 — ESCOLHA DE HERÓIS: LOBO DO CAÇADOR SEMPRE DENTRO DO PALCO
+· O recorte (máscara) não funcionava no celular e o lobo passava por cima da lista de classes. Agora não há máscara:
+  o lobo sai do portal atrás do herói (pequeno e transparente), corre para a frente e senta à esquerda dele, inteiro
+  dentro do palco, e depois volta correndo para o portal. Pétalas do Samurai também nascem dentro do palco.
 
 P216.97 — ESCOLHA DE HERÓIS: AJUSTES DA APRESENTAÇÃO
 · Sprite pequeno do jogo aparecendo ao escolher: no toque a tela atualiza 2× e a 2ª punha o sprite de gameplay no

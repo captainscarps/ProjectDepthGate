@@ -26746,7 +26746,7 @@ window.__caveScreen = __caveScreen;
   g.fillStyle(0xffffff).fillRect(X - 116, 0, 236, 2000);
   return (S.__selMask = g.createGeometryMask());
  };
- const fx = (S, o, mask) => { o.__selTag = 1; S.__selFx.push(o); mask && o.setMask(stageMask(S)); return o };
+ const fx = (S, o) => { o.__selTag = 1; S.__selFx.push(o); return o };      // p216.98: sem máscara (não recortava no celular); tudo nasce dentro do palco
  const stop = (S) => {
   S.__selT?.forEach((t) => t.remove?.()); S.__selT = [];
   S.__selTw?.forEach((t) => { try { t.remove() } catch (e) {} }); S.__selTw = [];
@@ -26774,13 +26774,14 @@ window.__caveScreen = __caveScreen;
   if (c === "shaman") for (const f of [8, 11, 14]) hooks[f] = () => bits(S, X - 30, Y - 8, 14, [0x7fe08a, 0x4fb060, 0xd8ff8a, 0xfff6a0], { up: 70, dx: 60, w: 40, t: 1400, spread: 400 });
   if (c === "berserker") for (const f of [4, 9, 14]) hooks[f] = () => {   // meditação: vento com pétalas de cerejeira
    for (let i = 0; i < 9; i++) {
-    const p = fx(S, S.add.rectangle(X - 130 - Math.random() * 30, Y - 60 - Math.random() * 170, 3, 2, [0xffc0d8, 0xff9cc2, 0xfff0f6][i % 3]).setDepth(6), 1);
-    S.tweens.add({ targets: p, x: p.x + 230 + Math.random() * 60, y: p.y + 30 + Math.random() * 50, angle: 540, duration: 1800 + Math.random() * 900, delay: Math.random() * 500, ease: "Sine.easeInOut", onComplete: () => p.destroy() });
+    const p = fx(S, S.add.rectangle(X - 100 + Math.random() * 20, Y - 60 - Math.random() * 170, 4, 3, [0xffc0d8, 0xff9cc2, 0xfff0f6][i % 3]).setDepth(6).setAlpha(0));
+    S.tweens.add({ targets: p, alpha: { from: 0, to: 1 }, duration: 300, yoyo: !0, hold: 1300 });
+    S.tweens.add({ targets: p, x: p.x + 190 + Math.random() * 20, y: p.y + 30 + Math.random() * 50, angle: 540, duration: 1800 + Math.random() * 900, delay: Math.random() * 500, ease: "Sine.easeInOut", onComplete: () => p.destroy() });
    }
   };
   if (c === "necromancer") hooks[15] = () => {                               // caveira sai da terra
    const xm = MAN._x?.esqueleto; if (!xm || !S.textures.exists("selx-esqueleto")) return;
-   const gx = X - 66, sk = fx(S, S.add.sprite(gx, Y, "selx-esqueleto", 0).setOrigin(.5, 0).setScale(.66).setDepth(2.5), 1);   // do lado onde o cajado bate no chão
+   const gx = X - 66, sk = fx(S, S.add.sprite(gx, Y, "selx-esqueleto", 0).setOrigin(.5, 0).setScale(.66).setDepth(2.5));   // do lado onde o cajado bate no chão
    const ia = anim(S, "selx-esqueleto-a", "selx-esqueleto", 1, xm.frames - 1, 8, -1, !0);
    const st = { v: 0 }, H = xm.foot, set = () => { if (!sk.active) return; const v = Math.round(st.v); sk.setCrop(0, 0, xm.w, v).setY(Y - v * sk.scaleY) };
    set(); flash(S, gx, Y - 10, 0xff3040, .9);
@@ -26791,12 +26792,18 @@ window.__caveScreen = __caveScreen;
   if (c === "hunter") hooks[12] = () => {                                    // assobio → o lobo chega correndo
    const rm = MAN._x?.["lobo-corre"], im = MAN._x?.["lobo-idle"]; if (!rm || !S.textures.exists("selx-lobo-corre")) return;
    const ra = anim(S, "selx-lobo-run", "selx-lobo-corre", 0, rm.frames - 1, 14, -1), ia = anim(S, "selx-lobo-id", "selx-lobo-idle", 1, (im?.frames || 2) - 1, 9, -1, !0);
-   // a arte do lobo olha para a direita: entra pela borda esquerda do palco (recortado — não passa por cima do painel),
-   // para à frente do herói, um pouco abaixo; sai virado para a esquerda
-   const wf = fx(S, S.add.sprite(X - 220, Y + 10, "selx-lobo-corre", 0).setOrigin(.5, rm.foot / rm.h).setScale(.72).setDepth(3.5).play(ra), 1);
-   S.tweens.add({ targets: wf, x: X - 54, duration: 900, ease: "Cubic.easeOut", onComplete: () => {
-    S.textures.exists("selx-lobo-idle") ? wf.setTexture("selx-lobo-idle", 0).play(ia) : wf.anims.stop();
-    later(S, 2600, () => { wf.setTexture("selx-lobo-corre", 0).setFlipX(!0).play(ra); S.tweens.add({ targets: wf, x: X - 260, duration: 900, ease: "Cubic.easeIn", onComplete: () => wf.destroy() }) });
+   // p216.98: o lobo sai do portal atrás do herói (pequeno e transparente), corre para a frente e senta à esquerda dele,
+   // sempre dentro do palco (nunca por cima dos painéis); depois volta correndo para dentro do portal
+   const wf = fx(S, S.add.sprite(X + 6, Y - 36, "selx-lobo-corre", 0).setOrigin(.5, rm.foot / rm.h).setScale(.22).setAlpha(0).setFlipX(!0).setDepth(2.6).play(ra));
+   S.tweens.add({ targets: wf, alpha: 1, duration: 260 });
+   later(S, 380, () => wf.active && wf.setDepth(3.5));
+   S.tweens.add({ targets: wf, x: X - 46, y: Y + 10, scaleX: .55, scaleY: .55, duration: 1000, ease: "Quad.easeOut", onComplete: () => {
+    if (!wf.active) return;
+    wf.setFlipX(!1); S.textures.exists("selx-lobo-idle") ? wf.setTexture("selx-lobo-idle", 0).play(ia) : wf.anims.stop();
+    later(S, 2600, () => { if (!wf.active) return; wf.setTexture("selx-lobo-corre", 0).setFlipX(!1).play(ra);
+     later(S, 450, () => wf.active && wf.setDepth(2.6));
+     S.tweens.add({ targets: wf, x: X + 6, y: Y - 36, scaleX: .22, scaleY: .22, duration: 900, ease: "Quad.easeIn" });
+     S.tweens.add({ targets: wf, alpha: 0, delay: 650, duration: 250, onComplete: () => wf.destroy() }) });
    } });
   };
   let bearing = !1;
