@@ -27155,11 +27155,12 @@ function __mmNeed(S, c) {
    vestido de casamento, "pra você sempre voltar pra casa". Numa descida que deu errado ele correu e deixou para trás
    a espada e o parceiro, Gaspar. Nunca contou ao filho.
    Campanha (estado por slot em __Q, chave "fe"):
-     0 nada · 1 aceita (Catacumbas) · 2 achou a fita da Ivone (Ruínas) · 3 achou o acampamento (Cidadela Glacial)
+     0 nada · 1 aceita (Ruínas) · 2 achou a fita da Ivone (Cidadela Glacial) · 3 achou o acampamento (o Gaspar, no mesmo lugar)
      4 venceu o Gaspar, tem a espada (voltar à taverna) · 5 Farias levou a espada à forja · 6 concluída
-   · Taverna: o Farias oferece depois do primeiro portal concluído; "!" sobre ele quando há o que conversar.
-   · Catacumbas / Capela Esquecida: a fita presa numa lápide. · Ruínas / Lago Sombrio: o acampamento do Gaspar.
-   · Cidadela Glacial / Lago Congelado: Gaspar, o Corvo (chefe), preso pelo Abismo há vinte anos.
+   · Taverna: o Farias oferece depois do segundo portal concluído (no primeiro já há outra missão); "!" sobre ele.
+   · Ruínas Antigas / Templo Perdido: a fita presa numa lápide. · Cidadela Glacial / Trilha Nevada: o acampamento do
+     Gaspar; lido o recado, o Gaspar, o Corvo (chefe, preso pelo Abismo há vinte anos) espera no Lago Congelado.
+   · A Ivone está viva: é ela quem manda a fita para o herói no fim.
    · Forja: o Farias espera ao lado da bigorna; pai e filho conversam e o Rafael restaura a espada, que fica
      pendurada atrás do balcão da taverna. Recompensa: Fita da Ivone (acessório lendário: +4 vida, +2 defesa;
      uma vez por masmorra, um golpe que mataria deixa 1 de vida).
@@ -27194,10 +27195,10 @@ function __feAnims(S) {
   mk("gaspar-windup", 18, 3, 8, 0); mk("gaspar-strike", 21, 6, 14, 0); mk("gaspar-hurt", 27, 5, 12, 0);
   mk("gaspar-death", 36, 9, 7, 0); mk("gaspar-phase", 0, 8, 10, 0);
 }
-/* 1. Catacumbas — a fita da Ivone presa numa lápide da Capela Esquecida */
+/* 1. Ruínas Antigas — a fita da Ivone presa numa lápide do Templo Perdido */
 function __feFita(S) {
   if (__FE.st(S) !== 1 || S.__feOn) return; S.__feOn = 1;
-  const R = __FE.room(S, "capela"); if (!R || !S.textures.exists("pe-fita-lapide")) return;
+  const R = __FE.room(S, "templo"); if (!R || !S.textures.exists("pe-fita-lapide")) return;
   const L3 = __FE.L3, [x, y] = __FE.spot(S, R, .5, .4);
   const s = S.add.image(x, y + 14, "pe-fita-lapide").setOrigin(.5, 1).setScale(.75).setDepth(y + 14);
   const g = __FE.glow(S, x, y - 6, 0xff5a5a, y + 15);
@@ -27206,19 +27207,19 @@ function __feFita(S) {
     __dlg(S, [
       __Q.H(S, L3("Uma fita vermelha, de seda, amarrada nesta lápide… desbotada, mas inteira.", "A red silk ribbon tied to this gravestone… faded, but whole.", "Una cinta roja de seda atada a esta lápida… desteñida, pero entera."), "calm"),
       __Q.H(S, L3("É a fita da Ivone. Alguém desenrolou do punho da espada e deixou aqui, como um aviso.", "It's Ivone's ribbon. Someone unwound it from the sword's grip and left it here, like a sign.", "Es la cinta de Ivone. Alguien la desenrolló de la empuñadura y la dejó aquí, como una señal."), "talk"),
-      __Q.H(S, L3("Tem um \"G.\" riscado na pedra, e marcas de bota indo para as Ruínas. O Gaspar saiu daqui vivo… e levou a espada.", "There's a \"G.\" scratched into the stone, and boot marks heading for the Ruins. Gaspar left here alive… and took the sword.", "Hay una \"G.\" rayada en la piedra y huellas de bota hacia las Ruinas. Gaspar salió vivo de aquí… y se llevó la espada."), "special"),
+      __Q.H(S, L3("Tem um \"G.\" riscado na pedra, e marcas de bota subindo para a Cidadela Glacial. O Gaspar saiu daqui vivo… e levou a espada.", "There's a \"G.\" scratched into the stone, and boot marks heading up to the Glacial Citadel. Gaspar left here alive… and took the sword.", "Hay una \"G.\" rayada en la piedra y huellas de bota hacia la Ciudadela Glacial. Gaspar salió vivo de aquí… y se llevó la espada."), "special"),
     ], () => {
       __FE.set(S, 2); off(); S.tweens.killTweensOf(g); g.destroy();
       S.tweens.add({ targets: s, alpha: .55, duration: 400 });
       S.effects?.burstTinted?.(x, y - 4, 0xff6a6a, 14);
-      __FE.banner(S, L3("A PRIMEIRA ESPADA: VOCÊ GUARDOU A FITA DA IVONE · SIGA PARA AS RUÍNAS", "THE FIRST SWORD: YOU KEPT IVONE'S RIBBON · HEAD TO THE RUINS", "LA PRIMERA ESPADA: GUARDASTE LA CINTA DE IVONE · VE A LAS RUINAS"));
+      __FE.banner(S, L3("A PRIMEIRA ESPADA: VOCÊ GUARDOU A FITA DA IVONE · SIGA PARA A CIDADELA GLACIAL", "THE FIRST SWORD: YOU KEPT IVONE'S RIBBON · HEAD TO THE GLACIAL CITADEL", "LA PRIMERA ESPADA: GUARDASTE LA CINTA DE IVONE · VE A LA CIUDADELA GLACIAL"));
     });
   });
 }
-/* 2. Ruínas — o acampamento do Gaspar no Lago Sombrio, com o recado entalhado */
+/* 2. Cidadela Glacial — o acampamento do Gaspar na Trilha Nevada, com o recado entalhado; lido, o Gaspar espera no Lago Congelado */
 function __feCamp(S) {
   if (__FE.st(S) !== 2 || S.__feOn) return; S.__feOn = 1;
-  const R = __FE.room(S, "rf-lago"); if (!R || !S.textures.exists("pe-acampamento")) return;
+  const R = __FE.room(S, "gs-trilha"); if (!R || !S.textures.exists("pe-acampamento")) return;
   const L3 = __FE.L3, [x, y] = __FE.spot(S, R, .45, .5);
   S.add.image(x, y + 14, "pe-acampamento").setOrigin(.5, 1).setScale(.85).setDepth(y + 2);
   const g = __FE.glow(S, x + 14, y - 8, 0xffc070, y + 15);
@@ -27226,11 +27227,12 @@ function __feCamp(S) {
     if (__FE.busy(S) || __FE.st(S) !== 2) return;
     __dlg(S, [
       __Q.H(S, L3("Um acampamento velho. Cinzas frias, uma garrafa quebrada… e dezenas de risquinhos na pedra, contando dias.", "An old camp. Cold ashes, a broken bottle… and dozens of little scratches on the stone, counting days.", "Un campamento viejo. Cenizas frías, una botella rota… y decenas de rayitas en la piedra, contando días."), "calm"),
-      __Q.H(S, L3("\"F. não voltou. Levo a espada do menino até a Cidadela. Alguém tem que terminar o contrato. — G.\"", "\"F. didn't come back. I'm taking the boy's sword to the Citadel. Someone has to finish the contract. — G.\"", "\"F. no volvió. Llevo la espada del niño hasta la Ciudadela. Alguien tiene que terminar el contrato. — G.\""), "special"),
-      __Q.H(S, L3("Esperou o parceiro aqui até desistir. A Cidadela Glacial, então.", "He waited for his partner here until he gave up. The Glacial Citadel, then.", "Esperó a su compañero aquí hasta rendirse. La Ciudadela Glacial, entonces."), "sadness"),
+      __Q.H(S, L3("\"F. não voltou. Levo a espada do menino até o lago lá em cima. Alguém tem que terminar o contrato. — G.\"", "\"F. didn't come back. I'm taking the boy's sword up to the lake. Someone has to finish the contract. — G.\"", "\"F. no volvió. Llevo la espada del niño hasta el lago de arriba. Alguien tiene que terminar el contrato. — G.\""), "special"),
+      __Q.H(S, L3("Esperou o parceiro aqui até desistir. O Lago Congelado, então.", "He waited for his partner here until he gave up. The Frozen Lake, then.", "Esperó a su compañero aquí hasta rendirse. El Lago Congelado, entonces."), "sadness"),
     ], () => {
       __FE.set(S, 3); off(); S.tweens.killTweensOf(g); g.destroy();
-      __FE.banner(S, L3("A PRIMEIRA ESPADA: O GASPAR SUBIU PARA A CIDADELA GLACIAL", "THE FIRST SWORD: GASPAR WENT UP TO THE GLACIAL CITADEL", "LA PRIMERA ESPADA: GASPAR SUBIÓ A LA CIUDADELA GLACIAL"));
+      __FE.banner(S, L3("A PRIMEIRA ESPADA: O GASPAR ESPERA NO LAGO CONGELADO", "THE FIRST SWORD: GASPAR WAITS AT THE FROZEN LAKE", "LA PRIMERA ESPADA: GASPAR ESPERA EN EL LAGO CONGELADO"));
+      S.__feOn = 0; __feGaspar(S);
     });
   });
 }
@@ -27240,17 +27242,17 @@ function __feGaspar(S) {
   const R = __FE.room(S, "gs-lago"); if (!R || !S.textures.exists("gaspar")) return;
   __feAnims(S);
   const L3 = __FE.L3, G = __FE.G, [x, y] = __FE.spot(S, R, .5, .45);
-  const npc = __qNpc(S, "gaspar", x, y + 20, { scale: .55 });
+  const npc = __qNpc(S, "gaspar", x, y + 16, { scale: .44 });
   if (!npc) return;
   npc.spr.setFlipX(!0).setTint(0xdfefff);
   let started = !1;
   const fight = () => {
-    if (!Yt.GASPAR_CORVO) Yt.GASPAR_CORVO = { ...Yt.ABYSS_GUARDIAN, name: "Gaspar, o Corvo", subtitle: "O Contrato Inacabado", texture: "gaspar", scale: .55, bodySize: 24, maxHp: 115, contactDamage: 2, speed: 62, xp: 750, gold: { min: 90, max: 170 }, attackCooldownMs: 1400,
+    if (!Yt.GASPAR_CORVO) Yt.GASPAR_CORVO = { ...Yt.ABYSS_GUARDIAN, name: "Gaspar, o Corvo", subtitle: "O Contrato Inacabado", texture: "gaspar", scale: .44, bodySize: 20, maxHp: 115, contactDamage: 2, speed: 62, xp: 750, gold: { min: 90, max: 170 }, attackCooldownMs: 1400,
       attacks: { SLAM: { damage: 3, range: 66, width: 78, telegraphMs: 560, recoverMs: 480 }, SHOCKWAVE: { damage: 3, radius: 112, telegraphMs: 760, recoverMs: 620 } },
       phase2: { hpRatio: .5, speedMult: 1.3, cooldownMult: .65, damageMult: 1.25, radiusMult: 1.25, tint: 0x9fdcff },
       anims: { idle: {}, walk: {}, attack: {}, strike: {}, windup: {}, hurt: {}, death: {}, phase: {} } };
     try { _s["Gaspar, o Corvo"] = "Gaspar the Crow" } catch (e) {}
-    const bx = npc.spr.x, by = npc.spr.y - 12; npc.destroy();
+    const bx = npc.spr.x, by = npc.spr.y - 10; npc.destroy();
     S.effects?.burstTinted?.(bx, by, 0xcfe8ff, 24); S.cameraSys?.shake?.(.008, 300);
     const b = S.spawnBoss("GASPAR_CORVO", bx, by, {});
     try { b.name = L3("Gaspar, o Corvo", "Gaspar the Crow", "Gaspar, el Cuervo") } catch (e) {}
@@ -27310,8 +27312,8 @@ try { const IU = __itemUnique; __itemUnique = function (it) { const r = IU.apply
   __QLIST.push({ id: "espada", title: "A Primeira Espada", st: (S) => {
     const s = __FE.st(S), L3 = __FE.L3; if (!s) return null;
     return s >= 6 ? ["done", L3("A espada do Rafael voltou para o gancho da taverna. O Farias te deu a Fita da Ivone.", "Rafael's sword is back on the tavern's hook. Farias gave you Ivone's Ribbon.", "La espada de Rafael volvió al gancho de la taberna. Farias te dio la Cinta de Ivone.")]
-      : ["on", [, L3("Procure a fita da Ivone na Capela Esquecida das Catacumbas.", "Look for Ivone's ribbon in the Forgotten Chapel of the Catacombs.", "Busca la cinta de Ivone en la Capilla Olvidada de las Catacumbas."),
-        L3("Siga o rastro do Gaspar até o Lago Sombrio, nas Ruínas Antigas.", "Follow Gaspar's trail to the Dark Lake, in the Ancient Ruins.", "Sigue el rastro de Gaspar hasta el Lago Sombrío, en las Ruinas Antiguas."),
+      : ["on", [, L3("Procure a fita da Ivone no Templo Perdido das Ruínas Antigas.", "Look for Ivone's ribbon in the Lost Temple of the Ancient Ruins.", "Busca la cinta de Ivone en el Templo Perdido de las Ruinas Antiguas."),
+        L3("Siga o rastro do Gaspar pela Trilha Nevada da Cidadela Glacial.", "Follow Gaspar's trail along the Snowy Trail of the Glacial Citadel.", "Sigue el rastro de Gaspar por el Sendero Nevado de la Ciudadela Glacial."),
         L3("Encontre o Gaspar no Lago Congelado da Cidadela Glacial.", "Find Gaspar at the Frozen Lake of the Glacial Citadel.", "Encuentra a Gaspar en el Lago Congelado de la Ciudadela Glacial."),
         L3("Leve a espada de volta ao Farias, na taverna do Refúgio.", "Bring the sword back to Farias, at the Refuge tavern.", "Lleva la espada de vuelta a Farias, en la taberna del Refugio."),
         L3("O Farias levou a espada até a forja. Encontre os dois lá.", "Farias took the sword to the forge. Meet them there.", "Farias llevó la espada a la forja. Encuéntralos allí.")][s] || ""];
@@ -27347,7 +27349,7 @@ try { const IU = __itemUnique; __itemUnique = function (it) { const r = IU.apply
         try { const it = S.lootSystem.makeItem("fita_ivone", "LEGENDARY"); S.lootSystem.spawnItem(S.player.x, S.player.y + 18, it); __Q.set(S, "feItem", 2);
           __FE.banner(S, __FE.L3("O FARIAS MANDOU A FITA DA IVONE PARA VOCÊ", "FARIAS SENT YOU IVONE'S RIBBON", "FARIAS TE ENVIÓ LA CINTA DE IVONE"), "#ffd27a") } catch (e) {}
       });
-      const lv = S.levelId, f = lv === "catacombs" ? __feFita : lv === "ruins" ? __feCamp : lv === "glacial" ? __feGaspar : null;
+      const lv = S.levelId, st = __FE.st(S), f = lv === "ruins" ? __feFita : lv === "glacial" ? (st === 2 ? __feCamp : __feGaspar) : null;
       f && S.time.delayedCall(450, () => { if (S.scene.isActive()) f(S) });
     } catch (e) { console.warn("[primeira-espada]", e) }
     return r;
@@ -27369,14 +27371,14 @@ function __feHero(H, t, e = "talk") {
 function __feFariasTalk(H, orig) {
   const s = __FE.st(H), L3 = __FE.L3, F = (t, e = "talk") => ({ who: "farias", e, t }), R = (t, e = "talk") => ({ who: "rafael", e, t });
   const prog = __feProg(H);
-  if (!s && prog >= 1) {
+  if (!s && prog >= 2) {
     H.__hubDlg([
       F(L3("Tá vendo aquele gancho vazio atrás do balcão? Faz vinte anos que ele está assim.", "See that empty hook behind the counter? It's been like that for twenty years.", "¿Ves ese gancho vacío detrás de la barra? Lleva veinte años así."), "sadness"),
       F(L3("Antes desta taverna eu era o Farias Mão-de-Ferro. Mercenário. Dos bons… ou pelo menos dos teimosos.", "Before this tavern I was Farias Iron-Hand. Mercenary. One of the good ones… or at least one of the stubborn ones.", "Antes de esta taberna yo era Farias Mano-de-Hierro. Mercenario. De los buenos… o al menos de los tercos."), "calm"),
       F(L3("O Rafael tinha doze anos quando forjou a primeira espada da vida dele. Torta, pesada… e pra mim.", "Rafael was twelve when he forged the first sword of his life. Crooked, heavy… and for me.", "Rafael tenía doce años cuando forjó la primera espada de su vida. Torcida, pesada… y para mí."), "smile"),
-      F(L3("A Ivone, minha mulher, enrolou o punho com a fita vermelha do vestido de casamento. \"Pra você sempre voltar pra casa\", ela disse.", "Ivone, my wife, wrapped the grip with the red ribbon from her wedding dress. \"So you always come back home\", she said.", "Ivone, mi mujer, envolvió la empuñadura con la cinta roja de su vestido de novia. \"Para que siempre vuelvas a casa\", dijo."), "smile"),
+      F(L3("A Ivone, minha mulher, enrolou o punho com a fita vermelha do vestido de casamento. \"Pra você sempre voltar pra casa\", ela disse. Até hoje ela me pergunta dessa espada.", "Ivone, my wife, wrapped the grip with the red ribbon from her wedding dress. \"So you always come back home\", she said. She still asks me about that sword.", "Ivone, mi mujer, envolvió la empuñadura con la cinta roja de su vestido de novia. \"Para que siempre vuelvas a casa\", dijo. Todavía me pregunta por esa espada."), "smile"),
       F(L3("Eu voltei. A espada não. Numa descida que deu errado eu corri… e deixei ela pra trás. E o Gaspar, meu parceiro, junto.", "I came back. The sword didn't. On a descent gone wrong I ran… and left it behind. And Gaspar, my partner, with it.", "Yo volví. La espada no. En un descenso que salió mal corrí… y la dejé atrás. Y a Gaspar, mi compañero, con ella."), "sadness"),
-      F(L3("Nunca contei isso pro meu filho. Se um dia passar pelas Catacumbas, procura a fita da Ivone. Onde ela estiver, a espada passou.", "I never told my son. If you ever pass through the Catacombs, look for Ivone's ribbon. Wherever it is, the sword went by.", "Nunca se lo conté a mi hijo. Si alguna vez pasas por las Catacumbas, busca la cinta de Ivone. Donde esté, pasó la espada."), "talk"),
+      F(L3("Nunca contei isso pro meu filho. Se um dia passar pelas Ruínas Antigas, procura a fita da Ivone. Onde ela estiver, a espada passou.", "I never told my son. If you ever pass through the Ancient Ruins, look for Ivone's ribbon. Wherever it is, the sword went by.", "Nunca se lo conté a mi hijo. Si alguna vez pasas por las Ruinas Antiguas, busca la cinta de Ivone. Donde esté, pasó la espada."), "talk"),
     ], () => { __FE.set(H, 1); H.__feMark?.(); H.__say?.(H.playerX, H.playerY - 46, L3("NOVA MISSÃO: A PRIMEIRA ESPADA", "NEW QUEST: THE FIRST SWORD", "NUEVA MISIÓN: LA PRIMERA ESPADA"), 3200, "#ffd27a") });
     return !0;
   }
@@ -27391,8 +27393,8 @@ function __feFariasTalk(H, orig) {
     return !0;
   }
   if (s === 1 || s === 2 || s === 3) {
-    const t = [, L3("As Catacumbas, herói. A Capela Esquecida era onde a gente montava acampamento.", "The Catacombs, hero. The Forgotten Chapel was where we used to make camp.", "Las Catacumbas, héroe. La Capilla Olvidada era donde acampábamos."),
-      L3("A fita da Ivone… você achou mesmo. Então o Gaspar saiu vivo daquela capela. Vivo!", "Ivone's ribbon… you really found it. So Gaspar left that chapel alive. Alive!", "La cinta de Ivone… de verdad la encontraste. Entonces Gaspar salió vivo de esa capilla. ¡Vivo!"),
+    const t = [, L3("As Ruínas Antigas, herói. O Templo Perdido era onde a gente montava acampamento.", "The Ancient Ruins, hero. The Lost Temple was where we used to make camp.", "Las Ruinas Antiguas, héroe. El Templo Perdido era donde acampábamos."),
+      L3("A fita da Ivone… você achou mesmo. Então o Gaspar saiu vivo daquele templo. Vivo! Ela vai querer saber disso.", "Ivone's ribbon… you really found it. So Gaspar left that temple alive. Alive! She'll want to hear this.", "La cinta de Ivone… de verdad la encontraste. Entonces Gaspar salió vivo de ese templo. ¡Vivo! Ella querrá saberlo."),
       L3("A Cidadela… Ele sempre foi o mais teimoso de nós dois. Toma cuidado lá em cima.", "The Citadel… He was always the more stubborn of us two. Be careful up there.", "La Ciudadela… Siempre fue el más terco de los dos. Ten cuidado allá arriba.")][s];
     H.__hubDlg([F(t, s === 2 ? "special" : "talk")]);
     return !0;
@@ -27420,7 +27422,8 @@ function __feForge(H) {
     H.time.delayedCall(700, () => {
       H.__hubDlg([
         R(L3("Pronto. Volta pro gancho da taverna, onde é o lugar dela.", "Done. Back to the tavern's hook, where it belongs.", "Listo. Vuelve al gancho de la taberna, donde pertenece."), "smile"),
-        F(L3("E a fita fica com você, herói. A Ivone ia querer que ela protegesse alguém que ainda desce.", "And the ribbon stays with you, hero. Ivone would want it to protect someone who still goes down there.", "Y la cinta se queda contigo, héroe. Ivone querría que protegiera a alguien que todavía baja."), "smile"),
+        R(L3("A mãe vai chorar quando vir ela pendurada de novo. Chorar e rir, do jeito dela.", "Mom is going to cry when she sees it hanging again. Cry and laugh, the way she does.", "Mamá va a llorar cuando la vea colgada otra vez. Llorar y reír, a su manera."), "smile"),
+        F(L3("E a fita fica com você, herói. Foi a própria Ivone que mandou: disse que agora ela tem que proteger quem ainda desce.", "And the ribbon stays with you, hero. Ivone herself insisted: she said now it has to protect someone who still goes down there.", "Y la cinta se queda contigo, héroe. Lo pidió la propia Ivone: dijo que ahora tiene que proteger a quien todavía baja."), "smile"),
         F(L3("Pra sempre voltar pra casa. Promete?", "So you always come back home. Promise?", "Para siempre volver a casa. ¿Lo prometes?"), "calm"),
       ], () => {
         __FE.set(H, 6); s.talk = .01;
@@ -27449,7 +27452,7 @@ function __feForge(H) {
         const sw = H.textures.exists("pe-espada") ? H.add.image(fi.x + 21, fi.y - 16, "pe-espada").setScale(.27).setAngle(-45).setDepth(5000).setVisible(!1) : null;
         H.__feMark = () => {
           const s = __FE.st(H); const prog = __feProg(H);
-          mk.setVisible(!!H.__tv && __feHub(H) && ((!s && prog >= 1) || s === 4));
+          mk.setVisible(!!H.__tv && __feHub(H) && ((!s && prog >= 2) || s === 4));
           sw?.setVisible(!!H.__tv && __feHub(H) && s >= 6);
         };
         H.events.on("update", () => { try { H.__feMark() } catch (e) {} });
@@ -27464,7 +27467,7 @@ function __feForge(H) {
       const H = this, want = a === "in" && !H.__tv && __feHub(H) && __FE.st(H) === 5 && H.textures.exists("farias");
       if (want && !H.__feF && H.M?.interior?.smith) {
         const A = H.M.interior.smith.anvil;
-        H.__feF = H.add.sprite(A[0] - 34, A[1] + 4, "farias", 0).setOrigin(.5, 1).setScale(.2).setDepth(A[1] + 4);
+        H.__feF = H.add.sprite(A[0] - 34, A[1] + 4, "farias", 0).setOrigin(.5, 1).setScale(.194).setDepth(A[1] + 4);
         H.anims.exists("farias-idle") && H.__feF.play("farias-idle");
       } else if (!want && H.__feF && a !== "in") { H.__feF.destroy(); H.__feF = null }
     } catch (e) { console.warn("[primeira-espada] forja", e) }

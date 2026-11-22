@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.103 · cache ded-web-v6.18.4-primeira-espada)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.104 · cache ded-web-v6.18.5-primeira-espada2)
+
+P216.104 — A PRIMEIRA ESPADA: AJUSTES
+- O Farias só oferece a missão depois do SEGUNDO portal concluído (no primeiro já há outra missão).
+- Pistas mudaram de lugar para vir depois disso: a fita da Ivone no Templo Perdido (Ruínas Antigas); o acampamento do
+  Gaspar na Trilha Nevada e, lido o recado, o Gaspar no Lago Congelado — os dois na Cidadela Glacial.
+- A Ivone está viva: "até hoje ela me pergunta dessa espada"; no fim é ela quem manda a fita para o herói, e o Rafael
+  comenta que a mãe vai chorar e rir quando vir a espada pendurada de novo.
+- Tamanhos proporcionais: o Gaspar ficou na escala do herói (cabeça do mesmo tamanho; agachado, da altura dele) e o
+  Farias na forja usa a mesma medida do Rafael.
 
 P216.103 — MISSÃO SECUNDÁRIA "A PRIMEIRA ESPADA" (FARIAS, O DONO DA TAVERNA)
 - Campanha. Depois do primeiro portal concluído, o Farias (pai do Rafael, o ferreiro) conta na taverna que era o
