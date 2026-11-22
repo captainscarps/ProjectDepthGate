@@ -2190,15 +2190,15 @@ else{const dx=d.tgt[0]-d.x,dy=d.tgt[1]-d.y,l=Math.hypot(dx,dy),sp=46*dt;if(l<=sp
 __solidOut(x,y){const M=this.M,g=M.g,r=M.coll[Math.floor(y/g)];return!r||r[Math.floor(x/g)]!=="0"}
 update(i,t){const e=Math.min(t/1e3,.05),inp=this.game.inputManager;if(!this.panel&&!this.__busy){let g=null;try{g=navigator.getGamepads?.()?.[0]||Array.from(navigator.getGamepads?.()??[]).find(p=>p&&p.connected)}catch(_){}const st=!!g&&!!g.buttons[9]?.pressed,sl=!!g&&!!g.buttons[8]?.pressed;st&&!this.__stPv&&this.__pzOpen();sl&&!this.__slPv&&!this.__hubDlgO&&this.__invHub?.();this.__stPv=st;this.__slPv=sl}else if(this.panel){this.__slPv=!0}else if(this.panel&&!this.__pz)this.__stPv=!0;if(this.__pz&&!this.panel)this.__pz=null;if(this.__hs&&!this.panel)this.__hs=null;this.__swingCd=(this.__swingCd||0)-e;this.__comboT=(this.__comboT||0)-e;
 if(this.__resumeSmith&&!this.panel){this.__resumeSmith=!1;this.smith.talk=.01}
-this.__combatTick(e);if(this.panel){this.__padPanel()}let vx=0,vy=0;if(!this.panel&&!this.__busy){inp?.update();const k=inp?.keyboardAxis()??{x:0,y:0},a0=inp?.axis()??{x:0,y:0},a=this.__joy?.on?this.__joy.ax:a0,m=Math.hypot(a.x,a.y)>Math.hypot(k.x,k.y)?a:k;if(Math.hypot(m.x,m.y)>.15){vx=m.x;vy=m.y;this.path=null;this.pending=null}
-else if(this.path&&this.path.length){const[tx,ty]=this.path[0],dx=tx-this.playerX,dy=ty-this.playerY,d=Math.hypot(dx,dy);if(d<3){this.path.shift();if(!this.path.length){this.path=null;if(this.pending){const o=this.pending;this.pending=null;const tt=o.dyn?.(),ox=tt?tt.x:o.x,oy=tt?tt.y:o.y;Math.hypot(ox-this.playerX,oy-this.playerY)<o.r+20&&this.__do(o)}}}else{vx=dx/d;vy=dy/d}}
+this.__combatTick(e);if(this.panel){this.__padPanel()}let vx=0,vy=0;this.__mr=0;if(!this.panel&&!this.__busy){inp?.update();const k=inp?.keyboardAxis()??{x:0,y:0},a0=inp?.axis()??{x:0,y:0},a=this.__joy?.on?this.__joy.ax:a0,m=Math.hypot(a.x,a.y)>Math.hypot(k.x,k.y)?a:k;/* p216.106: corrida no Refúgio com a regra da fase — teclado corre; analógico/toque anda com pouca inclinação e corre acima de ~60% */if(Math.hypot(m.x,m.y)>.15){const __M=Math.hypot(m.x,m.y);this.__mr=m===k?1:__M<.62?Math.max(.34,__M*.7):1;vx=m.x/__M*this.__mr;vy=m.y/__M*this.__mr;this.path=null;this.pending=null}
+else if(this.path&&this.path.length){const[tx,ty]=this.path[0],dx=tx-this.playerX,dy=ty-this.playerY,d=Math.hypot(dx,dy);if(d<3){this.path.shift();if(!this.path.length){this.path=null;if(this.pending){const o=this.pending;this.pending=null;const tt=o.dyn?.(),ox=tt?tt.x:o.x,oy=tt?tt.y:o.y;Math.hypot(ox-this.playerX,oy-this.playerY)<o.r+20&&this.__do(o)}}}else{vx=dx/d;vy=dy/d;this.__mr=1}}
 inp?.justDown("INTERACT")&&this.tryInteract();inp?.justDown("ATTACK")&&this.__attack();inp?.justDown("DASH")&&this.__dash();for(let k=0;k<4;k++)inp?.justDown("ABILITY_"+(k+1))&&this.__ability(k)}
-const sp=96*(this.__form?.speed||1);if(this.__dashT>0){this.__dashT-=e;vx=this.__dashV.x*3.2;vy=this.__dashV.y*3.2}if(vx||vy){const nx=this.playerX+vx*sp*e,ny=this.playerY+vy*sp*e,px=this.playerX,py=this.playerY;const __pf=(this.__pfree||this.__free);__pf.call(this,nx,this.playerY)&&(this.playerX=nx);__pf.call(this,this.playerX,ny)&&(this.playerY=ny);if(this.path){Math.hypot(this.playerX-px,this.playerY-py)<sp*e*.2?(this.__stuck=(this.__stuck||0)+e):(this.__stuck=0);if(this.__stuck>.45){const o=this.pending;this.path=null;this.pending=null;this.__stuck=0;if(o){const tt=o.dyn?.(),ox=tt?tt.x:o.x,oy=tt?tt.y:o.y;Math.hypot(ox-this.playerX,oy-this.playerY)<o.r+20&&this.__do(o)}}}Math.abs(vx)>Math.abs(vy)?this.facing={x:Math.sign(vx),y:0}:this.facing={x:0,y:Math.sign(vy)}}
+const sp=(this.__mr>.6&&!(this.__dashT>0)?168:96)*(this.__form?.speed||1);if(this.__dashT>0){this.__dashT-=e;vx=this.__dashV.x*3.2;vy=this.__dashV.y*3.2}if(vx||vy){const nx=this.playerX+vx*sp*e,ny=this.playerY+vy*sp*e,px=this.playerX,py=this.playerY;const __pf=(this.__pfree||this.__free);__pf.call(this,nx,this.playerY)&&(this.playerX=nx);__pf.call(this,this.playerX,ny)&&(this.playerY=ny);if(this.path){Math.hypot(this.playerX-px,this.playerY-py)<sp*e*.2?(this.__stuck=(this.__stuck||0)+e):(this.__stuck=0);if(this.__stuck>.45){const o=this.pending;this.path=null;this.pending=null;this.__stuck=0;if(o){const tt=o.dyn?.(),ox=tt?tt.x:o.x,oy=tt?tt.y:o.y;Math.hypot(ox-this.playerX,oy-this.playerY)<o.r+20&&this.__do(o)}}}Math.abs(vx)>Math.abs(vy)?this.facing={x:Math.sign(vx),y:0}:this.facing={x:0,y:Math.sign(vy)}}
 this.fakeBody.velocity.x=vx*sp;this.fakeBody.velocity.y=vy*sp;
 /* porta da forja: entra andando para cima; sai andando para baixo */
 const M=this.M,D=M.house.door;if(this.area==="out"){const nd=Math.abs(this.playerX-D[0])<14&&this.playerY<D[1]+3&&vy<-.3;nd&&!this.__busy&&this.__enter();const open=Math.hypot(this.playerX-D[0],this.playerY-D[1])<44;if(open!==this.doorOpen){this.doorOpen=open;const f=(this.house.anims.currentFrame?.index??1)-1;this.house.play({key:open?"vh-house-o":"vh-house-c",startFrame:f%12})}}
 else{const X=M.interior.door;Math.abs(this.playerX-X[0])<14&&this.playerY>X[1]-8&&vy>.3&&!this.__busy&&this.__leave()}
-this.rig.container.setPosition(this.playerX,this.playerY).setDepth(this.playerY);this.rig.update(e,{x:this.playerX,y:this.playerY,facing:this.facing,body:this.fakeBody,dead:!1,invuln:0});
+this.rig.container.setPosition(this.playerX,this.playerY).setDepth(this.playerY);this.rig.update(e,{x:this.playerX,y:this.playerY,facing:this.facing,body:this.fakeBody,dead:!1,invuln:0,moveRatio:this.__dashT>0?null:(this.fakeBody.velocity.x||this.fakeBody.velocity.y)?(this.__mr||1):0});
 this.__smithTick(e);this.__hunterTick(e);this.__herbTick(e);this.__dogTick(e);this.__heroesTick(e);
 /* dica e balão de interação */
 const o=this.panel||this.__hubDlgO?null:this.nearestStation();if(o){const tt=o.dyn?.(),x=tt?tt.x:o.x,y=tt?tt.y:o.y,key=inp?.device==="touch"?__L3("toque","tap","toca"):inp?.label?.("INTERACT")||"[E]";this.prompt.setText(`${key} ${o.desc}`).setPosition(x,y-(o.id==="door"?30:o.id==="portal"?92:o.id==="smith"?40:o.id==="herb"?60:46)).setVisible(!0);this.hint.setText(`${o.label} — ${o.desc}`)}else{this.prompt.setVisible(!1);this.hint.setText(this.area==="in"?(this.__tv?__L3("Converse com o Farias e a Maria ou saia pela porta","Talk to Farias and Maria or leave through the door","Habla con Farias y María o sal por la puerta"):__L3("Converse com o ferreiro ou saia pela porta","Talk to the blacksmith or leave through the door","Habla con el herrero o sal por la puerta")):__L3("Ande pela vila e chegue perto de algo para interagir","Walk around the village and get close to something to interact","Camina por la aldea y acércate a algo para interactuar"))}
@@ -25759,7 +25759,7 @@ const __HDIRS={warrior:{t:[0,1,2,3,4],n:[8,8,8,8,8,8,8,8],c:9},druid:{t:[0,1,2,3
 {const P0=bo.prototype.preload;bo.prototype.preload=function(){const r=P0.apply(this,arguments);try{const L=this.load,op=L.path;L.setPath("");
  for(const[c,o]of Object.entries(__HDIRS))for(const t of o.t){const k=`mk4b-${c}-t${t}-dirs`;this.textures.exists(k)||L.spritesheet(k,`assets/pixel-art/characters/${o.f??`${c}-pack-t${t}-dirs.png`}`,{frameWidth:128,frameHeight:128})}L.setPath(op)}catch(e){}return r}}
 {const U0=Qe.prototype.update;Qe.prototype.update=function(i,t){const r=U0.apply(this,arguments);try{const m=this.mk2;if(!m||this.deadPose||window.__noHeroDirs)return r;
- const key=`${this.animPrefix}-dirs`;if(!this.scene.textures.exists(key)){this.__hd=null;return r}
+ let key=`${this.animPrefix}-dirs`;/* p216.106: o herói do Refúgio usa a folha base (mk4b-<classe>), sem camada: cai na folha de direções da camada 0 */if(!this.scene.textures.exists(key)&&/^mk4b-[a-z]+$/.test(this.animPrefix))key=`${this.animPrefix}-t0-dirs`;if(!this.scene.textures.exists(key)){this.__hd=null;return r}
  const busy=this.attackState==="attack"||this.__skBusy||!!this.__skA||(t?.dashTimer??0)>0||this.castTimer>0||this.hurtAnimT>0||!!t?.guarding;if(busy){return r}
  const vx=t?.body?.velocity.x??0,vy=t?.body?.velocity.y??0,sp=Math.hypot(vx,vy),C=this.container;
  if(sp>20){const ax=Math.abs(vx)/sp,ay=Math.abs(vy)/sp,pr=this.__hd?.row,h=.07;
@@ -27139,7 +27139,7 @@ function __mmNeed(S, c) {
   L.isLoading() || L.start();
 }
 {const U0 = Qe.prototype.update; Qe.prototype.update = function () {
-  try { if (!this.isPreview && !this.__mmC) { const m = /^mk4b-([a-z]+)/.exec(this.animPrefix || ""), c = m && __MM.cls.includes(m[1]) ? m[1] : null;
+  try { if ((!this.isPreview || this.scene?.rig === this) && !this.__mmC) {   /* o herói do Refúgio é um boneco de prévia (this.rig) */ const m = /^mk4b-([a-z]+)/.exec(this.animPrefix || ""), c = m && __MM.cls.includes(m[1]) ? m[1] : null;
       if (c) { this.__mmC = c; (this.scene.__mmHeroes = this.scene.__mmHeroes || new Set()).add(this); __mmNeed(this.scene, c) } }
     else if (this.__mmC && !__MM.on.has(this.__mmC)) __mmNeed(this.scene, this.__mmC) } catch (e) {}
   return U0.apply(this, arguments) }}
@@ -27147,6 +27147,11 @@ function __mmNeed(S, c) {
 {const C0 = bl.prototype.create; bl.prototype.create = function () { const r = C0.apply(this, arguments);
   try { this.events.once("shutdown", () => { try { const T = this.textures; __mmFree(T, this.game.anims, T.getTextureKeys().filter(k => /^selx?-/.test(k))) } catch (e) {} }) } catch (e) {}
   return r }}
+/* prólogo e viagem de volta: o herói é um sprite simples (sem Qe) que usa a folha "-dirs" — pede as folhas da classe ao começar */
+try { if (typeof __ArcticPrologue !== "undefined") { const C0 = __ArcticPrologue.prototype.create; __ArcticPrologue.prototype.create = function () {
+  const r = C0.apply(this, arguments);
+  try { const m = /^mk4b-([a-z]+)/.exec(this.hkey || ""), c = m && __MM.cls.includes(m[1]) ? m[1] : String(this.classId || "").toLowerCase(); __MM.cls.includes(c) && __mmNeed(this, c) } catch (e) {}
+  return r } } } catch (e) {}
 /*__MEMHEROIS__*/
 /*__QESPADA__*/
 /* ══ Missão secundária 10: A Primeira Espada (Farias, dono da taverna · p216.103) ════════════════════════════════

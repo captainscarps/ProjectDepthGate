@@ -41,7 +41,7 @@ function __mmNeed(S, c) {
   L.isLoading() || L.start();
 }
 {const U0 = Qe.prototype.update; Qe.prototype.update = function () {
-  try { if (!this.isPreview && !this.__mmC) { const m = /^mk4b-([a-z]+)/.exec(this.animPrefix || ""), c = m && __MM.cls.includes(m[1]) ? m[1] : null;
+  try { if ((!this.isPreview || this.scene?.rig === this) && !this.__mmC) {   /* o herói do Refúgio é um boneco de prévia (this.rig) */ const m = /^mk4b-([a-z]+)/.exec(this.animPrefix || ""), c = m && __MM.cls.includes(m[1]) ? m[1] : null;
       if (c) { this.__mmC = c; (this.scene.__mmHeroes = this.scene.__mmHeroes || new Set()).add(this); __mmNeed(this.scene, c) } }
     else if (this.__mmC && !__MM.on.has(this.__mmC)) __mmNeed(this.scene, this.__mmC) } catch (e) {}
   return U0.apply(this, arguments) }}
@@ -49,3 +49,8 @@ function __mmNeed(S, c) {
 {const C0 = bl.prototype.create; bl.prototype.create = function () { const r = C0.apply(this, arguments);
   try { this.events.once("shutdown", () => { try { const T = this.textures; __mmFree(T, this.game.anims, T.getTextureKeys().filter(k => /^selx?-/.test(k))) } catch (e) {} }) } catch (e) {}
   return r }}
+/* prólogo e viagem de volta: o herói é um sprite simples (sem Qe) que usa a folha "-dirs" — pede as folhas da classe ao começar */
+try { if (typeof __ArcticPrologue !== "undefined") { const C0 = __ArcticPrologue.prototype.create; __ArcticPrologue.prototype.create = function () {
+  const r = C0.apply(this, arguments);
+  try { const m = /^mk4b-([a-z]+)/.exec(this.hkey || ""), c = m && __MM.cls.includes(m[1]) ? m[1] : String(this.classId || "").toLowerCase(); __MM.cls.includes(c) && __mmNeed(this, c) } catch (e) {}
+  return r } } } catch (e) {}
