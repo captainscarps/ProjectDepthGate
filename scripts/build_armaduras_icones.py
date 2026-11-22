@@ -1,4 +1,4 @@
-"""Monta os ícones de armadura (p216.101) no atlas items-hd.
+"""Monta os ícones de armadura (p216.101) e os de scripts/art-src/itens-extra/ no atlas items-hd.
 - <id>.png bruto de scripts/art-src/armaduras-icones → quadro "<id>" (substitui no lugar ou acrescenta no fim)
 - shadow_cloak / dark_leather_armor (itens com raridade) → "<id>@<RAR>" com brilho da raridade em volta
 - armor__<RAR>.png → "armor@<RAR>"
@@ -58,6 +58,9 @@ for fn in sorted(os.listdir(D)):
         new[k] = glow(im, RAR[k[6:]], .6 if k.endswith("COMMON") else 1)
     else:
         new[k] = im
+XD = os.path.join(ROOT, "scripts/art-src/itens-extra")   # outros itens com ícone próprio (ex.: Fita da Ivone, p216.103)
+for fn in sorted(os.listdir(XD)) if os.path.isdir(XD) else []:
+    if fn.endswith(".png"): new[fn[:-4]] = fit(Image.open(os.path.join(XD, fn)))
 arm = json.load(open("/tmp/armors.json")) if os.path.exists("/tmp/armors.json") else []
 VARIANTS = [a[0] for a in arm if "_v_" in a[0]] or json.load(open(os.path.join(D, "_variantes.json")))
 json.dump(VARIANTS, open(os.path.join(D, "_variantes.json"), "w"))

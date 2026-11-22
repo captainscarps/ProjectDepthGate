@@ -1,4 +1,19 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.102 · cache ded-web-v6.18.3-memoria-herois)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.103 · cache ded-web-v6.18.4-primeira-espada)
+
+P216.103 — MISSÃO SECUNDÁRIA "A PRIMEIRA ESPADA" (FARIAS, O DONO DA TAVERNA)
+- Campanha. Depois do primeiro portal concluído, o Farias (pai do Rafael, o ferreiro) conta na taverna que era o
+  "Mão-de-Ferro", mercenário: a primeira espada que o Rafael forjou, aos doze anos, foi para ele, e a Ivone enrolou o
+  punho com a fita vermelha do vestido de casamento "pra você sempre voltar pra casa". Numa descida ele correu e
+  deixou para trás a espada e o parceiro, Gaspar. "!" sobre o Farias quando há o que conversar.
+- Catacumbas (Capela Esquecida): a fita da Ivone numa lápide · Ruínas (Lago Sombrio): o acampamento do Gaspar com o
+  recado entalhado · Cidadela Glacial (Lago Congelado): Gaspar, o Corvo — chefe novo (arte PixelLab: sprite com
+  golpe de gelo e morte desfazendo-se em neve, retratos no estilo do Farias).
+- De volta à taverna o Farias leva a espada à forja; lá pai e filho conversam, o Rafael restaura a espada e ela fica
+  em pé ao lado do Farias, atrás do balcão. Recompensa: Fita da Ivone (acessório lendário: vida e defesa; uma vez
+  por masmorra, um golpe que mataria deixa 1 de vida). Diário com retrato do Farias. Falas novas depois.
+- Peças com nome próprio (fixedName) não ganham mais o sufixo dos afixos aleatórios.
+- Código: scripts/source/primeira-espada.js · arte: scripts/gerar_primeira_espada.py → scripts/build_primeira_espada.py
+  (ícones 80×80 em scripts/art-src/itens-extra/, montados no atlas pelo build_armaduras_icones.py).
 
 P216.102 — JOGO REINICIANDO NO CELULAR AO ABRIR A FASE (MEMÓRIA)
 - Causa: já no menu o jogo carregava as folhas de andar para cima/baixo (-dirs), de golpes (-sk) e de pesca (-fish)
