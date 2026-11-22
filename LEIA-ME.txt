@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.104 · cache ded-web-v6.18.5-primeira-espada2)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.105 · cache ded-web-v6.18.6-espada-dublagem)
+
+P216.105 — A PRIMEIRA ESPADA DUBLADA (PT e EN)
+- 38 falas, 220 gravações, com as MESMAS vozes de antes de cada personagem:
+  Farias: ElevenLabs "Jaan" em PT e EN (como as falas da taverna) · Rafael: PT ElevenLabs (par "Algieba" do elenco,
+  como o resto das falas dele), EN Kokoro am_onyx 0.92 · Herói: uma versão por classe — PT ElevenLabs do elenco, EN
+  Kokoro com a mistura e o tratamento da dublagem em inglês (KVOICE "hero-<CLASSE>") · Gaspar (personagem novo):
+  ElevenLabs "Rannox Elion" (grave e rouco) em PT e EN. O espanhol aponta para o mesmo áudio.
+- scripts/gravar_primeira_espada.py (pula o que já existe; --refazer regrava).
 
 P216.104 — A PRIMEIRA ESPADA: AJUSTES
 - O Farias só oferece a missão depois do SEGUNDO portal concluído (no primeiro já há outra missão).
