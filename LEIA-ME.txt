@@ -1,4 +1,17 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.106 · cache ded-web-v6.18.7-correr-refugio)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.107 · cache ded-web-v6.18.8-refugio-chao)
+
+P216.107 — REFÚGIO: PAREDE INVISÍVEL REMOVIDA · CHÃO NOVO (PIXELLAB)
+- Parede invisível: a colisão do Refúgio ainda tinha a borda de baixo do mapa antigo (linhas 86–87 da grade, y≈690),
+  atravessando o Refúgio inteiro entre a vila e o campo da praia, com uma única passagem na trilha. Removida em
+  village.json (ficam só as bordas laterais). Conferidos o resto do mapa, a forja e a taverna: o que bloqueia é objeto
+  desenhado (casas, canteiros, cercado, barco, água).
+- Chão novo: texturas do PixelLab (grama clara e grama florida, calçamento de pedras irregulares com musgo, areia),
+  deixadas sem emenda (deslocamento de meia textura + repintura da costura com inpaint) e aplicadas por região de
+  cor em ground.png. Ficam os contornos, flores e tufos desenhados, a água e o muro; a grama mistura as duas
+  texturas em manchas suaves, o que também apagou a emenda visível entre a vila e o campo. O tijolo sombreado junto
+  da forja virou calçamento escurecido.
+- Scripts: gerar_refugio_chao.py → emendar_refugio_chao.py → build_refugio_chao.py (re-executável, guarda o
+  ground.png original em scripts/art-src/refugio-chao/ground-orig.png).
 
 P216.106 — PRÓLOGO COM AS DIREÇÕES DE VOLTA · CORRER NO REFÚGIO
 - Prólogo (e viagem de volta): o herói não usava as folhas de andar para cima, para baixo e nas diagonais desde a
