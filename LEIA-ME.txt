@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.110 · cache ded-web-v6.19.1-variantes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.111 · cache ded-web-v6.19.2-fogo)
+
+P216.111 — HERÓI SEM "BURACOS" AO ANDAR + FOGO NOVO
+- Folhas "cabeça descoberta" (<classe>-nh-body/-dirs.png, usadas pelas armaduras lendárias e da forja) tinham pedaços do
+  tronco/costas faltando em alguns quadros de andar (o herói parecia cortado/transparente ao se mover). scripts/consertar_nh.py
+  fecha os buracos: copia da folha com capacete o que falta abaixo da cabeça quando a pose bate, e nos quadros de lado
+  (pose diferente) fecha o vão entre escudo e corpo com sombra de capa. Só preenche buracos, não aumenta o contorno.
+  Originais em scripts/art-src/nh-orig/. Folhas de golpes (-sk) não foram mexidas.
+- Chama "torch-flame" redesenhada (scripts/source/fogo.js): 16 quadros em laço, línguas subindo, núcleo branco, brasa que
+  se solta e fagulhas. Cada tocha começa num quadro e ritmo diferentes, o brilho em volta tremula, fogueiras ganham línguas
+  laterais e braseiros soltam fagulhas (com limite e só perto da câmera). Vale para tochas, velas, braseiros, lampiões e fogueiras.
 
 P216.110 — VARIANTES RARAS DAS ARMADURAS DA FORJA COM A COR DO PADRÃO
 - As 24 variantes (Jade, Glacial, Obsidiana, Áurea, Sanguínea, das Cinzas) apareciam iguais à armadura original: a
