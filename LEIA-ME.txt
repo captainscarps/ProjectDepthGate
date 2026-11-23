@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.108 · cache ded-web-v6.18.9-refugio-fisica)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.109 · cache ded-web-v6.19.0-refugio-pes)
+
+P216.109 — REFÚGIO PELOS PÉS DO HERÓI · BRILHO DAS ARMADURAS DA FORJA NO LUGAR
+- A posição do herói no Refúgio (playerY) fica 24 px acima dos pés (M.feetOff). A colisão nova (p216.108) estava na
+  base real dos objetos e a ordem de desenho usava playerY: o herói entrava meio corpo em tocos, toras e no
+  santuário e sumia atrás de caixotes que estavam atrás dele. Agora o pé de cada objeto, o cercado e o laguinho
+  ficam no mesmo espaço do playerY e o herói é desenhado pela linha dos pés. Base do santuário mais larga.
+- "Transparência" em armaduras da forja: o brilho da forja (camada "-glow", somada por cima) não copiava a posição do
+  desenho e ficava 14 px acima do corpo — as manchas claras caíam fora do lugar e pareciam buracos. Agora copia
+  posição, escala, origem, espelho e giro, e acompanha a troca de folha em qualquer cena (antes só nas fases).
+  Corrigido no código, sem arte nova.
 
 P216.108 — REFÚGIO: FÍSICA PELOS OBJETOS · MERCADORIAS DO VENDEDOR · BARRACA E SANTUÁRIO NOVOS · HERBORISTA
 - Física: a grade de colisão do lado de fora era desenhada à mão e não batia com a tela (o herói esbarrava no vazio

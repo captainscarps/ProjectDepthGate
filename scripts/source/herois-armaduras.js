@@ -147,7 +147,9 @@ function __haGlowSync(V) {
   const g = V.__fGlow, m = V.mk2;
   if (!g || !g.visible || !m) return;
   const gk = m.texture.key + "-glow";
-  if (V.scene.textures.exists(gk)) { g.texture.key !== gk && g.setTexture(gk); g.setFrame(m.frame.name) } else g.setAlpha(0);
+  /* p216.109: o brilho copia também posição, escala, origem, espelho e giro do desenho — antes ficava 14 px acima do corpo
+     e as manchas claras caíam fora do lugar (pareciam buracos/transparência na armadura) */
+  if (V.scene.textures.exists(gk)) { g.texture.key !== gk && g.setTexture(gk); g.setFrame(m.frame.name); g.setPosition(m.x, m.y).setScale(m.scaleX, m.scaleY).setOrigin(m.originX, m.originY).setFlipX(m.flipX).setRotation(m.rotation); g.alpha < .05 && g.setAlpha(.74) } else g.setAlpha(0);
 }
 {const C0 = Sd.prototype.create; Sd.prototype.create = function () {
   if (!Qe.prototype.__haG) { const U0 = Qe.prototype.update; Qe.prototype.update = function () { const r = U0.apply(this, arguments); try { __haGlowSync(this) } catch (e) {} return r }; Qe.prototype.__haG = 1 }

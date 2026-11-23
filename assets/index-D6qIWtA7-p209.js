@@ -25304,7 +25304,9 @@ function __haGlowSync(V) {
   const g = V.__fGlow, m = V.mk2;
   if (!g || !g.visible || !m) return;
   const gk = m.texture.key + "-glow";
-  if (V.scene.textures.exists(gk)) { g.texture.key !== gk && g.setTexture(gk); g.setFrame(m.frame.name) } else g.setAlpha(0);
+  /* p216.109: o brilho copia também posição, escala, origem, espelho e giro do desenho — antes ficava 14 px acima do corpo
+     e as manchas claras caíam fora do lugar (pareciam buracos/transparência na armadura) */
+  if (V.scene.textures.exists(gk)) { g.texture.key !== gk && g.setTexture(gk); g.setFrame(m.frame.name); g.setPosition(m.x, m.y).setScale(m.scaleX, m.scaleY).setOrigin(m.originX, m.originY).setFlipX(m.flipX).setRotation(m.rotation); g.alpha < .05 && g.setAlpha(.74) } else g.setAlpha(0);
 }
 {const C0 = Sd.prototype.create; Sd.prototype.create = function () {
   if (!Qe.prototype.__haG) { const U0 = Qe.prototype.update; Qe.prototype.update = function () { const r = U0.apply(this, arguments); try { __haGlowSync(this) } catch (e) {} return r }; Qe.prototype.__haG = 1 }
@@ -27514,7 +27516,7 @@ const __RFX = {
     if (key === "vh-herb-hut") return [w * .45, h * .42, 3];
     if (key === "vh-herb-bed") return [w * .47, h * .72, 2];
     if (key === "hub-stall") return [w * .42, Math.min(22, h * .3), 1];
-    if (key === "hub-shrine") return [w * .4, Math.min(18, h * .25), 1];
+    if (key === "hub-shrine") return [w * .47, Math.min(20, h * .26), 1];
     if (key === "hub-portal") return w > 70 ? [14, 7, 2] : null;   // o portal da vila; o das cavernas é só luz
     if (key === "hub-campfire" || key === "pet-kennel" || key === "vh-cart" || key === "vh-table" || key === "vh-herb-shelf" || key === "vh-herb-caul" || key === "vh-hunter-tans")
       return [w * .38, Math.max(6, Math.min(14, h * .3)), 1];
@@ -27533,15 +27535,21 @@ function __rfxRebuild(H) {
   const DR = M.dockRect, inDock = (x, y) => DR && x >= DR[0] && x < DR[0] + DR[2] && y >= DR[1] && y < DR[1] + DR[3];
   const PEN = typeof __PEN !== "undefined" ? __PEN : null, inPen = (x, y) => PEN && x >= PEN.x - 16 && x < PEN.x + PEN.w + 16 && y >= PEN.y - 16 && y < PEN.y + PEN.h + 2;
   const water = (x, y) => { if (!px) return !1; let n = 0; for (const [dx, dy] of [[0, 0], [-2, -2], [2, 2], [-2, 2], [2, -2]]) { const [r, gg, b] = px(x + dx, y + dy); b > r + 28 && b >= gg - 6 && n++ } return n >= 3 };
+  const FO0 = M.feetOff ?? 24, LK = typeof __RF_LAKE !== "undefined" ? __RF_LAKE : null, inLake = (x, y) => LK && x >= LK.x - 8 && x < LK.x + LK.w + 8 && y >= LK.y - FO0 - 8 && y < LK.y + LK.h + 8;
   const C = [];
   for (let y = 0; y < GH; y++) { let row = ""; for (let x = 0; x < GW; x++) {
     const cx = x * g + g / 2, cy = y * g + g / 2;
-    row += old[y][x] === "1" && (x < 2 || x >= GW - 2 || y < 14 || inDock(cx, cy) || inPen(cx, cy) || water(cx, cy)) ? "1" : "0";
+    // laguinho: decide pela água onde fica o PÉ (cy + feetOff); o cercado é refeito abaixo, no mesmo espaço
+    if (inLake(cx, cy) && y >= 14) { row += water(cx, cy + FO0) ? "1" : "0"; continue }
+    row += old[y][x] === "1" && !inPen(cx, cy) && (x < 2 || x >= GW - 2 || y < 14 || inDock(cx, cy) || water(cx, cy)) ? "1" : "0";
   } C.push(row) }
   const set = (x0, y0, x1, y1) => { for (let gy = Math.max(0, Math.floor(y0 / g)); gy <= Math.min(GH - 1, Math.floor((y1 - 1) / g)); gy++) {
     let r = C[gy]; for (let gx = Math.max(0, Math.floor(x0 / g)); gx <= Math.min(GW - 1, Math.floor((x1 - 1) / g)); gx++) {
       const ox = Math.max(x0, gx * g), oy = Math.max(y0, gy * g), ow = Math.min(x1, gx * g + g) - ox, oh = Math.min(y1, gy * g + g) - oy;
       ow > 2.5 && oh > 2.5 && (r = r.slice(0, gx) + "1" + r.slice(gx + 1)) } C[gy] = r } };
+  /* a posição do herói (playerY) fica a feetOff px ACIMA dos pés: a grade vive nesse espaço, então o pé de cada objeto
+     sobe feetOff (p216.109; antes o herói entrava meio corpo nos tocos e toras) */
+  const FO = M.feetOff ?? 24;
   const objs = [];
   const walk = (o, ox, oy) => { if (!o || o.visible === !1) return; if (o.type === "Container") { for (const c of o.list) walk(c, ox + o.x, oy + o.y); return }
     if (!o.texture || (o.type !== "Image" && o.type !== "Sprite")) return; if ((o.depth ?? 0) < 0 || o.alpha < .3) return; objs.push([o, ox + o.x, oy + o.y]) };
@@ -27549,13 +27557,14 @@ function __rfxRebuild(H) {
   for (const [o, x, y] of objs) {
     if (inDock(x, y) || inPen(x, y)) continue;
     const w = o.displayWidth, h = o.displayHeight, F = __RFX.foot(o.texture.key, o.frame?.name, w, h); if (!F) continue;
-    if (F === "house") { const Hs = M.house; set(Hs.x + 4, Hs.y + Hs.h * .38, Hs.x + Hs.w - 4, Hs.base); continue }
+    if (F === "house") { const Hs = M.house; set(Hs.x + 4, Hs.y + Hs.h * .38 - FO, Hs.x + Hs.w - 4, Hs.base - FO); continue }
     const fy = y + (1 - (o.originY ?? .5)) * h - F[2], fx = x + (.5 - (o.originX ?? .5)) * w;
-    set(fx - F[0], fy - F[1], fx + F[0], fy);
+    set(fx - F[0], fy - F[1] - FO, fx + F[0], fy - FO);
   }
-  for (const [lx, ly] of M.lamps || []) set(lx - 3, ly - 4, lx + 3, ly);
+  if (PEN) set(PEN.x - 12, PEN.y - 12 - FO, PEN.x + PEN.w + 12, PEN.y + PEN.h + 2 - FO);   // cercado dos pets (folga para os mourões)
+  for (const [lx, ly] of M.lamps || []) set(lx - 3, ly - 4 - FO, lx + 3, ly - FO);
   // pontos de uso continuam alcançáveis: nada bloqueia o próprio ponto de interação (porta, portal, placa…)
-  for (const it of H.inters || []) if (it.area === "out" && (it.id === "door" || it.id === "cabin" || it.id === "portal")) { const gx = Math.floor(it.x / g), gy = Math.floor((it.y + 2) / g); C[gy] && (C[gy] = C[gy].slice(0, gx) + "0" + C[gy].slice(gx + 1)) }
+  for (const it of H.inters || []) if (it.area === "out" && (it.id === "door" || it.id === "cabin" || it.id === "portal")) { const gx = Math.floor(it.x / g), gy = Math.floor((it.y + 2 - FO) / g); C[gy] && (C[gy] = C[gy].slice(0, gx) + "0" + C[gy].slice(gx + 1)) }
   H.M = Object.assign({}, M, { coll: C });
   H.__rfxDone = 1;
 }
@@ -27565,6 +27574,13 @@ function __rfxRebuild(H) {
     const r = I0.apply(this, arguments);
     try { const H = this; __rfxRebuild(H); H.time.delayedCall(350, () => { try { __rfxRebuild(H) } catch (e) { console.warn("[refugio-fisica]", e) } }) } catch (e) { console.warn("[refugio-fisica]", e) }
     try { __rfxVendor(this) } catch (e) { console.warn("[vendedor]", e) }
+    return r;
+  };
+  /* ordem de desenho pelo PÉ do herói (feetOff abaixo de playerY): antes ele sumia atrás de caixotes que estavam atrás dele */
+  const U0 = Fl.prototype.update;
+  Fl.prototype.update = function () {
+    const r = U0.apply(this, arguments);
+    try { if (this.area === "out" && !this.__tv && this.rig?.container) this.rig.container.setDepth(this.playerY + (this.M?.feetOff ?? 24)) } catch (e) {}
     return r;
   };
   /* herborista à esquerda e à frente do caldeirão (antes ficava escondida atrás dele) */
@@ -27686,4 +27702,7 @@ function __rfxBuy(H, e) {
   Fl.prototype.closePanel = function () { this.__vd = null; return X0.apply(this, arguments) };
 }
 window.__dgRFX = { rebuild: __rfxRebuild, stock: __rfxStock };
+/* brilho da forja acompanhando o desenho em qualquer cena (antes só nas fases; no Refúgio ficava parado na folha de perfil).
+   Instalado aqui, depois de todos os módulos, para rodar depois da troca de folha das direções. */
+{const U0 = Qe.prototype.update; Qe.prototype.update = function () { const r = U0.apply(this, arguments); try { typeof __haGlowSync === "function" && __haGlowSync(this) } catch (e) {} return r }}
 /*__RFFISICA__*/
