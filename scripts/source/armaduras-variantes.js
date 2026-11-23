@@ -47,22 +47,26 @@ function __avSkin(scene, cls) {
       const im = scene.textures.get(k).getSourceImage(), c = document.createElement("canvas"); c.width = 128; c.height = 128;
       const x = c.getContext("2d"); x.drawImage(im, 0, 0, 128, 128, 0, 0, 128, 128); const d = x.getImageData(0, 0, 128, 128).data;
       let y0 = 128, y1 = 0; for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 128) { const y = (i >> 2) >> 7; y0 = Math.min(y0, y); y1 = Math.max(y1, y) }
-      const lim = y0 + (y1 - y0) * (cls === "shaman" ? .6 : .32);
-      for (let i = 0; i < d.length; i += 4) { if (d[i + 3] < 128 || ((i >> 2) >> 7) > lim) continue; const [h, s, v] = __HSV(d[i], d[i + 1], d[i + 2]); if ((h <= 50 || h >= 345) && s > .12 && v > (cls === "druid" || cls === "shaman" ? .26 : .42)) out.push([d[i], d[i + 1], d[i + 2]]); else if (s > .18 && v > .12) (out.hair ||= []).push([d[i], d[i + 1], d[i + 2]]) }
+      const lim = y0 + (y1 - y0) * (cls === "shaman" ? .6 : .32), limH = y0 + (y1 - y0) * .17;
+      /* p216.110: cabelo só da CABEÇA (topo ~17% e faixa central): antes a amostra pegava também ombreiras e gola, e o
+         couro/armadura dessas cores nunca era repintado nas variantes */
+      let xs = 0, xn = 0; for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 128 && ((i >> 2) >> 7) <= limH) { xs += (i >> 2) & 127; xn++ }
+      const xc = xn ? xs / xn : 64;
+      for (let i = 0; i < d.length; i += 4) { const y = (i >> 2) >> 7, x = (i >> 2) & 127; if (d[i + 3] < 128 || y > lim) continue; const [h, s, v] = __HSV(d[i], d[i + 1], d[i + 2]); if ((h <= 50 || h >= 345) && s > .12 && s < .7 && v > (cls === "druid" || cls === "shaman" ? .26 : .52)) out.push([d[i], d[i + 1], d[i + 2]]); else if (s > .18 && v > .12 && y <= limH && Math.abs(x - xc) < 11) (out.hair ||= []).push([d[i], d[i + 1], d[i + 2]]) }
       if (out.length > 20) break;
     }
   } catch (e) {}
   return (__AV_SKIN[cls] = out);
 }
 function __avTex(scene, srcKey, P, cls) {
-  const key = `${srcKey}-y${P.k}`, TX = scene.textures;
+  const key = `${srcKey}-z${P.k}`, TX = scene.textures;
   if (TX.exists(key)) return key;
   if (!TX.exists(srcKey)) return null;
   const src = TX.get(srcKey), img = src.getSourceImage(), cv = document.createElement("canvas");
   cv.width = img.width; cv.height = img.height;
   const cx = cv.getContext("2d"); cx.drawImage(img, 0, 0);
   const D = cx.getImageData(0, 0, cv.width, cv.height), p = D.data;
-  const SK = cls ? __avSkin(scene, cls.toLowerCase()) : [], skc = new Map(), vmin = /^(druid|shaman)$/i.test(cls || "") ? .24 : .38;
+  const SK = cls ? __avSkin(scene, cls.toLowerCase()) : [], skc = new Map(), vmin = /^(druid|shaman)$/i.test(cls || "") ? .24 : .5;   // p216.110: couro escuro não conta como pele
   const skin = (h, s, v, r, g, b) => {                                                // pele: fica como está
     if (!((h <= 50 || h >= 345) && s > .12 && v > vmin)) return !1;
     const k = (r << 16) | (g << 8) | b; let o = skc.get(k); if (o !== undefined) return o;
@@ -80,20 +84,36 @@ function __avTex(scene, srcKey, P, cls) {
   const HAIR = (SK.hair || []), hc = new Map(), hair = (r, g, b) => { const k = (r << 16) | (g << 8) | b; let o = hc.get(k); if (o === undefined) { o = HAIR.some(q => Math.abs(q[0] - r) + Math.abs(q[1] - g) + Math.abs(q[2] - b) < 22); hc.set(k, o) } return o };
   const isPrim = k => P2.has(k);
   /* cabeça (cabelo, rosto, olhos) de cada quadro também fica: topo do desenho até ~24% da altura */
-  const FW = 128, W = cv.width, H = cv.height, hcN = Math.floor(W / FW), rowsN = Math.floor(H / FW), headY = new Int16Array(hcN * rowsN).fill(-1);
+  const FW = 128, W = cv.width, H = cv.height, hcN = Math.floor(W / FW), rowsN = Math.floor(H / FW), headY = new Int16Array(hcN * rowsN).fill(-1), hairY = new Int16Array(hcN * rowsN).fill(-1), LONG = /^(mage|rogue|shaman)$/i.test(cls || "");
   for (let cr = 0; cr < rowsN; cr++) for (let cc = 0; cc < hcN; cc++) {
     let t = -1, b = -1;
     for (let y = 0; y < FW && t < 0; y++) for (let x = 0; x < FW; x++) if (p[((cr * FW + y) * W + cc * FW + x) * 4 + 3] > 128) { t = y; break }
     for (let y = FW - 1; y >= 0 && b < 0; y--) for (let x = 0; x < FW; x++) if (p[((cr * FW + y) * W + cc * FW + x) * 4 + 3] > 128) { b = y; break }
-    t >= 0 && (headY[cr * hcN + cc] = t + Math.round((b - t) * .24));
+    t >= 0 && (headY[cr * hcN + cc] = t + Math.round((b - t) * .24), hairY[cr * hcN + cc] = t + Math.round((b - t) * (LONG ? .52 : .3)));
   }
+  /* p216.110: cor de cabelo só é protegida na altura da cabeça/ombros (couro escuro do corpo tem a mesma cor do cabelo) */
+  const inHair = i => { const q = i >> 2, x = q % W, y = (q / W) | 0, cc = (x / FW) | 0, cr = (y / FW) | 0; return y - cr * FW <= hairY[cr * hcN + cc] };
   const inHead = i => { const q = i >> 2, x = q % W, y = (q / W) | 0, cc = (x / FW) | 0, cr = (y / FW) | 0; return y - cr * FW <= headY[cr * hcN + cc] };
-  const [sh, ss] = __HSV(P.sec >> 16 & 255, P.sec >> 8 & 255, P.sec & 255);
+  const [sh, ss] = __HSV(P.sec >> 16 & 255, P.sec >> 8 & 255, P.sec & 255), [mh, ms, mv] = __HSV(P.main >> 16 & 255, P.main >> 8 & 255, P.main & 255);
+  /* p216.110: a cor PRINCIPAL também ganha o tom do padrão (antes só as secundárias mudavam e, em armaduras quase de uma
+     cor só — couro do Saqueador, tabardo do Templário —, a variante ficava igual à original). Cada pixel guarda o próprio
+     sombreado: o brilho é o do pixel relativo ao brilho médio da cor principal, levado ao brilho do padrão. */
+  let sv = 0, nv = 0;
+  for (let i = 0; i < p.length; i += 4 * 5) { if (p[i + 3] < 128) continue; const [h, s, v] = __HSV(p[i], p[i + 1], p[i + 2]); if (v >= .1 && s > .18 && isPrim(BIN(h)) && !skin(h, s, v, p[i], p[i + 1], p[i + 2]) && !(hair(p[i], p[i + 1], p[i + 2]) && inHair(i)) && !inHead(i)) { sv += v; nv++ } }
+  const avgV = nv ? sv / nv : .5, kv = Math.max(.35, Math.min(2.2, Math.max(.16, mv) / Math.max(.08, avgV)));
+  /* partes quase sem cor (couro gasto, tabardo branco, placas de prata, manto preto) também ganham o padrão, mais leve:
+     sem isso as armaduras quase cinzentas ficavam iguais à original. O brilho vai na direção do padrão só em parte. */
+  let sl = 0, nl = 0;
+  for (let i = 0; i < p.length; i += 4 * 5) { if (p[i + 3] < 128) continue; const [h, s, v] = __HSV(p[i], p[i + 1], p[i + 2]); if (v >= .14 && s <= .18 && !(hair(p[i], p[i + 1], p[i + 2]) && inHair(i)) && !inHead(i)) { sl += v; nl++ } }
+  const avgL = nl ? sl / nl : .5, kl = 1 + (Math.max(.3, Math.min(1.8, Math.max(.18, mv) / Math.max(.1, avgL))) - 1) * .7;
   for (let i = 0; i < p.length; i += 4) {
     if (p[i + 3] < 128) continue;
     const [h, s, v] = __HSV(p[i], p[i + 1], p[i + 2]);
-    if (v < .1 || s <= .18 || skin(h, s, v, p[i], p[i + 1], p[i + 2]) || isPrim(BIN(h)) || hair(p[i], p[i + 1], p[i + 2]) || inHead(i)) continue;
-    const o = __RGB(sh, Math.min(.85, s * .55 + ss * .4), Math.min(.92, v));
+    if (v < .1 || skin(h, s, v, p[i], p[i + 1], p[i + 2]) || (hair(p[i], p[i + 1], p[i + 2]) && inHair(i)) || inHead(i)) continue;
+    if (s <= .18) { if (v < .14) continue; const o = __RGB(mh, Math.min(.6, ms * .55 + s * .3), Math.max(.08, Math.min(.96, v * kl))); p[i] = o[0]; p[i + 1] = o[1]; p[i + 2] = o[2]; continue }
+    const o = isPrim(BIN(h))
+      ? __RGB(mh, Math.min(.9, ms * .8 + s * .2), Math.max(.07, Math.min(.95, v * kv)))
+      : __RGB(sh, Math.min(.85, s * .55 + ss * .4), Math.min(.92, v));
     p[i] = o[0]; p[i + 1] = o[1]; p[i + 2] = o[2];
   }
   cx.putImageData(D, 0, 0);

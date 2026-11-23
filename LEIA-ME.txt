@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.109 · cache ded-web-v6.19.0-refugio-pes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.110 · cache ded-web-v6.19.1-variantes)
+
+P216.110 — VARIANTES RARAS DAS ARMADURAS DA FORJA COM A COR DO PADRÃO
+- As 24 variantes (Jade, Glacial, Obsidiana, Áurea, Sanguínea, das Cinzas) apareciam iguais à armadura original: a
+  recoloração só mudava as cores secundárias, e ainda protegia como "cabelo" e "pele" cores que também estão no corpo
+  (couro escuro, armadura vermelha). Agora, sem arte nova, só ajustando a pintura (armaduras-variantes.js):
+  · a cor principal da armadura ganha o tom do padrão, mantendo o sombreado de cada pixel;
+  · partes quase sem cor (couro gasto, tabardo branco, placas de prata, manto preto) ganham o padrão mais leve,
+    escurecendo/clareando na direção dele (Obsidiana escura, Áurea dourada, Glacial azulada);
+  · cabelo protegido só na altura da cabeça/ombros (até a cintura nas heroínas de cabelo comprido) e pele só nos tons
+    claros (Druida e Xamã continuam com a regra larga, por terem pele à mostra); rosto e contorno não mudam.
+  · folhas de direções e golpes copiam a mesma pintura; o brilho da forja continua.
 
 P216.109 — REFÚGIO PELOS PÉS DO HERÓI · BRILHO DAS ARMADURAS DA FORJA NO LUGAR
 - A posição do herói no Refúgio (playerY) fica 24 px acima dos pés (M.feetOff). A colisão nova (p216.108) estava na
