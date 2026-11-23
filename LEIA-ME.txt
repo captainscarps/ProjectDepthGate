@@ -1,4 +1,16 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.113 · cache ded-web-v6.19.4-menu-sem-recarga)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.114 · cache ded-web-v6.19.5-mobile-desempenho)
+
+P216.114 — CELULAR: TELA DE MORTE QUE CABE NA TELA + MAIS DESEMPENHO
+- Tela de morte / das Cavernas Dorf no celular deitado: o título saía cortado em cima e o botão IR PARA O REFÚGIO
+  embaixo. Agora há um tamanho compacto para telas baixas (até 500 px de altura) e, se ainda não couber, a tela inteira
+  é medida e encolhida por igual até caber (também quando o texto da Guardiã cresce ou a tela gira). A linha de dica de
+  teclado/controle some em aparelho de toque. Tamanho do texto do sistema não infla mais essa tela (text-size-adjust).
+- Desempenho (scripts/source/desempenho.js): numa fase do Infinito eram ~960 objetos desenhados por quadro, ~800 fora da
+  tela. Imagens/sprites PARADOS do cenário fora da vista da câmera (com folga) não são mais desenhados; mexeu (posição,
+  escala, giro, quadro) → volta a ser desenhado até a próxima medição (a cada 0,4 s). Verificado: nenhum objeto
+  recortado estava visível. window.__noCull = 1 desliga.
+- Celular: telas de 90/120 Hz limitadas a ~60 quadros/s (window.__noFpsCap = 1 desliga); a queda automática de qualidade
+  gráfica age mais cedo (abaixo de 40 FPS por 3 s, antes 26 FPS por 5 s; no PC não mudou).
 
 P216.113 — VOLTAR AO MENU SEM RECARREGAR A PÁGINA
 - No PC, o menu principal recarregava a página inteira (tela preta + barra de carregamento) sempre que a janela tinha

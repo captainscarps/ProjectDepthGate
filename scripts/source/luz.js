@@ -153,8 +153,8 @@ function __lzSetup(S) {
     if (!S.sys.isActive() || !S.player) return;
     // quedas fortes de FPS: baixa um nível nesta sessão
     const fps = S.game.loop.actualFps;
-    L.fpsLow = fps < 26 ? L.fpsLow + dtMs : Math.max(0, L.fpsLow - dtMs * 2);
-    if (L.fpsLow > 5000 && Q() > 0 && !window.__gfxNoDrop) { window.__gfxDrop = Q() - 1; L.fpsLow = 0; apply(); try { S.__amb?.apply?.() } catch (e) {} }
+    L.fpsLow = fps < (window.__gfxMinFps || 26) ? L.fpsLow + dtMs : Math.max(0, L.fpsLow - dtMs * 2);   // p216.114: no celular o limite é maior (desempenho.js)
+    if (L.fpsLow > (window.__gfxDropMs || 5000) && Q() > 0 && !window.__gfxNoDrop) { window.__gfxDrop = Q() - 1; L.fpsLow = 0; apply(); try { S.__amb?.apply?.() } catch (e) {} }
     if (L.amb) { const v = cam.worldView; L.amb.setPosition(v.x - 40, v.y - 40) }
     if (!L.on) return;
     if ((L.scanT -= dtMs) <= 0) { L.scanT = Q() >= 2 ? 150 : 300; scan() }

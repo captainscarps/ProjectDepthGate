@@ -38,7 +38,7 @@ function __dmCss() {
   const px = (c, d) => `0 -4px 0 0 ${c},0 4px 0 0 ${c},-4px 0 0 0 ${c},4px 0 0 0 ${c},0 -8px 0 0 ${d},0 8px 0 0 ${d},-8px 0 0 0 ${d},8px 0 0 0 ${d},-4px -4px 0 0 ${d},4px -4px 0 0 ${d},-4px 4px 0 0 ${d},4px 4px 0 0 ${d}`;
   st.textContent = `
 #dm-ov{position:fixed;inset:0;z-index:10050;overflow:hidden;opacity:0;transition:opacity 1.1s steps(11);background:#050203;
- font-family:NeoDunggeunmo,'Courier New',monospace;color:#e8dcc0;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+ font-family:NeoDunggeunmo,'Courier New',monospace;color:#e8dcc0;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #dm-ov.on{opacity:1}
 #dm-bg{position:absolute;inset:-4%;background-size:cover;background-position:center;image-rendering:pixelated;
  filter:grayscale(1) contrast(1.15) brightness(.42) sepia(1) hue-rotate(-38deg) saturate(2.4);animation:dmZoom 30s linear forwards}
@@ -97,6 +97,11 @@ function __dmCss() {
 @keyframes dmBlink{50%{opacity:0}}
 @keyframes dmPulse{50%{background:#ffd062}}
 @media (max-width:980px),(max-height:620px){#dm-emb{width:192px;height:192px}#dm-wrap{gap:22px}#dm-say{margin-top:14px}#dm-st{margin-top:16px}#dm-keep{margin-top:12px}#dm-btn{margin-top:16px}#dm-por{flex-basis:64px;width:64px;height:64px}#dm-msg{font-size:13px;min-height:3.2em}}
+@media (max-height:500px){#dm-wrap{padding:2vh 3vw;gap:18px}#dm-emb{width:128px;height:128px}#dm-tit{font-size:clamp(28px,5vw,44px);letter-spacing:3px;text-shadow:3px 3px 0 #3a0604,5px 5px 0 #120102}#dm-sub{margin-top:8px;font-size:12px;letter-spacing:3px}
+ #dm-say{margin-top:10px;padding:6px 8px;gap:10px}#dm-por{flex-basis:48px;width:48px;height:48px}#dm-nm{font-size:10px;margin:0 0 3px}#dm-msg{font-size:12px;line-height:1.4;min-height:2.8em}
+ #dm-st{margin-top:10px;gap:10px}#dm-st div{padding:5px 3px 4px}#dm-st b{font-size:19px}#dm-st span{font-size:9px;letter-spacing:1px}
+ #dm-items{margin-top:8px;padding:5px 8px}#dm-items ul{max-height:54px}#dm-items li{font-size:11px}#dm-keep{margin-top:8px;font-size:11px;line-height:1.5}#dm-btn{margin-top:10px;padding:8px 16px 7px;font-size:16px}#dm-hint{margin-top:8px;font-size:10px}}
+@media (pointer:coarse){#dm-hint{display:none}}
 @media (max-width:720px){#dm-wrap{flex-direction:column;justify-content:center;gap:6px;overflow:auto}#dm-emb{width:128px;height:128px}#dm-right{flex:0 0 auto;width:100%}#dm-tit,#dm-sub{text-align:center}#dm-st{gap:10px}#dm-st b{font-size:20px}}
 `;
   document.head.appendChild(st);
@@ -159,7 +164,28 @@ function __dmScreen(o) {
   </div>`;
   document.body.appendChild(ov);
   o.showRec && (ov.querySelector("#dm-rec").style.display = "block");
-  const stopFx = __dmEmbers(ov.querySelector("#dm-fx"), o.cls === "win");
+  const stopFx0 = __dmEmbers(ov.querySelector("#dm-fx"), o.cls === "win");
+  /* p216.114: em telas baixas (celular deitado) o conteúdo passava da altura da tela — título cortado em cima e botão
+     cortado embaixo. Agora tudo é medido e, se não couber, a tela inteira é encolhida por igual até caber. */
+  const wrap = ov.querySelector("#dm-wrap"), fit = () => {
+    try {
+      const W = innerWidth, H = innerHeight; let s = 1;
+      for (let k = 0; k < 3; k++) {
+        Object.assign(wrap.style, { transform: "", inset: "auto", left: (W - W / s) / 2 + "px", top: (H - H / s) / 2 + "px", width: W / s + "px", height: H / s + "px" });
+        const ch = [...wrap.children], col = getComputedStyle(wrap).flexDirection === "column", cs = getComputedStyle(wrap);
+        const pad = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+        const need = (col ? ch.reduce((a, e) => a + e.scrollHeight, 0) + parseFloat(cs.rowGap || 0) * (ch.length - 1) : Math.max(...ch.map((e) => e.scrollHeight))) + pad;
+        const ns = Math.max(.4, Math.min(1, H / need));
+        if (Math.abs(ns - s) < .01) break; s = ns;
+      }
+      if (s < .999) Object.assign(wrap.style, { left: (W - W / s) / 2 + "px", top: (H - H / s) / 2 + "px", width: W / s + "px", height: H / s + "px", transform: `scale(${s})`, transformOrigin: "50% 50%" });
+      else Object.assign(wrap.style, { transform: "", inset: "", left: "", top: "", width: "", height: "" });
+    } catch (x) {}
+  };
+  fit(); requestAnimationFrame(fit); setTimeout(fit, 300); setTimeout(fit, 1500);
+  let ro = null; try { ro = new ResizeObserver(() => requestAnimationFrame(fit)); ro.observe(ov.querySelector("#dm-right")) } catch (x) {}
+  addEventListener("resize", fit);
+  const stopFx = () => { stopFx0(); try { ro?.disconnect() } catch (x) {} removeEventListener("resize", fit) };
   requestAnimationFrame(() => ov.classList.add("on"));
   window.__padUI = (window.__padUI || 0) + 1;
   const mEl = ov.querySelector("#dm-msg"); let mi = 0;
