@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.112 · cache ded-web-v6.19.3-infinito-save)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.113 · cache ded-web-v6.19.4-menu-sem-recarga)
+
+P216.113 — VOLTAR AO MENU SEM RECARREGAR A PÁGINA
+- No PC, o menu principal recarregava a página inteira (tela preta + barra de carregamento) sempre que a janela tinha
+  mudado de tamanho desde o carregamento (tela cheia, DevTools, monitor largo). Tirado: o menu abre na hora; se a
+  janela mudou, aparecem faixas pretas nas laterais até o próximo carregamento. Trocar a proporção nas Configurações
+  continua recarregando (é pedido do jogador).
 
 P216.112 — MODO INFINITO: VOLTA AO REFÚGIO MAIS SEGURA + CÓPIA DE SEGURANÇA DO SAVE
 - Tela de morte: a tecla que confirma (Enter/Espaço/E/Esc, mesmo segurada) é engolida por 1,6 s e os buffers de teclado
