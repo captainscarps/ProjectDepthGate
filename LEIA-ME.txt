@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.119 · cache ded-web-v6.20.0-selo-fechar)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.120 · cache ded-web-v6.20.1-cartas-habilidade)
+
+P216.120 — ESCOLHA DE HABILIDADE EM CARTAS (hud-barras.js, substitui o desenho de __SPPanel)
+- Moldura de carta feita no PixelLab (Create UI Pro 192×288, 10 gerações; fonte scripts/art-src/ui/carta.png,
+  recorte assets/ui/carta-habilidade.png 152×241): runas, espadas cruzadas, janela em arco e placa.
+- Na janela o herói faz o golpe daquela habilidade em laço (folha "sk" do herói — a mesma do jogo, __SKH_MAP); só a
+  carta escolhida anima. Passivas (Pesadelo) mostram o ícone grande. Placa: tipo e nome em letra de pixel (encolhe se
+  o nome for longo).
+- Celular: a descrição e recarga/custo da carta escolhida ficam numa faixa larga embaixo, em letra maior (12,5 px).
+  Toque numa carta mostra; tocar de novo escolhe. No PC o clique escolhe direto; ◀ ▶ e Enter/A continuam.
 
 P216.119 — SELO VERMELHO DE FECHAR EM TODAS AS TELAS + RELÍQUIAS EM DUAS PÁGINAS (book-ui.js)
 - Botão de fechar padrão: todo "✕" de qualquer cena (Bestiário, Códice, Relíquias, configurações, lojas, painéis…)
