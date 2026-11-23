@@ -214,8 +214,12 @@ function __bkTrack(S, root) {
   (S.__bkRoots ||= new Set()).add(root);
   if (S.__bkHook) return;
   S.__bkHook = 1;
-  S.events.on("update", () => { for (const r of S.__bkRoots) if (r.active && r.visible) __bkPaperize(S, r, r); });
-  S.events.once("shutdown", () => { S.__bkRoots = null; S.__bkHook = 0; });
+  /* p216.122: o ouvinte de "update" não saía no shutdown — ao voltar à mesma cena (Refúgio de novo) ele rodava com
+     a lista apagada e dava erro TODO quadro ("S.__bkRoots is not iterable"); o erro interrompia a atualização da
+     cena e o Refúgio ficava parado (escurecido/congelado). Agora sai junto e é protegido. */
+  const up = () => { const R = S.__bkRoots; if (!R) return; for (const r of R) { try { if (r.active && r.visible) __bkPaperize(S, r, r) } catch (e) {} } };
+  S.events.on("update", up);
+  S.events.once("shutdown", () => { S.events.off("update", up); S.__bkRoots = null; S.__bkHook = 0; });
 }
 
 /* __winSkin: o livro no lugar do painel escuro */
@@ -282,8 +286,9 @@ function __bkFlip(S, root, fwd) {
   __bkAnims(S);
   const d = fwd ? "f" : "b", BB = { ...B, x: B.x + root.x, y: B.y + root.y }, dep = (root.depth || 0) + 2;
   const sh = __bkFit(S, S.add.sprite(0, 0, `bk-flip-${d}-shadow`, 0), BB, dep), pg = __bkFit(S, S.add.sprite(0, 0, `bk-flip-${d}-page`, 0), BB, dep + .1);
-  __bkPlay(S, sh, 0, 7, 42);
-  __bkPlay(S, pg, 0, 7, 42, () => { sh.destroy(); pg.destroy(); });
+  const last = Math.max(0, (S.textures.get(`bk-flip-${d}-page`)?.frameTotal ?? 8) - 2);   // p216.122: a folha tem 7 quadros (0–6); pedir o 7 enchia o console de avisos
+  __bkPlay(S, sh, 0, last, 42);
+  __bkPlay(S, pg, 0, last, 42, () => { sh.destroy(); pg.destroy(); });
 }
 
 /* ── inventário (abas) ── */

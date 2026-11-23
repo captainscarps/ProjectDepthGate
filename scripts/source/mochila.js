@@ -98,6 +98,10 @@ Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen
   const C0 = __HubUI.prototype.create;
   __HubUI.prototype.create = function () {
     const r = C0.apply(this, arguments), U = this;
+    /* p216.122: a cena da interface do Refúgio é a mesma a cada volta, mas os objetos do livro morrem no shutdown —
+       o livro guardado da visita anterior dava erro ao abrir de novo (e a vila ficava "ocupada"). Começa do zero. */
+    U.__hiInv = null; U.__hiOpen = !1; U.skillTree = null;
+    U.events.once("shutdown", () => { U.__hiInv = null; U.__hiOpen = !1; U.skillTree = null });
     const close = () => U.__hiInv?.open && U.__hiInv.close();
     const key = k => {
       const v = U.__hiInv; if (!v?.open) return;
@@ -112,7 +116,8 @@ Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen
     U.input.keyboard?.on("keydown", e => { if (U.__hiOpen) key(e.key) });
     const MAP = [[12, "ArrowUp"], [13, "ArrowDown"], [14, "ArrowLeft"], [15, "ArrowRight"], [0, "Enter"], [1, "Escape"], [4, "q"], [5, "e"], [3, "t"]];
     let pv = { all: !0 };
-    U.events.on("update", () => {
+    /* p216.122: sai no shutdown (antes cada volta ao Refúgio somava mais um ouvinte: o controle apertava várias vezes) */
+    const upd = () => {
       if (!U.__hiOpen) { pv = { all: !0 }; return }
       let g = null; try { g = Array.from(navigator.getGamepads?.() ?? []).find(p => p && p.connected) } catch (e) {}
       if (!g) return;
@@ -122,7 +127,8 @@ Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen
       for (const [i, k] of MAP) if (now[i] && !pv[i]) key(k);
       if ((now[8] && !pv[8]) || (now[9] && !pv[9])) close();
       pv = now;
-    });
+    };
+    U.events.on("update", upd); U.events.once("shutdown", () => U.events.off("update", upd));
     return r;
   };
 }

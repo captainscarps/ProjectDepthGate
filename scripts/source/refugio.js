@@ -41,6 +41,9 @@ function __rfDecorate(H) {
   const A = H.anims, rnd = __rfRand(4242);
   // o que é só enfeite animado fica registrado aqui: no modo leve (aparelho lento) tudo isso é desligado
   const LIVE = (H.__rfLive = []);
+  /* p216.122: tudo que foi ligado aqui sai quando a vila fecha (antes os ouvintes de "update" dos bichos/vaga-lumes
+     se somavam a cada volta ao Refúgio — +14 por visita) */
+  H.events.once("shutdown", () => { for (const o of LIVE) { try { o.destroy?.() } catch (e) {} } LIVE.length = 0 });
   const keep = (o) => (LIVE.push(o), o);
   const onU = (fn) => { H.events.on("update", fn); LIVE.push({ destroy: () => H.events.off("update", fn) }) };
   H.M = Object.assign({}, H.M, { coll: H.M.coll.slice() });

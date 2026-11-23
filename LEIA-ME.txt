@@ -1,4 +1,19 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.121 · cache ded-web-v6.20.2-faixa-fantasia)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.122 · cache ded-web-v6.20.3-refugio-trava)
+
+P216.122 — CONGELAMENTO AO VOLTAR AO REFÚGIO (erros do console do usuário)
+- CAUSA PRINCIPAL ("erro na cena Hub: S.__bkRoots is not iterable", repetido): book-ui.js __bkTrack deixava o ouvinte
+  de "update" ligado no shutdown e apagava a lista; na volta seguinte ao Refúgio ele dava erro TODO quadro, o erro
+  cortava a atualização da cena e o Refúgio ficava parado/escurecido ("clareamento parado"). Agora o ouvinte sai no
+  shutdown e é protegido.
+- Livro do Refúgio (mochila.js): o livro guardado da visita anterior (objetos já destruídos) dava erro ao abrir de
+  novo — a vila ficava "ocupada". A cada criação da interface do Refúgio o livro/árvore começam do zero; o
+  ouvinte do controle do livro também sai no shutdown (antes somava um por visita: o controle apertava várias vezes).
+- Vazamentos de ouvintes: refugio.js (bichos, vaga-lumes… +14 ouvintes de "update" a cada volta), primeira-espada.js
+  (marcador da taverna) e a vinheta da cena UI agora saem no shutdown. Medido: 3 voltas ao Refúgio, contagem estável.
+- anti-trava.js: cada ouvinte de "update"/"preupdate"/"postupdate" roda isolado — um erro vai para
+  localStorage "depthgate:erros" (uma vez por tipo) e o resto do quadro continua (nada mais congela por um ouvinte).
+- death-guard.js: "livro aberto" conta pelo livro de fato aberto (__hiInv.open), não pela marca.
+- Livro: a virada de página pedia o quadro 7 de uma folha com 7 quadros (0–6) — fim dos avisos no console.
 
 P216.121 — FAIXA DO LOCAL: LETRA DE FANTASIA E NOME SEMPRE DENTRO DO PAINEL
 - Fonte nova Cinzel Decorative Bold (OFL; assets/fonts/CinzelDecorative-Bold.woff2 + CinzelDecorative-OFL.txt,

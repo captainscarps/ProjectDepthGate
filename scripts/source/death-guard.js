@@ -162,7 +162,7 @@
       const fe = Hb.cameras?.main?.fadeEffect, moving = fe?.isRunning || (fe && fe.direction === !0 && fe.alpha > .5);
       /* p216.118: o livro (inventário) aberto no Refúgio também deixa ocupado — antes, depois de 4 s o vigia "destravava"
          a vila com o livro aberto e o botão INVENTÁRIO voltava por cima das abas; o pergaminho de missão também conta */
-      const HU = G.scene.getScene("HubUI"), bookOpen = !!HU?.__hiOpen || !!HU?.__hiInv?.open || !!document.getElementById("hb-scroll");
+      const HU = G.scene.getScene("HubUI"), bookOpen = !!HU?.__hiInv?.open || !!document.getElementById("hb-scroll");
       const stuck = Hb.__busy && !Hb.panel && !Hb.__hubDlgO && !Hb.__pqReel && !Hb.__pqJ && !moving && !bookOpen;
       Hb.__dgBusy = stuck ? (Hb.__dgBusy || 0) + dt : 0;
       if (Hb.__dgBusy > 4000) { Hb.__dgBusy = 0; Hb.__busy = !1; console.warn("[anti-trava] Refúgio destravado (ocupado sem nada aberto)") }

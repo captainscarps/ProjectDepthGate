@@ -304,7 +304,7 @@ function __feForge(H) {
           mk.setVisible(!!H.__tv && __feHub(H) && ((!s && prog >= 2) || s === 4));
           sw?.setVisible(!!H.__tv && __feHub(H) && s >= 6);
         };
-        H.events.on("update", () => { try { H.__feMark() } catch (e) {} });
+        const fu = () => { try { H.__feMark() } catch (e) {} }; H.events.on("update", fu); H.events.once("shutdown", () => H.events.off("update", fu));
       }
     } catch (e) { console.warn("[primeira-espada] taverna", e) }
     return r;

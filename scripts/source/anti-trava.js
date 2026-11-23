@@ -52,3 +52,25 @@ function __atGuardRig() {
      L.wake(); lastT = now; fixes++;
    } catch (e) {}
  }, 500)}
+/* p216.122: um ouvinte de "update"/"preupdate"/"postupdate" com erro interrompia a lista inteira daquele quadro (os
+   ouvintes seguintes e a atualização da cena não rodavam) — repetido a cada quadro, a cena parecia congelada (foi o
+   caso do Refúgio). Agora cada ouvinte desses eventos roda isolado: o erro vai para o registro (uma vez por tipo) e
+   o resto continua. */
+{const EP = j.Events?.EventEmitter?.prototype, SAFE = new Set(["update", "preupdate", "postupdate"]), seen = new Set();
+ if (EP && !EP.__atSafe) {
+   const E0 = EP.emit;
+   EP.emit = function (evt) {
+     if (!SAFE.has(evt) || !this._events) return E0.apply(this, arguments);
+     const L = this._events[evt]; if (!L) return !1;
+     const args = Array.prototype.slice.call(arguments, 1), arr = L.fn ? [L] : L.slice();
+     for (const l of arr) {
+       if (l.once) this.removeListener(evt, l.fn, void 0, !0);
+       try { l.fn.apply(l.context, args) } catch (e) {
+         const k = evt + ":" + String(e?.message ?? e).slice(0, 80);
+         if (!seen.has(k) && seen.size < 40) { seen.add(k); __atLog("erro num ouvinte de " + evt, e) }
+       }
+     }
+     return !0;
+   };
+   EP.__atSafe = 1;
+ }}
