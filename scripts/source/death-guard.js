@@ -150,7 +150,7 @@
     const W_ = typeof _ !== "undefined" ? _ : 480, H_ = typeof st !== "undefined" ? st : 270;
     const S = G.scene.getScene("Game");
     if (S?.sys?.isActive?.() && S.uiOpen && S.state === "playing" && !S.transitioning && !S.finished) {
-      const ui = G.scene.getScene("UI"), open = ui?.__dlgOpen || S.__portalModalOpen || S.__riftModalOpen || S.pendingEvent || S.__ppGoing || bigOpen(ui, W_, H_) || bigOpen(S, W_, H_);
+      const ui = G.scene.getScene("UI"), open = !!document.getElementById("hb-scroll") || ui?.__dlgOpen || S.__portalModalOpen || S.__riftModalOpen || S.pendingEvent || S.__ppGoing || bigOpen(ui, W_, H_) || bigOpen(S, W_, H_);
       if (ui) { if (ui.__dlgOpen) ui.__dgWasDlg = 1; else if (ui.__dgWasDlg) { ui.__dgWasDlg = 0; S.__dgFast = 1 } }
       S.__dgUi = open ? 0 : (S.__dgUi || 0) + dt;
       if (open) S.__dgFast = 0;
@@ -160,7 +160,10 @@
     if (Hb?.sys?.isActive?.()) {
       if (Hb.__hubDlgO && !Hb.__hubDlgO.scene) Hb.__hubDlgO = null;
       const fe = Hb.cameras?.main?.fadeEffect, moving = fe?.isRunning || (fe && fe.direction === !0 && fe.alpha > .5);
-      const stuck = Hb.__busy && !Hb.panel && !Hb.__hubDlgO && !Hb.__pqReel && !Hb.__pqJ && !moving;
+      /* p216.118: o livro (inventário) aberto no Refúgio também deixa ocupado — antes, depois de 4 s o vigia "destravava"
+         a vila com o livro aberto e o botão INVENTÁRIO voltava por cima das abas; o pergaminho de missão também conta */
+      const HU = G.scene.getScene("HubUI"), bookOpen = !!HU?.__hiOpen || !!HU?.__hiInv?.open || !!document.getElementById("hb-scroll");
+      const stuck = Hb.__busy && !Hb.panel && !Hb.__hubDlgO && !Hb.__pqReel && !Hb.__pqJ && !moving && !bookOpen;
       Hb.__dgBusy = stuck ? (Hb.__dgBusy || 0) + dt : 0;
       if (Hb.__dgBusy > 4000) { Hb.__dgBusy = 0; Hb.__busy = !1; console.warn("[anti-trava] Refúgio destravado (ocupado sem nada aberto)") }
     }

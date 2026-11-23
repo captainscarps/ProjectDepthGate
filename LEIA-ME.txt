@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.117 · cache ded-web-v6.19.8-hud-pixelart)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.118 · cache ded-web-v6.19.9-avisos-livros)
+
+P216.118 — AVISOS MENORES, FAIXA DO LOCAL FIXA, RELÍQUIAS NO PADRÃO DO LIVRO, INVENTÁRIO DO REFÚGIO
+- Avisos no meio da tela ("ui:banner", ex.: "O salão do guardião está selado…"): eram 24 px numa linha só e passavam
+  da tela. Agora 13 px (curtos 18 px), quebram em até 2 linhas, encolhem se precisar, ficam mais tempo se longos e
+  ESPERAM a faixa do local sair (fila de até 4) — hud-barras.js.
+- Faixa do local: largura fixa (150) e a letra encolhe para nomes longos (antes a faixa crescia com o nome).
+- Relíquias da Campanha (book-ui.js): no padrão do inventário — títulos/rótulos na letra de pixel, textos longos em
+  Georgia, ✦ em vermelho, selo vermelho no fechar, sem o botão VOLTAR escuro (Esc/B/selo fecham).
+- Refúgio: o vigia do death-guard.js "destravava" a vila 4 s depois de abrir o livro (achava que estava presa sem
+  nada aberto) e o botão INVENTÁRIO voltava por cima das abas. Agora o livro aberto e o pergaminho de missão contam
+  como janela aberta (Refúgio e fase). O pergaminho também segura a vila (__busy).
 
 P216.117 — HUD EM PIXEL ART: BARRAS, FAIXA DO LOCAL E PERGAMINHO DE MISSÃO (scripts/source/hud-barras.js)
 - Peças feitas no PixelLab (Create UI Pro, 15 gerações cada; fontes em scripts/art-src/ui): assets/ui/hud-barra.png,

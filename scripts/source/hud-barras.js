@@ -81,7 +81,9 @@ __rtNext = function (G) {
   try { U.textures.get(__HB_F).setFilter(j.Textures.FilterMode.LINEAR) } catch (e) {}
   const y = (U.__hbBottom || 50) + 4, C = U.add.container(4, y).setDepth(650).setAlpha(0);
   const tx = U.add.text(0, 0, String(name).toUpperCase(), { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "11px", color: "#ffe6a8", stroke: "#2a0606", strokeThickness: 3, letterSpacing: 1 }).setOrigin(.5);
-  const w = Math.max(120, tx.width / .52), sc = w / 237, ban = U.add.image(0, 0, __HB_F).setOrigin(0).setScale(sc);
+  /* p216.118: a faixa crescia com o nome (nomes longos viravam uma faixa enorme): largura fixa e a letra encolhe */
+  const w = 150, sc = w / 237, ban = U.add.image(0, 0, __HB_F).setOrigin(0).setScale(sc);
+  for (let fs = 11; tx.width > w * .56 && fs > 6; fs--) tx.setFontSize(fs);
   tx.setPosition(w / 2, 54 * sc / 2 - 1);
   const sb = U.add.text(w / 2, 54 * sc + 2, sub || "", { fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8px", color: "#ecdcac", stroke: "#0a0604", strokeThickness: 2 }).setOrigin(.5, 0).setAlpha(0);
   C.add([ban, tx, sb]); try { __rtChime(G) } catch (e) {}
@@ -105,13 +107,13 @@ function __hbScroll(title, text) {
   ov.querySelector("#hb-h").textContent = __L3("toque ou aperte qualquer botão", "tap or press any button", "toca o pulsa cualquier botón");
   requestAnimationFrame(() => ov.classList.add("on"));
   /* o jogo espera enquanto o pergaminho está aberto */
-  const was = scenes.map((s) => [s, !!s.uiOpen]); for (const [s] of was) { s.uiOpen = !0; try { s.physics?.pause?.() } catch (e) {} }
+  const was = scenes.map((s) => [s, !!s.uiOpen, !!s.__busy]); for (const [s] of was) { s.uiOpen = !0; s.scene.key === "Hub" && (s.__busy = !0); try { s.physics?.pause?.() } catch (e) {} }
   const t0 = performance.now(); let done = !1, raf = 0;
   const close = () => {
     if (done || performance.now() - t0 < 600) return; done = !0; cancelAnimationFrame(raf);
     window.__hbClose = null; ov.removeEventListener("pointerdown", close);
     ov.classList.remove("on"); setTimeout(() => ov.remove(), 260);
-    for (const [s, w] of was) { s.uiOpen = w; try { w || s.physics?.resume?.() } catch (e) {} s.__uiClosedAt = performance.now() }
+    for (const [s, w, bz] of was) { s.uiOpen = w; s.scene.key === "Hub" && (s.__busy = bz); try { w || s.physics?.resume?.() } catch (e) {} s.__uiClosedAt = performance.now() }
   };
   window.__hbClose = close; ov.addEventListener("pointerdown", close);
   let held = !0;
@@ -144,3 +146,28 @@ addEventListener("keydown", (e) => { if (!document.getElementById("hb-scroll")) 
   };
   setInterval(() => { const n = performance.now(); if (n - lastT > 900) { lastT = n; tick() } }, 1000);
 }
+/* ── avisos no meio da tela ("ui:banner") — p216.118: o texto era de 24 px numa linha só; frases longas (o aviso dos
+   selos do guardião) passavam da largura da tela. Agora a letra é menor, quebra em até 2 linhas, encolhe se ainda
+   não couber, fica mais tempo se for longa e espera a faixa do local sair antes de aparecer (fila). ── */
+{
+  const hook = () => {
+    const g = window.__DED_GAME, U = g?.scene?.getScene?.("UI"); if (!U) return setTimeout(hook, 500);
+    const P = Object.getPrototypeOf(U); if (P.__hbBan || !P.showBanner) return; P.__hbBan = 1;
+    P.showBanner = function (txt, col) {
+      const G = this.scene.get("Game");
+      if (G?.__rtOn || this.__banBusy) { (this.__banQ ||= []).length < 4 && this.__banQ.push([txt, col]); return }
+      const b = this.banner, W = typeof _ !== "undefined" ? _ : 640, s = String(txt ?? ""), long = s.length > 28;
+      this.__banBusy = 1;
+      b.setStyle({ fontSize: long ? "13px" : "18px", strokeThickness: 3, align: "center", wordWrap: { width: W * .62, useAdvancedWrap: !0 } });
+      b.setText(s).setColor(col).setVisible(!0).setAlpha(0).setScale(.9);
+      if (b.width > W * .8) b.setFontSize(Math.max(10, Math.floor((long ? 13 : 18) * W * .8 / b.width)));
+      this.tweens.killTweensOf(b);
+      this.tweens.add({ targets: b, alpha: 1, scale: 1, duration: 220, yoyo: !0, hold: Math.min(3200, 900 + s.length * 35), onComplete: () => {
+        b.setVisible(!1); this.__banBusy = 0; const n = this.__banQ?.shift(); n && this.time.delayedCall(250, () => this.showBanner(n[0], n[1])) } });
+    };
+    /* quando a faixa do local termina, solta o aviso que estava esperando */
+    setInterval(() => { try { const u = g.scene.getScene("UI"), G0 = g.scene.getScene("Game"); if (u?.sys?.isActive() && !G0?.__rtOn && !u.__banBusy && u.__banQ?.length) { const n = u.__banQ.shift(); u.showBanner(n[0], n[1]) } } catch (e) {} }, 400);
+  };
+  hook();
+}
+window.__openColl = (S) => { try { __collectiblesOpen(S) } catch (e) {} };

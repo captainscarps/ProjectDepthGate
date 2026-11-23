@@ -775,7 +775,34 @@ function __bkScene(S, x, y, w, h, single) {
     this.panelG?.clear();
     this.detailsX += 14; this.detailsW -= 14;
     try { this.renderDetails(); } catch (e) {}
-    __bkScene(this, px, py, pw, ph, !1);
+    const root = __bkScene(this, px, py, pw, ph, !1);
+    /* p216.118: no padrão dos outros livros (inventário): títulos e rótulos na letra de pixel, textos longos em
+       Georgia, o selo vermelho no fechar e sem o botão VOLTAR escuro (Esc / B / o selo fecham). Roda depois do
+       ajuste do estilo moderno (que trocava tudo por letra lisa em negrito). */
+    let n = -1;
+    const fix = () => {
+      let c = this.children.list.length; for (const o of this.children.list) o.list && (c += o.list.length * 1e3);
+      if (c === n) return; n = c;
+      const walk = (l) => { for (const o of l) {
+        if (o.list) { walk(o.list); continue }
+        if (o.type !== "Text" || o.__bkCF) continue; o.__bkCF = 1;
+        const t = String(o.text || "");
+        if (t === "✕") {
+          if (this.textures.exists("bk-close_button_normal")) {
+            const im = this.add.image(o.x, o.y, "bk-close_button_normal").setScale(2).setDepth((o.depth || 0) + 1); im.__noPaper = 1;
+            o.setAlpha(.001); o.setAlpha = function () { return this };
+            o.on?.("pointerover", () => im.setTexture("bk-close_button_hover")); o.on?.("pointerout", () => im.setTexture("bk-close_button_normal"));
+          }
+          continue;
+        }
+        if (/VOLTAR|BACK|VOLVER/.test(t)) { o.setVisible(!1); o.disableInteractive?.(); continue }
+        const it = /italic/.test(o.style?.fontStyle || ""), body = it || t.length > 40;
+        o.setFontFamily(body ? "Georgia, 'Times New Roman', serif" : "PixelifySans, Georgia, serif").setFontStyle(it ? "italic" : body ? "normal" : "bold");
+        /✦/.test(t) && o.setColor("#8b1d16");
+      } };
+      walk(this.children.list);
+    };
+    this.events.on("postupdate", fix); this.events.once("shutdown", () => this.events.off("postupdate", fix));
   };
 }
 
