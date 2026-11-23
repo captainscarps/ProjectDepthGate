@@ -170,4 +170,4 @@ addEventListener("keydown", (e) => { if (!document.getElementById("hb-scroll")) 
   };
   hook();
 }
-window.__openColl = (S) => { try { __collectiblesOpen(S) } catch (e) {} };
+window.__openColl = (S, k) => { try { (k === "BestiaryBook" ? __bestiaryOpen : k === "CodexBook" ? __codexOpen : __collectiblesOpen)(S) } catch (e) {} };

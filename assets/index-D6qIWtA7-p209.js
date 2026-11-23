@@ -18891,8 +18891,22 @@ function __bkScene(S, x, y, w, h, single) {
     const pw = 580, ph = 320, px = this.cx - pw / 2, py = this.cy - ph / 2;
     this.panelG?.clear();
     this.detailsX += 14; this.detailsW -= 14;
+    if (!this.__bkRD) { this.__bkRD = 1; const RD = this.renderDetails; this.renderDetails = function () { const sp = __softPanel; __softPanel = () => {}; try { return RD.apply(this, arguments) } finally { __softPanel = sp } } }
     try { this.renderDetails(); } catch (e) {}
     const root = __bkScene(this, px, py, pw, ph, !1);
+    /* p216.119: dividido em páginas como os outros livros — nada atravessa a lombada: título e contagem na página da
+       esquerda (em cima da grade), "REGISTRO DA RELÍQUIA" no alto da direita e a ficha sem o painel por fora */
+    try {
+      const L = px + pw / 4 + 4, R = px + pw * 3 / 4 - 2;
+      for (const o of this.children.list) {
+        if (o.type !== "Text") continue;
+        if (/✦/.test(o.text) && Math.abs(o.y - (py + 22)) < 2) o.setPosition(L, py + 20).setFontSize(12);
+        else if (Math.abs(o.y - (py + 38)) < 2) { o.setOrigin(.5, 0).setPosition(L, py + 31).setFontSize(7).setAlign("center").setWordWrapWidth(pw / 2 - 48); o.setLineSpacing?.(1) }
+      }
+      const hd = this.add.text(R, py + 20, __L3("REGISTRO DA RELÍQUIA", "RELIC RECORD", "REGISTRO DE LA RELIQUIA"), { fontFamily: "PixelifySans, Georgia, serif", fontStyle: "bold", fontSize: "12px", color: "#8b1d16" }).setOrigin(.5);
+      hd.__bkCF = 1; hd.__ucC = 1; hd.__noPaper = 1;
+      const ln = this.add.graphics(); ln.__noPaper = 1; ln.lineStyle(1, 0x8b1d16, .45).lineBetween(R - 80, py + 32, R + 80, py + 32).lineBetween(L - 80, py + 54, L + 80, py + 54);
+    } catch (e) {}
     /* p216.118: no padrão dos outros livros (inventário): títulos e rótulos na letra de pixel, textos longos em
        Georgia, o selo vermelho no fechar e sem o botão VOLTAR escuro (Esc / B / o selo fecham). Roda depois do
        ajuste do estilo moderno (que trocava tudo por letra lisa em negrito). */
@@ -18904,14 +18918,7 @@ function __bkScene(S, x, y, w, h, single) {
         if (o.list) { walk(o.list); continue }
         if (o.type !== "Text" || o.__bkCF) continue; o.__bkCF = 1;
         const t = String(o.text || "");
-        if (t === "✕") {
-          if (this.textures.exists("bk-close_button_normal")) {
-            const im = this.add.image(o.x, o.y, "bk-close_button_normal").setScale(2).setDepth((o.depth || 0) + 1); im.__noPaper = 1;
-            o.setAlpha(.001); o.setAlpha = function () { return this };
-            o.on?.("pointerover", () => im.setTexture("bk-close_button_hover")); o.on?.("pointerout", () => im.setTexture("bk-close_button_normal"));
-          }
-          continue;
-        }
+        if (t === "✕") continue;   // selo vermelho: padrão geral no fim deste arquivo
         if (/VOLTAR|BACK|VOLVER/.test(t)) { o.setVisible(!1); o.disableInteractive?.(); continue }
         const it = /italic/.test(o.style?.fontStyle || ""), body = it || t.length > 40;
         o.setFontFamily(body ? "Georgia, 'Times New Roman', serif" : "PixelifySans, Georgia, serif").setFontStyle(it ? "italic" : body ? "normal" : "bold");
@@ -18960,6 +18967,46 @@ function __bkScene(S, x, y, w, h, single) {
     __bkTrack(S, R);
   };
 })();
+
+/* ── p216.119: o selo vermelho do livro é o botão de fechar PADRÃO — todo "✕" de qualquer tela (Bestiário, Códice,
+   configurações, lojas, painéis do Refúgio…) ganha o selo por cima; o ✕ original continua recebendo o toque e fica
+   invisível. A cada quadro o selo acompanha a posição, a visibilidade e a transparência do ✕. ── */
+{
+  const K = "bk-close_button_normal", KH = "bk-close_button_hover";
+  const sync = (o) => {
+    const im = o.__seal; if (!im || !im.scene) return;
+    const show = o.visible && o.active && (!o.parentContainer || o.parentContainer.visible);
+    im.setVisible(show); if (!show) return;
+    if (o.alpha > .01) { o.__sealA = o.alpha; o.alpha = .001 }
+    im.alpha = o.__sealA ?? 1;
+    const cx = o.x + (.5 - o.originX) * o.width * o.scaleX, cy = o.y + (.5 - o.originY) * o.height * o.scaleY;
+    let X = cx, Y = cy;
+    if (!o.parentContainer && typeof _ !== "undefined") { const m = 8 * im.scaleX; X = Math.min(Math.max(X, m), _ - m); Y = Math.min(Math.max(Y, m), st - m) }
+    im.x !== X && (im.x = X); im.y !== Y && (im.y = Y);
+    if (!o.parentContainer) { im.setDepth(o.depth + .01); im.setScrollFactor(o.scrollFactorX, o.scrollFactorY) }
+  };
+  const make = (S, o) => {
+    if (!S.textures.exists(K)) return;
+    const h = Math.max(o.height * o.scaleY, 16), sc = Math.max(1.25, Math.min(2, h * .8 / 14));
+    const im = S.make.image({ x: 0, y: 0, key: K, add: !1 }).setScale(sc); im.__noPaper = 1;
+    if (o.parentContainer) { const C = o.parentContainer; C.addAt(im, C.getIndex(o) + 1) } else S.add.existing(im);
+    o.__seal = im; o.__sealA = o.alpha || 1;
+    o.on?.("pointerover", () => im.scene && im.setTexture(KH)); o.on?.("pointerout", () => im.scene && im.setTexture(K));
+    o.once?.("destroy", () => { try { im.destroy() } catch (e) {} });
+    (S.__seals ||= new Set()).add(o);
+    if (!S.__sealUp) { S.__sealUp = 1; const up = () => { for (const t of S.__seals) t.scene ? sync(t) : S.__seals.delete(t) }; S.events.on("postupdate", up); S.events.once("shutdown", () => { S.events.off("postupdate", up); S.__sealUp = 0; S.__seals.clear() }) }
+    sync(o);
+  };
+  const scan = () => {
+    const g = window.__DED_GAME; if (!g?.scene) return;
+    for (const S of g.scene.getScenes(!0)) {
+      const walk = (l) => { for (const o of l) { if (o.list) { walk(o.list); continue }
+        if (o.type === "Text" && !o.__seal && !o.__bkX && o.alpha > .01 && String(o.text).trim() === "✕") { try { make(S, o) } catch (e) {} } } };
+      try { walk(S.children.list) } catch (e) {}
+    }
+  };
+  setInterval(scan, 250);
+}
 /*__BOOKUI__*/
 /*__FARMOR__*/
 /* ── Armaduras do ferreiro (Rafael): forjadas em Pedra Cobalto, cada uma muda o herói por inteiro ──────────────────
@@ -28229,5 +28276,5 @@ addEventListener("keydown", (e) => { if (!document.getElementById("hb-scroll")) 
   };
   hook();
 }
-window.__openColl = (S) => { try { __collectiblesOpen(S) } catch (e) {} };
+window.__openColl = (S, k) => { try { (k === "BestiaryBook" ? __bestiaryOpen : k === "CodexBook" ? __codexOpen : __collectiblesOpen)(S) } catch (e) {} };
 /*__HUDBAR__*/

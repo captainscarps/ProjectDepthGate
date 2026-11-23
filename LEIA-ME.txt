@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.118 · cache ded-web-v6.19.9-avisos-livros)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.119 · cache ded-web-v6.20.0-selo-fechar)
+
+P216.119 — SELO VERMELHO DE FECHAR EM TODAS AS TELAS + RELÍQUIAS EM DUAS PÁGINAS (book-ui.js)
+- Botão de fechar padrão: todo "✕" de qualquer cena (Bestiário, Códice, Relíquias, configurações, lojas, painéis…)
+  ganha por cima o selo vermelho do livro (bk-close_button_normal/hover). O ✕ original continua recebendo o toque e
+  fica invisível; a cada quadro o selo segue posição, visibilidade e transparência dele (preso dentro da tela).
+- Relíquias da Campanha divididas em páginas como os outros livros: título e contagem na página da esquerda (em cima
+  da grade), "REGISTRO DA RELÍQUIA" no alto da direita e a ficha sem o painel por fora. Nada atravessa a lombada.
 
 P216.118 — AVISOS MENORES, FAIXA DO LOCAL FIXA, RELÍQUIAS NO PADRÃO DO LIVRO, INVENTÁRIO DO REFÚGIO
 - Avisos no meio da tela ("ui:banner", ex.: "O salão do guardião está selado…"): eram 24 px numa linha só e passavam
