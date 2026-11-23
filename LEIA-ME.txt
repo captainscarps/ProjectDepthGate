@@ -1,4 +1,18 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.107 · cache ded-web-v6.18.8-refugio-chao)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.108 · cache ded-web-v6.18.9-refugio-fisica)
+
+P216.108 — REFÚGIO: FÍSICA PELOS OBJETOS · MERCADORIAS DO VENDEDOR · BARRACA E SANTUÁRIO NOVOS · HERBORISTA
+- Física: a grade de colisão do lado de fora era desenhada à mão e não batia com a tela (o herói esbarrava no vazio
+  e atravessava objetos). Agora ela é refeita depois que o Refúgio é montado: fica o terreno de verdade (bordas, muro
+  do topo, água do mar e do laguinho lida no próprio chão, píer, cercado dos pets) e cada objeto sólido ganha o pé
+  dele (tronco das árvores, base das casas, caixotes, barraca, santuário, fogueira, bonecos, postes…). Personagens,
+  enfeites de chão e luzes não bloqueiam. Testado: todos os pontos de interação continuam alcançáveis.
+- Vendedor: vende peças comuns e básicas que a classe pode usar (arma, armadura, elmo, botas, anel, amuleto,
+  escudo), 6 sorteadas a cada visita, Comum ou Incomum; preço em ouro da campanha (●) ou fragmentos (◆) no Infinito;
+  a peça vai para a mochila do save. As melhorias de antes ficam no botão "Melhorias do vendedor".
+- Barraca do vendedor e santuário redesenhados no PixelLab (scripts/gerar_refugio_objetos.py; originais em
+  scripts/art-src/refugio-objetos/*-orig.png).
+- Herborista: ficava atrás do caldeirão; agora fica à esquerda e à frente dele.
+- Código: scripts/source/refugio-fisica.js.
 
 P216.107 — REFÚGIO: PAREDE INVISÍVEL REMOVIDA · CHÃO NOVO (PIXELLAB)
 - Parede invisível: a colisão do Refúgio ainda tinha a borda de baixo do mapa antigo (linhas 86–87 da grade, y≈690),
