@@ -1,4 +1,18 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.116 · cache ded-web-v6.19.7-velocidade)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.117 · cache ded-web-v6.19.8-hud-pixelart)
+
+P216.117 — HUD EM PIXEL ART: BARRAS, FAIXA DO LOCAL E PERGAMINHO DE MISSÃO (scripts/source/hud-barras.js)
+- Peças feitas no PixelLab (Create UI Pro, 15 gerações cada; fontes em scripts/art-src/ui): assets/ui/hud-barra.png,
+  faixa-local.png, pergaminho-missao.png. (moldura-janela.png está só em art-src, ainda não usada.)
+- BARRAS de vida, recurso (na cor do recurso; some se o herói não tem) e experiência no canto superior esquerdo.
+  Celular: substituem o cartão (linha pequena acima com nível · herói · ◆). PC: ficam embaixo do retrato e os globos
+  de vida/recurso e a barra de XP de baixo foram escondidos (as barras mostram o mesmo). Vida baixa pisca.
+- FAIXA DO LOCAL: o título de região (campanha e salas especiais da floresta) agora é uma faixa vermelha menor, logo
+  abaixo das barras, à esquerda, entrando de lado — não cobre mais o meio da tela.
+- PERGAMINHO DE MISSÃO: quando uma missão do Diário passa a "em andamento" pela primeira vez (Refúgio ou fase), abre
+  no centro um pergaminho com o nome e o objetivo; o jogo espera; sai ao tocar ou apertar qualquer tecla/botão (essa
+  tecla não chega ao jogo). Espera conversas/história terminarem. No primeiro uso num jogo salvo, as missões que já
+  existiam não abrem (lista "hbq:<save>" no localStorage). Testes: window.__hbScroll(título, texto),
+  window.__hbTitle(nome, subtítulo).
 
 P216.116 — CELULAR: JOGO NÃO FICA MAIS ACELERADO
 - Erro do p216.114: o limite de ~60 quadros/s usava o limitador do Phaser, que repassa ao jogo o tempo acumulado E
