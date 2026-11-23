@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.114 · cache ded-web-v6.19.5-mobile-desempenho)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.115 · cache ded-web-v6.19.6-memoria-video)
+
+P216.115 — IPHONE: SAFARI NÃO FECHA MAIS O JOGO ("UM PROBLEMA OCORREU REPETIDAMENTE")
+- Causa: memória de vídeo. O jogo enviava TODAS as imagens para a placa de vídeo já no carregamento: ~800 MB no menu e
+  ~1 GB no Refúgio (chefes, cinemáticas, folhas dos 14 heróis e variantes, livro, códice…). O Safari do iPhone fecha a
+  aba quando passa do limite — acontecia no carregamento ou logo ao entrar no Refúgio.
+- Agora (scripts/source/desempenho.js) a imagem só vai para a placa de vídeo na primeira vez que é desenhada; trocar o
+  filtro de pixel art de uma imagem ainda não enviada só anota o filtro (antes reenviava a imagem inteira). Medido:
+  menu 806 MB → 9 MB, Refúgio 1 GB → ~110 MB. Imagens/canvas que ficam 25 s sem serem desenhados saem da placa de vídeo
+  e voltam na hora se forem usados de novo (testado: Refúgio → Infinito → Refúgio com tudo de volta).
+- Desligar para diagnóstico: window.__noLazyTex = 1 (envio antecipado) e window.__noTexEvict = 1 (remoção);
+  window.__texIdleS muda os 25 s.
 
 P216.114 — CELULAR: TELA DE MORTE QUE CABE NA TELA + MAIS DESEMPENHO
 - Tela de morte / das Cavernas Dorf no celular deitado: o título saía cortado em cima e o botão IR PARA O REFÚGIO
