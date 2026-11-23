@@ -7,7 +7,7 @@
      caixa; se a caixa está fora da vista da câmera (com folga), não são desenhados naquele quadro. Mexeu (posição,
      escala, giro, quadro) → a caixa deixa de valer até a próxima medição, então nada some por engano.
    • CELULAR (toque): a queda automática de qualidade gráfica (luz.js) age mais cedo — abaixo de 40 FPS por 3 s
-     baixa um nível nesta sessão (no PC continua 26 FPS por 5 s); e telas de 90/120 Hz ficam limitadas a ~60 quadros/s.
+     baixa um nível nesta sessão (no PC continua 26 FPS por 5 s); e telas de 120 Hz ficam limitadas a ~60 quadros/s.
    • MEMÓRIA DE VÍDEO (p216.115): no iPhone o Safari fechava a aba ("Um problema ocorreu repetidamente") — o jogo
      enviava TODAS as imagens para a placa de vídeo já no carregamento (~800 MB no menu, ~1 GB no Refúgio: chefes,
      cinemáticas, folhas de todos os 14 heróis, livro, códice…). Agora uma imagem só vai para a placa de vídeo na
@@ -46,7 +46,22 @@
     let t = 0;
     /* celular com tela de 90/120 Hz: o jogo tentava 120 quadros por segundo (dobro de trabalho, esquenta e engasga);
        limitado a ~60 */
-    try { TOUCH && !window.__noFpsCap && g.loop.setFPSLimit?.(62) } catch (e) {}
+    /* p216.116: o limitador do Phaser repassava ao jogo o tempo que sobrava E guardava a mesma sobra para o próximo
+       quadro — o tempo contava em dobro e o jogo ficava ~1,5× ACELERADO no celular. Agora: a sobra é zerada (o jogo
+       recebe exatamente o tempo real) e o limite só liga se a tela realmente roda acima de 100 Hz. */
+    try {
+      const L = g.loop;
+      L.stepLimitFPS = function (s) {
+        this.now = s; let r = Math.max(0, s - this.lastTime); this.rawDelta = r; this.time += r;
+        this.delta += r; s >= this.nextFpsUpdate && this.updateFPS(s); this.framesThisSecond++;
+        if (this.delta >= this._limitRate) { const d = Math.min(this.delta, this._min || 200); this.delta = 0; this.callback(s, d) }
+        this.lastTime = s; this.frame++;
+      };
+      if (TOUCH && !window.__noFpsCap) {
+        let n = 0; const t0 = performance.now(), probe = () => { if (++n < 120) return requestAnimationFrame(probe); const hz = n * 1000 / (performance.now() - t0); window.__rafHz = Math.round(hz); hz > 100 && L.setFPSLimit(62) };
+        setTimeout(() => requestAnimationFrame(probe), 3000);
+      }
+    } catch (e) {}
     g.events.on("poststep", (time, d) => {
       if ((t -= d) > 0) return; t = 400;
       for (const k of ["Game", "Hub"]) { try { const S = g.scene.getScene(k); S?.sys?.isActive() && scan(S) } catch (e) {} }

@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.115 · cache ded-web-v6.19.6-memoria-video)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.116 · cache ded-web-v6.19.7-velocidade)
+
+P216.116 — CELULAR: JOGO NÃO FICA MAIS ACELERADO
+- Erro do p216.114: o limite de ~60 quadros/s usava o limitador do Phaser, que repassa ao jogo o tempo acumulado E
+  guarda a sobra para o próximo quadro — a sobra contava duas vezes. Resultado: no celular tudo andava ~1,5× mais
+  rápido em tela de 60 Hz (~1,26× em 120 Hz). No PC não acontecia (o limite só ligava em aparelho de toque).
+- Agora (desempenho.js) a sobra é zerada a cada quadro entregue: o jogo recebe exatamente o tempo real (medido 1,00×).
+  E o limite só liga se a tela realmente roda acima de 100 Hz (medido 3 s depois de abrir; window.__rafHz mostra).
 
 P216.115 — IPHONE: SAFARI NÃO FECHA MAIS O JOGO ("UM PROBLEMA OCORREU REPETIDAMENTE")
 - Causa: memória de vídeo. O jogo enviava TODAS as imagens para a placa de vídeo já no carregamento: ~800 MB no menu e
