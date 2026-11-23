@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.111 · cache ded-web-v6.19.2-fogo)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.112 · cache ded-web-v6.19.3-infinito-save)
+
+P216.112 — MODO INFINITO: VOLTA AO REFÚGIO MAIS SEGURA + CÓPIA DE SEGURANÇA DO SAVE
+- Tela de morte: a tecla que confirma (Enter/Espaço/E/Esc, mesmo segurada) é engolida por 1,6 s e os buffers de teclado
+  são limpos — não vaza mais para o Refúgio que está abrindo (lá ela interagia/abria painel no primeiro quadro).
+- Se a volta normal falhar e o Refúgio abrir pela garantia de 6 s, o registro fica igual ao da volta normal
+  (espaço do Infinito, classe do herói), em vez de abrir sem saber qual era o save.
+- Cada gravação de dungeon-crawler:save:eN vai também para dg-bak:eN (só deste aparelho, fora da nuvem). Ao abrir o
+  menu principal, espaço vazio com cópia válida (e sem download da nuvem depois dela) é recuperado. Apagar pela
+  lixeira apaga a cópia junto. Recuperações ficam registradas em depthgate:erros.
 
 P216.111 — HERÓI SEM "BURACOS" AO ANDAR + FOGO NOVO
 - Folhas "cabeça descoberta" (<classe>-nh-body/-dirs.png, usadas pelas armaduras lendárias e da forja) tinham pedaços do

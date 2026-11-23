@@ -26586,11 +26586,16 @@ function __dmScreen(o) {
     try { window.__dubStop?.() } catch (x) {}
     window.removeEventListener("keydown", kd, !0); clearInterval(pad); typer && clearInterval(typer);
     window.__padUI = Math.max(0, (window.__padUI || 0) - 1);
-    try { g.inputManager && (g.inputManager.padButtons = []) } catch (x) {}
+    try { const im = g.inputManager; im && (im.padButtons = [], im.keysDown?.clear?.(), im.keyPressedBuffer?.clear?.()) } catch (x) {}
+    // p216.112: a tecla que confirmou (Enter/Espaço/E/Esc, às vezes segurada) não pode vazar para o Refúgio que está
+    // abrindo — lá ela interagia/abria painel no primeiro quadro e o herói ficava preso até apertar START.
+    const swallow = (ev) => { if (["Enter", " ", "e", "E", "Escape"].includes(ev.key)) { ev.preventDefault(); ev.stopImmediatePropagation() } };
+    window.addEventListener("keydown", swallow, !0); window.addEventListener("keyup", swallow, !0);
+    setTimeout(() => { window.removeEventListener("keydown", swallow, !0); window.removeEventListener("keyup", swallow, !0); try { g.inputManager?.keysDown?.clear?.() } catch (x) {} }, 1600);
     ov.classList.remove("on"); setTimeout(() => { stopFx(); ov.remove() }, 1150);
     try { o.onGo() } catch (x) { console.warn("[tela]", x); try { g.scene.start("Hub") } catch (y) {} }
     // garantia: se em 6 s o Refúgio não abriu, abre direto
-    setTimeout(() => { try { const H = g.scene.getScene("Hub"); if (!H?.sys?.isActive?.()) { g.scene.getScenes(!0).forEach((q) => { const k = q.sys.settings.key; k !== "LazyMaps" && g.scene.stop(k) }); g.scene.start("Hub") } } catch (x) {} }, 6000);
+    setTimeout(() => { try { const H = g.scene.getScene("Hub"); if (!H?.sys?.isActive?.()) { __dmHubReg(g, o.S); g.scene.getScenes(!0).forEach((q) => { const k = q.sys.settings.key; k !== "LazyMaps" && g.scene.stop(k) }); g.scene.start("Hub") } } catch (x) {} }, 6000);
   };
   const kd = (ev) => { if (["Enter", " ", "e", "E", "Escape"].includes(ev.key)) { ev.preventDefault(); ev.stopPropagation(); go() } };
   window.addEventListener("keydown", kd, !0);
@@ -26622,10 +26627,20 @@ function __deathScreen(S, t) {
       ...(broke ? [["k", "⚒", `${broke} ${__dmL("peça(s) do ferreiro quebraram — conserte na forja", "blacksmith piece(s) broke — repair them at the forge", "pieza(s) del herrero se rompieron — repáralas en la forja")}`]] : [])],
     onGo: () => {
       if (S.sys?.isActive?.()) S.onRestart();
-      else { g.scene.getScenes(!0).forEach((q) => { const k = q.sys.settings.key; k !== "LazyMaps" && g.scene.stop(k) }); g.scene.start("Hub") }
+      else { __dmHubReg(g, S); g.scene.getScenes(!0).forEach((q) => { const k = q.sys.settings.key; k !== "LazyMaps" && g.scene.stop(k) }); g.scene.start("Hub") }
     } });
 }
 window.__deathScreen = __deathScreen;
+/* p216.112: quando a volta normal (onRestart) não acontece e o Refúgio é aberto "na marra", deixa o registro igual ao
+   da volta normal — senão o Refúgio abria sem saber qual espaço do Infinito era o do herói. */
+function __dmHubReg(g, S) {
+  try {
+    const R = g.registry; if (R.get("mode") !== "endless") return;
+    const sl = R.get("save:slot") || 1, sv = typeof Nn === "function" ? Nn(sl) : null;
+    R.set("hub:endlessSlot", sl); R.remove("hub:fromForest");
+    const cls = sv?.ok ? sv.data.player.classId : S?.classDef?.id; cls && R.set("hub:classId", cls);
+  } catch (e) {}
+}
 
 /* Cavernas da Montanha Dorf (p216.89): queda (perde metade da Pedra Cobalto e os itens achados lá dentro) e volta
    vitoriosa pelo portal (tudo o que juntou). r = { fell, runStone, lostStone, total, found, onGo } */
@@ -26705,6 +26720,43 @@ window.__caveScreen = __caveScreen;
    this.cameras.main.once("camerafadeoutcomplete", () => this.scene.start("Game", { endless: !0, classId: cls }));
   } catch (e) { console.warn("[portal]", e); return EP0.apply(this, arguments) }
  };
+}
+
+/* ══ Cópia de segurança dos saves do Modo Infinito (p216.112) ══
+   Cada gravação de "dungeon-crawler:save:eN" também vai para "dg-bak:eN" (chave só deste aparelho, fora da nuvem).
+   Apagar o espaço pelo menu (lixeira) apaga a cópia junto. Se ao abrir o menu principal o espaço estiver vazio mas a
+   cópia existir — e nenhum download da nuvem tiver acontecido depois dela —, o save volta da cópia. */
+{
+  const SP = Storage.prototype, S0 = SP.setItem, D0 = SP.removeItem, RX = /^dungeon-crawler:save:e(\d)$/;
+  SP.setItem = function (k, v) {
+    const r = S0.apply(this, arguments);
+    try { const m = this === window.localStorage && typeof k === "string" && k.match(RX); if (m) { const d = JSON.parse(v); d?.player?.classId && d?.run?.seed && S0.call(this, "dg-bak:e" + m[1], JSON.stringify({ t: Date.now(), v })) } } catch (e) {}
+    return r;
+  };
+  SP.removeItem = function (k) {
+    const r = D0.apply(this, arguments);
+    try { const m = this === window.localStorage && typeof k === "string" && k.match(RX); m && D0.call(this, "dg-bak:e" + m[1]) } catch (e) {}
+    return r;
+  };
+  const hookCloud = () => { try { const C = window.DGSave; if (C && !C.__bakH) { const A0 = C.apply; C.apply = function () { try { S0.call(localStorage, "dg-bak:cloudAt", String(Date.now())) } catch (e) {} return A0.apply(this, arguments) }; C.__bakH = 1 } } catch (e) {} };
+  hookCloud(); setTimeout(hookCloud, 3000);
+  window.__endBakRestore = function () {
+    hookCloud();
+    const cAt = +(localStorage.getItem("dg-bak:cloudAt") || 0), out = [];
+    for (let n = 1; n <= 4; n++) {
+      try {
+        const k = "dungeon-crawler:save:e" + n; if (localStorage.getItem(k)) continue;
+        const b = JSON.parse(localStorage.getItem("dg-bak:e" + n) || "null"); if (!b?.v || b.t < cAt) continue;
+        const d = JSON.parse(b.v); if (!d?.player?.classId || !d?.run?.seed) continue;
+        S0.call(localStorage, k, b.v); out.push(n);
+        console.warn("[DEPTHGATE] save do Infinito " + n + " estava vazio — recuperado da cópia de segurança");
+        try { typeof __atLog === "function" && __atLog("save do Infinito " + n + " recuperado da cópia", { message: "slot vazio ao abrir o menu" }) } catch (e) {}
+      } catch (e) {}
+    }
+    return out;
+  };
+  const C0 = $o.prototype.create;
+  $o.prototype.create = function () { try { window.__endBakRestore() } catch (e) {} return C0.apply(this, arguments) };
 }
 /*__TELAMORTE__*/
 /*__SELHEROIS__*/
@@ -27743,13 +27795,16 @@ function __fogoFlame() {
       const h = (base - y) / 15.5; if (h < -.08 || h > 1.05) continue;
       const hh = Math.max(0, h);
       const sway = Math.sin(t + hh * 3.1) * 1.5 * hh + Math.sin(2 * t + hh * 5.3 + 1) * .55 * hh;
-      const w = 5.4 * Math.pow(1 - Math.min(1, hh), .72) + .35 + (h < .12 ? (.12 - h) * 6 : 0);
-      let heat = 1 - Math.abs(x + .5 - cx - sway) / w;
-      heat -= .5 * hh * hh;                                                     // afina no alto
-      heat -= .22 * hh * (.5 + .5 * Math.sin(y * 1.15 + 3 * t + x * .8));       // ondas subindo
-      heat -= .12 * hh * (.5 + .5 * Math.sin(y * 2.3 - x * 1.3 + 2 * t + 2));
+      const env = h < .2 ? .55 + h / .2 * .45 : Math.max(0, 1 - Math.pow((h - .2) / .85, .8));
+      const w = 5.6 * env + .3;
+      const dx = x + .5 - cx - sway;
+      let heat = 1 - Math.abs(dx) / w;
+      heat += .2 * hh * Math.cos(dx * 1.9 + 2 * t + hh * 4.5);                  // línguas
+      heat -= .45 * hh * hh;                                                    // afina no alto
+      heat -= .2 * hh * (.5 + .5 * Math.sin(y * 1.15 + 3 * t + x * .8));        // ondas subindo
+      heat -= .1 * hh * (.5 + .5 * Math.sin(y * 2.3 - x * 1.3 + 2 * t + 2));
       if (h < 0) heat -= (-h) * 9;                                              // base arredondada
-      heat += .14 * (1 - hh);                                                   // pé mais quente
+      heat += .12 * (1 - hh) - (h < .1 ? (.1 - h) * 2.2 : 0);
       let k = -1; for (let i = 0; i < CUT.length; i++) if (heat > CUT[i]) k = i;
       if (k >= 0) put(ox + x, y, PAL[k], k === 0 ? 225 : 255);
     }
