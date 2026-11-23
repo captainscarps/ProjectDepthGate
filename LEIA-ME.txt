@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.120 · cache ded-web-v6.20.1-cartas-habilidade)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.121 · cache ded-web-v6.20.2-faixa-fantasia)
+
+P216.121 — FAIXA DO LOCAL: LETRA DE FANTASIA E NOME SEMPRE DENTRO DO PAINEL
+- Fonte nova Cinzel Decorative Bold (OFL; assets/fonts/CinzelDecorative-Bold.woff2 + CinzelDecorative-OFL.txt,
+  @font-face em index.html, pré-carregada em hud-barras.js).
+- Faixa um pouco maior (176 de largura); o nome é medido contra o painel do meio da faixa (x 48–190, y 5–35 da
+  imagem) e a letra encolhe até caber — nunca passa para as fitas.
 
 P216.120 — ESCOLHA DE HABILIDADE EM CARTAS (hud-barras.js, substitui o desenho de __SPPanel)
 - Moldura de carta feita no PixelLab (Create UI Pro 192×288, 10 gerações; fonte scripts/art-src/ui/carta.png,

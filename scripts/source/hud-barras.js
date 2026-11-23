@@ -8,6 +8,7 @@
      menor, logo abaixo das barras, à esquerda — não cobre mais o meio da tela.
    • PERGAMINHO DE MISSÃO: quando uma missão secundária começa (entra no Diário como "em andamento"), um pergaminho
      abre no centro da tela com o nome e o objetivo; sai ao tocar ou apertar qualquer tecla/botão do controle.        */
+try { document.fonts?.load?.('700 12px "CinzelDecorative"') } catch (e) {}
 const __HB_K = "hb-barra", __HB_F = "hb-faixa", __HB_P = "assets/ui/pergaminho-missao.png";
 const __HB_IN = [56, 9, 440, 24];   // interior da moldura (px da imagem 495×32)
 {const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
@@ -80,11 +81,14 @@ __rtNext = function (G) {
   G.__rtOn = !0; const [name, sub] = it;
   try { U.textures.get(__HB_F).setFilter(j.Textures.FilterMode.LINEAR) } catch (e) {}
   const y = (U.__hbBottom || 50) + 4, C = U.add.container(4, y).setDepth(650).setAlpha(0);
-  const tx = U.add.text(0, 0, String(name).toUpperCase(), { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "11px", color: "#ffe6a8", stroke: "#2a0606", strokeThickness: 3, letterSpacing: 1 }).setOrigin(.5);
+  /* p216.121: letra de fantasia (Cinzel Decorative, OFL) e o nome sempre dentro do painel do meio da faixa */
+  const tx = U.add.text(0, 0, String(name), { fontFamily: "CinzelDecorative, Georgia, serif", fontStyle: "bold", fontSize: "12px", color: "#ffe6a8", stroke: "#2a0606", strokeThickness: 3 }).setOrigin(.5);
   /* p216.118: a faixa crescia com o nome (nomes longos viravam uma faixa enorme): largura fixa e a letra encolhe */
-  const w = 150, sc = w / 237, ban = U.add.image(0, 0, __HB_F).setOrigin(0).setScale(sc);
-  for (let fs = 11; tx.width > w * .56 && fs > 6; fs--) tx.setFontSize(fs);
-  tx.setPosition(w / 2, 54 * sc / 2 - 1);
+  const w = 176, sc = w / 237, ban = U.add.image(0, 0, __HB_F).setOrigin(0).setScale(sc);
+  const IW = 128 * sc, IH = 28 * sc;   // painel do meio da faixa: x 48–190, y 5–35 da imagem 237×54
+  for (let fs = 12; (tx.width > IW || tx.height > IH) && fs > 5; fs -= .5) tx.setFontSize(fs);
+  if (tx.width > IW) tx.setScale(IW / tx.width);
+  tx.setPosition(119 * sc, 20 * sc);
   const sb = U.add.text(w / 2, 54 * sc + 2, sub || "", { fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "8px", color: "#ecdcac", stroke: "#0a0604", strokeThickness: 2 }).setOrigin(.5, 0).setAlpha(0);
   C.add([ban, tx, sb]); try { __rtChime(G) } catch (e) {}
   C.x = -w; U.tweens.add({ targets: C, x: 4, alpha: 1, duration: 600, ease: "Back.easeOut" }); U.tweens.add({ targets: sb, alpha: .9, duration: 700, delay: 400 });
