@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.127 · cache ded-web-v6.20.8-arsenal)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.128 · cache ded-web-v6.20.9-forja-toque)
+
+P216.128 — FORJA: ROLAGEM POR TOQUE
+- Armaria do ferreiro (hub-village.js __forgeWeaponsShop): arrastar o dedo na lista rola (antes só a roda do mouse);
+  com rolagem, o toque escolhe a peça ao soltar sem arrastar. O quadro do controle acompanha a rolagem.
+- Página da direita: peças com 4+ atributos ficam com as linhas mais juntas e o bloco sobe se for encostar no FORJAR.
+  (hub-village.js não entra pelos patches: mudança feita na fonte e no bundle.)
 
 P216.127 — ARSENAL DO FERREIRO: 39 ARMAS EXCLUSIVAS DE CADA HERÓI (scripts/source/arsenal.js, bloco /*__ARSENAL__*/)
 - Armaria (aba ARMAS): as armas do herói que está no Refúgio aparecem no topo (window.__arsList, chamada em

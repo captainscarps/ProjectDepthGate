@@ -2474,8 +2474,8 @@ __forgeWeaponsShop(fromSmith,mode){
     hd?pIcon.setTexture("items-hd",wp.id).setDisplaySize(52,52):pIcon.setTexture(this.textures.exists(wp.icon)?wp.icon:"icon-sword").setScale(2.2);
     pIcon.clearTint().setAlpha(1);wp.tint!=null&&!hd&&!/^farm-ic-/.test(wp.icon)&&pIcon.setTint(wp.tint);pIcon.setVisible(!0).setX(pv?RC-70:RC);
     wp.locked&&pIcon.setTint(0x000000).setAlpha(.82).setX(RC);pv?.container?.setVisible(!wp.locked);
-    pStats.setText(wp.locked?`🔒 ${wp.stats}`:wp.stats.split(" · ").join("\n"));
-    const [ot,oc]=wp.locked||wp.special?[wp.locked?"":L3("ENTREGUE PELO FERREIRO","DELIVERED BY THE BLACKSMITH","ENTREGADO POR EL HERRERO"),"#4ade80"]:ownTxt(wp);pOwn.setText(wp.found&&!wp.locked?L3(...wp.found):ot).setColor(oc||"#9cc2ff").setY(pStats.y+pStats.height+6);
+    {const sl=wp.locked?[`🔒 ${wp.stats}`]:wp.stats.split(" · ");pStats.setText(sl.join("\n")).setLineSpacing(sl.length>3?1:3).setY(sl.length>3?Y+148:Y+160)}   // p216.128: 4+ atributos mais juntos, para não encostar no FORJAR
+    const [ot,oc]=wp.locked||wp.special?[wp.locked?"":L3("ENTREGUE PELO FERREIRO","DELIVERED BY THE BLACKSMITH","ENTREGADO POR EL HERRERO"),"#4ade80"]:ownTxt(wp);pOwn.setText(wp.found&&!wp.locked?L3(...wp.found):ot).setColor(oc||"#9cc2ff").setY(pStats.y+pStats.height+6);{const lim=Y+232-14-4,ov=pOwn.y+(pOwn.text?pOwn.height:0)-lim;ov>0&&(pStats.y-=ov,pOwn.y-=ov)}
     forgeBtn.setText(wp.locked?L3("🔒 FEITO NECESSÁRIO","🔒 DEED REQUIRED","🔒 HAZAÑA NECESARIA"):wp.special?L3("✔ ENTREGUE","✔ DELIVERED","✔ ENTREGADO"):`${L3("FORJAR","FORGE","FORJAR")} · ${this.__alPrice(wp.price)} ◆`);
     showPv(wp);
   };
@@ -2553,7 +2553,7 @@ __forgeWeaponsShop(fromSmith,mode){
     draw(idx===sel);
     z.on("pointerover",()=>draw(idx===sel,!0));
     z.on("pointerout",()=>draw(idx===sel));
-    z.on("pointerdown",()=>{const pad=this.__fnByPad;select(idx);pad&&this.time.delayedCall(0,()=>focusOn(forgeBtn))});       // tocar escolhe e mostra; forjar só pelo botão, com confirmação (no controle, A leva o foco ao FORJAR)
+    z.on("pointerdown",p=>{if(list.length>MAXV&&!this.__fnByPad){o.__drag={y:p.y,top,moved:0,idx};return}const pad=this.__fnByPad;select(idx);pad&&this.time.delayedCall(0,()=>focusOn(forgeBtn))});   // p216.128: com rolagem, o toque escolhe ao soltar (arrastar rola a lista)       // tocar escolhe e mostra; forjar só pelo botão, com confirmação (no controle, A leva o foco ao FORJAR)
     const parts=[box,im,nm,stT,prT,z];
     rowsUi.push({z,draw,parts,base:parts.map(p=>p.y)});
     z.__onFocus=()=>{if(o.__wheel)return;showRow(idx);!confirming&&sel!==idx&&select(idx)};   // controle: o cursor na peça já mostra a prévia
@@ -2569,6 +2569,12 @@ __forgeWeaponsShop(fromSmith,mode){
   const showRow=i=>{const t0=top;if(i<top)top=i;else if(i>=top+MAXV)top=i-MAXV+1;top=Math.max(0,Math.min(top,Math.max(0,list.length-MAXV)));top!==t0&&layout()};
   const wheel=(p,ob,dx,dyw)=>{if(!o.active||!o.visible||confirming||list.length<=MAXV)return;const t0=top;top=Math.max(0,Math.min(list.length-MAXV,top+Math.sign(dyw)));if(top!==t0){layout();const F=this.__fn;if(F?.o===o){o.__wheel=1;this.__fnDraw();o.__wheel=0}}};
   this.input.on("wheel",wheel);o.once("destroy",()=>this.input.off("wheel",wheel));
+  // p216.128: arrastar o dedo na lista rola (touch); toque sem arrastar escolhe a peça
+  const dk=()=>(this.cameras.main.zoom||1)*(this.__us||1)*(o.scaleY||1);
+  const dMove=p=>{const D=o.__drag;if(!D||!o.active||!o.visible||!p.isDown)return;const dy=(p.y-D.y)/dk();if(!D.moved&&Math.abs(dy)<6)return;D.moved=1;const t0=top;top=Math.max(0,Math.min(list.length-MAXV,D.top-Math.round(dy/RS)));if(top!==t0){layout();const F=this.__fn;if(F?.o===o){o.__wheel=1;this.__fnDraw();o.__wheel=0}}};
+  const dUp=()=>{const D=o.__drag;o.__drag=null;if(!D||!o.active||!o.visible||D.moved||confirming)return;select(D.idx)};
+  this.input.on("pointermove",dMove);this.input.on("pointerup",dUp);this.input.on("pointerupoutside",dUp);
+  o.once("destroy",()=>{this.input.off("pointermove",dMove);this.input.off("pointerup",dUp);this.input.off("pointerupoutside",dUp)});
   layout();
 
   const bY=Y+HH-16;
