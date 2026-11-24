@@ -1,4 +1,19 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.124 · cache ded-web-v6.20.5-hud-kit)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.125 · cache ded-web-v6.20.6-hud-completo)
+
+P216.125 — HUD COMPLETO NO ESTILO DO KIT (scripts/source/hud-kit.js, bloco /*__HUDKIT__*/)
+1) Barra de habilidades (PC): espaços com a moldura do kit sobre painel bordô/dourado; recarga em "relógio" com os
+   segundos; brilho dourado quando volta. (Celular: os botões de toque continuam com a recarga própria.)
+2) Efeitos ativos embaixo das barras (bônus de dano/defesa/velocidade/ataque/crítico de stats.buffs) com o tempo.
+3) Barra do chefe (Pd): moldura grande do kit, emblema no encaixe, nome dentro, vida perdida descendo (faixa clara),
+   marcas douradas nas fases (data_.phases do chefe) e clarão na troca de fase.
+4) Vida dos inimigos (lh.drawHpBar): só depois de levar dano (some 4 s depois); elite sempre, com borda dourada e
+   número embaixo da barra.
+5) Números de dano em letra de pixel; crítico vira "N!" laranja maior com pulo.
+6) Avisos de ganho à direita: +XP, +ouro e ITEM novo (cor da raridade); no celular mais acima (não cobre botões).
+7) Missão em andamento (a última "em andamento" do Diário) no canto de cima à direita.
+8) Aviso de interação ("[E] Abrir baú") num quadro escuro; no celular sem a tecla.
+9) Vida baixa (<30%): bordas vermelhas pulsando (textura própria hk-redvig). A barra de vida agora usa a textura
+   clara tingida de vermelho vivo (com pouca vida a original ficava escura).
 
 P216.124 — HUD DO GAMEPLAY NO ESTILO DO KIT "PIXEL UI HUD: FANTASY RPG KIT"
 - Referência enviada pelo usuário: demo grátis do kit de IndigoLay (indigolay.itch.io/pixel-hud-ui — "Free for

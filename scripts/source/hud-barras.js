@@ -26,7 +26,7 @@ const __HB2 = "assets/ui/hud2/";
 function __hbStatus(S, w, depth, kind) {
   const sc = w / 395, C = S.add.container(0, 0).setDepth(depth);
   const bg = S.add.image(0, 0, "hb2-status-bg").setOrigin(0).setScale(sc);
-  const fill = S.add.image(57 * sc, 9 * sc, kind === "hp" ? "hb2-status-fill-hp" : "hb2-status-fill-gray").setOrigin(0).setScale(sc * 314 / 319, sc);
+  const fill = S.add.image(57 * sc, 9 * sc, "hb2-status-fill-gray").setOrigin(0).setScale(sc * 314 / 319, sc);   // p216.125: a vida também usa a textura clara tingida (vermelho vivo; a original ficava escura com pouca vida)
   const shine = S.add.graphics();
   C.add([bg, fill, shine]);
   let icon;
@@ -37,7 +37,8 @@ function __hbStatus(S, w, depth, kind) {
   return { C, fill, icon, sc, h: 57 * sc, k: "", set(r, col, a = 1) {
     const key = r.toFixed(3) + "|" + col + "|" + a.toFixed(2); if (key === this.k) return; this.k = key;
     r = Math.max(0, Math.min(1, r)); this.fill.setVisible(r > 0).setCrop(0, 0, 319 * r, 39).setAlpha(a);
-    if (kind !== "hp") { this.fill.setTint(col);
+    this.fill.setTint(kind === "hp" ? (col || 0xe23a3a) : col);
+    if (kind !== "hp") {
       const g = this.icon; g.clear(); const cx = 30 * sc, cy = 28.5 * sc, R = 12 * sc;
       g.fillStyle(0x000000, .35).fillCircle(cx, cy + 1, R + 1).fillStyle(col, 1).fillCircle(cx, cy, R).fillStyle(0xffffff, .55).fillCircle(cx - R * .35, cy - R * .35, R * .35).lineStyle(1, 0xf0d090, .9).strokeCircle(cx, cy, R) }
   }, vis(v) { this.C.setVisible(v) } };
@@ -87,7 +88,7 @@ function __hbMake(H) {
     if (R?.__sk) { for (const o of [...(R.__gb || []), ...(R.__gf || []), R.__xb, R.__xf, R.hpT, R.mpT]) o?.setAlpha?.(0) }
     vis(!0); B.top.setVisible(mob); B.rs.vis(hasR);
     const P = g.player, hp = P.maxHp > 0 ? Math.max(0, P.hp / P.maxHp) : 0, low = hp < .3 && hp > 0;
-    B.hp.set(hp, 0, low ? .55 + .45 * Math.sin(S.time.now / 140) : 1);
+    B.hp.set(hp, low ? (Math.sin(S.time.now / 140) > 0 ? 0xff5a4a : 0xd8302c) : 0xe23a3a, 1);
     hasR && B.rs.set(Rs.max > 0 ? Math.max(0, Rs.current / Rs.max) : 0, Rs.def.color ?? 0x3b7bff);
     const xr = h && h.xpNext > 0 ? Math.max(0, Math.min(1, h.xp / h.xpNext)) : 0; B.xp.set(xr, 0xf0b43c);
     const T = `${Math.max(0, Math.ceil(P.hp))}/${P.maxHp}`; B.hpT._s !== T && (B.hpT.setText(T), B.hpT._s = T);
