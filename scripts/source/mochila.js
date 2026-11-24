@@ -25,7 +25,10 @@ Fl.prototype.__hiState = function (S) {
     mode: H.fromForest ? "campaign" : "endless", state: "playing", uiOpen: !0,
     audioRef: { play: k => { try { g.audioEngine?.sfx?.(k) } catch (e) {} } },
     endlessRun: () => null,
-    skillState: P.skills && Array.isArray(P.skills.unlocked) ? { unlocked: [...P.skills.unlocked], equipped: [0, 1, 2, 3].map(k => P.skills.equipped?.[k] ?? null) } : zh(cls.id),
+    skillState: P.skills && Array.isArray(P.skills.unlocked) ? { unlocked: [...P.skills.unlocked], equipped: [0, 1, 2, 3].map(k => P.skills.equipped?.[k] ?? null),
+      /* p216.126: as escolhas por nível e a árvore vêm junto (antes a aba mostrava tudo trancado e a escolha do nível 5 sumia) */
+      ...(P.skills.pick && typeof P.skills.pick === "object" ? { pick: JSON.parse(JSON.stringify(P.skills.pick)) } : {}),
+      ...(P.skills.et && typeof P.skills.et === "object" ? { et: JSON.parse(JSON.stringify(P.skills.et)) } : {}) } : zh(cls.id),
     abilities: { setEquipped() {} },
     player: { hp: P.hp || 6, maxHp: P.hp || 6, x: H.playerX, y: H.playerY, heal() {} },
     resource: { current: P.resource ?? 100, max: P.resource ?? 100 },
@@ -36,6 +39,7 @@ Fl.prototype.__hiState = function (S) {
   for (const r of P.items || []) { const it = mk(r); it && A.inventory.items.push(it) }
   for (const k of __HI_SLOTS) A.inventory.equipment[k] = mk(P.equipment?.[k]);
   A.stats.attachInventory(A.inventory);
+  try { typeof __spSt === "function" && (__spSt(A), __spMigrate(A, !!P.skills)) } catch (e) {}
   // descartar no Refúgio apagaria o item de vez (não há chão para ele cair): fica só para a run
   A.inventory.discard = () => { try { g.events.emit("ui:banner", __L3("Descartar itens só durante a run.", "Discard items only during a run.", "Descartar objetos solo durante la run."), "#ff9a7a") } catch (e) {} return !1 };
   try { A.player.maxHp = Math.max(A.player.hp, A.stats.total?.maxHp || A.player.hp) } catch (e) {}
@@ -57,6 +61,8 @@ Fl.prototype.__invHub = function () {
       const P = S.d.player; P.items = A.inventory.items.map(ser).filter(Boolean);
       P.equipment = Object.fromEntries(__HI_SLOTS.map(k => [k, ser(A.inventory.equipment[k])]));
       P.skills = { ...(P.skills || {}), unlocked: [...A.skillState.unlocked], equipped: [...A.skillState.equipped] };   // mantém a árvore do Infinito e as escolhas
+      A.skillState.pick && (P.skills.pick = JSON.parse(JSON.stringify(A.skillState.pick)));
+      A.skillState.et && (P.skills.et = JSON.parse(JSON.stringify(A.skillState.et)));
       localStorage.setItem(S.key, JSON.stringify(S.d));
       typeof __rfGear === "function" && __rfGear(H);
     } catch (e) { console.warn("[inventário do Refúgio]", e) }
@@ -90,6 +96,47 @@ Fl.prototype.__invHub = function () {
   inv.show();
   try { inv.__sk && typeof __invTab === "function" && __invTab(inv, 0) } catch (e) {}   // abre sempre em EQUIPAMENTO
 };
+/* p216.126: nível alcançado sem escolher a habilidade (ex.: subiu no fim da fase e a partida acabou antes da janela
+   abrir) — ao chegar no Refúgio as cartas aparecem aqui mesmo, com o mesmo "jogo substituto" do livro. */
+Fl.prototype.__spHubCheck = function (tries = 0) {
+  const H = this, U = H.scene.get("HubUI");
+  try {
+    if (!H.sys?.isActive?.() || !U?.sys?.isActive?.() || typeof __SPPanel !== "function" || U.__spHub?.open) return;
+    if (H.__busy || H.panel || H.__hubDlgO || U.__hiOpen || document.querySelector("#hb-scroll")) { tries < 40 && H.time.delayedCall(1500, () => H.__spHubCheck(tries + 1)); return }
+    const S = H.__moLoad();
+    if (!S || !S.d.player || (S.d.player.classId && S.d.player.classId !== H.classDef?.id)) return;
+    const A = H.__hiState(S), pend = __spPending(A).filter(q => q.kind === "lv");
+    if (!pend.length) return;
+    const P0 = S.d.player;
+    const save = () => {
+      try {
+        P0.skills = { ...(P0.skills || {}), unlocked: [...A.skillState.unlocked], equipped: [...A.skillState.equipped], pick: JSON.parse(JSON.stringify(A.skillState.pick || {})) };
+        A.skillState.et && (P0.skills.et = JSON.parse(JSON.stringify(A.skillState.et)));
+        localStorage.setItem(S.key, JSON.stringify(S.d));
+      } catch (e) { console.warn("[escolha no Refúgio]", e) }
+    };
+    A.requestSave = save; A.uiOpen = !1;
+    const P = U.__spHub = new __SPPanel(U);
+    P.gs = () => A; P.busy = () => !1;
+    const hud = [U.pzBtn, U.moBtn, U.pzBd, U.moBd].filter(Boolean);
+    H.__busy = !0; H.path = null; H.pending = null; hud.forEach(o => o.setVisible(!1));
+    const C0 = P.close;
+    P.close = function () {
+      const r = C0.apply(this, arguments);
+      if (!this.queue.length) { save(); hud.forEach(o => o.setVisible(!0)); A.uiOpen = !1; U.time.delayedCall(150, () => { H.__busy = !1 }) }
+      return r;
+    };
+    for (const q of pend) P.push(q);
+  } catch (e) { console.warn("[escolha no Refúgio]", e) }
+};
+{
+  const C0 = Fl.prototype.create;
+  Fl.prototype.create = function () {
+    const r = C0.apply(this, arguments);
+    try { this.time.delayedCall(2600, () => this.__spHubCheck()) } catch (e) {}
+    return r;
+  };
+}
 Fl.prototype.__mochila = function () { return this.__invHub() };
 Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen };
 
@@ -113,11 +160,20 @@ Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen
       if ((k === "t" || k === "T") && !v.__forgeModal) { try { __openForge(v) } catch (e) {} return }
       const used = v.handleKey(k); if (!used && k === "Escape") close();
     };
-    U.input.keyboard?.on("keydown", e => { if (U.__hiOpen) key(e.key) });
+    U.input.keyboard?.on("keydown", e => { if (U.__spHub?.open) return U.__spHub.handleKey(e.key); if (U.__hiOpen) key(e.key) });
+    U.__spHub = null; U.events.once("shutdown", () => { try { clearInterval(U.__spHub?.__anim) } catch (e) {} U.__spHub = null });
     const MAP = [[12, "ArrowUp"], [13, "ArrowDown"], [14, "ArrowLeft"], [15, "ArrowRight"], [0, "Enter"], [1, "Escape"], [4, "q"], [5, "e"], [3, "t"]];
     let pv = { all: !0 };
     /* p216.122: sai no shutdown (antes cada volta ao Refúgio somava mais um ouvinte: o controle apertava várias vezes) */
     const upd = () => {
+      if (U.__spHub?.open) {   // cartas de habilidade no Refúgio: direcional escolhe, A confirma
+        let g = null; try { g = Array.from(navigator.getGamepads?.() ?? []).find(p => p && p.connected) } catch (e) {}
+        if (!g) return;
+        const b = i => !!(g.buttons[i]?.pressed || (g.buttons[i]?.value ?? 0) > .5), ax = g.axes[0] ?? 0;
+        const now = { 14: b(14) || ax < -.6, 15: b(15) || ax > .6, 0: b(0) };
+        if (!pv.all) for (const [i, k] of [[14, "ArrowLeft"], [15, "ArrowRight"], [0, "Enter"]]) if (now[i] && !pv[i]) U.__spHub.handleKey(k);
+        pv = now; return;
+      }
       if (!U.__hiOpen) { pv = { all: !0 }; return }
       let g = null; try { g = Array.from(navigator.getGamepads?.() ?? []).find(p => p && p.connected) } catch (e) {}
       if (!g) return;

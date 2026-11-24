@@ -497,7 +497,9 @@ function __tpProps(S, B, M, niches, special) {
   }
   // baús do jogo com a arte do pack (os objetos são criados depois das paredes)
   // estátuas, colunas e sarcófagos do templo (pacote props-temple), na mesma escala 2x do piso
-  for (const rm of B.level.rooms || []) for (const [k, c, r, o = {}] of __TP_PROPS[rm.id] || []) {
+  /* p216.126: essas peças (estátuas, colunas, sarcófagos, urnas, ídolo) eram de outro pacote e ficavam maiores que os
+     heróis (fora de proporção) — saíram do templo. window.__tpPropsOn = 1 traz de volta para comparar. */
+  for (const rm of window.__tpPropsOn ? B.level.rooms || [] : []) for (const [k, c, r, o = {}] of __TP_PROPS[rm.id] || []) {
     const key = "ptp-" + k; if (!S.textures.exists(key)) continue;
     const PAD = { "column-broken": 10, "column-intact": 11 }, TN = { "column-broken": 0xa4a9cc, "column-intact": 0xa4a9cc, "sarcophagus-effigy": 0xc4c8de, "coffin-skeleton": 0xc4c8de, "urns": 0xd8ccc4, "winged-idol": 0xb4b8d6 };
     const fr = S.textures.get(key).getSourceImage(), sc = k === "urns" ? 1.5 : 2;

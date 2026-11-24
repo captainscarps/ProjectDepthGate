@@ -217,11 +217,31 @@ function __spCheck(S, delay = 0) {
     const S = this.gs(), P = __spSt(S) || {}, t = [], ey = { 1: 86, 5: 148, 10: 210, 15: 272 };
     for (const lv of Ne) {
       const o = P[lv] ? [P[lv]] : __spOpts(S, lv);
-      o.forEach((id, n) => t.push({ id, level: lv, x: o.length === 1 ? 190 : o.length === 2 ? 130 + n * 120 : 100 + n * 90, y: ey[lv] }));
+      /* p216.126: a árvore cabe na página da esquerda do livro (x 112–292); detalhes e espaços ficam na da direita */
+      const m = o.length, gap = m > 1 ? Math.min(90, 180 / (m - 1)) : 0, x0 = 202 - gap * (m - 1) / 2;
+      o.forEach((id, n) => t.push({ id, level: lv, x: Math.round(x0 + n * gap), y: ey[lv] }));
     }
     return t;
   };
-  Rd.prototype.stateOf = function (id, lv) { const S = this.gs(); return S.skillState.unlocked.includes(id) ? "unlocked" : "locked" };
-  Rd.prototype.unlockSelected = function () {};
+  /* nível já alcançado sem escolha feita: as opções ficam liberadas para escolher ali mesmo (Enter / toque) */
+  const pend = (S, lv) => { const P = __spSt(S) || {}; return lv != null && (S.stats?.level ?? 1) >= lv && P[lv] == null };
+  Rd.prototype.stateOf = function (id, lv) { const S = this.gs(); return S.skillState.unlocked.includes(id) && !pend(S, lv) ? "unlocked" : pend(S, lv) ? "available" : "locked" };
+  Rd.prototype.unlockSelected = function () {
+    try {
+      const S = this.gs(), t = this.nodeUi?.[this.sel]; if (!t || !pend(S, t.level)) return;
+      /* 1º toque/Enter mostra a habilidade; o 2º na mesma confirma (as outras do nível ficam trancadas) */
+      if (this.__armed !== t.id) {
+        this.__armed = t.id; this.refresh();
+        this.dReq?.setText(__L3("Toque de novo para ESCOLHER", "Tap again to CHOOSE", "Toca otra vez para ELEGIR")).setColor?.("#2f7d32");
+        return;
+      }
+      this.__armed = null;
+      __spApply(S, { kind: "lv", lv: t.level }, t.id);
+      S.audioRef?.play?.("sfx-ability-ready");
+      this.ui.game.events.emit("ui:banner", __spName(t.id).toUpperCase(), "#ffd24a");
+      this.persist?.(S);
+      const id = t.id; this.buildNodes(); const k = this.nodeUi.findIndex(n => n.id === id); this.sel = k >= 0 ? k : 0; this.refresh();
+    } catch (e) { console.warn("[skill-picks] árvore", e) }
+  };
 }
 window.__dgSP = { opts: __spOpts, pending: __spPending, ui: __spUI, check: __spCheck, X: __SPX };

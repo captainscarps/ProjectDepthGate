@@ -125,15 +125,17 @@ function __hbScroll(title, text) {
   const ov = document.createElement("div"); ov.id = "hb-scroll";
   ov.innerHTML = `<style>#hb-scroll{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);opacity:0;transition:opacity .25s;touch-action:manipulation;-webkit-text-size-adjust:100%}
 #hb-scroll.on{opacity:1}#hb-sc{position:relative;height:min(88vh,88vw*1.14);aspect-ratio:128/146;background:url(${__HB_P}) center/100% 100% no-repeat;image-rendering:pixelated;transform:scaleY(.08);transition:transform .45s cubic-bezier(.2,1.3,.4,1)}
-#hb-scroll.on #hb-sc{transform:scaleY(1)}#hb-tx{position:absolute;left:19%;right:19%;top:21%;bottom:22%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;font-family:PixelifySans,Georgia,serif;color:#4a2a12;overflow:hidden}
-#hb-k{font-size:min(2.6vh,15px);letter-spacing:1px;color:#8a2a14;font-weight:700;margin-top:4%}#hb-t{font-size:min(4.4vh,26px);font-weight:700;color:#3a1c08;margin:5% 0 7%;line-height:1.05}#hb-d{font-size:min(3vh,17px);line-height:1.35}
-#hb-h{position:absolute;left:0;right:0;bottom:-2.4em;text-align:center;font:600 min(2.4vh,13px) system-ui,sans-serif;color:#f2e2b8;text-shadow:0 1px 3px #000;opacity:.85}</style>
+#hb-scroll.on #hb-sc{transform:scaleY(1)}#hb-tx{position:absolute;left:19%;right:19%;top:19%;bottom:20%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;font-family:PixelifySans,Georgia,serif;color:#4a2a12;overflow:hidden}
+#hb-sc{container-type:size}#hb-k{font-size:3.4vh;font-size:3.6cqh;letter-spacing:1px;color:#8a2a14;font-weight:700;margin-top:3%}#hb-t{font-size:6vh;font-size:6.6cqh;font-weight:700;color:#3a1c08;margin:5% 0 6%;line-height:1.05}#hb-d{font-family:Georgia,"Times New Roman",serif;font-size:4.2vh;font-size:4.8cqh;line-height:1.3;color:#3e220e}
+#hb-h{position:absolute;left:0;right:0;bottom:-2.4em;text-align:center;font:600 max(13px,2.8vh) system-ui,sans-serif;color:#f2e2b8;text-shadow:0 1px 3px #000;opacity:.85}</style>
 <div id="hb-sc"><div id="hb-tx"><div id="hb-k"></div><div id="hb-t"></div><div id="hb-d"></div></div><div id="hb-h"></div></div>`;
   document.body.appendChild(ov);
   ov.querySelector("#hb-k").textContent = __L3("NOVA MISSÃO SECUNDÁRIA", "NEW SIDE QUEST", "NUEVA MISIÓN SECUNDARIA");
   ov.querySelector("#hb-t").textContent = title; ov.querySelector("#hb-d").textContent = text || "";
   ov.querySelector("#hb-h").textContent = __L3("toque ou aperte qualquer botão", "tap or press any button", "toca o pulsa cualquier botón");
-  requestAnimationFrame(() => ov.classList.add("on"));
+  requestAnimationFrame(() => { ov.classList.add("on");
+    /* texto longo: encolhe até caber no papel (nunca sai do pergaminho) */
+    setTimeout(() => { try { const tx = ov.querySelector("#hb-tx"), dd = ov.querySelector("#hb-d"); for (let k = 1; tx.scrollHeight > tx.clientHeight + 1 && k > .45; k -= .05) dd.style.fontSize = `calc(4.8cqh * ${k.toFixed(2)})` } catch (e) {} }, 480) });
   /* o jogo espera enquanto o pergaminho está aberto */
   const was = scenes.map((s) => [s, !!s.uiOpen, !!s.__busy]); for (const [s] of was) { s.uiOpen = !0; s.scene.key === "Hub" && (s.__busy = !0); try { s.physics?.pause?.() } catch (e) {} }
   const t0 = performance.now(); let done = !1, raf = 0;

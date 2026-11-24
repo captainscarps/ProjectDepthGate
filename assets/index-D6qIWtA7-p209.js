@@ -10978,7 +10978,7 @@ function __etWhyNot(S,id,side){const st=__etSt(S),x=__ETIDX[id];if(!x)return"?";
   return __L3("Requer ","Requires ","Requiere ")+nm+(lv>1&&!q.startsWith("any:")?" "+__roman(lv):"")}
  if(n.t==="top"&&r===0){const T=__ET[x.c][side];const o=T.nodes.find(q=>q.t==="top"&&q.id!==id&&(st.r[q.id]|0)>0);if(o)return __L3("Topo já escolhido: ","Peak already chosen: ","Cima ya elegida: ")+__etL(o.n)}
  return null}
-function __etPersist(S){try{S.game.registry.get("mode")==="endless"?In(S):S.requestSave?.(500)}catch(e){}}
+function __etPersist(S){try{if(S?.__hubInv)return S.requestSave?.();S.game.registry.get("mode")==="endless"?In(S):S.requestSave?.(500)}catch(e){}}
 /* compra um grau; ativa nova vai para o primeiro espaço livre */
 function __etBuy(S,id){if(__etWhyNot(S,id))return!1;const st=__etSt(S),n=__ETIDX[id].n;st.r[id]=(st.r[id]|0)+1;
  if(n.ab&&st.r[id]===1){const k=S.skillState;k.unlocked.includes(n.ab)||k.unlocked.push(n.ab);if(!k.equipped.includes(n.ab)){const e=k.equipped.findIndex(o=>o==null);e>=0&&(k.equipped[e]=n.ab,S.abilities.setEquipped(k.equipped))}}
@@ -11780,12 +11780,32 @@ function __spCheck(S, delay = 0) {
     const S = this.gs(), P = __spSt(S) || {}, t = [], ey = { 1: 86, 5: 148, 10: 210, 15: 272 };
     for (const lv of Ne) {
       const o = P[lv] ? [P[lv]] : __spOpts(S, lv);
-      o.forEach((id, n) => t.push({ id, level: lv, x: o.length === 1 ? 190 : o.length === 2 ? 130 + n * 120 : 100 + n * 90, y: ey[lv] }));
+      /* p216.126: a árvore cabe na página da esquerda do livro (x 112–292); detalhes e espaços ficam na da direita */
+      const m = o.length, gap = m > 1 ? Math.min(90, 180 / (m - 1)) : 0, x0 = 202 - gap * (m - 1) / 2;
+      o.forEach((id, n) => t.push({ id, level: lv, x: Math.round(x0 + n * gap), y: ey[lv] }));
     }
     return t;
   };
-  Rd.prototype.stateOf = function (id, lv) { const S = this.gs(); return S.skillState.unlocked.includes(id) ? "unlocked" : "locked" };
-  Rd.prototype.unlockSelected = function () {};
+  /* nível já alcançado sem escolha feita: as opções ficam liberadas para escolher ali mesmo (Enter / toque) */
+  const pend = (S, lv) => { const P = __spSt(S) || {}; return lv != null && (S.stats?.level ?? 1) >= lv && P[lv] == null };
+  Rd.prototype.stateOf = function (id, lv) { const S = this.gs(); return S.skillState.unlocked.includes(id) && !pend(S, lv) ? "unlocked" : pend(S, lv) ? "available" : "locked" };
+  Rd.prototype.unlockSelected = function () {
+    try {
+      const S = this.gs(), t = this.nodeUi?.[this.sel]; if (!t || !pend(S, t.level)) return;
+      /* 1º toque/Enter mostra a habilidade; o 2º na mesma confirma (as outras do nível ficam trancadas) */
+      if (this.__armed !== t.id) {
+        this.__armed = t.id; this.refresh();
+        this.dReq?.setText(__L3("Toque de novo para ESCOLHER", "Tap again to CHOOSE", "Toca otra vez para ELEGIR")).setColor?.("#2f7d32");
+        return;
+      }
+      this.__armed = null;
+      __spApply(S, { kind: "lv", lv: t.level }, t.id);
+      S.audioRef?.play?.("sfx-ability-ready");
+      this.ui.game.events.emit("ui:banner", __spName(t.id).toUpperCase(), "#ffd24a");
+      this.persist?.(S);
+      const id = t.id; this.buildNodes(); const k = this.nodeUi.findIndex(n => n.id === id); this.sel = k >= 0 ? k : 0; this.refresh();
+    } catch (e) { console.warn("[skill-picks] árvore", e) }
+  };
 }
 window.__dgSP = { opts: __spOpts, pending: __spPending, ui: __spUI, check: __spCheck, X: __SPX };
 
@@ -16874,7 +16894,7 @@ function __tpProps(S, B, M, niches, special) {
   }
   // baús do jogo com a arte do pack (os objetos são criados depois das paredes)
   // estátuas, colunas e sarcófagos do templo (pacote props-temple), na mesma escala 2x do piso
-  for (const rm of B.level.rooms || []) for (const [k, c, r, o = {}] of __TP_PROPS[rm.id] || []) {
+  for (const rm of window.__tpPropsOn ? B.level.rooms || [] : []) for (const [k, c, r, o = {}] of __TP_PROPS[rm.id] || []) {
     const key = "ptp-" + k; if (!S.textures.exists(key)) continue;
     const PAD = { "column-broken": 10, "column-intact": 11 }, TN = { "column-broken": 0xa4a9cc, "column-intact": 0xa4a9cc, "sarcophagus-effigy": 0xc4c8de, "coffin-skeleton": 0xc4c8de, "urns": 0xd8ccc4, "winged-idol": 0xb4b8d6 };
     const fr = S.textures.get(key).getSourceImage(), sc = k === "urns" ? 1.5 : 2;
@@ -23588,7 +23608,10 @@ Fl.prototype.__hiState = function (S) {
     mode: H.fromForest ? "campaign" : "endless", state: "playing", uiOpen: !0,
     audioRef: { play: k => { try { g.audioEngine?.sfx?.(k) } catch (e) {} } },
     endlessRun: () => null,
-    skillState: P.skills && Array.isArray(P.skills.unlocked) ? { unlocked: [...P.skills.unlocked], equipped: [0, 1, 2, 3].map(k => P.skills.equipped?.[k] ?? null) } : zh(cls.id),
+    skillState: P.skills && Array.isArray(P.skills.unlocked) ? { unlocked: [...P.skills.unlocked], equipped: [0, 1, 2, 3].map(k => P.skills.equipped?.[k] ?? null),
+      /* p216.126: as escolhas por nível e a árvore vêm junto (antes a aba mostrava tudo trancado e a escolha do nível 5 sumia) */
+      ...(P.skills.pick && typeof P.skills.pick === "object" ? { pick: JSON.parse(JSON.stringify(P.skills.pick)) } : {}),
+      ...(P.skills.et && typeof P.skills.et === "object" ? { et: JSON.parse(JSON.stringify(P.skills.et)) } : {}) } : zh(cls.id),
     abilities: { setEquipped() {} },
     player: { hp: P.hp || 6, maxHp: P.hp || 6, x: H.playerX, y: H.playerY, heal() {} },
     resource: { current: P.resource ?? 100, max: P.resource ?? 100 },
@@ -23599,6 +23622,7 @@ Fl.prototype.__hiState = function (S) {
   for (const r of P.items || []) { const it = mk(r); it && A.inventory.items.push(it) }
   for (const k of __HI_SLOTS) A.inventory.equipment[k] = mk(P.equipment?.[k]);
   A.stats.attachInventory(A.inventory);
+  try { typeof __spSt === "function" && (__spSt(A), __spMigrate(A, !!P.skills)) } catch (e) {}
   // descartar no Refúgio apagaria o item de vez (não há chão para ele cair): fica só para a run
   A.inventory.discard = () => { try { g.events.emit("ui:banner", __L3("Descartar itens só durante a run.", "Discard items only during a run.", "Descartar objetos solo durante la run."), "#ff9a7a") } catch (e) {} return !1 };
   try { A.player.maxHp = Math.max(A.player.hp, A.stats.total?.maxHp || A.player.hp) } catch (e) {}
@@ -23620,6 +23644,8 @@ Fl.prototype.__invHub = function () {
       const P = S.d.player; P.items = A.inventory.items.map(ser).filter(Boolean);
       P.equipment = Object.fromEntries(__HI_SLOTS.map(k => [k, ser(A.inventory.equipment[k])]));
       P.skills = { ...(P.skills || {}), unlocked: [...A.skillState.unlocked], equipped: [...A.skillState.equipped] };   // mantém a árvore do Infinito e as escolhas
+      A.skillState.pick && (P.skills.pick = JSON.parse(JSON.stringify(A.skillState.pick)));
+      A.skillState.et && (P.skills.et = JSON.parse(JSON.stringify(A.skillState.et)));
       localStorage.setItem(S.key, JSON.stringify(S.d));
       typeof __rfGear === "function" && __rfGear(H);
     } catch (e) { console.warn("[inventário do Refúgio]", e) }
@@ -23653,6 +23679,47 @@ Fl.prototype.__invHub = function () {
   inv.show();
   try { inv.__sk && typeof __invTab === "function" && __invTab(inv, 0) } catch (e) {}   // abre sempre em EQUIPAMENTO
 };
+/* p216.126: nível alcançado sem escolher a habilidade (ex.: subiu no fim da fase e a partida acabou antes da janela
+   abrir) — ao chegar no Refúgio as cartas aparecem aqui mesmo, com o mesmo "jogo substituto" do livro. */
+Fl.prototype.__spHubCheck = function (tries = 0) {
+  const H = this, U = H.scene.get("HubUI");
+  try {
+    if (!H.sys?.isActive?.() || !U?.sys?.isActive?.() || typeof __SPPanel !== "function" || U.__spHub?.open) return;
+    if (H.__busy || H.panel || H.__hubDlgO || U.__hiOpen || document.querySelector("#hb-scroll")) { tries < 40 && H.time.delayedCall(1500, () => H.__spHubCheck(tries + 1)); return }
+    const S = H.__moLoad();
+    if (!S || !S.d.player || (S.d.player.classId && S.d.player.classId !== H.classDef?.id)) return;
+    const A = H.__hiState(S), pend = __spPending(A).filter(q => q.kind === "lv");
+    if (!pend.length) return;
+    const P0 = S.d.player;
+    const save = () => {
+      try {
+        P0.skills = { ...(P0.skills || {}), unlocked: [...A.skillState.unlocked], equipped: [...A.skillState.equipped], pick: JSON.parse(JSON.stringify(A.skillState.pick || {})) };
+        A.skillState.et && (P0.skills.et = JSON.parse(JSON.stringify(A.skillState.et)));
+        localStorage.setItem(S.key, JSON.stringify(S.d));
+      } catch (e) { console.warn("[escolha no Refúgio]", e) }
+    };
+    A.requestSave = save; A.uiOpen = !1;
+    const P = U.__spHub = new __SPPanel(U);
+    P.gs = () => A; P.busy = () => !1;
+    const hud = [U.pzBtn, U.moBtn, U.pzBd, U.moBd].filter(Boolean);
+    H.__busy = !0; H.path = null; H.pending = null; hud.forEach(o => o.setVisible(!1));
+    const C0 = P.close;
+    P.close = function () {
+      const r = C0.apply(this, arguments);
+      if (!this.queue.length) { save(); hud.forEach(o => o.setVisible(!0)); A.uiOpen = !1; U.time.delayedCall(150, () => { H.__busy = !1 }) }
+      return r;
+    };
+    for (const q of pend) P.push(q);
+  } catch (e) { console.warn("[escolha no Refúgio]", e) }
+};
+{
+  const C0 = Fl.prototype.create;
+  Fl.prototype.create = function () {
+    const r = C0.apply(this, arguments);
+    try { this.time.delayedCall(2600, () => this.__spHubCheck()) } catch (e) {}
+    return r;
+  };
+}
 Fl.prototype.__mochila = function () { return this.__invHub() };
 Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen };
 
@@ -23676,11 +23743,20 @@ Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen
       if ((k === "t" || k === "T") && !v.__forgeModal) { try { __openForge(v) } catch (e) {} return }
       const used = v.handleKey(k); if (!used && k === "Escape") close();
     };
-    U.input.keyboard?.on("keydown", e => { if (U.__hiOpen) key(e.key) });
+    U.input.keyboard?.on("keydown", e => { if (U.__spHub?.open) return U.__spHub.handleKey(e.key); if (U.__hiOpen) key(e.key) });
+    U.__spHub = null; U.events.once("shutdown", () => { try { clearInterval(U.__spHub?.__anim) } catch (e) {} U.__spHub = null });
     const MAP = [[12, "ArrowUp"], [13, "ArrowDown"], [14, "ArrowLeft"], [15, "ArrowRight"], [0, "Enter"], [1, "Escape"], [4, "q"], [5, "e"], [3, "t"]];
     let pv = { all: !0 };
     /* p216.122: sai no shutdown (antes cada volta ao Refúgio somava mais um ouvinte: o controle apertava várias vezes) */
     const upd = () => {
+      if (U.__spHub?.open) {   // cartas de habilidade no Refúgio: direcional escolhe, A confirma
+        let g = null; try { g = Array.from(navigator.getGamepads?.() ?? []).find(p => p && p.connected) } catch (e) {}
+        if (!g) return;
+        const b = i => !!(g.buttons[i]?.pressed || (g.buttons[i]?.value ?? 0) > .5), ax = g.axes[0] ?? 0;
+        const now = { 14: b(14) || ax < -.6, 15: b(15) || ax > .6, 0: b(0) };
+        if (!pv.all) for (const [i, k] of [[14, "ArrowLeft"], [15, "ArrowRight"], [0, "Enter"]]) if (now[i] && !pv[i]) U.__spHub.handleKey(k);
+        pv = now; return;
+      }
       if (!U.__hiOpen) { pv = { all: !0 }; return }
       let g = null; try { g = Array.from(navigator.getGamepads?.() ?? []).find(p => p && p.connected) } catch (e) {}
       if (!g) return;
@@ -28287,15 +28363,17 @@ function __hbScroll(title, text) {
   const ov = document.createElement("div"); ov.id = "hb-scroll";
   ov.innerHTML = `<style>#hb-scroll{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);opacity:0;transition:opacity .25s;touch-action:manipulation;-webkit-text-size-adjust:100%}
 #hb-scroll.on{opacity:1}#hb-sc{position:relative;height:min(88vh,88vw*1.14);aspect-ratio:128/146;background:url(${__HB_P}) center/100% 100% no-repeat;image-rendering:pixelated;transform:scaleY(.08);transition:transform .45s cubic-bezier(.2,1.3,.4,1)}
-#hb-scroll.on #hb-sc{transform:scaleY(1)}#hb-tx{position:absolute;left:19%;right:19%;top:21%;bottom:22%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;font-family:PixelifySans,Georgia,serif;color:#4a2a12;overflow:hidden}
-#hb-k{font-size:min(2.6vh,15px);letter-spacing:1px;color:#8a2a14;font-weight:700;margin-top:4%}#hb-t{font-size:min(4.4vh,26px);font-weight:700;color:#3a1c08;margin:5% 0 7%;line-height:1.05}#hb-d{font-size:min(3vh,17px);line-height:1.35}
-#hb-h{position:absolute;left:0;right:0;bottom:-2.4em;text-align:center;font:600 min(2.4vh,13px) system-ui,sans-serif;color:#f2e2b8;text-shadow:0 1px 3px #000;opacity:.85}</style>
+#hb-scroll.on #hb-sc{transform:scaleY(1)}#hb-tx{position:absolute;left:19%;right:19%;top:19%;bottom:20%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;font-family:PixelifySans,Georgia,serif;color:#4a2a12;overflow:hidden}
+#hb-sc{container-type:size}#hb-k{font-size:3.4vh;font-size:3.6cqh;letter-spacing:1px;color:#8a2a14;font-weight:700;margin-top:3%}#hb-t{font-size:6vh;font-size:6.6cqh;font-weight:700;color:#3a1c08;margin:5% 0 6%;line-height:1.05}#hb-d{font-family:Georgia,"Times New Roman",serif;font-size:4.2vh;font-size:4.8cqh;line-height:1.3;color:#3e220e}
+#hb-h{position:absolute;left:0;right:0;bottom:-2.4em;text-align:center;font:600 max(13px,2.8vh) system-ui,sans-serif;color:#f2e2b8;text-shadow:0 1px 3px #000;opacity:.85}</style>
 <div id="hb-sc"><div id="hb-tx"><div id="hb-k"></div><div id="hb-t"></div><div id="hb-d"></div></div><div id="hb-h"></div></div>`;
   document.body.appendChild(ov);
   ov.querySelector("#hb-k").textContent = __L3("NOVA MISSÃO SECUNDÁRIA", "NEW SIDE QUEST", "NUEVA MISIÓN SECUNDARIA");
   ov.querySelector("#hb-t").textContent = title; ov.querySelector("#hb-d").textContent = text || "";
   ov.querySelector("#hb-h").textContent = __L3("toque ou aperte qualquer botão", "tap or press any button", "toca o pulsa cualquier botón");
-  requestAnimationFrame(() => ov.classList.add("on"));
+  requestAnimationFrame(() => { ov.classList.add("on");
+    /* texto longo: encolhe até caber no papel (nunca sai do pergaminho) */
+    setTimeout(() => { try { const tx = ov.querySelector("#hb-tx"), dd = ov.querySelector("#hb-d"); for (let k = 1; tx.scrollHeight > tx.clientHeight + 1 && k > .45; k -= .05) dd.style.fontSize = `calc(4.8cqh * ${k.toFixed(2)})` } catch (e) {} }, 480) });
   /* o jogo espera enquanto o pergaminho está aberto */
   const was = scenes.map((s) => [s, !!s.uiOpen, !!s.__busy]); for (const [s] of was) { s.uiOpen = !0; s.scene.key === "Hub" && (s.__busy = !0); try { s.physics?.pause?.() } catch (e) {} }
   const t0 = performance.now(); let done = !1, raf = 0;

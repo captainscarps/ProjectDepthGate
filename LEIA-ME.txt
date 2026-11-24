@@ -1,4 +1,20 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.125 · cache ded-web-v6.20.6-hud-completo)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.126 · cache ded-web-v6.20.7-skills-livro)
+
+P216.126 — ESCOLHA DE HABILIDADE QUE FALTAVA, ÁRVORE NO LIVRO, TEMPLO E PERGAMINHO
+1) Escolha que sumia: o livro do Refúgio (mochila.js, "jogo substituto") remontava as habilidades sem as escolhas por
+   nível (skillState.pick) nem a árvore (et) — a aba mostrava tudo trancado. Agora copia e grava as duas.
+2) Nível alcançado sem escolha (ex.: subiu no fim da fase e a fase acabou antes das cartas): ao chegar no Refúgio as
+   cartas aparecem lá (Fl.__spHubCheck, teclado/controle/toque) e a escolha vai para o save. Na aba HABILIDADES as
+   opções desse nível ficam liberadas: 1º toque/Enter mostra, o 2º escolhe (as outras do nível trancam).
+   __etPersist no Refúgio grava pelo livro (S.__hubInv), não pela run.
+3) Árvore no modo livro: os nós cabem na página da esquerda (x 112–292, espaço automático com 4 opções); detalhes e
+   espaços equipados ficam na da direita — nada cruza a lombada.
+4) Templo dos Irmãos: estátuas, colunas, sarcófagos, urnas e ídolo (pacote props-temple, maiores que os heróis) saíram
+   (window.__tpPropsOn = 1 traz de volta para comparar).
+5) Pergaminho de missão: letra maior (medida pela altura do pergaminho, cqh) e encolhe sozinha se não couber; margem
+   lateral maior para o texto não encostar na borda.
+   Obs.: skill-picks.js, et-engine.js e temple.js entram pelo patch_endless_trees.py (não rodar) — a mudança foi
+   aplicada no bundle direto e nas fontes.
 
 P216.125 — HUD COMPLETO NO ESTILO DO KIT (scripts/source/hud-kit.js, bloco /*__HUDKIT__*/)
 1) Barra de habilidades (PC): espaços com a moldura do kit sobre painel bordô/dourado; recarga em "relógio" com os

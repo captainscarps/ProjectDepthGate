@@ -35,7 +35,7 @@ function __etWhyNot(S,id,side){const st=__etSt(S),x=__ETIDX[id];if(!x)return"?";
   return __L3("Requer ","Requires ","Requiere ")+nm+(lv>1&&!q.startsWith("any:")?" "+__roman(lv):"")}
  if(n.t==="top"&&r===0){const T=__ET[x.c][side];const o=T.nodes.find(q=>q.t==="top"&&q.id!==id&&(st.r[q.id]|0)>0);if(o)return __L3("Topo já escolhido: ","Peak already chosen: ","Cima ya elegida: ")+__etL(o.n)}
  return null}
-function __etPersist(S){try{S.game.registry.get("mode")==="endless"?In(S):S.requestSave?.(500)}catch(e){}}
+function __etPersist(S){try{if(S?.__hubInv)return S.requestSave?.();S.game.registry.get("mode")==="endless"?In(S):S.requestSave?.(500)}catch(e){}}
 /* compra um grau; ativa nova vai para o primeiro espaço livre */
 function __etBuy(S,id){if(__etWhyNot(S,id))return!1;const st=__etSt(S),n=__ETIDX[id].n;st.r[id]=(st.r[id]|0)+1;
  if(n.ab&&st.r[id]===1){const k=S.skillState;k.unlocked.includes(n.ab)||k.unlocked.push(n.ab);if(!k.equipped.includes(n.ab)){const e=k.equipped.findIndex(o=>o==null);e>=0&&(k.equipped[e]=n.ab,S.abilities.setEquipped(k.equipped))}}
