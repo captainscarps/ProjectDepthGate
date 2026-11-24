@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.122 · cache ded-web-v6.20.3-refugio-trava)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.123 · cache ded-web-v6.20.4-pe-no-chao)
+
+P216.123 — HERÓI COM O PÉ NO CHÃO, SEM RUÍNAS FANTASMAS, PAINÉIS DO REFÚGIO SEM TEXTO VAZANDO
+- Herói desenhado ~26 px ABAIXO do corpo de colisão (herois-hd.js): o deslocamento inicial do sprite (pé na altura da
+  sombra, +14 no grupo do herói) se perdia na primeira atualização. Encostado numa parede de baixo, o pé ficava em cima
+  da parede. Agora o grupo do herói sobe o que sobrava (tudo preso a ele vai junto) e a sombra fica no pé.
+  window.__noFootFix = 1 desliga. Conferido em 8 heróis (parado, golpe e andando).
+- Ruínas de colunas quebradas (dx-ruin*, enfeites grandes com colisão de 1 quadrado: o herói atravessava) saem das
+  salas — tabela Sl e as fases da campanha já montadas (ki) — Ruínas Antigas, Catacumbas e salas do Infinito.
+- Painéis do Refúgio (Ferreiro/Vendedor/Santuário, hud-barras.js): linha que passa da janela encolhe até caber (ex.:
+  "Martelo de Forjador · restam 10 de 10 usos…"); mensagem e frase também.
 
 P216.122 — CONGELAMENTO AO VOLTAR AO REFÚGIO (erros do console do usuário)
 - CAUSA PRINCIPAL ("erro na cena Hub: S.__bkRoots is not iterable", repetido): book-ui.js __bkTrack deixava o ouvinte

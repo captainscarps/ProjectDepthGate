@@ -274,3 +274,23 @@ function __hbSkAnim(S, id) {
   };
   __SPPanel.prototype.close = function () { clearInterval(this.__anim); try { this.cards?.forEach((c) => c.__mk?.destroy()) } catch (e) {} return C0.apply(this, arguments) };
 }
+/* ── p216.123: painéis do Refúgio (Ferreiro, Vendedor, Santuário): nenhuma linha passa da janela (380 de largura) —
+   linha longa (ex.: "Martelo de Forjador · restam 10 de 10 usos…") encolhe até caber; a mensagem e a frase também. ── */
+{
+  const fit = (t, max) => { if (!t?.active) return; t.setScale(1); const w = t.width; if (w > max) t.setScale(max / w) };
+  const fitAll = (H) => { try { for (const r of H.panelRows || []) fit(r.row, 352); fit(H.panelMsg, 352) } catch (e) {} };
+  const R0 = Fl.prototype.refreshPanel; Fl.prototype.refreshPanel = function () { const r = R0.apply(this, arguments); fitAll(this); return r };
+  const P0 = Fl.prototype.panelConfirm; Fl.prototype.panelConfirm = function () { const r = P0.apply(this, arguments); fitAll(this); return r };
+  const O0 = Fl.prototype.openMetaPanel; Fl.prototype.openMetaPanel = function () {
+    const r = O0.apply(this, arguments);
+    try { for (const o of this.panel?.list || []) if (o.type === "Text" && o.width > 352) fit(o, 352) } catch (e) {}
+    fitAll(this); return r };
+}
+/* ── p216.123: as ruínas de colunas quebradas (dx-ruin*) eram enfeites grandes com colisão de 1 quadrado só — o herói
+   atravessava a figura inteira. Saem das salas (Ruínas Antigas, Catacumbas e os biomas do Infinito que usam as
+   mesmas salas). ── */
+/* roda depois que o pacote inteiro carregou (Sl é declarado mais adiante no arquivo) */
+setTimeout(() => { try { for (const b of Object.values(Sl)) for (const k of Object.keys(b || {})) { const A = b[k]; if (Array.isArray(A)) for (let i = A.length - 1; i >= 0; i--) /^dx-ruin/.test(A[i]?.tex || "") && A.splice(i, 1) }
+  /* as fases da campanha copiaram os enfeites na hora de montar (ki) */
+  for (const L of Object.values(ki)) for (const rm of L?.rooms || []) if (Array.isArray(rm.decor)) rm.decor = rm.decor.filter((o) => !/^dx-ruin/.test(o?.tex || ""));
+} catch (e) { console.warn("[ruinas]", e) } }, 0);

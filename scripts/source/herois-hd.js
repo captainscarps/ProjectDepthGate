@@ -24,3 +24,23 @@ function __hdOff(V) {
     } catch (e) {}
   }
 }}
+/* p216.123: o herói era desenhado ~26 px ABAIXO do corpo de colisão — o deslocamento inicial do sprite (pé na
+   altura da sombra, +14 no grupo do herói) se perdia na primeira atualização (andar/parado zeram o y do sprite).
+   Encostado numa parede de baixo, o pé ficava em cima da parede ("parece andar em cima da parede"). Agora o grupo
+   inteiro do herói sobe o que sobrava (arma, brilhos, capa e efeitos presos a ele vão junto) e a sombra de contato
+   fica no pé. window.__noFootFix = 1 desliga. */
+{const U0 = Qe.prototype.update; Qe.prototype.update = function () {
+  const C = this.container;
+  if (C && this.__ffD) C.y += this.__ffD;     // volta ao lugar de antes (o update calcula a partir dele em alguns casos)
+  const r = U0.apply(this, arguments);
+  try {
+    const m = this.mk2, L = this.mk2Layout; let D = 0;
+    if (!window.__noFootFix && C && m?.visible && L && !this.isPreview) {
+      const fy = (L.footY ?? L.frameH - 1) - L.frameH / 2;
+      D = Math.max(0, Math.min(40, (this.__hdY || 0) + fy * Math.abs(m.scaleY) - 14));
+    }
+    this.__ffD = D;
+    if (D) { C.y -= D; this.contactShadow && (this.contactShadow.y = 15 + D) }
+    else if (this.contactShadow && this.contactShadow.y !== 15) this.contactShadow.y = 15;
+  } catch (e) {}
+  return r }}
