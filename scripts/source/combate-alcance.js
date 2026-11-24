@@ -6,7 +6,7 @@
    · o herói dá um passo visual para frente no golpe (só o desenho; a física não se mexe);
    · a cor segue o elemento da arma (gelo, fogo, raio, sombra…), aço por padrão. Bastões e cajados ficam de fora. */
 {
-  const HEAVY = /axe|great_sword|greatsword|slayer|cleaver|club|hammer|maul/, THRUST = /dagger|razor|fang|rogue_dual|shadow/;
+  const HEAVY = /axe|great_sword|greatsword|slayer|cleaver|club|hammer|maul|ars_(heavy|great|cleave|scythe)/, THRUST = /dagger|razor|fang|rogue_dual|shadow|ars_(sai|spear|chain)/;
   const STEEL = { deep: 0x5a6a88, out: 0xc8d4ea, mid: 0xf4f0e2, light: 0xffffff };
   const palOf = (S, key) => {
     try {

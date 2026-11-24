@@ -529,6 +529,7 @@ __forgeWeaponsShop(fromSmith,mode){
     {id:"unique_forge_cataclysm",name:L3("Machado do Cataclismo","Cataclysm Axe","Hacha del Cataclismo"),price:170,icon:"icon-axe",stats:"+24 DANO · +4 DEFESA · +15% CRÍTICO",color:"#f87171"},
     {id:"unique_forge_abyss_scepter",name:L3("Cetro da Ruína Astral","Astral Ruin Scepter","Cetro de la Ruina Astral"),price:180,icon:"icon-arcane-staff",stats:"+22 PODER MÁGICO · +35 MANA · -20% RECARGA",color:"#a855f7"}
   ];
+  try{const ex=window.__arsList?.(this)||[];ex.length&&weaponsList.unshift(...ex)}catch(_){}
   if(window.__apzGet?.(this)?.s===3)weaponsList.push({id:"unique_forge_brokk",name:L3("Martelo Rúnico de Brokk","Brokk's Runic Hammer","Martillo Rúnico de Brokk"),price:150,icon:"icon-axe",stats:"+20 DANO · +6 DEFESA · +2 VIDA · +10% CRÍTICO",color:"#60a5fa"});
   // armaduras da forja: mudam o visual do herói (scripts/source/forge-armor.js)
   const armorsList=Object.entries(window.__FARM||{}).map(([id,a])=>({id,name:L3(...a.name),price:a.price,icon:Xt[id]?.icon||"icon-armor",tint:a.trim,stats:L3(a.st[0],a.st[1],a.st[1]),color:"#"+a.trim.toString(16).padStart(6,"0")}));

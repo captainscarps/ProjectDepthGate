@@ -1,4 +1,29 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.126 · cache ded-web-v6.20.7-skills-livro)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.127 · cache ded-web-v6.20.8-arsenal)
+
+P216.127 — ARSENAL DO FERREIRO: 39 ARMAS EXCLUSIVAS DE CADA HERÓI (scripts/source/arsenal.js, bloco /*__ARSENAL__*/)
+- Armaria (aba ARMAS): as armas do herói que está no Refúgio aparecem no topo (window.__arsList, chamada em
+  hub-village.js), em Pedra Cobalto, como as outras peças do ferreiro (quebram na campanha; N runs no Infinito).
+  Samurai: Katana do Vento Cortante (rápida), Nodachi do Sol Poente (pesada), Sai do Guardião, Corrente Ninja.
+  Caçador: Besta de Caça, Besta de Repetição, Bastão de Freixo, Cutelo de Esfolar.
+  Guerreiro: Montante do Juramento (duas mãos), Espadas Curtas Gêmeas.
+  Maga: Grimório das Marés, Tomo do Eclipse, Luvas do Arcano Vivo, Cajados das Brasas, da Geada e do Trovão.
+  Druida: Cajado da Seiva, Cajado da Tempestade, Bastão de Carvalho, Lança de Espinheiro, Besta de Raízes.
+  Xamã: Arco de Jatobá, Zarabatana de Curare, Espada dos Espíritos, Bastão do Pajé, Lança de Tupã.
+  Arqueiro: Arco Longo de Teixo, Arco Curto do Falcão, Arco Gêmeo (2 flechas), Arco Tridente (3 em leque).
+  Necromante: Foice do Ceifador Pálido, Cajado das Lápides, Tomo dos Mortos, Livro das Almas.
+  Ladina: Facas de Arremesso, Espada Curta da Sombra, Sais Gêmeos, Bastão de Bambu, Nunchaku de Ébano.
+- Ícones próprios no padrão vetorial dos outros: scripts/icon_arsenal.py; encaixados no atlas items-hd por
+  scripts/build_arsenal_icons.py (não refaz o atlas — o build_item_icons.py completo perderia 41 quadros de outros
+  scripts; ele também passou a conhecer as armas novas).
+- Animação de cada arma (a própria arma, do atlas, faz o golpe por cima do golpe normal): corte com cópias-fantasma
+  (katanas, espadas), corte pesado com tremor (nodachi, montante, foice com almas), golpe de cima (cutelo), estocadas
+  (sais 3x alternando, lanças longas; a de Tupã solta um raio), giro do bastão com anel (folhas no do Druida),
+  corrente que vai e volta com os elos, nunchaku girando, dois cortes em X, besta/arco aparece apontando com recuo,
+  cajado erguido com o elemento na ponta, livro/tomo que abre e solta páginas, luvas com soco de luz.
+- Comportamento: golpe-base novo por tipo (oe/oa ars_*: alcance e ângulo — corrente 92, lança 84, bastão 360°,
+  montante 200°, foice 220°); sais e nunchaku/espadas gêmeas acertam 3/2 vezes; disparos próprios (virote que
+  atravessa, 2 virotes seguidos, 2/3 flechas, 3 facas girando, dardo de curare, espinho que prende, tomo que explode,
+  cajado de fogo/gelo/veneno/lentidão, raio que atravessa). combate-alcance.js reconhece os tipos pesados/estocada.
 
 P216.126 — ESCOLHA DE HABILIDADE QUE FALTAVA, ÁRVORE NO LIVRO, TEMPLO E PERGAMINHO
 1) Escolha que sumia: o livro do Refúgio (mochila.js, "jogo substituto") remontava as habilidades sem as escolhas por

@@ -336,6 +336,9 @@ UNIQ = {
     "colar_onca": lambda: U(lambda I: amulet(I, "leather", "amber", teeth=True), "#ff9a1a"),
     "tornozeleira": lambda: U(lambda I: boots(I, kind="anklet"), "#ff9a1a"),
 }
+# Arsenal do Ferreiro: armas exclusivas de cada herói (scripts/icon_arsenal.py)
+from icon_arsenal import build as _ars_build  # noqa
+UNIQ.update(_ars_build(U, shrink))
 CRYS = {"icon-crys-forest": "emerald", "icon-crys-ruins": "topaz", "icon-crys-catacombs": "amethyst", "icon-crys-glacial": "diamond",
         "icon-crys-bosque": "soul", "icon-crys-rio": "sapphire", "icon-crys-morta": "void", "icon-crys-fortress": "ruby"}
 for k, g in CRYS.items():
