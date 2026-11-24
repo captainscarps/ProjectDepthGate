@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.123 · cache ded-web-v6.20.4-pe-no-chao)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.124 · cache ded-web-v6.20.5-hud-kit)
+
+P216.124 — HUD DO GAMEPLAY NO ESTILO DO KIT "PIXEL UI HUD: FANTASY RPG KIT"
+- Referência enviada pelo usuário: demo grátis do kit de IndigoLay (indigolay.itch.io/pixel-hud-ui — "Free for
+  personal & commercial use"); originais e ReadMe em scripts/art-src/ui/PixelHUDUI_demo, usados em assets/ui/hud2.
+- Barras de vida e recurso: moldura bordô com borda dourada e encaixe quadrado (coração na vida; orbe na cor do recurso
+  no recurso), preenchimento com a textura do kit recortado pelo valor (recurso: versão clara tingida na cor do recurso
+  — status-fill-gray.png, gerada do original). XP: barra fina do kit esticada em 9 partes, preenchimento dourado.
+  Vida baixa pisca. Herói sem recurso: só vida + XP. Celular no lugar do cartão; PC embaixo do retrato.
 
 P216.123 — HERÓI COM O PÉ NO CHÃO, SEM RUÍNAS FANTASMAS, PAINÉIS DO REFÚGIO SEM TEXTO VAZANDO
 - Herói desenhado ~26 px ABAIXO do corpo de colisão (herois-hd.js): o deslocamento inicial do sprite (pé na altura da

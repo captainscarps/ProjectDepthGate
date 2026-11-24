@@ -28177,33 +28177,58 @@ const __HB_IN = [56, 9, 440, 24];   // interior da moldura (px da imagem 495×32
   this.textures.exists(__HB_K) || L.image(__HB_K, "assets/ui/hud-barra.png");
   this.textures.exists(__HB_F) || L.image(__HB_F, "assets/ui/faixa-local.png");
   L.setPath(op) } catch (e) {} return r }}
-/* uma barra: moldura + preenchimento */
-function __hbBar(S, x, y, w, h, depth) {
-  const fr = S.add.image(x, y, __HB_K).setOrigin(0).setDisplaySize(w, h).setDepth(depth + .2);
-  try { S.textures.get(__HB_K).setFilter(j.Textures.FilterMode.LINEAR) } catch (e) {}
-  const g = S.add.graphics().setDepth(depth + .3);
-  const sx = w / 495, sy = h / 32, ix = x + __HB_IN[0] * sx, iy = y + __HB_IN[1] * sy, iw = (__HB_IN[2] - __HB_IN[0]) * sx, ih = (__HB_IN[3] - __HB_IN[1]) * sy;
-  return { fr, g, ix, iy, iw, ih, k: "", set(r, col, a = 1) {
+/* p216.124: barras no estilo do kit "Pixel UI HUD: Fantasy RPG Kit" (demo grátis, uso comercial liberado —
+   scripts/art-src/ui/PixelHUDUI_demo): moldura bordô com dourado e encaixe quadrado à esquerda (coração na vida,
+   orbe na cor do recurso), preenchimento com textura recortado pelo valor; XP na barra fina do mesmo kit. */
+const __HB2 = "assets/ui/hud2/";
+{const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
+  for (const k of ["status-bg", "status-fill-hp", "status-fill-gray", "prog-bg", "prog-fill-gray", "heart", "slot"]) this.textures.exists("hb2-" + k) || L.image("hb2-" + k, __HB2 + k + ".png");
+  L.setPath(op) } catch (e) {} return r }}
+/* barra de status (vida/recurso): 395×57 na arte, encaixe x 6–54, interior x 57–372 / y 9–48 */
+function __hbStatus(S, w, depth, kind) {
+  const sc = w / 395, C = S.add.container(0, 0).setDepth(depth);
+  const bg = S.add.image(0, 0, "hb2-status-bg").setOrigin(0).setScale(sc);
+  const fill = S.add.image(57 * sc, 9 * sc, kind === "hp" ? "hb2-status-fill-hp" : "hb2-status-fill-gray").setOrigin(0).setScale(sc * 314 / 319, sc);
+  const shine = S.add.graphics();
+  C.add([bg, fill, shine]);
+  let icon;
+  if (kind === "hp" && S.textures.exists("hb2-heart")) icon = S.add.image(30 * sc, 28.5 * sc, "hb2-heart").setScale(sc * .95);
+  else { icon = S.add.graphics(); }
+  C.add(icon);
+  for (const k of ["hb2-status-bg", "hb2-status-fill-hp", "hb2-status-fill-gray", "hb2-heart"]) { try { S.textures.get(k).setFilter(j.Textures.FilterMode.LINEAR) } catch (e) {} }
+  return { C, fill, icon, sc, h: 57 * sc, k: "", set(r, col, a = 1) {
     const key = r.toFixed(3) + "|" + col + "|" + a.toFixed(2); if (key === this.k) return; this.k = key;
-    const G = this.g; G.clear(); if (r <= 0) return;
-    const W = Math.max(1, this.iw * Math.min(1, r)), hi = Math.max(1, Math.round(this.ih * .3));
-    G.fillStyle(col, a).fillRect(this.ix, this.iy, W, this.ih);
-    G.fillStyle(0xffffff, .28 * a).fillRect(this.ix, this.iy, W, hi);
-    G.fillStyle(0x000000, .25 * a).fillRect(this.ix, this.iy + this.ih - 1, W, 1);
-  }, vis(v) { this.fr.setVisible(v); this.g.setVisible(v) } };
+    r = Math.max(0, Math.min(1, r)); this.fill.setVisible(r > 0).setCrop(0, 0, 319 * r, 39).setAlpha(a);
+    if (kind !== "hp") { this.fill.setTint(col);
+      const g = this.icon; g.clear(); const cx = 30 * sc, cy = 28.5 * sc, R = 12 * sc;
+      g.fillStyle(0x000000, .35).fillCircle(cx, cy + 1, R + 1).fillStyle(col, 1).fillCircle(cx, cy, R).fillStyle(0xffffff, .55).fillCircle(cx - R * .35, cy - R * .35, R * .35).lineStyle(1, 0xf0d090, .9).strokeCircle(cx, cy, R) }
+  }, vis(v) { this.C.setVisible(v) } };
+}
+/* barra fina de XP: 104×39 esticada (9 partes), interior x 6–98 / y 7–31 */
+function __hbProg(S, w, h, depth) {
+  const s = h / 39, C = S.add.container(0, 0).setDepth(depth), W = w / s;
+  let bg, fill;
+  try { bg = S.add.nineslice(0, 0, "hb2-prog-bg", null, W, 39, 9, 9, 8, 8).setOrigin(0); fill = S.add.nineslice(6, 7, "hb2-prog-fill-gray", null, W - 12, 24, 4, 4, 4, 4).setOrigin(0) }
+  catch (e) { bg = S.add.image(0, 0, "hb2-prog-bg").setOrigin(0).setDisplaySize(W, 39); fill = S.add.image(6, 7, "hb2-prog-fill-gray").setOrigin(0).setDisplaySize(W - 12, 24) }
+  C.add([bg, fill]).setScale(s);
+  return { C, fill, h, k: "", set(r, col) {
+    const key = r.toFixed(3) + "|" + col; if (key === this.k) return; this.k = key;
+    const fw = (W - 12) * Math.max(0, Math.min(1, r)); this.fill.setVisible(fw >= 8); if (fw >= 8) { this.fill.type === "NineSlice" ? this.fill.setSize(fw, 24) : this.fill.setDisplaySize(fw, 24) } this.fill.setTint?.(col);
+  }, vis(v) { this.C.setVisible(v) } };
 }
 function __hbMake(H) {
-  const S = H.s; if (!S.textures.exists(__HB_K)) return null;
-  const F = { fontFamily: "PixelifySans, Georgia, serif", fontStyle: "bold" };
-  const o = { hp: __hbBar(S, 0, 0, 190, 13, 110), rs: __hbBar(S, 0, 0, 190, 13, 110), xp: __hbBar(S, 0, 0, 158, 9, 110) };
-  o.hpT = S.add.text(0, 0, "", { ...F, fontSize: "8px", color: "#ffffff", stroke: "#000000", strokeThickness: 2 }).setOrigin(1, .5).setDepth(110.5);
+  const S = H.s; if (!S.textures.exists("hb2-status-bg")) return null;
+  const F = { fontFamily: "PixelifySans, Georgia, serif", fontStyle: "bold" }, Wd = 172;
+  const o = { hp: __hbStatus(S, Wd, 110, "hp"), rs: __hbStatus(S, Wd, 110, "rs"), xp: __hbProg(S, Wd * .86, 10, 110) };
+  o.hpT = S.add.text(0, 0, "", { ...F, fontSize: "9px", color: "#ffffff", stroke: "#1a0606", strokeThickness: 3 }).setOrigin(1, .5).setDepth(110.5);
   o.top = S.add.text(0, 0, "", { ...F, fontSize: "8px", color: "#f2d98a", stroke: "#0a0604", strokeThickness: 2 }).setDepth(110.5);
   o.all = [o.hp, o.rs, o.xp]; o.txt = [o.hpT, o.top];
-  o.place = (x, y, mob) => {
-    if (o.at === x + "," + y + mob) return; o.at = x + "," + y + mob;
-    const put = (b, X, Y) => { const dx = X - b.fr.x, dy = Y - b.fr.y; b.fr.setPosition(X, Y); b.ix += dx; b.iy += dy; b.k = "" };
+  o.place = (x, y, mob, noR) => {
+    const key = x + "," + y + mob + noR; if (o.at === key) return; o.at = key;
     let yy = y; o.top.setPosition(x + 4, yy).setVisible(mob); if (mob) yy += 10;
-    put(o.hp, x, yy); o.hpT.setPosition(x + 166, yy + 6.5); yy += 15; put(o.rs, x, yy); o.rsY = yy; put(o.xp, x, yy + 15); o.bottom = yy + 25;
+    o.hp.C.setPosition(x, yy); o.hpT.setPosition(x + 362 * o.hp.sc, yy + 28.5 * o.hp.sc); yy += o.hp.h + 1;
+    if (!noR) { o.rs.C.setPosition(x, yy); yy += o.rs.h + 1 }
+    o.xp.C.setPosition(x + 54 * o.hp.sc, yy); o.bottom = yy + o.xp.h + 2;
   };
   return o;
 }
@@ -28217,18 +28242,16 @@ function __hbMake(H) {
     const vis = (v) => { for (const b of B.all) b.vis(v); for (const t of B.txt) t.setVisible(v) };
     const R = S.refHud;
     if (!show) { vis(!1); S.__hbBottom = 0; return r }
-    const mob = this.mode === "mob";
-    if (mob) { this.__uc?.setVisible(!1); for (const o of [this.mhp, this.mname, this.mlvlT, this.muf, this.hpF, this.rsF, this.mlvl]) o?.setVisible(!1); B.place(6, 4, !0) }
-    else B.place(8, 66, !1);
+    const mob = this.mode === "mob", Rs = g.resource, hasR = !!Rs?.def;
+    if (mob) { this.__uc?.setVisible(!1); for (const o of [this.mhp, this.mname, this.mlvlT, this.muf, this.hpF, this.rsF, this.mlvl]) o?.setVisible(!1); B.place(6, 4, !0, !hasR) }
+    else B.place(8, 66, !1, !hasR);
     /* PC: globos e barra de XP de baixo saem (as barras mostram o mesmo) */
     if (R?.__sk) { for (const o of [...(R.__gb || []), ...(R.__gf || []), R.__xb, R.__xf, R.hpT, R.mpT]) o?.setAlpha?.(0) }
-    vis(!0); B.top.setVisible(mob);
-    const P = g.player, Rs = g.resource, hp = P.maxHp > 0 ? Math.max(0, P.hp / P.maxHp) : 0, low = hp < .3 && hp > 0;
-    B.hp.set(hp, low ? 0xff3434 : 0xd42e2e, low ? .55 + .45 * Math.sin(S.time.now / 140) : 1);
-    const hasR = !!Rs?.def; B.rs.vis(hasR); hasR && B.rs.set(Rs.max > 0 ? Math.max(0, Rs.current / Rs.max) : 0, Rs.def.color ?? 0x3b7bff);
-    if (!hasR) { if (B.__xpUp !== 1) { B.__xpUp = 1; B.at = "" } } else if (B.__xpUp) { B.__xpUp = 0; B.at = "" }
-    const xr = h && h.xpNext > 0 ? Math.max(0, Math.min(1, h.xp / h.xpNext)) : 0; B.xp.set(xr, 0xe0a83a);
-    if (B.__xpUp) { const X = B.xp, dy = B.rsY - X.fr.y; if (dy) { X.fr.y += dy; X.iy += dy; X.k = ""; B.bottom = B.rsY + 10 } }
+    vis(!0); B.top.setVisible(mob); B.rs.vis(hasR);
+    const P = g.player, hp = P.maxHp > 0 ? Math.max(0, P.hp / P.maxHp) : 0, low = hp < .3 && hp > 0;
+    B.hp.set(hp, 0, low ? .55 + .45 * Math.sin(S.time.now / 140) : 1);
+    hasR && B.rs.set(Rs.max > 0 ? Math.max(0, Rs.current / Rs.max) : 0, Rs.def.color ?? 0x3b7bff);
+    const xr = h && h.xpNext > 0 ? Math.max(0, Math.min(1, h.xp / h.xpNext)) : 0; B.xp.set(xr, 0xf0b43c);
     const T = `${Math.max(0, Math.ceil(P.hp))}/${P.maxHp}`; B.hpT._s !== T && (B.hpT.setText(T), B.hpT._s = T);
     if (mob) { const st_ = g.stats, nm = (__HN[g.classDef?.id] ?? g.classDef?.name ?? "").toUpperCase(), N = `${__L3("NV", "LV", "NV")} ${st_?.level ?? 1} · ${nm} · ◆ ${st_?.gold ?? 0}`; B.top._s !== N && (B.top.setText(N), B.top._s = N) }
     S.__hbBottom = B.bottom;
