@@ -221,3 +221,12 @@ try { window.__dlgT = (S, L, cb) => (typeof __dlg === "function" ? __dlg(S, L, c
   const C1 = Vd.prototype.create;
   Vd.prototype.create = function () { const r = C1.apply(this, arguments); try { this.__dgLang = langNow() } catch (e) {} return r };
 }
+
+/* p216.129: sorteio de item com um nome que não existe na lista de itens (ex.: pools antigos do Infinito) quebrava a morte do
+   inimigo e a abertura dos baús ("Cannot read properties of undefined (reading 'classRequirement')"). Agora o nome
+   inexistente é ignorado no sorteio. */
+{
+  const miss = new Set(), ok = (l) => { const r = (l || []).filter((x) => Xt[x]); if (r.length !== (l || []).length) for (const x of l) if (!Xt[x] && !miss.has(x)) { miss.add(x); console.warn("[itens] nome sem modelo ignorado:", x) } return r };
+  const PT = Bh.prototype.pickTemplate; Bh.prototype.pickTemplate = function (i) { const r = ok(i); return PT.call(this, r.length ? r : ["potion"]) };
+  const PC = Bh.prototype.pickClassWeapon; PC && (Bh.prototype.pickClassWeapon = function (i) { const r = ok(i); return PC.call(this, r.length ? r : ["potion"]) });
+}

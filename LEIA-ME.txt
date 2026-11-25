@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.128 · cache ded-web-v6.20.9-forja-toque)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.129 · cache ded-web-v6.21.0-save-dorf)
+
+P216.129 — HERÓI DO INFINITO SUMIA DO SAVE · INVENTÁRIO DO REFÚGIO · BAÚS E DROPS DO INFINITO
+- Save do Infinito (bundle, In/Nn): voltar das Cavernas Dorf depois que a run tinha acabado gravava o save sem a
+  semente da run ("endless:run" já fora do registro) e o menu mostrava o espaço VAZIO; o Refúgio também não achava
+  o save (inventário não abria e as compras da forja não entravam). Agora In mantém a run que já está no save e Nn
+  recupera o save que ficou sem semente (o herói volta para a lista, com itens e nível).
+- Forja (refugio2.js, rede de toque): ao confirmar a compra a pergunta "Forjar…?" voltava sozinha (a rede acionava
+  o FORJAR que aparecia embaixo do ✔); o FECHAR só cancelava. Corrigido.
+- Infinito (bundle Ih e recompensa do chefe): nomes de itens que não existem (blowpipe, golden_scythe, ...) trocados
+  pelos certos; death-guard.js ignora no sorteio qualquer nome sem modelo (erro "reading 'classRequirement'" ao
+  matar inimigos e abrir baús).
 
 P216.128 — FORJA: ROLAGEM POR TOQUE
 - Armaria do ferreiro (hub-village.js __forgeWeaponsShop): arrastar o dedo na lista rola (antes só a roda do mouse);

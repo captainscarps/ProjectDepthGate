@@ -369,7 +369,9 @@ function __rfPanelInput(H) {
      parecer travado. */
   const rescue = (p, over) => {
     const o = H.panel; if (!o?.active || !o.visible) return;
-    const hitReal = (over || []).some((g) => g && g.input?.enabled && !(g.type === "Rectangle" && g.width >= _ * .95));
+    /* p216.129: o botão acertado pode ter se desligado no próprio clique (o ✔ FORJAR some ao comprar); antes, sem ele "ligado",
+       a rede acionava o FORJAR que aparecia embaixo e a pergunta de confirmação voltava sozinha */
+    const hitReal = (over || []).some((g) => g && g.input && !(g.type === "Rectangle" && g.width >= _ * .95));
     if (hitReal) return;
     const cam = H.cameras.main, z = cam.zoom || 1, wx = p.x / z + cam.width / 2 * (1 - 1 / z), wy = p.y / z + cam.height / 2 * (1 - 1 / z);
     const all = []; const walk = (c) => { for (const x of c.list || []) { all.push(x); x.list && walk(x) } }; walk(o);
