@@ -203,3 +203,20 @@ Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen
   const HK = Cd.prototype.handleKey;
   Cd.prototype.handleKey = function (k) { if (this.open && window.__invDeckKey?.(this, k)) return !0; return HK.apply(this, arguments) };
 }
+
+/* p216.130: SALVAR no Start do Refúgio (como o SALVAR do Start da run). Regrava o save do espaço atual (o Infinito pelo
+   leitor que também conserta save sem semente da run; a campanha pelo slot do Refúgio) e avisa na tela. */
+Fl.prototype.__hubSave = function (quiet) {
+  const H = this, msg = (t, c) => { if (quiet) return; try { const U = H.scene.get("HubUI"), x = U.add.text(_ / 2, 60, String(t), { ...ti, fontSize: "13px", color: c || "#4ade80", stroke: "#120c08", strokeThickness: 4, align: "center", wordWrap: { width: 520 } }).setOrigin(.5, 0).setDepth(99999); U.tweens.add({ targets: x, alpha: 0, delay: 1800, duration: 500, onComplete: () => x.destroy() }) } catch (e) {} };
+  try {
+    let ok = !1;
+    if (H.fromForest) { const c = __cData(H); if (c?.d) { c.d.timestamp = Date.now(); localStorage.setItem(Wt("campaign", c.sl), JSON.stringify(c.d)); ok = !0 } }
+    else {
+      const sl = H.game.registry.get("save:slot") || 1, e = Nn(sl);
+      if (e.ok && (!e.data.player.classId || e.data.player.classId === H.classDef?.id)) { e.data.timestamp = Date.now(); localStorage.setItem(Wt("endless", sl), JSON.stringify(e.data)); ok = !0 }
+    }
+    if (ok) { msg(W("pause.saved"), "#4ade80"); H.game.audioEngine?.sfx?.("sfx-ui-confirm") }
+    else { msg(__L3("Nenhum save deste herói para gravar — comece uma descida.", "No save for this hero — start a descent.", "No hay partida de este héroe — empieza un descenso."), "#ff9a7a"); H.game.audioEngine?.sfx?.("sfx-door-locked") }
+    return ok;
+  } catch (e) { msg(W("pause.cantSave"), "#ff9a7a"); return !1 }
+};

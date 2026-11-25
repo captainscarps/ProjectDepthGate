@@ -1972,12 +1972,12 @@ this.input.keyboard.on("keydown-ESC",()=>{this.__fn?.o?.active?this.__fnClose():
 this.refreshFragments();this.__combatHud();this.__joyInit();try{this.scene.get("HubUI")?this.scene.launch("HubUI"):this.scene.add("HubUI",__HubUI,!0);this.scene.bringToTop("HubUI")}catch(e){}this.events.once("shutdown",()=>{this.__busy=!1;try{this.scene.stop("HubUI")}catch(e){}});cam.fadeIn(400,0,0,0);
 this.time.delayedCall(700,()=>this.__say(this.playerX,this.playerY-40,this.fromForest?L3("Bem-vindo ao Refúgio! A placa da FLORESTA leva você de volta.","Welcome to the Refuge! The FOREST sign takes you back.","¡Bienvenido al Refugio! El cartel del BOSQUE te lleva de vuelta."):L3("Bem-vindo ao Refúgio. Explore a vila!","Welcome to the Refuge. Explore the village!","Bienvenido al Refugio. ¡Explora la aldea!"),3000,"#ffe7a8"))}
 __pzOpen(){if(this.panel||this.__busy)return;const L3=__L3,ff=this.fromForest,d=_/2,o=this.add.container(this.__ox,this.__oy).setDepth(9800).setScrollFactor(0).setScale(this.__us),a=this.add.rectangle(d,st/2,_,st,328450,.7).setInteractive(),n=this.add.graphics();
-const opts=[[L3("Continuar","Resume","Continuar"),()=>this.__pzClose()]];this.__invHub&&opts.push([L3("Inventário","Inventory","Inventario"),()=>{this.__pzClose();this.time.delayedCall(60,()=>this.__invHub())}]);window.DepthGateUser&&opts.push([L3("Conta e amigos","Account & friends","Cuenta y amigos"),()=>{this.__pzClose();window.DepthGateUser.openModal()}]);ff&&opts.push([L3("Voltar à Floresta","Back to the Forest","Volver al Bosque"),()=>{this.__pzClose();this.__backToForest()}]);opts.push([ff?L3("Salvar e ir ao menu","Save and go to menu","Guardar e ir al menú"):L3("Menu principal","Main menu","Menú principal"),()=>{this.__pzClose();this.exitToMenu()}]);
+const opts=[[L3("Continuar","Resume","Continuar"),()=>this.__pzClose()]];this.__invHub&&opts.push([L3("Inventário","Inventory","Inventario"),()=>{this.__pzClose();this.time.delayedCall(60,()=>this.__invHub())}]);window.DepthGateUser&&opts.push([L3("Conta e amigos","Account & friends","Cuenta y amigos"),()=>{this.__pzClose();window.DepthGateUser.openModal()}]);ff&&opts.push([L3("Voltar à Floresta","Back to the Forest","Volver al Bosque"),()=>{this.__pzClose();this.__backToForest()}]);/* p216.130: SALVAR no Start do Refúgio, como no Start da run da campanha; sair para o menu também salva */opts.push([L3("Salvar","Save","Guardar"),()=>{this.__hubSave?.();this.__pzClose()}]);opts.push([L3("Salvar e ir ao menu","Save and go to menu","Guardar e ir al menú"),()=>{this.__hubSave?.(!0);this.__pzClose();this.exitToMenu()}]);
 /* p216.40: a altura acompanha o número de opções (com Inventário e Conta e amigos o "Menu principal" saía da moldura) */
-const H=58+opts.length*32+(ff?30:12),Y=st/2-H/2;Dt(n,d-140,Y,280,H);o.add([a,n]);__winSkin(this,o,d-140,Y,280,H,1)&&n.clear();
+const H=58+opts.length*32+30,Y=st/2-H/2;Dt(n,d-140,Y,280,H);o.add([a,n]);__winSkin(this,o,d-140,Y,280,H,1)&&n.clear();
 o.add(this.add.text(d,Y+22,L3("PAUSA","PAUSE","PAUSA"),la).setOrigin(.5));
 const items=opts.map(([lb,fn],k)=>{const t=this.add.text(d,Y+58+k*32,lb,{...ti,fontSize:"12px"}).setOrigin(.5).setInteractive({useHandCursor:!0});Gt(t,40,10);t.on("pointerover",()=>{this.__pz&&(this.__pz.sel=k,this.__pzDraw())});t.on("pointerdown",(p,x,y,e)=>{e?.stopPropagation?.();this.__pz&&(this.__pz.sel=k,this.__pzConfirm())});o.add(t);return t});
-ff&&o.add(this.add.text(d,Y+H-14,L3("Seu progresso na campanha fica salvo.","Your campaign progress is saved.","Tu progreso en la campaña queda guardado."),{...Le,fontSize:"8px",color:"#a8a08a"}).setOrigin(.5));
+o.add(this.add.text(d,Y+H-14,ff?L3("Seu progresso na campanha fica salvo.","Your campaign progress is saved.","Tu progreso en la campaña queda guardado."):L3(`Seu herói fica salvo no espaço ${this.game.registry.get("save:slot")||1}.`,`Your hero is saved in slot ${this.game.registry.get("save:slot")||1}.`,`Tu héroe queda guardado en el espacio ${this.game.registry.get("save:slot")||1}.`),{...Le,fontSize:"8px",color:"#a8a08a"}).setOrigin(.5));
 this.__fixScroll?.(o);
 this.panel=o;this.panelRows=null;this.__pz={sel:0,opts,items};this.__padPv={a:!0,x:!0,s:!0,u:!0,d:!0};this.__pzDraw();this.game.audioEngine?.sfx?.("sfx-ui-open")}
 __pzDraw(){const P=this.__pz;if(!P)return;P.items.forEach((t,k)=>{const on=k===P.sel;t.setText(on?`»  ${P.opts[k][0]}  «`:P.opts[k][0]).setColor(on?"#ffd24a":"#d8cdb4")})}
@@ -23804,6 +23804,23 @@ Fl.prototype.__moOpen = function () { return !!this.scene.get("HubUI")?.__hiOpen
   const HK = Cd.prototype.handleKey;
   Cd.prototype.handleKey = function (k) { if (this.open && window.__invDeckKey?.(this, k)) return !0; return HK.apply(this, arguments) };
 }
+
+/* p216.130: SALVAR no Start do Refúgio (como o SALVAR do Start da run). Regrava o save do espaço atual (o Infinito pelo
+   leitor que também conserta save sem semente da run; a campanha pelo slot do Refúgio) e avisa na tela. */
+Fl.prototype.__hubSave = function (quiet) {
+  const H = this, msg = (t, c) => { if (quiet) return; try { const U = H.scene.get("HubUI"), x = U.add.text(_ / 2, 60, String(t), { ...ti, fontSize: "13px", color: c || "#4ade80", stroke: "#120c08", strokeThickness: 4, align: "center", wordWrap: { width: 520 } }).setOrigin(.5, 0).setDepth(99999); U.tweens.add({ targets: x, alpha: 0, delay: 1800, duration: 500, onComplete: () => x.destroy() }) } catch (e) {} };
+  try {
+    let ok = !1;
+    if (H.fromForest) { const c = __cData(H); if (c?.d) { c.d.timestamp = Date.now(); localStorage.setItem(Wt("campaign", c.sl), JSON.stringify(c.d)); ok = !0 } }
+    else {
+      const sl = H.game.registry.get("save:slot") || 1, e = Nn(sl);
+      if (e.ok && (!e.data.player.classId || e.data.player.classId === H.classDef?.id)) { e.data.timestamp = Date.now(); localStorage.setItem(Wt("endless", sl), JSON.stringify(e.data)); ok = !0 }
+    }
+    if (ok) { msg(W("pause.saved"), "#4ade80"); H.game.audioEngine?.sfx?.("sfx-ui-confirm") }
+    else { msg(__L3("Nenhum save deste herói para gravar — comece uma descida.", "No save for this hero — start a descent.", "No hay partida de este héroe — empieza un descenso."), "#ff9a7a"); H.game.audioEngine?.sfx?.("sfx-door-locked") }
+    return ok;
+  } catch (e) { msg(W("pause.cantSave"), "#ff9a7a"); return !1 }
+};
 /*__MOCHILA__*/
 /*__ALCANCE__*/
 /* ══ Golpe corpo a corpo com peso: a ANIMAÇÃO cobre a área de acerto (o alcance não muda) ══

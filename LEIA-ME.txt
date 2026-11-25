@@ -1,4 +1,10 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.129 · cache ded-web-v6.21.0-save-dorf)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.130 · cache ded-web-v6.21.1-start-salvar)
+
+P216.130 — START DO REFÚGIO COM "SALVAR" (como o Start da run da campanha)
+- Pausa do Refúgio (hub-village.js __pzOpen, fonte e bundle): novas opções "Salvar" e "Salvar e ir ao menu" (no
+  Infinito o antigo "Menu principal" virou "Salvar e ir ao menu"); rodapé diz em que espaço o herói fica salvo.
+- mochila.js Fl.prototype.__hubSave: regrava o save do espaço atual (Infinito via Nn, que também conserta save sem
+  semente da run; campanha via __cData) e mostra "JOGO SALVO" na camada de interface do Refúgio.
 
 P216.129 — HERÓI DO INFINITO SUMIA DO SAVE · INVENTÁRIO DO REFÚGIO · BAÚS E DROPS DO INFINITO
 - Save do Infinito (bundle, In/Nn): voltar das Cavernas Dorf depois que a run tinha acabado gravava o save sem a
