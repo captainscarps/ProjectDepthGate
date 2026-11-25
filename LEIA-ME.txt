@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.130 · cache ded-web-v6.21.1-start-salvar)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.131 · cache ded-web-v6.21.2-arqueiro-diag)
+
+P216.131 — ARQUEIRO: DIAGONAIS PARA CIMA TROCADAS
+- archer-nh-dirs.png (cabeça descoberta): a linha 3 (andar ↗) estava desenhada de perfil para a esquerda (↖); como a
+  esquerda usa o espelho, ↗ e ↖ saíam trocados. Linha espelhada (a folha nh só tem 4 linhas: vale para correr também).
+- archer-rubro-dirs.png (Armadura Rubra): a linha 7 (correr ↗) estava virada para ↖. Espelhada; o quadro parado da
+  linha continua igual ao do andar. Conferido quadro a quadro com as outras classes; as camadas t0…t4 (archer-pack)
+  estavam certas.
 
 P216.130 — START DO REFÚGIO COM "SALVAR" (como o Start da run da campanha)
 - Pausa do Refúgio (hub-village.js __pzOpen, fonte e bundle): novas opções "Salvar" e "Salvar e ir ao menu" (no
