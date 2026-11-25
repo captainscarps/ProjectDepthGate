@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.131 · cache ded-web-v6.21.2-arqueiro-diag)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.132 · cache ded-web-v6.21.3-chefes-saco)
+
+P216.132 — INFINITO: CHEFES SEM REPETIR ATÉ TODOS APARECEREM
+- bundle (__bossPlan, perto de yr/xr): o chefe de cada fundo com sala de chefe sai de um "saco" com os 15 chefes; só
+  volta a repetir quando todos já saíram, e aí o saco enche de novo. O chefe do bioma continua tendo a preferência se
+  ainda não saiu nesta volta (fundo 3 segue Górgona das Ruínas). As ondas de chefes (fundos 75, 150…) também tiram do
+  saco. Nunca o mesmo chefe nem as duas Górgonas em seguida. Determinístico pela semente da run (recarregar ou
+  voltar do save dá o mesmo chefe). pd/vd usam o plano no lugar de vr/xr (ficaram sem uso).
+- Motivo: o Deserto (fundos 5–6) usava a Górgona das Ruínas como chefe; com o Rio (Górgona da Floresta) eram 3
+  Górgonas entre os 4 primeiros chefes (fundos 3, 6 e 12).
 
 P216.131 — ARQUEIRO: DIAGONAIS PARA CIMA TROCADAS
 - archer-nh-dirs.png (cabeça descoberta): a linha 3 (andar ↗) estava desenhada de perfil para a esquerda (↖); como a
