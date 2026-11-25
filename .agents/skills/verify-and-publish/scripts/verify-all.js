@@ -127,7 +127,7 @@ try {
   const hub = new evaluatedClass();
   hub.__pzOpen();
   if (!hub.panel || !hub.__pz) throw new Error('__pzOpen falhou em criar o painel');
-  hub.__pzNav(1);
+  hub.__pzNav(-1); // p216.130: "Salvar e ir ao menu" é a última opção (antes dela entrou "Salvar")
   hub.__pzConfirm();
   if (!hub.exitedToMenu || hub.panel !== null) throw new Error('__pzConfirm falhou na ação de sair para o menu');
   hub.exitedToMenu = false;
