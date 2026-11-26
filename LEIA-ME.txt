@@ -1,4 +1,14 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.132 · cache ded-web-v6.21.3-chefes-saco)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.133 · cache ded-web-v6.21.4-tocar-mover)
+
+P216.133 — "TOCAR/CLICAR PARA MOVER" (POINT AND CLICK) OPCIONAL
+- Novo scripts/source/point-click.js (marcador /*__PTCLICK__*/ no patch_book_ui). Configurações → Controles →
+  TOCAR/CLICAR PARA MOVER (desligado por padrão; settings.pointClick). Nas fases (cena Game):
+  chão = anda até lá (A* no grid do dungeon, caminho suavizado; sem grid vai reto); inimigo = alvo, chega ao alcance
+  da arma (corpo a corpo por oa/Tl, distância 230 com linha de visão) e ataca sozinho até cair; item/baú/porta/
+  portal/Guardiã = vai e interage; segurar o mouse segue o cursor. Teclado, controle ou joystick cancelam na hora.
+  Toque rápido sem arrastar na área do joystick também conta. Desligado no cooperativo local.
+- Como entra: o gerenciador de comandos ganha __pcAxis/__pcAim/__pcPress (axis/aim/justDown embrulhados); nada do
+  controle normal muda. bundle: linha da opção, aba CONTROLES e padrão pointClick:!1.
 
 P216.132 — INFINITO: CHEFES SEM REPETIR ATÉ TODOS APARECEREM
 - bundle (__bossPlan, perto de yr/xr): o chefe de cada fundo com sala de chefe sai de um "saco" com os 15 chefes; só
