@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.133 · cache ded-web-v6.21.4-tocar-mover)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.134 · cache ded-web-v6.21.5-tocar-barra)
+
+P216.134 — MENUS SÓ PELOS BOTÕES · TOCAR/CLICAR ESCONDE OS BOTÕES DE TOQUE
+- __joyExcl (bundle e ui-modern.js): a área que abria INVENTÁRIO/PAUSA ao tocar na zona do joystick ia do botão até o
+  pé da tela (e, com os botões no alto, cortava a tela inteira no meio). Agora só em volta do botão.
+- ci() (bundle): com "Tocar/clicar para mover" ligado os botões de toque (joystick e cia.) ficam escondidos.
+- point-click.js: no lugar deles aparece a barra de habilidades do PC, agora clicável (habilidades 1–4, poção, ataque,
+  dash, escudo segurando, interagir) e com ☰ (inventário) e ❚❚ (pausa) ao lado. Fila __pcQueue/__pcHold no
+  gerenciador de comandos.
 
 P216.133 — "TOCAR/CLICAR PARA MOVER" (POINT AND CLICK) OPCIONAL
 - Novo scripts/source/point-click.js (marcador /*__PTCLICK__*/ no patch_book_ui). Configurações → Controles →

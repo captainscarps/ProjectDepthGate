@@ -18,7 +18,8 @@
   const wrapMgr = (M) => {
     if (!M || M.__pcW) return; M.__pcW = 1;
     const ax = M.axis.bind(M), am = M.aim.bind(M), jd = M.justDown.bind(M);
-    M.__pcPress = new Set();
+    M.__pcPress = new Set(); M.__pcQueue = new Set(); M.__pcHold = new Set();
+    const idn = M.isDown.bind(M); M.isDown = function (a) { return idn(a) || M.__pcHold.has(a) };
     M.axis = function () { const a = ax(), v = M.__pcAxis; return v && Math.hypot(a.x, a.y) < .2 ? v : a };
     M.aim = function () { return am() ?? M.__pcAim ?? null };
     M.justDown = function (a) { return jd(a) || M.__pcPress.has(a) };
@@ -119,7 +120,7 @@
 
   /* ---------- a cada quadro ---------- */
   function tick(S, ms) {
-    const M = S.game.inputManager; if (!M) return; M.__pcPress?.clear();
+    const M = S.game.inputManager; if (!M) return; M.__pcPress?.clear(); if (M.__pcQueue?.size) { for (const a of M.__pcQueue) M.__pcPress.add(a); M.__pcQueue.clear() }
     if (!ON(S)) { (M.__pcAxis || M.__pcAim) && clear(S); PC(S).g?.clear(); return }
     hook(S); const pc = PC(S), P = S.player, dt = Math.min(.05, ms / 1e3);
     if (blocked(S)) { M.__pcAxis = null; M.__pcAim = null; pc.g?.clear(); return }
@@ -171,6 +172,39 @@
 
   const U0 = Sd.prototype.update;
   Sd.prototype.update = function (t, d) { try { tick(this, d) } catch (e) { console.warn("[toque para mover]", e) } return U0.apply(this, arguments) };
+
+  /* barra de habilidades clicável (o lugar dos botões de toque, que ficam escondidos neste modo)
+     cada quadrado faz a ação dele; ☰ abre o inventário e ❚❚ pausa — menus só por estes botões */
+  {
+    const R0 = __RefHud.prototype.update;
+    __RefHud.prototype.update = function (i) {
+      const r = R0.apply(this, arguments);
+      try {
+        const U = this.s, on = !!this.on && !!(U.game.registry.get("settings") ?? {}).pointClick, M = U.game.inputManager;
+        if (!this.__pcz && on) {
+          wrapMgr(M); const W = this.W, G = this.G; this.__pcz = [];
+          this.acts.forEach((a, d) => {
+            const z = U.add.zone(this.x0 + d * (W + G), this.sy, W, W).setOrigin(0).setDepth(125).setInteractive({ useHandCursor: !0 });
+            const up = () => M.__pcHold.delete(a);
+            z.on("pointerdown", (p, lx, ly, ev) => { ev?.stopPropagation?.(); a === "GUARD" ? M.__pcHold.add(a) : M.__pcQueue.add(a) }); z.on("pointerup", up); z.on("pointerout", up);
+            this.__pcz.push(z);
+          });
+          const bx = this.x0 + this.tw + 12, F = { fontFamily: "PixelifySans, Georgia, serif", fontStyle: "bold", fontSize: "11px", color: "#fff0c8", stroke: "#000000", strokeThickness: 3 };
+          const mk = (k, x, glyph, act) => {
+            const g = U.add.graphics().setDepth(124.5); g.fillStyle(0x140808, .85).fillRoundedRect(x, this.sy - 1, W + 2, W + 2, 5).lineStyle(1.5, 0xb08446, 1).strokeRoundedRect(x, this.sy - 1, W + 2, W + 2, 5);
+            const t = U.add.text(x + W / 2 + 1, this.sy + W / 2, glyph, F).setOrigin(.5).setDepth(125);
+            const z = U.add.zone(x - 2, this.sy - 3, W + 6, W + 6).setOrigin(0).setDepth(126).setInteractive({ useHandCursor: !0 });
+            z.on("pointerdown", (p, lx, ly, ev) => { ev?.stopPropagation?.(); const pv = M.device; M.touchPress?.(act); pv && pv !== "touch" && M.setDevice?.(pv); g.setAlpha(.6); U.time.delayedCall(140, () => g.setAlpha(1)) });
+            this.__pcz.push(g, t, z);
+          };
+          mk("inv", bx, "☰", "INVENTORY"); mk("pause", bx + W + 8, "❚❚", "PAUSE");
+        }
+        this.__pcz?.forEach((o) => { o.setVisible(on); o.input && (on ? o.input.enabled = !0 : o.input.enabled = !1) });
+        !on && M?.__pcHold?.size && M.__pcHold.clear();
+      } catch (e) {}
+      return r;
+    };
+  }
 
   /* textos da opção */
   try {

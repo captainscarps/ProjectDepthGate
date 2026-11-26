@@ -40,7 +40,7 @@ __joySync=function(J){if(!J?.__jb)return;const r=J.base.radius??J.radius;J.__jb.
  flash(){this.draw(!0);this.text.scene.time.delayedCall(140,()=>this.draw(!1))}
  setPosition(i,t){super.setPosition(i,t);this.draw()}}}
 __joyExcl=function(H){const J=H.joystick;if(!J)return;J.__excl=[[H.selectBtn,"INVENTORY"],[H.startBtn,"PAUSE"]].filter(([b])=>b?.text).map(([b,act])=>{const t=b.text,w=t.displayWidth,h=t.displayHeight,x0=t.x-w/2-18,y0=t.y-h/2-14;
- return{t,r:new j.Geom.Rectangle(x0,y0,w+36,Math.max(h+28,st-y0)),fn:()=>{H.mgr.markTouchConsumed();H.mgr.touchPress(act);b.flash?.()}}})};
+ return{t,r:new j.Geom.Rectangle(x0,y0,w+36,h+28/*p216.134: só em volta do botão (antes ia até o pé da tela)*/),fn:()=>{H.mgr.markTouchConsumed();H.mgr.touchPress(act);b.flash?.()}}})};
 /* HUD do celular */
 {const U0=__Hud2.prototype.update;__Hud2.prototype.update=function(g){const r=U0.apply(this,arguments);try{if(!this.ok)return r;const S=this.s,mob=this.mode==="mob";
  if(!this.__uc){this.__uc=S.add.graphics().setDepth(107.5);this.__ucT=[this.mhp,this.mname,this.mlvlT];for(const t of this.__ucT)t.setFontFamily(__UC_F).setFontStyle("bold");
