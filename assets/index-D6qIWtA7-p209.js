@@ -29245,9 +29245,11 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
 /*__PTCLICK__*/
 /* p216.133 — CONTROLE "TOQUE / CLIQUE PARA MOVER" (point and click), OPCIONAL
    Configurações → Controles → "TOCAR/CLICAR PARA MOVER" (desligado por padrão). O jogo continua igual; isto só soma:
-   • toque/clique no chão: o herói anda até lá (caminho A* no grid da masmorra; sem grid, vai em linha reta)
-   • toque/clique num inimigo: vira alvo; o herói chega ao alcance da arma (corpo a corpo ou distância) e ataca
-     sozinho até ele cair
+   p216.135: toque/clique rápido = ATAQUE; segurar = ANDAR/CORRER
+   • toque/clique num inimigo (ou perto dele): vira alvo; o herói chega ao alcance da arma e ataca até ele cair
+   • toque/clique no chão vazio: golpe na direção do toque (não anda)
+   • segurar o dedo/botão: o herói segue o dedo — perto do herói anda, longe corre; soltou, parou
+   • no celular, botões grandes de habilidade embaixo (1-4, poção, dash, escudo, interagir, ☰, ❚❚)
    • toque/clique em item, baú, porta, portal, NPC: vai até ele e interage
    • segurar o botão do mouse: segue o cursor (desktop)
    • qualquer movimento pelo teclado, controle ou joystick cancela na hora; as habilidades continuam nos botões
@@ -29255,8 +29257,8 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
    se for rápido e sem arrastar. */
 {
   const ON = (S) => { try { return !!(S.game.registry.get("settings") ?? {}).pointClick && !(S.game.registry.get("mode") === "endless" && S.game.registry.get("endless:coop")) } catch (e) { return !1 } };
-  const PC = (S) => S.__pc || (S.__pc = { path: [], target: null, obj: null, dest: null, stuck: 0, chk: null, rp: 0, give: 0, down: null, g: null, ring: 0 });
-  const clear = (S) => { const p = PC(S); p.path = []; p.target = null; p.obj = null; p.dest = null; p.stuck = 0; p.give = 0; const M = S.game.inputManager; M && (M.__pcAxis = null, M.__pcAim = null) };
+  const PC = (S) => S.__pc || (S.__pc = { path: [], target: null, swing: null, walk: !1, obj: null, dest: null, stuck: 0, chk: null, rp: 0, give: 0, down: null, g: null, ring: 0 });
+  const clear = (S) => { const p = PC(S); p.path = []; p.target = null; p.obj = null; p.dest = null; p.swing = null; p.walk = !1; p.stuck = 0; p.give = 0; const M = S.game.inputManager; M && (M.__pcAxis = null, M.__pcAim = null) };
   const blocked = (S) => !S.player || S.player.dead || S.player.isDowned || S.state !== "playing" || S.uiOpen || S.freezeTimer > 0 || S.ui?.__dlgOpen || S.__dlgOpen || S.detailsOpen;
 
   /* ---------- entrada global: axis/aim/press extras no gerenciador de comandos ---------- */
@@ -29316,9 +29318,9 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
 
   /* ---------- o que existe no ponto tocado ---------- */
   const alive = (e) => e && e.active && !e.dead && !(e.hp <= 0);
-  function enemyAt(S, x, y) {
+  function enemyAt(S, x, y, slack = 0) {
     const L = S.enemies?.getChildren?.().filter(alive) ?? []; alive(S.boss) && L.push(S.boss);
-    let b = null, bd = 1e9; for (const e of L) { const r = Math.max(22, (e.displayHeight || 40) * .45), d = Math.hypot(e.x - x, e.y - (e.displayHeight || 40) * .15 - y); if (d < r && d < bd) { bd = d; b = e } } return b;
+    let b = null, bd = 1e9; for (const e of L) { const r = Math.max(22, (e.displayHeight || 40) * .45) + slack, d = Math.hypot(e.x - x, e.y - (e.displayHeight || 40) * .15 - y); if (d < r && d < bd) { bd = d; b = e } } return b;
   }
   function objectAt(S, x, y) {
     const C = []; for (const o of S.groundItems ?? []) C.push(o);
@@ -29332,11 +29334,14 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
   function worldTap(S, sx, sy) {
     if (!ON(S) || blocked(S)) return; const cam = S.cameras.main, w = cam.getWorldPoint(sx, sy), pc = PC(S);
     const e = enemyAt(S, w.x, w.y);
-    pc.target = null; pc.obj = null; pc.give = 0; pc.stuck = 0;
+    pc.target = null; pc.obj = null; pc.give = 0; pc.stuck = 0; pc.swing = null;
     if (e) { pc.target = e; pc.rp = 0; mark(S, e.x, e.y, 0xff5b4b); return }
     const o = objectAt(S, w.x, w.y);
     if (o) { pc.obj = o; route(S, o.x, o.y + 6); mark(S, o.x, o.y, 0xffd27a); return }
-    pc.dest = { x: w.x, y: w.y }; route(S, w.x, w.y) ? mark(S, w.x, w.y, 0xe8b44c) : mark(S, w.x, w.y, 0x8a8178);
+    /* chão: inimigo perto do toque vira alvo; senão, golpe na direção tocada (sem andar) */
+    const n = enemyAt(S, w.x, w.y, 34);
+    if (n) { pc.target = n; pc.rp = 0; mark(S, n.x, n.y, 0xff5b4b); return }
+    pc.path = []; pc.dest = null; pc.swing = { x: w.x, y: w.y }; mark(S, w.x, w.y, 0xc8c0b0);
   }
   function mark(S, x, y, col) {
     try { const g = S.add.graphics().setDepth(y - 2); g.lineStyle(2, col, 1).strokeEllipse(0, 0, 22, 11); g.setPosition(x, y + 4); S.tweens.add({ targets: g, scaleX: 1.6, scaleY: 1.6, alpha: 0, duration: 420, onComplete: () => g.destroy() }) } catch (e) {}
@@ -29354,8 +29359,8 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
     };
     const onUp = (p) => {
       const pc = PC(S), d = pc.down; if (!d || d.id !== p.id) return; pc.down = null;
-      if (d.held) return; const moved = Math.hypot(p.x - d.x, p.y - d.y), dt = performance.now() - d.t;
-      if (moved < 14 && dt < (d.joy ? 320 : 900)) worldTap(S, p.x, p.y);
+      if (d.held) { pc.path = []; pc.dest = null; pc.walk = !1; return } const moved = Math.hypot(p.x - d.x, p.y - d.y), dt = performance.now() - d.t;
+      if (moved < 14 && dt < (d.joy ? 320 : 600)) worldTap(S, p.x, p.y);
     };
     src.input.on("pointerdown", onDown); src.input.on("pointerup", onUp);
     /* o Game só recebe o clique quando a interface não tem nada no ponto */
@@ -29372,12 +29377,19 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
     /* teclado / controle / joystick mandam: cancela */
     const k = M.keyboardAxis?.() ?? { x: 0, y: 0 }, gp = M.gamepadAxis ?? { x: 0, y: 0 }, tc = M.touch?.axis ?? { x: 0, y: 0 };
     if (Math.hypot(k.x, k.y) > .2 || Math.hypot(gp.x, gp.y) > .25 || Math.hypot(tc.x, tc.y) > .2) { if (pc.path.length || pc.target || pc.obj) clear(S); if (pc.down) pc.down.joy && (pc.down = null); return }
-    /* segurar o mouse: segue o cursor (só no desktop) */
+    /* segurar (dedo ou mouse): segue o ponto; perto do herói anda, longe corre */
     if (pc.down && !pc.down.joy) {
-      const ap = S.input.activePointer;
-      if (ap?.isDown && ap.id === pc.down.id && performance.now() - pc.down.t > 260 && !ap.wasTouch) { const w = S.cameras.main.getWorldPoint(ap.x, ap.y); pc.down.held = !0; pc.target = null; pc.obj = null; pc.rp -= dt; if (pc.rp <= 0 || !pc.path.length) { pc.rp = .2; route(S, w.x, w.y) } }
+      const ap = (S.input.manager?.pointers ?? []).find((q) => q && q.id === pc.down.id) ?? S.input.activePointer;
+      if (!ap?.isDown) pc.down.held && (pc.down = null, pc.path = [], pc.walk = !1);
+      else if (ap.id === pc.down.id && (pc.down.held || performance.now() - pc.down.t > 200 || Math.hypot(ap.x - pc.down.x, ap.y - pc.down.y) > 14)) {
+        const w = S.cameras.main.getWorldPoint(ap.x, ap.y); pc.down.held || (pc.rp = 0); pc.down.held = !0; pc.target = null; pc.obj = null; pc.swing = null;
+        const dw = Math.hypot(w.x - P.x, w.y - P.y); pc.walk = dw < 85;
+        pc.rp -= dt; if (dw < 10) pc.path = []; else if (pc.rp <= 0 || !pc.path.length) { pc.rp = .18; route(S, w.x, w.y) }
+      }
     }
     let aim = null;
+    /* toque no chão: um golpe na direção tocada */
+    if (pc.swing) { const dx = pc.swing.x - P.x, dy = pc.swing.y - P.y, d = Math.hypot(dx, dy) || 1; aim = { x: dx / d, y: dy / d }; M.__pcPress.add("ATTACK"); pc.swing = null }
     /* alvo: chega ao alcance e ataca */
     if (pc.target) {
       const e = pc.target; if (!alive(e)) { pc.target = null; pc.path = [] } else {
@@ -29401,7 +29413,7 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
       const wp = pc.path[0], dx = wp.x - P.x, dy = wp.y - P.y, d = Math.hypot(dx, dy), last = pc.path.length === 1;
       if (d < (last ? 6 : 12)) { pc.path.shift(); if (!pc.path.length) pc.dest = null }
       else {
-        const sl = last && d < 26 ? Math.max(.45, d / 26) : 1; ax = { x: dx / d * sl, y: dy / d * sl };
+        const sl = pc.walk ? .5 : last && d < 26 ? Math.max(.45, d / 26) : 1; ax = { x: dx / d * sl, y: dy / d * sl };
         /* preso (caixote, porta fechada): tenta de novo e depois desiste */
         pc.chk = pc.chk ?? { x: P.x, y: P.y, t: 0 }; pc.chk.t += dt;
         if (pc.chk.t > .5) { const mv = Math.hypot(P.x - pc.chk.x, P.y - pc.chk.y); pc.chk = { x: P.x, y: P.y, t: 0 }; if (mv < 6) { pc.stuck++; if (pc.stuck > 3) { pc.path = []; pc.target = null; pc.obj = null; pc.stuck = 0 } else { const f = pc.path[pc.path.length - 1]; route(S, f.x + (Math.random() - .5) * 20, f.y + (Math.random() - .5) * 20) } } else pc.stuck = 0 }
@@ -29422,10 +29434,15 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
      cada quadrado faz a ação dele; ☰ abre o inventário e ❚❚ pausa — menus só por estes botões */
   {
     const R0 = __RefHud.prototype.update;
+    const BIG = (U, M) => U.game.device?.os?.desktop === !1 || M?.device === "touch";
     __RefHud.prototype.update = function (i) {
-      const r = R0.apply(this, arguments);
+      const U0 = this.s, M0 = U0.game.inputManager, pcOn = !!(U0.game.registry.get("settings") ?? {}).pointClick;
+      /* celular: a barra pequena dá lugar aos botões grandes */
+      const big = pcOn && BIG(U0, M0) && !(U0.game.registry.get("mode") === "endless" && U0.game.registry.get("endless:coop"));
+      let r; if (big) { const tc = U0.touchControls; U0.touchControls = { visible: !0 }; try { r = R0.apply(this, arguments) } finally { U0.touchControls = tc } } else r = R0.apply(this, arguments);
+      try { bigBar(this, i, big && !!i?.player && U0.hud?.panel?.visible !== !1 && i.state !== "gameover" && i.state !== "victory" && !i.uiOpen && !U0.inventoryUI?.open && !U0.pauseMenu?.open) } catch (e) { console.warn("[toque para mover]", e) }
       try {
-        const U = this.s, on = !!this.on && !!(U.game.registry.get("settings") ?? {}).pointClick, M = U.game.inputManager;
+        const U = this.s, on = !!this.on && pcOn && !big, M = U.game.inputManager;
         if (!this.__pcz && on) {
           wrapMgr(M); const W = this.W, G = this.G; this.__pcz = [];
           this.acts.forEach((a, d) => {
@@ -29449,6 +29466,58 @@ if (typeof dh !== "undefined" && dh.prototype?.deliverAttack) {
       } catch (e) {}
       return r;
     };
+  }
+
+  /* botões grandes de baixo (celular, com tocar/clicar para mover ligado) */
+  function bigBar(H, i, on) {
+    const U = H.s, M = U.game.inputManager;
+    if (!H.__bb) {
+      if (!on) return; wrapMgr(M);
+      const ACTS = ["ABILITY_1", "ABILITY_2", "ABILITY_3", "ABILITY_4", "POTION", "DASH", "GUARD", "INTERACT", "INVENTORY", "PAUSE"];
+      const BW = 34, GP = 4, XG = 8, N = ACTS.length, tw = N * BW + (N - 1) * GP + XG, x0 = Math.round(_ / 2 - tw / 2), y = st - 5 - BW;
+      const bb = H.__bb = { ACTS, BW, y, xs: [], ic: [], gl: [], ct: [], all: [] };
+      const bg = U.add.graphics().setDepth(124); bb.bg = bg; bb.live = U.add.graphics().setDepth(125.5); bb.all.push(bg, bb.live);
+      const F = { fontFamily: "PixelifySans, Georgia, serif", fontStyle: "bold", color: "#fff0c8", stroke: "#000000", strokeThickness: 3 };
+      const GL = { DASH: "»", INTERACT: "!", INVENTORY: "☰", PAUSE: "❚❚" };
+      ACTS.forEach((a, k) => {
+        const x = x0 + k * (BW + GP) + (k >= 8 ? XG : 0); bb.xs.push(x);
+        const menu = k >= 8;
+        bg.fillStyle(menu ? 0x1c0c0c : 0x0c0a08, .82).fillRoundedRect(x, y, BW, BW, 6).lineStyle(1.5, k < 4 ? 0x7f6a3a : 0xb08446, 1).strokeRoundedRect(x, y, BW, BW, 6);
+        const im = U.add.image(x + BW / 2, y + BW / 2, "icon-sword").setDepth(125).setVisible(!1);
+        const g = U.add.text(x + BW / 2, y + BW / 2, GL[a] ?? "", { ...F, fontSize: menu ? "14px" : "17px" }).setOrigin(.5).setDepth(126);
+        const c = U.add.text(x + BW - 3, y + BW - 2, "", { ...F, fontSize: "10px" }).setOrigin(1, 1).setDepth(126);
+        const z = U.add.zone(x - 1, y - 2, BW + 2, BW + 4).setOrigin(0).setDepth(127).setInteractive();
+        const up = () => M.__pcHold.delete(a);
+        z.on("pointerdown", (p, lx, ly, ev) => {
+          ev?.stopPropagation?.(); bb.flash = { k, t: 140 };
+          if (a === "GUARD") M.__pcHold.add(a);
+          else if (menu) { const pv = M.device; M.touchPress?.(a); pv && pv !== "touch" && M.setDevice?.(pv) }
+          else M.__pcQueue.add(a);
+        });
+        z.on("pointerup", up); z.on("pointerout", up);
+        bb.ic.push(im); bb.gl.push(g); bb.ct.push(c); bb.all.push(im, g, c, z);
+      });
+    }
+    const bb = H.__bb;
+    if (bb.on !== on) { bb.on = on; for (const o of bb.all) { o.setVisible(on); o.input && (o.input.enabled = on) } on || M.__pcHold.delete("GUARD") }
+    if (!on) return;
+    const sl = i.abilities?.slots ?? [], inv = i.inventory, pots = i.potions?.count ?? inv?.potionCount?.() ?? 0, sh = inv?.equipment?.offhand?.type === "shield", res = i.resource;
+    const L = bb.live, BW = bb.BW, y = bb.y; L.clear();
+    for (let k = 0; k < bb.ACTS.length; k++) {
+      const a = bb.ACTS[k], x = bb.xs[k], im = bb.ic[k];
+      let icon = null, dim = !1, cnt = "";
+      if (k < 4) { const s = sl[k]; icon = s?.def?.icon ?? null; dim = !s?.def }
+      else if (a === "POTION") { icon = "icon-potion"; cnt = pots > 0 ? String(pots) : ""; dim = pots <= 0 }
+      else if (a === "GUARD") { icon = "icon-shield"; dim = !sh }
+      if (icon && U.textures.exists(icon)) { im.texture.key !== icon && im.setTexture(icon); im.setScale(Math.min(1.5, 26 / Math.max(im.width, im.height))).setVisible(!0).setAlpha(dim ? .35 : 1) } else im.setVisible(!1);
+      bb.gl[k].setAlpha(dim ? .35 : 1); bb.ct[k]._s !== cnt && (bb.ct[k].setText(cnt), bb.ct[k]._s = cnt);
+      if (k < 4) { const s = sl[k]; if (s?.def) {
+        if (s.cooldown > 0) { const w = Math.min(1, s.cooldown / s.def.cooldown); L.fillStyle(0, .62).fillRect(x + 2, y + 2 + (BW - 4) * (1 - w), BW - 4, (BW - 4) * w) }
+        else if (res?.canAfford && !res.canAfford(s.def.cost)) L.fillStyle(0x203050, .5).fillRoundedRect(x + 1, y + 1, BW - 2, BW - 2, 5);
+      } }
+      if ((a === "GUARD" && M.__pcHold.has("GUARD")) || (bb.flash && bb.flash.k === k)) L.fillStyle(0xffe3a0, .22).fillRoundedRect(x + 1, y + 1, BW - 2, BW - 2, 5);
+    }
+    if (bb.flash && (bb.flash.t -= U.game.loop.delta) <= 0) bb.flash = null;
   }
 
   /* textos da opção */

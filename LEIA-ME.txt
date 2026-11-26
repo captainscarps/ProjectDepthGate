@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.134 · cache ded-web-v6.21.5-tocar-barra)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.135 · cache ded-web-v6.21.6-toque-ataca)
+
+P216.135 — TOCAR/CLICAR: TOQUE ATACA, SEGURAR ANDA/CORRE · BOTÕES GRANDES EMBAIXO NO CELULAR
+- point-click.js: toque/clique rápido não anda mais. Num inimigo (ou a até ~34px dele) vira alvo e ataca até cair;
+  no chão vazio dá um golpe na direção tocada. Item/baú/porta/NPC continuam: vai até lá e interage.
+- Segurar o dedo ou o botão do mouse (200 ms ou arrastar): o herói segue o ponto; perto (<85px) anda, longe corre.
+  Soltou, parou. Vale no toque também (antes só no mouse).
+- Celular (ou aparelho em modo toque) com a opção ligada: a barra pequena do PC dá lugar a 10 botões de 34px embaixo
+  (habilidades 1–4 com recarga, poção com contagem, dash, escudo segurando, interagir, ☰ inventário, ❚❚ pausa).
+  Somem com inventário/pausa/escolha aberta. No computador fica a barra pequena clicável de antes.
 
 P216.134 — MENUS SÓ PELOS BOTÕES · TOCAR/CLICAR ESCONDE OS BOTÕES DE TOQUE
 - __joyExcl (bundle e ui-modern.js): a área que abria INVENTÁRIO/PAUSA ao tocar na zona do joystick ia do botão até o
