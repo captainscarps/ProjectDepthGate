@@ -1,4 +1,15 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.138 · cache ded-web-v6.21.9-aelric-roupa)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.139 · cache ded-web-v6.22.0-kyudo)
+
+P216.139 — HAKAMA DO KYŪDŌ (Arqueiro, armadura do Ferreiro) (PixelLab)
+· Ideia do Rafael: arqueiro de kyūdō. Sem elmo nem armadura — cabelo preto longo num rabo alto, quimono azul-marinho
+  com a manga direita tirada (ombro, braço e peito à mostra), hakama plissada verde-floresta, obi verde-sálvia, tabi
+  brancas com sandálias, braçadeiras de couro e um yumi bem alto. Ferreiro → Armaduras: 170 Pedras Cobalto · +3 defesa ·
+  +3 vida · +6 dano · +10% crítico · dura 4 runs. Sem capa extra. Ícone próprio no atlas items-hd.
+· Arte: referências de frente e de costas com edit-images-v2 sobre o Arqueiro (scripts/art-src/armaduras/kyudo/) e
+  transfer-outfit-v2 nas MESMAS animações do Arqueiro (parado, andar, correr, tiro, disparo, dano, morte, 4 habilidades,
+  andar/correr nas 4 direções e pesca) — scripts/gerar_armadura_kyudo.py. Quadros de costas em que o ombro nu trocava
+  de lado e um quadro de frente com caneleira foram refeitos. Folhas archer-kyudo-body/-dirs/-sk/-fish.png
+  (build_armaduras_unicas.py kyudo, build_pesca_herois.py, build_herois_nuca.py). Código: scripts/source/kyudo.js.
 
 P216.138 — AELRIC JOVEM COM ROUPA DE PRÍNCIPE REBELDE
 - Visual: gibão carmim aberto com friso e botões dourados, camisa de linho solta para fora, mangas arregaçadas, cinto de

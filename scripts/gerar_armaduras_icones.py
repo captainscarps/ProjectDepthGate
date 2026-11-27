@@ -45,6 +45,7 @@ A = {
  "armor_forge_selvagem": ("a savage war-paint harness with bone ornaments", "druid-selvagem-body.png"),
  "armor_forge_lobo": ("a northern hunter's wolf-pelt mantle with leather straps", "hunter-lobo-body.png"),
  "armor_forge_rubro": ("a crimson moon samurai archer armour", "archer-rubro-body.png"),
+ "armor_forge_kyudo": ("a folded kyudo archer outfit: a dark navy kimono top over pleated forest-green hakama with a sage-green obi sash and brown leather wrist guards", "archer-kyudo-body.png"),
  "dh_plate": ("a dragon hunter's plate cuirass made of dark scales", "warrior-dh-body.png"),
  "unique_forge_executioner_mantle": ("an executioner's black hooded mantle with blood-red lining and iron chains", None),
  "armor@COMMON": ("a simple grey iron chainmail vest with a leather belt", None),

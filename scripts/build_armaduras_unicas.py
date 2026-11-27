@@ -37,7 +37,8 @@ ARM = {
     "lobisomem": ("druid", {"atk": "attack", "cast": "cast"}, None),                   # p216.69: Forma de Lobisomem refeita (Druida)
     "tigre": ("druid", {"atk": "attack", "cast": "cast"}, None),                       # p216.67: Forma de Tigre Branco (Druida)
     "pantera": ("druid", {"atk": "attack", "cast": "cast"}, None),                     # p216.67: Forma de Pantera Negra (Druida)
-    "rubro": ("archer", {"atk": "attack", "cast": "cast"}, None),                      # p216.66: Armadura da Lua Rubra (Arqueiro)                       # p216.64: Manto do Caçador do Norte (Caçador)
+    "rubro": ("archer", {"atk": "attack", "cast": "cast"}, None),
+    "kyudo": ("archer", {"atk": "attack", "cast": "cast"}, None),                      # p216.139: Hakama do Kyūdō (Arqueiro)                      # p216.66: Armadura da Lua Rubra (Arqueiro)                       # p216.64: Manto do Caçador do Norte (Caçador)
     "urso": ("druid", {"atk": "attack", "cast": "cast"}, None),                        # p216.63: Forma de Urso Pardo (Druida) — habilidades usam o rugido
 }
 DECAPE = {"nh-warrior"}                            # (o preto da armadura do Caçador de Dragão confundia o filtro de capa)

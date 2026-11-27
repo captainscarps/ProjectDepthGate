@@ -7,7 +7,7 @@
    • Lendárias: a troca do capacete pela cabeça descoberta usava máscaras da arte antiga e estragava a arte nova;
      nos heróis refeitos ela fica desligada (a capa continua, presa na nuca nova de mods/<classe>-mods.json).  */
 /* folhas extras das armaduras únicas refeitas (scripts/build_armaduras_unicas.py) */
-const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0], ["warrior", "templario", 0], ["shaman", "penas", 0], ["rogue", "esmeralda", 0], ["berserker", "oni", 0], ["berserker", "ronin", 0], ["druid", "corvo", 0], ["druid", "selvagem", 0], ["druid", "urso", 0], ["hunter", "lobo", 0], ["archer", "rubro", 0], ["druid", "tigre", 0], ["druid", "pantera", 0], ["druid", "javali", 0], ["druid", "lobisomem", 0]];
+const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0], ["warrior", "templario", 0], ["shaman", "penas", 0], ["rogue", "esmeralda", 0], ["berserker", "oni", 0], ["berserker", "ronin", 0], ["druid", "corvo", 0], ["druid", "selvagem", 0], ["druid", "urso", 0], ["hunter", "lobo", 0], ["archer", "rubro", 0], ["archer", "kyudo", 0], ["druid", "tigre", 0], ["druid", "pantera", 0], ["druid", "javali", 0], ["druid", "lobisomem", 0]];
 {const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
   for (const [c, n, gl] of __HA_UNI) for (const suf of ["-dirs", "-sk"]) for (const g of gl ? ["", "-glow"] : [""]) {
     const k = `mk4b-${c}-${n}${suf}${g}`; this.textures.exists(k) || L.spritesheet(k, `assets/pixel-art/characters/${c}-${n}${suf}${g}.png`, { frameWidth: 128, frameHeight: 128 }) }

@@ -19355,7 +19355,7 @@ function __capeFor(cls, eq) {
   return null;   // p216.84: nenhuma armadura desenha capa/manto/lenço extra no herói (pedido do Rafael) — a raridade aparece na cor
   const D = __NOCAPE.has(cls) ? null : __CAPE[cls], tier = __CAPE_TIER[eq?.armor?.rarity] ?? 0;
   if (!D || !tier) return null;
-  if (/templario|rubro/.test(eq?.armor?.id ?? "")) return null;   // p216.56: o Templário já tem manto no desenho (sem capa extra); p216.66: nem a Lua Rubra
+  if (/templario|rubro|kyudo/.test(eq?.armor?.id ?? "")) return null;   // p216.56: o Templário já tem manto no desenho (sem capa extra); p216.66: nem a Lua Rubra
   if (tier === 1) return { n: 4, seg: 2.6, w0: 1.3, w1: 1.7, style: "scarf", tails: 1, tier };
   if (tier === 2) return D.style === "scarf" ? { ...D, n: Math.max(4, Math.round(D.n * .55)), tails: 1, tier }
     : { ...D, n: Math.max(4, Math.round(D.n * .5)), w1: D.w1 * .92, tier };
@@ -19377,7 +19377,7 @@ function __capeUpdate(V, dt) {
   const info = V.scene.cache.json.get(`hmod-${cls}`), fi = +m.frame.name, tk = m.texture?.key || "";
   // p216.41: nuca por folha (perfil, direções, golpes) — as folhas novas têm quadros diferentes
   // p216.51: pescando (folha "-fish", quadros de 208 com o herói no meio): nuca da folha de pesca da armadura
-  const fsh = tk.endsWith("-fish"), fv = fsh && (tk.includes("-nh") ? "nh" : ["ossos", "vendaval", "saqueador", "dh", "templario", "penas", "esmeralda", "oni", "ronin", "corvo", "selvagem", "lobo", "rubro"].find(n => tk.includes("-" + n + "-") || tk.includes("-" + n)));
+  const fsh = tk.endsWith("-fish"), fv = fsh && (tk.includes("-nh") ? "nh" : ["ossos", "vendaval", "saqueador", "dh", "templario", "penas", "esmeralda", "oni", "ronin", "corvo", "selvagem", "lobo", "rubro", "kyudo"].find(n => tk.includes("-" + n + "-") || tk.includes("-" + n)));
   const arr = tk.endsWith("-dirs") ? info?.dirs : tk.endsWith("-sk") ? info?.sk : fsh ? (info?.fishv?.[fv] ?? info?.fish) : info?.frames, F = arr?.[fi] ?? V.__capeLastF, c0 = fsh ? 104 : 64;
   if (!F) { V.__cape?.g.setVisible(!1); return; }
   V.__capeLastF = F;      // quadro sem cabeça achada (de costas, atrás do escudo): a capa fica na última nuca
@@ -22148,7 +22148,7 @@ const __PZ_RAR = [["COMUM", "COMMON", "COMÚN", "#cfe0ff"], ["INCOMUM", "UNCOMMO
    têm folha de pesca própria (<armadura>-fish.png); as cores dessas também são copiadas. Só as formas do Druida e
    os heróis antigos continuam com a vara desenhada. */
 const __PQH = ["warrior", "archer", "mage", "necromancer", "druid", "shaman", "rogue", "berserker", "hunter"];
-const __PQU = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin", "druid-corvo", "druid-selvagem", "hunter-lobo", "archer-rubro"];
+const __PQU = ["necromancer-ossos", "mage-vendaval", "warrior-saqueador", "warrior-dh", "warrior-templario", "shaman-penas", "rogue-esmeralda", "berserker-oni", "berserker-ronin", "druid-corvo", "druid-selvagem", "hunter-lobo", "archer-rubro", "archer-kyudo"];
 const __PQV = [...__PQU, ...["warrior", "berserker", "archer", "hunter", "druid", "necromancer", "mage", "rogue"].map(c => c + "-nh")];
 function __pqHeroFish(H) {
   const V = H.rig, m = V?.mk2; if (!m || !H.cache.json.exists("pq-hfish")) return null;
@@ -24684,7 +24684,7 @@ function __skhKey(V) { return V.animPrefix + "-sk" }
    • Lendárias: a troca do capacete pela cabeça descoberta usava máscaras da arte antiga e estragava a arte nova;
      nos heróis refeitos ela fica desligada (a capa continua, presa na nuca nova de mods/<classe>-mods.json).  */
 /* folhas extras das armaduras únicas refeitas (scripts/build_armaduras_unicas.py) */
-const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0], ["warrior", "templario", 0], ["shaman", "penas", 0], ["rogue", "esmeralda", 0], ["berserker", "oni", 0], ["berserker", "ronin", 0], ["druid", "corvo", 0], ["druid", "selvagem", 0], ["druid", "urso", 0], ["hunter", "lobo", 0], ["archer", "rubro", 0], ["druid", "tigre", 0], ["druid", "pantera", 0], ["druid", "javali", 0], ["druid", "lobisomem", 0]];
+const __HA_UNI = [["necromancer", "ossos", 1], ["mage", "vendaval", 1], ["warrior", "saqueador", 0], ["warrior", "dh", 0], ["warrior", "templario", 0], ["shaman", "penas", 0], ["rogue", "esmeralda", 0], ["berserker", "oni", 0], ["berserker", "ronin", 0], ["druid", "corvo", 0], ["druid", "selvagem", 0], ["druid", "urso", 0], ["hunter", "lobo", 0], ["archer", "rubro", 0], ["archer", "kyudo", 0], ["druid", "tigre", 0], ["druid", "pantera", 0], ["druid", "javali", 0], ["druid", "lobisomem", 0]];
 {const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
   for (const [c, n, gl] of __HA_UNI) for (const suf of ["-dirs", "-sk"]) for (const g of gl ? ["", "-glow"] : [""]) {
     const k = `mk4b-${c}-${n}${suf}${g}`; this.textures.exists(k) || L.spritesheet(k, `assets/pixel-art/characters/${c}-${n}${suf}${g}.png`, { frameWidth: 128, frameHeight: 128 }) }
@@ -29554,3 +29554,44 @@ function __vkCrown(S) {
 { const _c = Fl.prototype.create; Fl.prototype.create = function (...a) { const r = _c.apply(this, a); try { __vkHub(this) } catch (e) { console.warn("valdrak hub", e) } return r } }
 
 /*__VALDRAK__*/
+/*__KYUDO__*/
+/* ══ Hakama do Kyūdō — armadura do ferreiro só para o Arqueiro (p216.139) ═════════════════════════════════════
+   • Aba ARMADURAS da forja (Pedra Cobalto, durabilidade em runs); só aparece para o Arqueiro.
+   • Visual (ideia do Rafael: arqueiro de kyūdō): sem elmo nem armadura — cabelo preto longo num rabo alto, quimono
+     azul-marinho com a manga direita tirada (ombro e peito à mostra), hakama plissada verde-floresta, obi verde-sálvia,
+     tabi brancas, braçadeiras de couro e um yumi bem alto (folhas archer-kyudo-body/-dirs/-sk/-fish.png; PixelLab:
+     scripts/gerar_armadura_kyudo.py → build_armaduras_unicas.py kyudo e build_pesca_herois.py).
+   • Pouca proteção, muita precisão: menos defesa que a Lua Rubra, mais dano e crítico.                           */
+const __KY_ID = "armor_forge_kyudo", __KY_SHEET = "mk4b-archer-kyudo";
+__FARM[__KY_ID] = {
+  name: ["Hakama do Kyūdō", "Kyūdō Hakama", "Hakama del Kyūdō"], price: 170, cls: "ARCHER",
+  main: 0x2f5a34, trim: 0x1c2233, glow: 0xd8c27a, pulse: 0, fx: "none",
+  stats: { defense: 3, maxHp: 3, damage: 6, critChance: 10 },
+  st: ["+3 DEFESA · +3 VIDA · +6 DANO · +10% CRÍTICO", "+3 DEFENSE · +3 HEALTH · +6 DAMAGE · +10% CRIT"],
+  desc: "Sem armadura, só o quimono e a respiração. O arqueiro do kyūdō não mira o alvo: espera o momento em que a flecha já sabe o caminho.",
+};
+{
+  const a = __FARM[__KY_ID];
+  Xt[__KY_ID] = { name: a.name[0], type: "armor", slot: "armor", icon: "icon-armor", minRarity: "UNIQUE",
+    stats: a.stats, value: a.price * 2, tint: a.main, forgeArmor: __KY_ID, uniqueForge: !0, breaksOnDeath: !0, desc: a.desc + " Quebra-se se morrer na run." };
+  try { _s["item." + __KY_ID] = a.name[1]; Io["item." + __KY_ID] = a.name[2] } catch (e) {}
+  try { window.__FORGE_RUNS && (window.__FORGE_RUNS[__KY_ID] = 4) } catch (e) {}
+}
+{const P0 = bo.prototype.preload; bo.prototype.preload = function () { const r = P0.apply(this, arguments); try { const L = this.load, op = L.path; L.setPath("");
+  this.textures.exists(__KY_SHEET) || L.spritesheet(__KY_SHEET, "assets/pixel-art/characters/archer-kyudo-body.png", { frameWidth: 128, frameHeight: 128 });
+  L.setPath(op) } catch (e) {} return r }}
+function __kySheet(sc) {
+  if (!sc.textures.exists(__KY_SHEET)) return null;
+  try { sc.textures.get(__KY_SHEET).setFilter(j.Textures.FilterMode.NEAREST) } catch (e) {}
+  const base = "mk4b-archer-t0-";
+  for (const A0 of sc.anims.anims?.getArray?.() ?? []) {
+    if (!A0.key.startsWith(base)) continue;
+    const nk = __KY_SHEET + "-" + A0.key.slice(base.length);
+    sc.anims.exists(nk) || sc.anims.create({ key: nk, frames: A0.frames.map(f => ({ key: __KY_SHEET, frame: f.frame.name })), frameRate: A0.frameRate, repeat: A0.repeat });
+  }
+  return __KY_SHEET;
+}
+{const SK0 = __skinFor; __skinFor = function (scene, skin, classId, eq) {
+  try { if (skin && classId === "ARCHER" && eq?.armor?.id === __KY_ID) { const k = __kySheet(scene); if (k) return { ...skin, sheet: k, __farm: __FARM[__KY_ID] } } } catch (e) {}
+  return SK0.apply(this, arguments) }}
+/*__KYUDO__*/
