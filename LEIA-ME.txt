@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.136 · cache ded-web-v6.21.7-missoes-rei)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.137 · cache ded-web-v6.21.8-aelric-direcoes)
+
+P216.137 — AELRIC JOVEM (O REI QUANDO PRÍNCIPE) ANDA EM TODAS AS DIREÇÕES
+- PixelLab: generate-8-rotations-v3 a partir do perfil antigo + animate-pixminimax (perfil 12 quadros; frente, costas,
+  diagonal de frente e diagonal de costas 8 quadros). scripts/gerar_aelric_andar.py → scripts/art-src/aelric-jovem/;
+  scripts/build_aelric_andar.py monta assets/pixel-art/valdrak/aelric-young-w-<e|s|n|se|ne>.png (mesma escala e pés do
+  antigo; quadro 0 = parado na direção). Oeste/noroeste/sudoeste = espelho.
+- Valdrak antiga (valdrak.js): o príncipe anda virado para o movimento; parado depois de andar para frente/costas/
+  diagonais fica na pose daquela direção. Correndo na frente/costas/diagonais usa o andar 1,5× mais rápido; de lado
+  continua a corrida antiga. O Rei adulto (memórias) não mudou.
 
 P216.136 — MISSÕES DO REI (VALDRAK) VOLTAM A ABRIR NO REFÚGIO
 - O arco do Rei (sonho + Eco de Valdrak com 5 portais; Memórias do Rei com 6, 7 e 8; final com o Rei libertado) contava

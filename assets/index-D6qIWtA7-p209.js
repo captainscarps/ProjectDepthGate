@@ -28868,6 +28868,7 @@ class __ValdrakAntiga extends j.Scene {
     ex("vk-shade") || L.spritesheet("vk-shade", "assets/pixel-art/enemies/necro-shade.png", { frameWidth: 76, frameHeight: 89 });
     if (this.mode === "mem2") { ex("vk-tground") || L.image("vk-tground", P + "map/temple-ground.png"); ex("vk-tprops") || L.atlas("vk-tprops", P + "map/temple-props.png", P + "map/temple-props.json"); this.cache.json.exists("vk-temple") || L.json("vk-temple", P + "map/temple.json") }
     for (const who in sp) for (const a of sp[who]) ex(`vk-${who}-${a}`) || L.spritesheet(`vk-${who}-${a}`, `${P}${who}-${a}.png`, { frameWidth: 128, frameHeight: 128 });
+    for (const t of ["e", "s", "n", "se", "ne"]) ex("vk-ay-w-" + t) || L.spritesheet("vk-ay-w-" + t, `${P}aelric-young-w-${t}.png`, { frameWidth: 128, frameHeight: 128 });   // p216.137: andar em todas as direções (PixelLab)
     for (const k of ["peasant-1", "peasant-2", "peasant-3", "peasant-4"]) ex(k) || L.spritesheet(k, `assets/pixel-art/npc/${k}.png`, { frameWidth: 128, frameHeight: 128 });
     ex("elf-1") || L.spritesheet("elf-1", "assets/pixel-art/npc/elf-1.png", { frameWidth: 128, frameHeight: 128 });
     ex("menino") || L.spritesheet("menino", "assets/pixel-art/npc/menino.png", { frameWidth: 64, frameHeight: 77 });
@@ -28879,6 +28880,7 @@ class __ValdrakAntiga extends j.Scene {
   mkAnims() {
     const A = this.anims, mk = (k, t, fr, rep = -1, s = 0, e) => { if (A.exists(k) || !this.textures.exists(t)) return; const n = this.textures.get(t).frameTotal - 1; A.create({ key: k, frames: A.generateFrameNumbers(t, { start: s, end: e ?? n - 1 }), frameRate: fr, repeat: rep }) };
     for (const a of [["idle", 7], ["idle2", 7], ["walk", 12], ["run", 16], ["attack1", 14, 0], ["attack2", 14, 0], ["jump", 16, 0], ["hurt", 10, 0], ["dead", 8, 0]]) mk("vk-ay-" + a[0], "vk-aelric-young-" + a[0], a[1], a[2] ?? -1);
+    for (const t of ["e", "s", "n", "se", "ne"]) { const T = "vk-ay-w-" + t; if (!this.textures.exists(T) || A.exists(T)) continue; const n = this.textures.get(T).frameTotal - 1; A.create({ key: T, frames: A.generateFrameNumbers(T, { start: 1, end: n - 1 }), frameRate: t === "e" ? 13 : 10, repeat: -1 }) }
     mk("vk-k-idle", "vk-aelric-king-idle", 7);
     // rei adulto (memórias): mesmas chaves do príncipe com o prefixo vk-ak-
     mk("vk-ak-idle", "vk-aelric-king-idle", 7); mk("vk-ak-idle2", "vk-aelric-king-dialogue", 7); mk("vk-ak-walk", "vk-aelric-king-walk", 12); mk("vk-ak-run", "vk-aelric-king-walk", 17);
@@ -29197,8 +29199,16 @@ class __ValdrakAntiga extends j.Scene {
       const sp = (run ? 230 : 150) * Math.min(1, m) / Math.max(1, m) * (S.atkT > 0 ? .35 : 1);
       S.move(H, mx * sp * dt, my * sp * dt, air || S.auto);
       if (Math.abs(mx) > .1) S.face = mx < 0 ? -1 : 1;
-      if (!air && S.atkT <= 0 && S.inv < 600) H.anims.currentAnim?.key !== S.AP + (run ? "run" : "walk") && H.play(S.AP + (run ? "run" : "walk"));
-    } else if (!air && S.atkT <= 0 && S.inv < 600 && !S.dead) H.anims.currentAnim?.key !== S.AP + "idle" && H.play(S.AP + "idle");
+      // p216.137: o príncipe anda virado para a direção do movimento (frente, costas, diagonais; oeste = espelho)
+      const dir8 = S.AP === "vk-ay-" && S.anims.exists("vk-ay-w-s") ? (Math.abs(my) < .38 * m ? "e" : Math.abs(mx) < .38 * m ? (my < 0 ? "n" : "s") : my < 0 ? "ne" : "se") : null;
+      S.vdir = dir8;
+      const wk = dir8 && (!run || dir8 !== "e") ? "vk-ay-w-" + dir8 : S.AP + (run ? "run" : "walk");
+      if (!air && S.atkT <= 0 && S.inv < 600) { H.anims.currentAnim?.key !== wk && H.play(wk); H.anims.timeScale = dir8 && run && dir8 !== "e" ? 1.5 : 1 }
+    } else if (!air && S.atkT <= 0 && S.inv < 600 && !S.dead) {
+      H.anims.timeScale = 1;
+      if (S.vdir && S.vdir !== "e" && S.AP === "vk-ay-") { const T = "vk-ay-w-" + S.vdir; (H.texture.key !== T || H.anims.isPlaying) && (H.anims.stop(), H.setTexture(T, 0)) }
+      else H.anims.currentAnim?.key !== S.AP + "idle" && H.play(S.AP + "idle");
+    }
     if (!air && S.cell(H.x, H.y) !== "2") S.lastSafe = [H.x, H.y];
     H.setFlipX(S.face < 0); H.setDepth(H.y); H.y += 0; H.setY(H.y);
     if (H.__jy) H.y += 0;
