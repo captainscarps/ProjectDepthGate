@@ -1,4 +1,9 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.135 · cache ded-web-v6.21.6-toque-ataca)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.136 · cache ded-web-v6.21.7-missoes-rei)
+
+P216.136 — MISSÕES DO REI (VALDRAK) VOLTAM A ABRIR NO REFÚGIO
+- O arco do Rei (sonho + Eco de Valdrak com 5 portais; Memórias do Rei com 6, 7 e 8; final com o Rei libertado) contava
+  os portais com __hubProg, que precisa da mochila — e no Refúgio não há mochila: dava erro, contava 0 e nada abria.
+  Agora __vkProg conta pelo save da campanha (masmorras concluídas, lista de portais e cristais guardados).
 
 P216.135 — TOCAR/CLICAR: TOQUE ATACA, SEGURAR ANDA/CORRE · BOTÕES GRANDES EMBAIXO NO CELULAR
 - point-click.js: toque/clique rápido não anda mais. Num inimigo (ou a até ~34px dele) vira alvo e ataca até cair;

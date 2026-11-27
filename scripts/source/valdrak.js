@@ -658,8 +658,23 @@ window.__valdrakNow = function (cls, onDone, act, mode) {
    o arco do príncipe (≥5 portais), depois as memórias do rei (≥6, ≥7, ≥8) e, com o Rei libertado, o final. */
 if (typeof Xt !== "undefined" && !Xt.valdrak_crown) Xt.valdrak_crown = { name: "Coroa de Valdrak", type: "accessory", slot: "accessory", icon: "icon-crys-fortress", minRarity: "LEGENDARY", stats: { maxHp: 8, defense: 4, critChance: 8, maxMana: 20 }, value: 500, desc: "A coroa de Aelric. Pesa como uma promessa cumprida." };
 function __vkKingFreed(S, n) { try { const c = JSON.parse(localStorage.getItem("depthgate:collectibles") || "{}"); return n >= __HUBD.length || !!window.__vkForceFinal || Object.keys(c).some(k => /valdrak|fortress|castle/i.test(k)) && n >= __HUBD.length - 1 } catch (e) { return n >= __HUBD.length } }
+/* p216.136: no Refúgio não existe mochila (S.inventory) — __hubProg quebrava ali e as missões do Rei nunca abriam.
+   Conta os portais concluídos pelo save da campanha: masmorras concluídas, lista de portais e cristais guardados. */
+function __vkProg(S) {
+  if (S?.inventory) { try { return __hubProg(S).n } catch (e) { } }
+  const L = new Set(S?.completedDungeons || []);
+  try {
+    const c = typeof __cData === "function" ? __cData(S) : null, d = c?.d, sl = c?.sl ?? S?.retSlot ?? 1;
+    for (const id of [...(d?.campaign?.completedDungeons || []), ...(d?.completedDungeons || [])]) L.add(id);
+    const cls = String(d?.player?.classId || S?.game?.registry?.get("hub:classId") || "").toUpperCase();
+    for (const k of ["depthgate:portals:slot_" + sl, cls && "depthgate:portals:" + sl + ":" + cls]) if (k) for (const id of JSON.parse(localStorage.getItem(k) || "[]")) L.add(id);
+    const its = [...(d?.player?.items || []), ...Object.values(d?.player?.equipment || {})].filter(Boolean).map((q) => q.id);
+    for (const id of __HUBD) if (typeof __CRY !== "undefined" && its.includes(__CRY[id])) L.add(id);
+  } catch (e) { }
+  return __HUBD.filter((id) => L.has(id)).length;
+}
 function __vkNext(S) {
-  const st = __vGet(); let n = 0; try { n = __hubProg(S).n } catch (e) { }
+  const st = __vGet(); let n = __vkProg(S);
   if (window.__vkForce) n = Math.max(n, window.__vkForce === !0 ? 9 : window.__vkForce);
   const half = Math.ceil(__HUBD.length / 2);
   if (n < half) return null;
