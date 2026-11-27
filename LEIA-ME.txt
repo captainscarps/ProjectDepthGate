@@ -1,4 +1,13 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.137 · cache ded-web-v6.21.8-aelric-direcoes)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.138 · cache ded-web-v6.21.9-aelric-roupa)
+
+P216.138 — AELRIC JOVEM COM ROUPA DE PRÍNCIPE REBELDE
+- Visual: gibão carmim aberto com friso e botões dourados, camisa de linho solta para fora, mangas arregaçadas, cinto de
+  couro, luvas sem dedos, meia capa azul rasgada num ombro, calça escura e botas vermelhas gastas. Mesmo cabelo,
+  rosto e lança.
+- PixelLab: edit-images-v2 nas poses (referências de frente, perfil e costas em scripts/art-src/aelric-jovem/roupa/) e
+  transfer-outfit-v2 em TODAS as folhas do príncipe (parado, andar, correr, golpes, pulo, dano, queda e as 5 direções),
+  3 quadros por pedido, mesmo movimento. As costas usam referência própria (a capa trocava de lado entre quadros).
+  scripts/gerar_aelric_roupa.py [folha…] | --instalar. Folhas sem roupa em scripts/art-src/aelric-jovem/sem-roupa/.
 
 P216.137 — AELRIC JOVEM (O REI QUANDO PRÍNCIPE) ANDA EM TODAS AS DIREÇÕES
 - PixelLab: generate-8-rotations-v3 a partir do perfil antigo + animate-pixminimax (perfil 12 quadros; frente, costas,
