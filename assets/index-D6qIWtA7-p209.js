@@ -29144,7 +29144,7 @@ const __RPA=["river-flow","river-rapids","river-wind","boat-glide","boat-sfx"];
 const __BARCO=["warrior","archer","mage","necromancer","druid","shaman","rogue","berserker","hunter"],__BSC=.6;
 /* p216.140: barco em 16 direções (barco16-<classe>.png, quadros de 128: 9 linhas e, ese, se, sse, s, ene, ne, nne, n × 13 quadros;
    0 parado, 1–12 remada; oeste = espelho). Classes com a folha nova: __BARCO16. scripts/gerar_barco16.py + build_barco16.py */
-const __BARCO16=["warrior"],__BSC16=__BSC*168/128,__B16=[[0,0],[1,0],[2,0],[3,0],[4,0],[3,1],[2,1],[1,1],[0,1],[5,1],[6,1],[7,1],[8,0],[7,0],[6,0],[5,0]];
+const __BARCO16=["warrior","archer","mage","necromancer","druid","shaman","rogue","berserker","hunter"],__BSC16=__BSC*168/128,__B16=[[0,0],[1,0],[2,0],[3,0],[4,0],[3,1],[2,1],[1,1],[0,1],[5,1],[6,1],[7,1],[8,0],[7,0],[6,0],[5,0]];
 function __barco16Frame(S,B,row,dt){let d=S.bang*180/Math.PI;while(d>180)d-=360;while(d<=-180)d+=360;
  /* setor de 16 direções (22,5°) com folga: só troca quando passa 16° do meio do setor atual */
  const raw=((Math.round(d/22.5)%16)+16)%16;if(S.bsec==null||S.bsec>15)S.bsec=raw;else if(raw!==S.bsec){let off=d-S.bsec*22.5;while(off>180)off-=360;while(off<-180)off+=360;Math.abs(off)>16&&(S.bsec=raw)}

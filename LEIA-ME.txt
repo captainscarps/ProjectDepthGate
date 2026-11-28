@@ -1,4 +1,11 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.140 · cache ded-web-v6.22.1-barco16)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.141 · cache ded-web-v6.22.2-barco16-todos)
+
+P216.141 — BARCO EM 16 DIREÇÕES PARA TODAS AS CLASSES
+· Arqueiro, Maga, Necromante, Druida, Xamã, Ladina, Samurai e Caçador ganharam a folha barco16-<classe>.png (mesmo
+  processo da p216.140: rotações v3 + /rotate, poses escolhidas a olho por classe em gerar_barco16.py POSES, remada de
+  12 quadros). scripts/gerar_barco16.py poses|remada [classe…] (fontes por classe em scripts/art-src/barco/v16/<classe>/).
+· build_barco16.py: cada quadro da remada é encaixado no casco do quadro parado (a IA movia o barco até ~14 px entre os
+  quadros e ele "pulava") e recortado no próprio quadro (o barco de frente vazava para a linha de baixo).
 
 P216.140 — BARCO DO PRÓLOGO EM 16 DIREÇÕES (Guerreiro, teste) (PixelLab)
 · O barco troca de desenho a cada 22,5° (antes 45°): 9 direções desenhadas (leste, lés-sudeste, sudeste, su-sudeste, sul,
