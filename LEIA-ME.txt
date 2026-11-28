@@ -1,4 +1,12 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.143 · cache ded-web-v6.22.4-valdrak-refino)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.144 · cache ded-web-v6.22.5-valdrak-legivel)
+
+P216.144 — VALDRAK: TEXTOS LEGÍVEIS E MAIS INFORMAÇÃO NA TELA
+- Todos os textos da fase renderizados em alta resolução (antes ficavam borrados por causa da ampliação da interface).
+- Fontes maiores: fala 13 px (nome 14), objetivo 13, dicas 12, avisos de interação e títulos de ato maiores, contorno mais forte.
+- Objetivo com uma linha de detalhe dizendo onde fica / o que fazer; seta da borda mostra a distância em metros.
+- Nome aparece em cima do personagem com quem dá para falar quando se chega perto.
+- Placa com o nome do lugar ao chegar: Moinho de Hollin, Praça da Festa, Ponte do Riacho, Forja, Taberna do Bram,
+  Poço da Vila, Portão de Valdrak.
 
 P216.143 — REFINO DE VALDRAK (FASE DO REI) + CLONE DO ARQUEIRO
 - Clone/fantasma da esquiva do arqueiro (e o chamariz): agora copia o sprite atual do herói (mk2, mesmo quadro e direção),

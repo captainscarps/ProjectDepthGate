@@ -28992,6 +28992,8 @@ class __ValdrakAntiga extends j.Scene {
     mk("vk-c-idle", "vk-chief", 8, -1, 0, 7); mk("vk-c-walk", "vk-chief", 10, -1, 8, 23); mk("vk-c-atk", "vk-chief", 14, 0, 24, 38); mk("vk-c-die", "vk-chief", 10, 0, 39, 47);
   }
   create() {
+    // p216.144: textos nítidos — a interface é ampliada (escala do jogo × zoom), então o texto nasce em alta resolução
+    if (!this.__txtHi) { this.__txtHi = 1; const fac = this.add, t0 = fac.text.bind(fac), R = Math.min(4, Math.ceil((window.devicePixelRatio || 1) * 2.5)); fac.text = (...a) => { const o = t0(...a); try { o.setResolution(R) } catch (e) {} return o } }
     if (this.mode === "dream") return this.dream();
     if (this.mode === "final") return this.finale();
     const S = this, TEMPLE = S.mode === "mem2", M = S.M = S.cache.json.get(TEMPLE ? "vk-temple" : "vk-map"), cam = S.cameras.main;
@@ -29038,14 +29040,17 @@ class __ValdrakAntiga extends j.Scene {
     S.ui = S.add.container(0, 0).setScrollFactor(0).setDepth(2e4);
     S.uiScale();
     // p216.143: objetivo no padrão do jogo — placa no alto, centralizada, com a lista do que falta e o marcador no mapa
-    S.objBg = S.add.graphics(); S.objT = S.add.text(S.LW / 2, 9, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "11px", color: "#f2d9a0", stroke: "#100806", strokeThickness: 3, align: "center", lineSpacing: 2 }).setOrigin(.5, 0);
-    S.hpT = S.add.text(10, 8, "", { fontFamily: "Georgia, serif", fontSize: "12px", color: "#e05050", stroke: "#100806", strokeThickness: 3 });
-    S.hint = S.add.text(S.LW / 2, S.LH - 6, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "10px", color: "#ece2cc", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5, 1);
-    S.prompt = S.add.text(0, 0, "", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "13px", color: "#fff3c8", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5, 1).setDepth(19000);
+    S.objBg = S.add.graphics(); S.objT = S.add.text(S.LW / 2, 9, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "13px", color: "#f2d9a0", stroke: "#100806", strokeThickness: 3, align: "center", lineSpacing: 3 }).setOrigin(.5, 0);
+    S.hpT = S.add.text(10, 8, "", { fontFamily: "Georgia, serif", fontSize: "15px", color: "#e05050", stroke: "#100806", strokeThickness: 3 });
+    S.hint = S.add.text(S.LW / 2, S.LH - 6, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "12px", color: "#ece2cc", stroke: "#100806", strokeThickness: 4 }).setOrigin(.5, 1);
+    S.prompt = S.add.text(0, 0, "", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "21px", color: "#fff3c8", stroke: "#100806", strokeThickness: 5 }).setOrigin(.5, 1).setDepth(19000);
     S.objArrow = S.add.text(0, 0, "➤", { fontFamily: "Georgia, serif", fontSize: "16px", color: "#ffd24a", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5).setVisible(!1);
     S.objMark = S.add.text(0, 0, "!", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "20px", color: "#ffd24a", stroke: "#100806", strokeThickness: 4 }).setOrigin(.5, 1).setDepth(19001).setVisible(!1);
     S.tweens.add({ targets: S.objMark, scale: { from: .9, to: 1.15 }, duration: 520, yoyo: !0, repeat: -1 });
-    S.ui.add([S.objBg, S.objT, S.hpT, S.hint, S.objArrow]);
+    S.objD = S.add.text(0, 0, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "11px", color: "#ffe9a8", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5).setVisible(!1);
+    S.areaT = S.add.text(S.LW / 2, 74, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold italic", fontSize: "16px", color: "#f7e6b8", stroke: "#100806", strokeThickness: 4 }).setOrigin(.5).setAlpha(0);
+    S.tagT = S.add.text(0, 0, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "17px", color: "#f2d9a0", stroke: "#100806", strokeThickness: 5, align: "center" }).setOrigin(.5, 1).setDepth(19000);
+    S.ui.add([S.objBg, S.objT, S.hpT, S.hint, S.objArrow, S.objD, S.areaT]);
     S.setupWeather(); S.isNight && S.setNight(!0);
     S.setupInput(); S.setupTouch();
     S.dlgBox(); S.state = {}; S.busy = !1;
@@ -29118,8 +29123,8 @@ class __ValdrakAntiga extends j.Scene {
     else { bg = S.add.graphics(); bg.fillStyle(0x141113, .95).fillRoundedRect(px, py, pw, ph, 8).lineStyle(1, 0x8a2420, .9).strokeRoundedRect(px, py, pw, ph, 8) }
     const gl = S.add.image(px + 52, py - 6, "light").setBlendMode(j.BlendModes.ADD).setScale(.55).setAlpha(.3).setTint(0xffd580);
     const por = S.add.sprite(px + 56, py + ph - 3, "__DEFAULT").setOrigin(.5, 1);
-    const nm = S.add.text(px + 118, py + 10, "", { fontFamily: F, fontStyle: "bold", fontSize: "12px", color: "#f2d9a0", stroke: "#120a08", strokeThickness: 3 });
-    const tx = S.add.text(px + 118, py + 28, "", { fontFamily: F, fontSize: "11px", color: "#ece2cc", lineSpacing: 3, wordWrap: { width: pw - 134 }, stroke: "#0a0806", strokeThickness: 2 });
+    const nm = S.add.text(px + 118, py + 8, "", { fontFamily: F, fontStyle: "bold", fontSize: "14px", color: "#f2d9a0", stroke: "#120a08", strokeThickness: 3 });
+    const tx = S.add.text(px + 118, py + 27, "", { fontFamily: F, fontSize: "13px", color: "#f4ecda", lineSpacing: 3, wordWrap: { width: pw - 134 }, stroke: "#0a0806", strokeThickness: 2 });
     const hint = S.add.text(px + pw - 10, py + ph - 8, "▼", { fontFamily: F, fontSize: "10px", color: "#c9a24a" }).setOrigin(1, 1);
     S.tweens.add({ targets: hint, alpha: .25, duration: 500, yoyo: !0, repeat: -1 });
     c.add([dim, bg, gl, por, nm, tx, hint]); S.ui.add(c);
@@ -29158,8 +29163,8 @@ class __ValdrakAntiga extends j.Scene {
   titleCard(a, b, done) {
     const S = this, cam = S.cameras.main;
     const LW = S.LW || cam.width, LH = S.LH || cam.height;
-    const t1 = S.add.text(LW / 2, LH * .38, a, { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "20px", color: "#f2d9a0", stroke: "#100806", strokeThickness: 4 }).setOrigin(.5).setAlpha(0);
-    const t2 = S.add.text(LW / 2, LH * .38 + 22, b, { fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "11px", color: "#ece2cc", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5).setAlpha(0);
+    const t1 = S.add.text(LW / 2, LH * .38, a, { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "26px", color: "#f2d9a0", stroke: "#100806", strokeThickness: 5 }).setOrigin(.5).setAlpha(0);
+    const t2 = S.add.text(LW / 2, LH * .38 + 28, b, { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", fontSize: "14px", color: "#ece2cc", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5).setAlpha(0);
     S.ui.add([t1, t2]); S.busy = !0;
     S.tweens.add({ targets: [t1, t2], alpha: 1, duration: 700, hold: 1600, yoyo: !0, onComplete: () => { t1.destroy(); t2.destroy(); S.busy = !1; done?.() } });
   }
@@ -29175,6 +29180,13 @@ class __ValdrakAntiga extends j.Scene {
       (T.bridge ? "✓ " : "· ") + L3("Ferreiro do outro lado do riacho", "The blacksmith across the stream", "El herrero al otro lado del arroyo"),
       (T.ticoDone ? "✓ " : "· ") + L3("Mãe do Tico, perto da praça", "Tico's mother, near the square", "La madre de Tico, cerca de la plaza"),
       (T.baker ? "✓ " : "· ") + L3("Padeira na barraca (opcional)", "Baker at her stall (optional)", "Panadera en su puesto (opcional)")].join("\n");
+    const DET = { o_mill: L3("A trava fica na base do moinho, ao norte da praça", "The lock is at the base of the windmill, north of the square", "La traba está en la base del molino, al norte de la plaza"),
+      o_tavern: L3("Bram, o taberneiro, chamou você — a taberna fica a leste", "Bram the innkeeper sent for you — the tavern is to the east", "Bram, el tabernero, te llamó — la taberna está al este"),
+      o_rescue: L3("Vá até os moradores presos e guie todos até o poço", "Reach the trapped villagers and lead them to the well", "Llega a los aldeanos atrapados y guíalos al pozo"),
+      o_chief: L3("Derrote o chefe dos Corvos antes que ele queime a vila", "Defeat the Crow chief before he burns the village", "Derrota al jefe de los Cuervos antes de que queme la aldea"),
+      o_well: L3("Junte todos no poço da vila", "Gather everyone at the village well", "Reúne a todos en el pozo de la aldea"),
+      o_gate: L3("O portão fica ao norte, na muralha", "The gate is to the north, in the wall", "La puerta está al norte, en la muralla"), o_gates2: L3("O portão fica ao norte, na muralha", "The gate is to the north, in the wall", "La puerta está al norte, en la muralla") };
+    k && DET[k] && !t.includes("\n") && (t += "\n" + DET[k]);
     S.objT.setText(t); S.objBg.clear();
     if (t) { const w = S.objT.width + 22, h = S.objT.height + 10; S.objBg.fillStyle(0x140d0a, .82).fillRoundedRect(S.LW / 2 - w / 2, 4, w, h, 6).lineStyle(1, 0xc9a24a, .85).strokeRoundedRect(S.LW / 2 - w / 2, 4, w, h, 6) }
   }
@@ -29201,6 +29213,23 @@ class __ValdrakAntiga extends j.Scene {
     if (inV) { S.objArrow.setVisible(!1); return }
     const cx = v.centerX, cy = v.centerY, a = Math.atan2(tg[1] - cy, tg[0] - cx), mx = S.LW / 2 - 18, my = S.LH / 2 - 24, k = Math.min(mx / Math.max(.001, Math.abs(Math.cos(a))), my / Math.max(.001, Math.abs(Math.sin(a))));
     S.objArrow.setVisible(!0).setPosition(S.LW / 2 + Math.cos(a) * k, S.LH / 2 + Math.sin(a) * k).setRotation(a);
+    const m = Math.round(Math.hypot(tg[0] - S.hero.x, tg[1] - S.hero.y) / 32);
+    S.objD.setVisible(!0).setText(m + " m").setPosition(S.objArrow.x - Math.cos(a) * 18, S.objArrow.y - Math.sin(a) * 14);
+  }
+  /* nome em cima de quem está perto (os personagens com fala) e o nome do lugar quando se chega nele */
+  updInfo() {
+    const S = this, H = S.hero; if (!S.tagT || !H) return;
+    S.objArrow.visible || S.objD.setVisible(!1);
+    let best = null, bd = 120;
+    if (!S.dlg.vis) for (const id in S.npcs || {}) { const n = S.npcs[id]; if (!n.visible) continue; const d = Math.hypot(n.x - H.x, n.y - H.y); if (d < bd) { bd = d; best = [id, n] } }
+    if (best) { let nm = ""; try { nm = S.speaker(best[0]).name } catch (e) {} const ph = Math.min(best[1].displayHeight || 60, 74); S.tagT.setText(nm).setPosition(best[1].x, best[1].y - ph - 2).setVisible(!!nm && !S.prompt.text) } else S.tagT.setVisible(!1);
+    const sp = S.M?.spots || {}; if (S.mode !== "prince" || !sp.millLever) return;
+    const L3 = (a, b, c) => { try { return __L3(a, b, c) } catch (e) { return a } };
+    const Z = [["millLever", 200, L3("Moinho de Hollin", "Hollin's Windmill", "Molino de Hollin")], ["festival", 240, L3("Praça da Festa", "Festival Square", "Plaza de la Fiesta")], ["bridgeW", 170, L3("Ponte do Riacho", "Stream Bridge", "Puente del Arroyo")],
+      ["smith", 170, L3("Forja do Ferreiro", "Blacksmith's Forge", "Forja del Herrero")], ["tavernDoor", 220, L3("Taberna do Bram", "Bram's Tavern", "Taberna de Bram")], ["well", 170, L3("Poço da Vila", "Village Well", "Pozo de la Aldea")], ["gate", 260, L3("Portão de Valdrak", "Gate of Valdrak", "Puerta de Valdrak")]];
+    let z = null; for (const [k, r, nm] of Z) if (sp[k] && Math.hypot(sp[k][0] - H.x, sp[k][1] - H.y) < r) { z = nm; break }
+    if (z && z !== S.__area) { S.__area = z; S.tweens.killTweensOf(S.areaT); S.areaT.setText("— " + z + " —").setY(S.objT.height + 30).setAlpha(0); S.tweens.add({ targets: S.areaT, alpha: 1, duration: 400, yoyo: !0, hold: 2200 }) }
+    else if (!z) S.__area = null;
   }
   /* aparelho usado agora (teclado, controle ou toque): botões de toque só aparecem no toque; textos de botão seguem o aparelho */
   dev() { return this.__dev || (this.sys.game.device.input.touch && !this.game.device?.os?.desktop ? "touch" : "keyboard") }
@@ -29356,7 +29385,7 @@ class __ValdrakAntiga extends j.Scene {
       (pad.a || pad.b || pad.x2 || pad.run || Math.abs(pad.x) > .3 || Math.abs(pad.y) > .3) && (S.__dev = "gamepad") }
     // p216.143: botões de toque só com toque; marcador do objetivo; destrava se ficar "ocupado" sem fala por muito tempo
     if (S.tBtns) { const on = S.dev() === "touch"; if (on !== S.__tOn) { S.__tOn = on; S.tBtns.forEach(o => o.setVisible(on)); S.joy.base.setVisible(on); S.joy.knob.setVisible(on) } }
-    S.updObj();
+    S.updObj(); S.updInfo();
     if (S.__devShown !== S.dev() && S.hint.text && S.hint.text === S.__hintTxt) S.hint.setText(S.keysHint()); S.__devShown = S.dev(); S.__hintTxt = S.hint.text;
     if (S.busy && !S.dlg.vis && !S.__cine) { S.__busyT = (S.__busyT || 0) + dtMs; if (S.__busyT > 30000) { S.__busyT = 0; S.busy = !1; console.warn("[valdrak] destravado: ocupado sem fala por 30 s") } } else S.__busyT = 0;
     if (Phaser_JD(k.use) || Phaser_JD(k.u3)) S.dlg.vis ? S.dlgNext() : S.use();
