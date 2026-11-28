@@ -1,4 +1,17 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.139 · cache ded-web-v6.22.0-kyudo)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.140 · cache ded-web-v6.22.1-barco16)
+
+P216.140 — BARCO DO PRÓLOGO EM 16 DIREÇÕES (Guerreiro, teste) (PixelLab)
+· O barco troca de desenho a cada 22,5° (antes 45°): 9 direções desenhadas (leste, lés-sudeste, sudeste, su-sudeste, sul,
+  lés-nordeste, nordeste, nor-nordeste, norte) + espelho para o oeste, todas na mesma vista de cima inclinada.
+  Remada com 12 quadros (antes 8). Folha assets/pixel-art/barco/barco16-warrior.png (quadros 128, escala ajustada para
+  o mesmo tamanho na tela). As outras classes continuam com o barco de 8 direções até ganharem a folha (__BARCO16).
+· Movimento: troca de direção com folga de 16° (não pisca na fronteira); a remada acompanha a velocidade (acelerando
+  rema rápido, deslizando rema devagar, parado assenta); o barco "senta" e estica um pouco a cada puxada; som e
+  respingo da remada saem quando a pá entra na água (quadro 4), em vez de num tempo fixo.
+· Arte: generate-8-rotations-v3 a partir da pose de frente + a mesma pose girada 22° (/rotate) → 16 poses; as que
+  ficaram nos ângulos certos foram escolhidas a olho; animate-pixminimax 12 quadros por direção.
+  scripts/gerar_barco16.py [classe] → scripts/art-src/barco/v16/; scripts/build_barco16.py monta a folha.
+  Código: arctic-prologue.js (__barco16Frame).
 
 P216.139 — HAKAMA DO KYŪDŌ (Arqueiro, armadura do Ferreiro) (PixelLab)
 · Ideia do Rafael: arqueiro de kyūdō. Sem elmo nem armadura — cabelo preto longo num rabo alto, quimono azul-marinho

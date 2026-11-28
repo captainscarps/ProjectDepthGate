@@ -73,6 +73,21 @@ const __RPA=["river-flow","river-rapids","river-wind","boat-glide","boat-sfx"];
    Folha barco-<classe>.png: 5 linhas (leste, sudeste, sul, nordeste, norte) × 9 quadros (0 parado, 1–8 remada); o lado
    oeste é o espelho. Sem a folha da classe, fica o barco antigo visto de cima (que gira). */
 const __BARCO=["warrior","archer","mage","necromancer","druid","shaman","rogue","berserker","hunter"],__BSC=.6;
+/* p216.140: barco em 16 direções (barco16-<classe>.png, quadros de 128: 9 linhas e, ese, se, sse, s, ene, ne, nne, n × 13 quadros;
+   0 parado, 1–12 remada; oeste = espelho). Classes com a folha nova: __BARCO16. scripts/gerar_barco16.py + build_barco16.py */
+const __BARCO16=["warrior"],__BSC16=__BSC*168/128,__B16=[[0,0],[1,0],[2,0],[3,0],[4,0],[3,1],[2,1],[1,1],[0,1],[5,1],[6,1],[7,1],[8,0],[7,0],[6,0],[5,0]];
+function __barco16Frame(S,B,row,dt){let d=S.bang*180/Math.PI;while(d>180)d-=360;while(d<=-180)d+=360;
+ /* setor de 16 direções (22,5°) com folga: só troca quando passa 16° do meio do setor atual */
+ const raw=((Math.round(d/22.5)%16)+16)%16;if(S.bsec==null||S.bsec>15)S.bsec=raw;else if(raw!==S.bsec){let off=d-S.bsec*22.5;while(off>180)off-=360;while(off<-180)off+=360;Math.abs(off)>16&&(S.bsec=raw)}
+ const[r,fl]=__B16[S.bsec],sp=Math.min(1,(S.bspd||0)/66);
+ /* remada no ritmo do barco: acelerando rema rápido e forte; deslizando rema devagar; parado assenta no quadro 0 */
+ const rate=row?7+8*sp:sp>.25?3.5:0;if(rate>0)S.bfr=(S.bfr||0)+dt*rate;else{const ph=(S.bfr||0)%12;ph>.4&&(S.bfr=(S.bfr||0)+dt*6)}
+ const ph=(S.bfr||0)%12,f=rate>0||ph>.4?1+Math.floor(ph):0;
+ /* a pá entra na água no quadro 4: som e respingo da remada saem nessa hora (rowing block abaixo) */
+ const fi=Math.floor(ph);if(f&&S.__bpf!==fi&&fi===3&&(row||sp>.25))S.__stroke=1;S.__bpf=fi;
+ /* balanço junto da puxada: o barco "senta" e avança um pouco na metade da remada */
+ const pull=f?Math.max(0,Math.sin(ph/12*Math.PI*2)):0,bob=Math.sin(S.bt*2.1)*.008+pull*.018*(row?1:.4);
+ B.setFrame(r*13+f).setFlipX(!!fl).setRotation(0).setScale(__BSC16*(1+pull*.006),__BSC16*(1+bob))}
 function __barcoFrame(S,B,row,dt){let d=S.bang*180/Math.PI;while(d>180)d-=360;while(d<=-180)d+=360;
  /* p216.72: setor de 8 direções com folga de 10° (o barco não pisca entre duas direções na fronteira) */
  const raw=((Math.round(d/45)%8)+8)%8;if(S.bsec==null)S.bsec=raw;else if(raw!==S.bsec){let off=d-S.bsec*45;while(off>180)off-=360;while(off<-180)off+=360;Math.abs(off)>32&&(S.bsec=raw)}
@@ -125,7 +140,7 @@ function __arcMirror(S,M){const W=M.w,X=x=>W-x,P2=a=>a&&[X(a[0]),a[1],...a.slice
   path:(M.path||[]).map(p=>[X(p[0]),p[1],p[2]]),mist:(M.mist||[]).map(([x,y,rx,ry])=>[X(x),y,rx,ry]),zones,mirrored:1}}
 class __ArcticPrologue extends j.Scene{constructor(k){super(k||"ArcticPrologue")}
 init(d){this.ret=!!d?.ret;this.onDone=d?.onDone||null;this.choice=d?.choice||null;this.next=d?.next??{key:"Game",data:{levelId:"forest"}};this.classId=d?.classId??this.next.data?.classId??"WARRIOR";this.leaving=!1;if(!this.ret)window.__hasGuardianMagic=!1}
-preload(){this.textures.exists("arc-boat-red")||this.load.image("arc-boat-red","assets/pixel-art/arctic/arc-boat-red.png");this.textures.exists("arc-boat-teal")||this.load.image("arc-boat-teal","assets/pixel-art/arctic/arc-boat-teal.png");{const c=String(this.classId||"WARRIOR").toLowerCase();__BARCO.includes(c)&&!this.textures.exists("barco-"+c)&&this.load.spritesheet("barco-"+c,"assets/pixel-art/barco/barco-"+c+".png",{frameWidth:168,frameHeight:168});this.textures.exists("barco-vazio")||this.load.image("barco-vazio","assets/pixel-art/barco/barco-vazio.png")}
+preload(){this.textures.exists("arc-boat-red")||this.load.image("arc-boat-red","assets/pixel-art/arctic/arc-boat-red.png");this.textures.exists("arc-boat-teal")||this.load.image("arc-boat-teal","assets/pixel-art/arctic/arc-boat-teal.png");{const c=String(this.classId||"WARRIOR").toLowerCase();__BARCO.includes(c)&&!this.textures.exists("barco-"+c)&&this.load.spritesheet("barco-"+c,"assets/pixel-art/barco/barco-"+c+".png",{frameWidth:168,frameHeight:168});__BARCO16.includes(c)&&!this.textures.exists("barco16-"+c)&&this.load.spritesheet("barco16-"+c,"assets/pixel-art/barco/barco16-"+c+".png",{frameWidth:128,frameHeight:128});this.textures.exists("barco-vazio")||this.load.image("barco-vazio","assets/pixel-art/barco/barco-vazio.png")}
  this.textures.exists("rf-props")||this.load.atlas("rf-props","assets/pixel-art/ruins-forest/rf-props.png","assets/pixel-art/ruins-forest/rf-props.json");
  this.textures.exists("fr-bridge")||this.load.image("fr-bridge","assets/pixel-art/forest-open/fr-bridge.png");
  this.textures.exists("rp2-props")||this.load.atlas("rp2-props","assets/pixel-art/river-prologue/rp2-props.png","assets/pixel-art/river-prologue/rp2-props.json");
@@ -172,7 +187,7 @@ create(){const S=this,M0=S.cache.json.get("rp-meta"),M=S.ret?__arcMirror(S,M0):M
  for(const[mx,my,rx,ry]of M.mist||[])for(let k=0;k<7;k++){const m=w(S.add.ellipse(mx+(R()-.5)*rx,my+(R()-.5)*ry,rx*(.5+R()*.5),ry*(.35+R()*.3),0xdfeee8,0).setDepth(3900));S.tweens.add({targets:m,alpha:{from:.02,to:.09},x:"+="+(30+R()*50),duration:6e3+R()*5e3,yoyo:!0,repeat:-1,delay:R()*4e3})}
  for(let k=0;k<16;k++){const x=R()*S.W,y=R()*S.H,ray=w(S.add.image(x,y,"light").setScale(.9,5).setRotation(.55).setBlendMode(j.BlendModes.ADD).setTint(0xfff3c8).setAlpha(0).setDepth(3950));S.tweens.add({targets:ray,alpha:{from:0,to:.07},duration:4e3+R()*3e3,yoyo:!0,repeat:-1,delay:R()*5e3})}
  /* barco */
- S.mode="boat";const P0=M.start;{const bc="barco-"+String(S.classId||"WARRIOR").toLowerCase();S.bhd=S.textures.exists(bc)?bc:null;S.boat=w((S.bhd?S.add.sprite(P0[0],P0[1],S.bhd,0).setOrigin(.5,.62).setScale(__BSC):S.add.image(P0[0],P0[1],"arc-boat-red").setScale(.5)).setDepth(P0[1]))}S.bv={x:0,y:0};S.wakeT=0;S.bt=0;
+ S.mode="boat";const P0=M.start;{const cl=String(S.classId||"WARRIOR").toLowerCase(),b16="barco16-"+cl,bc=S.textures.exists(b16)?b16:"barco-"+cl;S.b16=bc===b16;S.bhd=S.textures.exists(bc)?bc:null;S.boat=w((S.bhd?S.add.sprite(P0[0],P0[1],S.bhd,0).setOrigin(.5,S.b16?.61:.62).setScale(S.b16?__BSC16:__BSC):S.add.image(P0[0],P0[1],"arc-boat-red").setScale(.5)).setDepth(P0[1]))}S.bv={x:0,y:0};S.wakeT=0;S.bt=0;
  const p1=S.P[3]||[P0[0]+10,P0[1]-10];S.bang=Math.atan2(p1[1]-P0[1],p1[0]-P0[0]);
  /* herói (aparece ao desembarcar) */
  const cls=String(S.classId||"WARRIOR").toLowerCase(),key=[`mk4b-${cls}-t0`,`mk4b-${cls}`].find(k=>S.textures.exists(k));S.lay=S.cache.json.get(`mk4b-${cls}-layout`);S.hkey=key;
@@ -333,7 +348,7 @@ updateAnimals(dt){const S=this;if(!S.animals?.length)return;const R=Math.random,
   if(C.kind==="duck"&&a.st==="idle"&&R()<dt*.15)S.ring(a.x,a.y,10);if(C.kind==="fish"&&a.st==="idle"&&R()<dt*.1&&v.contains(a.x,a.y))S.ring(a.x,a.y,5)}}
 doAct(){const S=this,a=S.curAct;if(!a)return;if(a.kind==="land"){S.disembark();return}if(a.kind==="embark"){S.embark();return}if(a.kind==="poi"){a.p.done=!0;S.ret?S.mono(a.p.line===5?"wreck":"statue",__L3(...__RET[a.p.line===5?"wreck":"statue"])):S.say(a.p.line,!0);S.game.audioEngine?.sfx?.("sfx-ui-tab");S.burst(a.p.x,a.p.y-20)}}
 burst(x,y){const S=this;for(let k=0;k<10;k++){const c=S.w(S.add.circle(x,y,1.5,0xd8ff9a,.9).setDepth(5e3));S.tweens.add({targets:c,x:x+(Math.random()-.5)*50,y:y-20-Math.random()*30,alpha:0,duration:700,onComplete:()=>c.destroy()})}}
-disembark(){const S=this;if(S.mode!=="boat")return;S.mode="land";S.bv={x:0,y:0};S.bhd&&S.boat.setTexture("barco-vazio").setFlipX(!1).setRotation(0);S.tweens.add({targets:S.boat,x:S.dock.x+34,y:S.dock.y+6,rotation:S.bhd?0:.25,duration:500});
+disembark(){const S=this;if(S.mode!=="boat")return;S.mode="land";S.bv={x:0,y:0};S.bhd&&S.boat.setTexture("barco-vazio").setScale(__BSC).setFlipX(!1).setRotation(0);S.tweens.add({targets:S.boat,x:S.dock.x+34,y:S.dock.y+6,rotation:S.bhd?0:.25,duration:500});
  S.sfx("splash",.8);S.sfx("bump",.6);S.time.delayedCall(250,()=>S.sfx("step",.7));S.time.delayedCall(480,()=>S.sfx("step",.7));
  const Lp=S.M.land,hx=Lp[0],hy=Lp[1];S.hx=hx;S.hy=hy;S.hero&&S.hero.setPosition(hx,hy).setVisible(!0).setAlpha(0).setDepth(hy+1);S.hero&&S.tweens.add({targets:S.hero,alpha:1,duration:400});S.hsh.setPosition(hx,hy).setVisible(!0);
  S.hero&&S.anims.exists(S.hkey+"-idle")&&S.hero.play(S.hkey+"-idle");S.cameras.main.startFollow(S.hero||S.boat,!0,.08,.08);S.cameras.main.setFollowOffset(0,0);S.time.delayedCall(700,()=>S.say(4));S.time.delayedCall(900,()=>S.title("dock"))}
@@ -361,10 +376,10 @@ update(t,ms){const S=this;if(S.leaving)return;if(S.game.inputManager?.justDown?.
   const hit=Math.abs(nx-tx)+Math.abs(ny-ty)>.3;if(hit){S.bv.x*=.7;S.bv.y*=.7;if(sp>45&&(S.bumpT||0)<t){S.bumpT=t+900;S.sfx("bump",Math.min(.8,sp/120));S.cameras.main.shake(120,.0015)}}
   B.setPosition(nx,ny).setDepth(ny);const tv=Math.hypot(vx,vy);S.bspd=tv;
   /* p216.72: com o direcional apertado, o barco vira para onde o jogador aponta (rápido); solto, segue o rumo da correnteza */const inp=Math.hypot(a.x,a.y)>.3;if(inp||tv>6){const ang=inp?Math.atan2(a.y,a.x):Math.atan2(vy,vx);let d=ang-S.bang;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;S.bang+=d*Math.min(1,dt*(inp?(S.bhd?10:4):(S.bhd?1.6:2.6)))}
-  S.bt+=dt;S.bhd&&B.texture.key===S.bhd?__barcoFrame(S,B,Math.hypot(a.x,a.y)>.3,dt):B.setRotation(S.bang+Math.PI/2+Math.sin(S.bt*1.7)*.035).setScale(.5,.5*(1+Math.sin(S.bt*2.3)*.012));
+  S.bt+=dt;S.bhd&&B.texture.key===S.bhd?(S.b16?__barco16Frame:__barcoFrame)(S,B,Math.hypot(a.x,a.y)>.3,dt):B.setRotation(S.bang+Math.PI/2+Math.sin(S.bt*1.7)*.035).setScale(.5,.5*(1+Math.sin(S.bt*2.3)*.012));
   S.wakeT+=dt;if(tv>18&&S.wakeT>.11){S.wakeT=0;for(const sd of[-1,1]){const bx=B.x-Math.cos(S.bang)*26+Math.sin(S.bang)*sd*7,by=B.y-Math.sin(S.bang)*26-Math.cos(S.bang)*sd*7,e=S.w(S.add.ellipse(bx,by,8,4,0xcfeee4,.45).setDepth(.95).setRotation(S.bang));S.tweens.add({targets:e,x:bx+Math.sin(S.bang)*sd*10,y:by-Math.cos(S.bang)*sd*10,scaleX:2.6,scaleY:1.6,alpha:0,duration:1100,onComplete:()=>e.destroy()})}}
   /* remadas (som + respingo dos dois lados) e rangidos da madeira */
-  const rowing=Math.hypot(a.x,a.y)>.3;S.rowT=(S.rowT||0)-dt;if(rowing&&S.rowT<=0){S.rowT=.95+Math.random()*.2;S.side=-(S.side||1);S.sfx("paddle",.75,S.side*.35);const px_=B.x+Math.sin(S.bang)*S.side*16,py_=B.y-Math.cos(S.bang)*S.side*16;for(let k=0;k<5;k++){const c=S.w(S.add.circle(px_,py_,1.4,0xe8fff8,.9).setDepth(ny+1));S.tweens.add({targets:c,x:px_+(Math.random()-.5)*14,y:py_-6-Math.random()*8,alpha:0,duration:450,onComplete:()=>c.destroy()})}const r=S.w(S.add.ellipse(px_,py_,6,3,0,0).setStrokeStyle(1,0xe8fff8,.7).setDepth(.9));S.tweens.add({targets:r,scaleX:3.4,scaleY:3,alpha:0,duration:900,onComplete:()=>r.destroy()})}
+  const rowing=Math.hypot(a.x,a.y)>.3;S.rowT=(S.rowT||0)-dt;if(S.b16?(S.__stroke?(S.__stroke=0,!0):!1):(rowing&&S.rowT<=0)){S.rowT=.95+Math.random()*.2;S.side=-(S.side||1);S.sfx("paddle",.75,S.side*.35);const px_=B.x+Math.sin(S.bang)*S.side*16,py_=B.y-Math.cos(S.bang)*S.side*16;for(let k=0;k<5;k++){const c=S.w(S.add.circle(px_,py_,1.4,0xe8fff8,.9).setDepth(ny+1));S.tweens.add({targets:c,x:px_+(Math.random()-.5)*14,y:py_-6-Math.random()*8,alpha:0,duration:450,onComplete:()=>c.destroy()})}const r=S.w(S.add.ellipse(px_,py_,6,3,0,0).setStrokeStyle(1,0xe8fff8,.7).setDepth(.9));S.tweens.add({targets:r,scaleX:3.4,scaleY:3,alpha:0,duration:900,onComplete:()=>r.destroy()})}
   S.creakT=(S.creakT??3)-dt;if(S.creakT<=0){S.creakT=4+Math.random()*6;tv>12&&S.sfx("creak",.35+Math.random()*.25,(Math.random()-.5)*.6)}
   /* câmera olha um pouco à frente do barco */
   const lk=.75;S.look.x+=(-vx*lk-S.look.x)*Math.min(1,dt*1.2);S.look.y+=(-vy*lk-S.look.y)*Math.min(1,dt*1.2);cam.setFollowOffset(S.look.x,S.look.y);
@@ -492,7 +507,7 @@ updateLife(dt,t,G){const S=this,R=Math.random,v=S.cameras.main.worldView,tw=t/1e
 /* ── caminho de volta ── */
 retStart(){const S=this,M=S.M,L3=__L3,cam=S.cameras.main,R=Math.random;S.mode="land";S.bv={x:0,y:0};
  /* barco amarrado no píer; herói chega pela trilha da floresta */
- S.boat.setPosition(S.dock.x+30,S.dock.y+8).setRotation(S.bhd?0:.25).setDepth(S.dock.y+8);S.bhd&&S.boat.setTexture("barco-vazio");
+ S.boat.setPosition(S.dock.x+30,S.dock.y+8).setRotation(S.bhd?0:.25).setDepth(S.dock.y+8);S.bhd&&S.boat.setTexture("barco-vazio").setScale(__BSC);
  let hx=M.exit[0],hy=M.exit[1];for(let k=0;k<60;k++){const t=k/60,x=M.exit[0]+(M.land[0]-M.exit[0])*t*.5,y=M.exit[1]+(M.land[1]-M.exit[1])*t*.5;if(S.walkOk(x,y)){hx=x;hy=y;if(k>6)break}}
  S.hx=hx;S.hy=hy;S.hero&&(S.hero.setPosition(hx,hy).setVisible(!0).setDepth(hy+1),S.anims.exists(S.hkey+"-idle")&&S.hero.play(S.hkey+"-idle"));S.hsh.setPosition(hx,hy).setVisible(!0);
  cam.startFollow(S.hero||S.boat,!0,.08,.08);cam.setFollowOffset(0,0);cam.centerOn(hx,hy);
@@ -503,7 +518,7 @@ retStart(){const S=this,M=S.M,L3=__L3,cam=S.cameras.main,R=Math.random;S.mode="l
  try{window.__dubPrefetch?.([__L3(...__RETLANG)].concat(Object.values(__RET).map(a=>__L3(...a))))}catch(e){}
  S.time.delayedCall(1800,()=>S.title("ret"));S.time.delayedCall(3600,()=>{S.mono("lang",L3(...__RETLANG));S.mono("r0",L3(...__RET.r0))})}
 embark(){const S=this;if(S.mode!=="land")return;S.mono("dock",__L3(...__RET.dock));S.mode="boat";S.sfx("step",.7);S.time.delayedCall(220,()=>S.sfx("step",.7));S.time.delayedCall(420,()=>{S.sfx("splash",.6);S.sfx("bump",.4)});
- S.tweens.add({targets:S.hero,alpha:0,duration:400,onComplete:()=>S.hero.setVisible(!1)});S.hsh.setVisible(!1);S.tweens.add({targets:S.boat,x:S.dock.x,y:S.dock.y,rotation:0,duration:600});S.bhd&&S.time.delayedCall(420,()=>S.boat.setTexture(S.bhd,0));
+ S.tweens.add({targets:S.hero,alpha:0,duration:400,onComplete:()=>S.hero.setVisible(!1)});S.hsh.setVisible(!1);S.tweens.add({targets:S.boat,x:S.dock.x,y:S.dock.y,rotation:0,duration:600});S.bhd&&S.time.delayedCall(420,()=>S.boat.setTexture(S.bhd,0).setScale(S.b16?__BSC16:__BSC));
  S.pi=S.near(S.dock.x,S.dock.y);const tn=S.tan(Math.max(0,S.pi));S.bang=Math.atan2(-tn.y,-tn.x);S.bv={x:-tn.x*20,y:-tn.y*20};
  S.cameras.main.startFollow(S.boat,!0,.05,.05);S.time.delayedCall(4200,()=>S.mono("river",__L3(...__RET.river)))}
 retRiver(B){const S=this,M=S.M,L3=__L3;
