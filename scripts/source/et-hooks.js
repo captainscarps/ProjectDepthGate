@@ -145,7 +145,12 @@ function __etOnDodge(S,kind){const P=S.player,now=S.time.now;R(S,"rd_contra")&&(
  if(R(S,"ard_danca")&&now>=(S.__etDanceCD??0)){S.__etDanceCD=now+3e3;P.invuln=Math.max(P.invuln,1);S.effects.floatText(P.x,P.y-30,__L3("DANÇA DO VENTO","WIND DANCE","DANZA DEL VIENTO"),"#c0e0ff",9);__etFlash(S,P.x,P.y,12640767,30)}
  if(kind==="reflex"&&R(S,"rd_mare")){const s=S.abilities.slots.find(q=>q.def?.id==="ET_ROLL");s&&s.cooldown>0&&(s.cooldown=0,s.__chOk=!0,S.effects.floatText(P.x,P.y-40,__L3("MARÉ BAIXA","LOW TIDE","MAREA BAJA"),"#9ad0ff",9))}
  if(kind==="dash"&&R(S,"ard_fant"))__etPhantom(S)}
-function __etPhantom(S){const P=S.player;let im;try{im=S.add.sprite(P.x,P.y,P.texture.key,P.frame?.name??0).setFlipX(P.flipX).setScale(P.scaleX,P.scaleY).setTint(10137804).setAlpha(.6).setDepth(P.y).setBlendMode(j.BlendModes.ADD)}catch(e){return}
+/* p216.143: cópia do herói COMO ELE APARECE (folha e quadro atuais do desenho, com a armadura) — nunca o corpo de física
+   (S.player usa a textura antiga "player-<classe>", invisível no jogo; era ela que aparecia no fantasma/isca) */
+function __heroImg(S,tint,alpha,add){const m=S.playerVisual?.mk2,P=S.player;if(!m?.active)return null;const mt=m.getWorldTransformMatrix();
+ const im=S.add.sprite(mt.tx,mt.ty,m.texture.key,m.frame.name).setOrigin(m.originX,m.originY).setScale(Math.abs(mt.scaleX),Math.abs(mt.scaleY)).setFlipX(m.flipX!==mt.scaleX<0).setDepth(P?.y??mt.ty);
+ tint!=null&&im.setTint(tint);im.setAlpha(alpha??1);add&&im.setBlendMode(j.BlendModes.ADD);return im}
+function __etPhantom(S){const P=S.player;const im=__heroImg(S,10137804,.6,!0);if(!im)return;
  const x=P.x,y=P.y;for(let k=0;k<6;k++)S.time.delayedCall(250+k*480,()=>{if(!im.active)return;const t=__etNearest(S,{x,y},260);if(!t)return;const dx=t.x-x,dy=t.y-y,l=Math.hypot(dx,dy)||1,dir={x:dx/l,y:dy/l},{amount:m,crit:c}=S.stats.rollAbilityDamage(.7,"physical");im.setFlipX(dx<0);
   S.__etCtx="et:phantom";try{S.projectiles.spawn({x:x+dir.x*12,y:y+dir.y*12,dir,texture:"proj-arrow",speed:480,maxDist:280,tint:10137804,damage:m,critical:c,damageType:"physical"})}finally{S.__etCtx=null}});
  S.time.delayedCall(3e3,()=>S.tweens.add({targets:im,alpha:0,duration:250,onComplete:()=>im.destroy()}))}
@@ -164,7 +169,7 @@ function __etCheat(S,P,D0){const now=S.time.now,F=S.__etFloor??(S.__etFloor={}),
   g.lineStyle(1,16777215,.6*f).lineBetween(x-6,y-h*.5,x+2,y+h*.3)});
  if(R(S,"dd_ren")&&!F.ren)return lockRev("ren",__L3("RENASCER","REBIRTH","RENACER"),5287994,.5,(z,f,life)=>{const g=z.g.clear().setDepth(S.player.y+60),x=z.x,y=z.y,s=Math.min(1,life*5);
   g.fillStyle(6044970,f).fillRect(x-4,y-26*s,8,26*s+6).fillStyle(3368499,.95*f).fillCircle(x,y-30*s,16*s).fillStyle(5287994,.95*f).fillCircle(x-8,y-34*s,10*s).fillCircle(x+9,y-32*s,9*s)});
- if(R(S,"hd_han")&&!F.han){F.han=1;try{const w=S.add.sprite(P.x-90,P.y,S.textures.exists("hunter-hound")?"hunter-hound":P.texture.key,0).setTint(12640767).setAlpha(.7).setBlendMode(j.BlendModes.ADD).setDepth(P.y+1);S.tweens.add({targets:w,x:P.x,duration:340,onComplete:()=>S.tweens.add({targets:w,alpha:0,scale:1.6,duration:420,onComplete:()=>w.destroy()})})}catch(e){}
+ if(R(S,"hd_han")&&!F.han){F.han=1;try{const w=(S.textures.exists("hunter-hound")?S.add.sprite(P.x-90,P.y,"hunter-hound",0):__heroImg(S,null,1).setPosition(P.x-90,P.y)).setTint(12640767).setAlpha(.7).setBlendMode(j.BlendModes.ADD).setDepth(P.y+1);S.tweens.add({targets:w,x:P.x,duration:340,onComplete:()=>S.tweens.add({targets:w,alpha:0,scale:1.6,duration:420,onComplete:()=>w.destroy()})})}catch(e){}
   return rev(P.maxHp*.5,1.5,__L3("ESPÍRITO HÄN","HÄN SPIRIT","ESPÍRITU HÄN"),12640767)}
  if(R(S,"nd_nao")&&!F.nao){F.nao=1;rev(1,6.3,__L3("NÃO MORTO","UNDEAD","NO MUERTO"),5963696);S.__etSpec={until:now+6e3,k:0,D0};P.setAlpha?.(.5);try{S.playerVisual?.setTintAll?.(5963696)}catch(e){}return!0}
  return!1}

@@ -84,7 +84,7 @@ const __ETAB={
   S.time.delayedCall(2e3,()=>{if(!P.active)return;for(let k=0;k<16;k++)S.effects.burstTinted(P.x+Math.random()*30-15,P.y-10+Math.random()*30-15,12580607,3);S.effects.shockwaveRing(P.x,P.y,60);for(const e of __etTargets(S))Math.hypot(e.x-P.x,e.y-P.y)<80&&__etHit(S,e,1.4,{ctx:"ab:ET_ICE_PRISON",type:"magical",status:{key:"CHILL",duration:2}})})},
  ET_ROLL(Y,d,S){const P=S.player,fd=Y.facingDir();P.dashDir=fd;P.dashTimer=.2;P.dashSpeed=120/.2;P.invuln=Math.max(P.invuln,.42);__etGhost(S,10125264,4,45);
   S.tweens.add({targets:P,angle:360*(fd.x>=0?1:-1),duration:200,onComplete:()=>P.setAngle(0)});S.effects.burstTinted(P.x,P.y+8,9076582,6)},
- ET_DECOY(Y,d,S){const P=S.player;let im;try{im=S.add.sprite(P.x,P.y,P.texture.key,P.frame?.name??0).setFlipX(P.flipX).setScale(P.scaleX,P.scaleY).setTint(11045594).setAlpha(.82).setDepth(P.y)}catch(e){}
+ ET_DECOY(Y,d,S){const P=S.player;let im;try{im=__heroImg(S,11045594,.82)}catch(e){}
   S.effects.burstTinted(P.x,P.y,5593702,16);S.effects.floatText(P.x,P.y-30,__L3("ISCA","DECOY","SEÑUELO"),"#c9a0ff",10);const dc={x:P.x,y:P.y,dead:!1,until:S.time.now+3e3,img:im};S.__etDecoy=dc;S.__etLure=!0;
   im&&S.tweens.add({targets:im,scaleX:P.scaleX*1.05,scaleY:P.scaleY*.95,yoyo:!0,repeat:-1,duration:260});
   S.time.delayedCall(3e3,()=>{if(S.__etDecoy===dc)S.__etDecoy=null;im&&S.tweens.add({targets:im,alpha:0,duration:200,onComplete:()=>im.destroy()});S.effects.burstTinted(dc.x,dc.y,5593702,12);

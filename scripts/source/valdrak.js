@@ -72,12 +72,20 @@ class __ValdrakAntiga extends j.Scene {
     if (this.mode === "dream") return this.dream();
     if (this.mode === "final") return this.finale();
     const S = this, TEMPLE = S.mode === "mem2", M = S.M = S.cache.json.get(TEMPLE ? "vk-temple" : "vk-map"), cam = S.cameras.main;
-    S.mkAnims(); S.W = M.w; S.H = M.h; S.G = M.g; S.coll = M.coll; S.lt = __vT; S.AP = S.isKing ? "vk-ak-" : "vk-ay-";
+    S.mkAnims(); S.W = M.w; S.H = M.h; S.G = M.g; S.coll = M.coll.map(r => r.split("")); S.lt = __vT; S.AP = S.isKing ? "vk-ak-" : "vk-ay-";
     S.add.image(0, 0, TEMPLE ? "vk-tground" : "vk-ground").setOrigin(0).setDepth(-1e4);
     const snow = S.weather === "snow" && S.textures.exists("vk-props-snow"), PT = TEMPLE ? "vk-tprops" : snow ? "vk-props-snow" : "vk-props";
     snow && S.textures.exists("vk-gsnow") && S.add.image(0, 0, "vk-gsnow").setOrigin(0).setDepth(-9999);
     S.props = [];
-    for (const [k, x, y, f] of M.props) { const im = S.add.image(x, y, PT, k).setOrigin(.5, 1).setDepth(y); f && im.setFlipX(!0); S.props.push(im); if (k === "windmill") S.mill = im }
+    // p216.143: placas de loja soltas no meio da grama/caminho (sem parede onde pendurar) e a paliçada que subia colada
+    // na casa à beira do rio não entram; prédios ganham colisão pela base inteira (antes era uma faixa fina: o herói e os
+    // moradores entravam nas portas e paredes)
+    const SKIP = new Set(["sign", "d9", "d12", "d15", "d16", "d17"]), FP = { house1: .44, house2: .44, house3: .40, house4: .40, tavern: .42, farmhouse: .42, barn: .5, hayshed: .5, coop: .5, windmill: .34, well: .42, tent1: .3, tent2: .3, tent3: .3, tent4: .3, cart: .45, cart2: .45, anvil: .5, "tav-barrels": .5, "tav-table": .5 };
+    for (const [k, x, y, f] of M.props) {
+      if (!TEMPLE && (SKIP.has(k) || (/^fence(9|10|11)$/.test(k) && x > 2400 && y < 1580))) continue;
+      const im = S.add.image(x, y, PT, k).setOrigin(.5, 1).setDepth(y); f && im.setFlipX(!0); S.props.push(im); if (k === "windmill") S.mill = im;
+      if (!TEMPLE && FP[k]) { const w = im.width * (k === "windmill" ? .6 : k === "well" ? .8 : .9), h = Math.max(18, im.height * FP[k]); S.block(x - w / 2, y - h, x + w / 2, y - 4) }
+    }
     if (S.mill) { S.sails = S.add.image(S.mill.x + 2, S.mill.y - S.mill.height + 78, PT, "sails").setDepth(S.mill.y + 1); S.tweens.add({ targets: S.sails, angle: 360, duration: 9000, repeat: -1 }) }
     // pedras do riacho e tábuas quebradas
     S.stones = TEMPLE ? [] : (M.stones || []).map(([x, y]) => S.add.image(x, y + 8, "vk-props", "stone").setDepth(y - 30).setScale(1.5));
@@ -91,10 +99,9 @@ class __ValdrakAntiga extends j.Scene {
     const npc = (id, tex, anim, x, y, sc = .7, flip = !1) => { const s = S.add.sprite(x, y, tex, 0).setOrigin(.5, .99).setScale(__vScale(S, tex, tex === "menino" ? "kid" : "adult")).setFlipX(flip); S.anims.exists(anim) && s.play(anim); s.idA = anim; S.npcs[id] = s; return s };
     if (S.mode === "prince") {
     npc("mira", "elf-1", "vk-mira-idle", sp.mira[0], sp.mira[1], .68, !0);
-    npc("baker", "peasant-2", "vk-p2-idle", sp.baker[0], sp.baker[1], .68);
+    npc("baker", "vkv-camp-moca-1", "vkv-i-camp-moca-1", sp.baker[0], sp.baker[1], .68);   // p216.143: camponesa da cesta (a garçonete da taberna não sai na rua)
     npc("smith", "peasant-1", "vk-p1-idle", sp.smith[0], sp.smith[1] - 40, .7, !0);   // o ferreiro na bigorna (sprite com a bigorna desenhada)
-    npc("mom", "vkv-elf-3-1", "vkv-i-elf-3-1", sp.ticoMom[0], sp.ticoMom[1], .64);
-    npc("barmaid", "peasant-2", "vk-p2-idle", sp.tavernDoor[0] + 150, sp.tavernDoor[1] + 50, .64, !0);   // só uma garçonete, na frente da taberna
+    npc("mom", "vkv-camp-moca-2", "vkv-i-camp-moca-2", sp.ticoMom[0], sp.ticoMom[1], .64);
     npc("tico", "menino", "vk-tico-idle", sp.tico[0], sp.tico[1], .62);
     npc("bram", "vkv-bram", "vkv-i-bram", sp.bram[0] + 60, sp.bram[1] + 40, .7, !0);
     }
@@ -106,13 +113,16 @@ class __ValdrakAntiga extends j.Scene {
     S.fireL = S.add.layer().setDepth(9001);
     // HUD (câmera fixa)
     S.ui = S.add.container(0, 0).setScrollFactor(0).setDepth(2e4);
-    const uz = 1 / cam.zoom, ox = cam.width / 2 * (1 - uz), oy = cam.height / 2 * (1 - uz); S.uz = uz; S.uox = ox; S.uoy = oy;
-    S.ui.setScale(uz).setPosition(ox, oy);
-    S.objT = S.add.text(12, 10, "", { fontFamily: "Georgia, serif", fontSize: "13px", color: "#f2d9a0", stroke: "#100806", strokeThickness: 3 });
-    S.hpT = S.add.text(12, 30, "", { fontFamily: "Georgia, serif", fontSize: "14px", color: "#e05050", stroke: "#100806", strokeThickness: 3 });
-    S.hint = S.add.text(cam.width / 2, cam.height - 18, "", { fontFamily: "Georgia, serif", fontSize: "12px", color: "#ece2cc", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5, 1);
-    S.prompt = S.add.text(0, 0, "", { fontFamily: "Georgia, serif", fontSize: "11px", color: "#fff3c8", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5, 1).setDepth(19000);
-    S.ui.add([S.objT, S.hpT, S.hint]);
+    S.uiScale();
+    // p216.143: objetivo no padrão do jogo — placa no alto, centralizada, com a lista do que falta e o marcador no mapa
+    S.objBg = S.add.graphics(); S.objT = S.add.text(S.LW / 2, 9, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "11px", color: "#f2d9a0", stroke: "#100806", strokeThickness: 3, align: "center", lineSpacing: 2 }).setOrigin(.5, 0);
+    S.hpT = S.add.text(10, 8, "", { fontFamily: "Georgia, serif", fontSize: "12px", color: "#e05050", stroke: "#100806", strokeThickness: 3 });
+    S.hint = S.add.text(S.LW / 2, S.LH - 6, "", { fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "10px", color: "#ece2cc", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5, 1);
+    S.prompt = S.add.text(0, 0, "", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "13px", color: "#fff3c8", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5, 1).setDepth(19000);
+    S.objArrow = S.add.text(0, 0, "➤", { fontFamily: "Georgia, serif", fontSize: "16px", color: "#ffd24a", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5).setVisible(!1);
+    S.objMark = S.add.text(0, 0, "!", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "20px", color: "#ffd24a", stroke: "#100806", strokeThickness: 4 }).setOrigin(.5, 1).setDepth(19001).setVisible(!1);
+    S.tweens.add({ targets: S.objMark, scale: { from: .9, to: 1.15 }, duration: 520, yoyo: !0, repeat: -1 });
+    S.ui.add([S.objBg, S.objT, S.hpT, S.hint, S.objArrow]);
     S.setupWeather(); S.isNight && S.setNight(!0);
     S.setupInput(); S.setupTouch();
     S.dlgBox(); S.state = {}; S.busy = !1;
@@ -120,12 +130,12 @@ class __ValdrakAntiga extends j.Scene {
     S.events.once("shutdown", () => { try { window.__dubStop?.() } catch (e) { } });
     S.cameras.main.fadeIn(900, 0, 0, 0);
     if (S.isKing) { S.startMemory(); return }
-    if (S.startAct >= 2) S.toAct2(!0); else S.time.delayedCall(400, () => S.titleCard(__vT(__VL.ui.title), __vT(__VL.ui.subtitle), () => S.titleCard(__vT(__VL.ui.act1), "", () => S.say("a1_intro", () => { S.state.a1 = 1; S.setObj("o_mill"); S.hint.setText(__vT(__VL.ui.keys)); S.time.delayedCall(9000, () => S.hint.setText("")) }))));
+    if (S.startAct >= 2) S.toAct2(!0); else S.time.delayedCall(400, () => S.titleCard(__vT(__VL.ui.title), __vT(__VL.ui.subtitle), () => S.titleCard(__vT(__VL.ui.act1), "", () => S.say("a1_intro", () => { S.state.a1 = 1; S.setObj("o_mill"); S.hint.setText(S.keysHint()); S.time.delayedCall(9000, () => S.hint.setText("")) }))));
   }
   // sonho no Refúgio: tela escura, a voz do Rei, o fragmento da coroa
   dream() {
     const S = this, cam = S.cameras.main; cam.setBackgroundColor(0x05050a); cam.fadeIn(1200);
-    S.ui = S.add.container(0, 0).setScrollFactor(0).setDepth(2e4); S.uz = 1; S.uox = 0; S.uoy = 0; S.k = null;
+    S.ui = S.add.container(0, 0).setScrollFactor(0).setDepth(2e4); S.uiScale(); S.k = null;
     const mist = []; for (let i = 0; i < 14; i++) { const m = S.add.image(Math.random() * cam.width, Math.random() * cam.height, "light").setTint(0x8aa0c8).setAlpha(.08).setScale(2 + Math.random() * 2).setBlendMode(j.BlendModes.ADD); S.tweens.add({ targets: m, x: "+=" + (60 + Math.random() * 80), alpha: { from: .04, to: .12 }, duration: 5000 + Math.random() * 4000, yoyo: !0, repeat: -1 }); mist.push(m) }
     S.setupInput(); S.dlgBox(); S.busy = !0; S.state = {};
     S.time.delayedCall(1300, () => {
@@ -144,26 +154,28 @@ class __ValdrakAntiga extends j.Scene {
   setupInput() {
     const K = this.input.keyboard, k = s => K.addKey(s);
     this.k = { up: k("W"), dn: k("S"), lf: k("A"), rt: k("D"), u2: k("UP"), d2: k("DOWN"), l2: k("LEFT"), r2: k("RIGHT"), run: k("SHIFT"), jump: k("SPACE"), j2: k("K"), atk: k("J"), a2: k("Z"), use: k("E"), u3: k("ENTER") };
-    this.input.on("pointerdown", p => { if (p.wasTouch) return; if (this.dlg.vis) this.dlgNext(); else if (p.leftButtonDown() && !this.touchOn) this.attack() });
+    this.input.keyboard?.on("keydown", () => { this.__dev = "keyboard" });
+    this.input.on("pointerdown", p => { if (p.wasTouch) { this.__dev = "touch"; return } this.__dev = "keyboard"; if (this.dlg.vis) this.dlgNext(); else if (p.leftButtonDown() && !this.__tOn) this.attack() });
     this.input.gamepad && (this.input.gamepad.once("connected", () => { }));
     this.prevPad = {};
   }
   setupTouch() {
     const S = this, touch = (S.sys.game.device.input.touch);
     if (!touch) return;
-    const cam = S.cameras.main, mk = (x, y, r, label) => { const c = S.add.circle(x, y, r, 0x000000, .35).setStrokeStyle(2, 0xf2d9a0, .6), t = S.add.text(x, y, label, { fontFamily: "Georgia, serif", fontSize: Math.round(r * .7) + "px", color: "#f2d9a0" }).setOrigin(.5); S.ui.add([c, t]); return c };
-    S.tUse = mk(cam.width - 46, cam.height - 110, 24, "!"); S.tAtk = mk(cam.width - 46, cam.height - 52, 26, "⚔"); S.tJmp = mk(cam.width - 104, cam.height - 52, 24, "⤴");
-    S.joy = { base: S.add.circle(86, cam.height - 86, 46, 0x000000, .25).setStrokeStyle(2, 0xf2d9a0, .4), knob: S.add.circle(86, cam.height - 86, 20, 0xf2d9a0, .45), id: null, dx: 0, dy: 0 };
+    const cam = S.cameras.main, mk = (x, y, r, label) => { const c = S.add.circle(x, y, r, 0x000000, .35).setStrokeStyle(2, 0xf2d9a0, .6), t = S.add.text(x, y, label, { fontFamily: "Georgia, serif", fontSize: Math.round(r * .9) + "px", color: "#f2d9a0" }).setOrigin(.5); S.ui.add([c, t]); S.tBtns && S.tBtns.push(c, t); return c };
+    const LW = S.LW, LH = S.LH; S.tBtns = [];
+    S.tUse = mk(LW - 26, LH - 62, 13, "!"); S.tAtk = mk(LW - 26, LH - 28, 14, "⚔"); S.tJmp = mk(LW - 58, LH - 28, 13, "⤴");
+    S.joy = { base: S.add.circle(48, LH - 48, 25, 0x000000, .25).setStrokeStyle(2, 0xf2d9a0, .4), knob: S.add.circle(48, LH - 48, 11, 0xf2d9a0, .45), id: null, dx: 0, dy: 0 };
     S.ui.add([S.joy.base, S.joy.knob]); S.touchOn = !0;
-    const toUi = p => [(p.x - S.uox) / S.uz, (p.y - S.uoy) / S.uz];
+    const toUi = p => [p.x / S.PTs, p.y / S.PTs];
     S.input.addPointer(2);
     S.input.on("pointerdown", p => {
-      const [x, y] = toUi(p); const hit = (b) => b && Math.hypot(x - b.x, y - b.y) < b.radius + 10;
+      const [x, y] = toUi(p); const hit = (b) => b && Math.hypot(x - b.x, y - b.y) < b.radius + 6;
       if (S.dlg.vis) { S.dlgNext(); return }
       if (hit(S.tAtk)) S.attack(); else if (hit(S.tJmp)) S.jump(); else if (hit(S.tUse)) S.use();
-      else if (x < cam.width / 2) { S.joy.id = p.id; S.joy.base.setPosition(x, y); S.joy.knob.setPosition(x, y) }
+      else if (x < S.LW / 2) { S.joy.id = p.id; S.joy.base.setPosition(x, y); S.joy.knob.setPosition(x, y) }
     });
-    S.input.on("pointermove", p => { if (p.id !== S.joy.id) return; const [x, y] = toUi(p), b = S.joy.base; let dx = x - b.x, dy = y - b.y; const d = Math.hypot(dx, dy) || 1, m = Math.min(d, 42); S.joy.knob.setPosition(b.x + dx / d * m, b.y + dy / d * m); S.joy.dx = dx / d * (m / 42); S.joy.dy = dy / d * (m / 42) });
+    S.input.on("pointermove", p => { if (p.id !== S.joy.id) return; const [x, y] = toUi(p), b = S.joy.base; let dx = x - b.x, dy = y - b.y; const d = Math.hypot(dx, dy) || 1, m = Math.min(d, 22); S.joy.knob.setPosition(b.x + dx / d * m, b.y + dy / d * m); S.joy.dx = dx / d * (m / 22); S.joy.dy = dy / d * (m / 22) });
     S.input.on("pointerup", p => { if (p.id !== S.joy.id) return; S.joy.id = null; S.joy.dx = S.joy.dy = 0; S.joy.knob.setPosition(S.joy.base.x, S.joy.base.y) });
   }
   padState() {
@@ -174,20 +186,27 @@ class __ValdrakAntiga extends j.Scene {
   }
   // ── diálogo ────────────────────────────────────────────────────────────────────────────────────
   dlgBox() {
-    const S = this, cam = S.cameras.main, w = cam.width - 40, h = 86, x = 20, y = cam.height - h - 14;
+    // p216.143: mesma janela de fala do resto do jogo (Refúgio/taverna): moldura ui2-win, retrato à esquerda saindo da
+    // janela, nome dourado, texto em Georgia e o ▼ piscando — em pixels lógicos (escala da interface do jogo)
+    const S = this, LW = S.LW, LH = S.LH, px = 16, py = LH - 92, pw = LW - 32, ph = 82, F = "Georgia, 'Times New Roman', serif";
     const c = S.add.container(0, 0).setVisible(!1);
-    const bg = S.add.graphics(); bg.fillStyle(0x140d0a, .94).fillRoundedRect(x, y, w, h, 8).lineStyle(1, 0x8a6a2c, .9).strokeRoundedRect(x, y, w, h, 8);
-    const por = S.add.sprite(x + 50, y + h + 30, "__DEFAULT").setOrigin(.5, 1);
-    const nm = S.add.text(x + 104, y + 10, "", { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "13px", color: "#f2d9a0", stroke: "#120a08", strokeThickness: 3 });
-    const tx = S.add.text(x + 104, y + 30, "", { fontFamily: "Georgia, serif", fontSize: "12px", color: "#ece2cc", lineSpacing: 3, wordWrap: { width: w - 120 }, stroke: "#0a0806", strokeThickness: 2 });
-    const mask = S.add.graphics().fillRect(x + 4, y + 4, 92, h - 8).setVisible(!1); por.setMask(mask.createGeometryMask());
-    c.add([bg, por, nm, tx]); S.ui.add(c);
+    const dim = S.add.rectangle(LW / 2, LH / 2, LW * 1.3, LH * 1.3, 0, .25);
+    let bg; if (S.textures.exists("ui2-win")) bg = S.add.image(px - 4, py - 4, "ui2-win").setOrigin(0).setDisplaySize(pw + 8, ph + 8);
+    else { bg = S.add.graphics(); bg.fillStyle(0x141113, .95).fillRoundedRect(px, py, pw, ph, 8).lineStyle(1, 0x8a2420, .9).strokeRoundedRect(px, py, pw, ph, 8) }
+    const gl = S.add.image(px + 52, py - 6, "light").setBlendMode(j.BlendModes.ADD).setScale(.55).setAlpha(.3).setTint(0xffd580);
+    const por = S.add.sprite(px + 56, py + ph - 3, "__DEFAULT").setOrigin(.5, 1);
+    const nm = S.add.text(px + 118, py + 10, "", { fontFamily: F, fontStyle: "bold", fontSize: "12px", color: "#f2d9a0", stroke: "#120a08", strokeThickness: 3 });
+    const tx = S.add.text(px + 118, py + 28, "", { fontFamily: F, fontSize: "11px", color: "#ece2cc", lineSpacing: 3, wordWrap: { width: pw - 134 }, stroke: "#0a0806", strokeThickness: 2 });
+    const hint = S.add.text(px + pw - 10, py + ph - 8, "▼", { fontFamily: F, fontSize: "10px", color: "#c9a24a" }).setOrigin(1, 1);
+    S.tweens.add({ targets: hint, alpha: .25, duration: 500, yoyo: !0, repeat: -1 });
+    c.add([dim, bg, gl, por, nm, tx, hint]); S.ui.add(c);
     S.dlg = { c, por, nm, tx, vis: !1, list: null, i: 0, full: "", shown: 0 };
   }
   speaker(who) {
     const sp = __VL.speakers[who] || {}, S = this;
-    if (who === "hero") { const nm = (typeof __HN !== "undefined" && __HN[S.cls]) || S.cls; return { name: String(nm).toUpperCase(), tex: this.textures.exists("mk4b-" + S.cls.toLowerCase()) ? "mk4b-" + S.cls.toLowerCase() : "__DEFAULT", sc: .9, cls: S.cls } }
-    const T = { aelric: ["vk-aelric-young-idle", .95], narr: ["vk-aelric-king-idle", .95], king: ["vk-aelric-king-idle", .95], mira: ["elf-1", .9], baker: ["peasant-2", .85], mom: ["vkv-elf-3-1", .85], smith: ["peasant-1", .85], tico: ["menino", 1.1], bram: ["vkv-bram", .85], villager: ["peasant-3", .85], chief: ["vk-chief", 1.1], halvard: ["vk-aelric-king-idle", .95] }[who] || ["__DEFAULT", 1];
+    if (who === "hero") { const nm = (typeof __HN !== "undefined" && __HN[S.cls]) || S.cls; return { name: String(nm).toUpperCase(), por: "hero-" + S.cls.toLowerCase() + "-p-talk", tex: this.textures.exists("mk4b-" + S.cls.toLowerCase()) ? "mk4b-" + S.cls.toLowerCase() : "__DEFAULT", sc: .9, cls: S.cls } }
+    if (who === "elyndra") return { name: sp.name ? __vT(sp.name) : "ELYNDRA", por: "guardia-p-talk", tex: "vk-elyndra-queen-idle", sc: .95 };
+    const T = { aelric: ["vk-aelric-young-idle", .95], narr: ["vk-aelric-king-idle", .95], king: ["vk-aelric-king-idle", .95], mira: ["elf-1", .9], baker: ["vkv-camp-moca-1", .85], mom: ["vkv-camp-moca-2", .85], smith: ["peasant-1", .85], tico: ["menino", 1.1], bram: ["vkv-bram", .85], villager: ["vkv-camp-lavrador-1", .85], farmer: ["vkv-camp-lavrador-0", .85], council: ["vkv-camp-lavrador-2", .85], chief: ["vk-chief", 1.1], halvard: ["vk-aelric-king-idle", .95] }[who] || ["__DEFAULT", 1];
     return { name: sp.name ? __vT(sp.name) : who, tex: T[0], sc: T[1], dark: who === "halvard" || who === "king" };
   }
   say(scene, done) {
@@ -203,22 +222,72 @@ class __ValdrakAntiga extends j.Scene {
     D.i++;
     if (D.i >= D.list.length) { D.vis = !1; D.c.setVisible(!1); S.busy = !1; try { window.__dubStop?.() } catch (e) { } const d = D.done; D.done = null; D.full = ""; d?.(); return }
     const e = D.list[D.i], sp = S.speaker(e.who);
-    D.nm.setText(sp.name); D.por.setTexture(sp.tex, 0).setScale(sp.sc * 1.7); sp.dark ? D.por.setTint(0x101018) : D.por.clearTint();
+    D.nm.setText(sp.name);
+    // retrato desenhado (herói da classe, Guardiã) quando existe; senão o próprio personagem, em pé, saindo da janela
+    const pk = sp.por && S.textures.exists(sp.por) ? sp.por : null;
+    if (pk) D.por.setTexture(pk).setOrigin(0, 1).setPosition(24, S.LH - 12).setScale(.78);
+    else D.por.setTexture(sp.tex, 0).setOrigin(.5, .99).setPosition(72, S.LH - 13).setScale(sp.sc * .95);
+    D.por.setVisible(sp.tex !== "__DEFAULT" || !!pk); sp.dark ? D.por.setTint(0x101018) : D.por.clearTint();
     window.__currentSpeaker = sp.cls || null;
     D.full = e.text; D.shown = 0; D.tx.setText("");
     try { window.__dub?.(e.text) } catch (er) { }
   }
   titleCard(a, b, done) {
     const S = this, cam = S.cameras.main;
-    const t1 = S.add.text(cam.width / 2, cam.height * .38, a, { fontFamily: "Georgia, serif", fontStyle: "bold", fontSize: "30px", color: "#f2d9a0", stroke: "#100806", strokeThickness: 5 }).setOrigin(.5).setAlpha(0);
-    const t2 = S.add.text(cam.width / 2, cam.height * .38 + 34, b, { fontFamily: "Georgia, serif", fontSize: "14px", color: "#ece2cc", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5).setAlpha(0);
+    const LW = S.LW || cam.width, LH = S.LH || cam.height;
+    const t1 = S.add.text(LW / 2, LH * .38, a, { fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "bold", fontSize: "20px", color: "#f2d9a0", stroke: "#100806", strokeThickness: 4 }).setOrigin(.5).setAlpha(0);
+    const t2 = S.add.text(LW / 2, LH * .38 + 22, b, { fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "11px", color: "#ece2cc", stroke: "#100806", strokeThickness: 3 }).setOrigin(.5).setAlpha(0);
     S.ui.add([t1, t2]); S.busy = !0;
     S.tweens.add({ targets: [t1, t2], alpha: 1, duration: 700, hold: 1600, yoyo: !0, onComplete: () => { t1.destroy(); t2.destroy(); S.busy = !1; done?.() } });
   }
-  setObj(k, extra = "") { this.objK = k; this.objT.setText(k ? "◆ " + __vT(__VL.ui[k]) + extra : "") }
+  uiScale() { const S = this, cam = S.cameras.main, PT = typeof Pt !== "undefined" ? Pt : 2, z = cam.zoom; S.PTs = PT; S.LW = cam.width / PT; S.LH = cam.height / PT;
+    S.uz = PT / z; S.uox = cam.width / 2 * (1 - 1 / z); S.uoy = cam.height / 2 * (1 - 1 / z); S.ui.setScale(S.uz).setPosition(S.uox, S.uoy) }
+  setObj(k, extra = "") { this.objK = k; this.objX = extra; this.drawObj() }
+  /* placa do objetivo: título + o que falta (no "ajude os moradores" mostra cada tarefa com ✓) */
+  drawObj() {
+    const S = this, k = S.objK; if (!S.objT) return;
+    let t = k ? "◆ " + __vT(__VL.ui[k]) + (S.objX || "") : "";
+    const st = S.state || {}, T = st.tasks || {}, L3 = (a, b, c) => { try { return __L3(a, b, c) } catch (e) { return a } };
+    if (k && st.a1 === 2 && /^o_(square|bridge|tico)$/.test(k)) t = "◆ " + __vT(__VL.ui.o_square) + "\n" + [
+      (T.bridge ? "✓ " : "· ") + L3("Ferreiro do outro lado do riacho", "The blacksmith across the stream", "El herrero al otro lado del arroyo"),
+      (T.ticoDone ? "✓ " : "· ") + L3("Mãe do Tico, perto da praça", "Tico's mother, near the square", "La madre de Tico, cerca de la plaza"),
+      (T.baker ? "✓ " : "· ") + L3("Padeira na barraca (opcional)", "Baker at her stall (optional)", "Panadera en su puesto (opcional)")].join("\n");
+    S.objT.setText(t); S.objBg.clear();
+    if (t) { const w = S.objT.width + 22, h = S.objT.height + 10; S.objBg.fillStyle(0x140d0a, .82).fillRoundedRect(S.LW / 2 - w / 2, 4, w, h, 6).lineStyle(1, 0xc9a24a, .85).strokeRoundedRect(S.LW / 2 - w / 2, 4, w, h, 6) }
+  }
+  /* onde fica o objetivo agora (ponto no mapa) — vira o "!" que pula em cima e a seta na borda da tela */
+  objTarget() {
+    const S = this, st = S.state || {}, sp = S.M?.spots || {}, N = S.npcs || {}, T = st.tasks || {}, H = S.hero, near = a => a.filter(Boolean).sort((p, q) => Math.hypot(p[0] - H.x, p[1] - H.y) - Math.hypot(q[0] - H.x, q[1] - H.y))[0];
+    switch (S.objK) {
+      case "o_mill": return sp.millLever;
+      case "o_square": case "o_bridge": case "o_tico":
+        return near([!T.bridge && (T.smithTalk ? N.smith && [N.smith.x, N.smith.y] : sp.bridgeW), !T.mom && N.mom && [N.mom.x, N.mom.y], T.mom && !T.tico && N.tico && [N.tico.x, N.tico.y], !T.baker && N.baker && [N.baker.x, N.baker.y]]);
+      case "o_tavern": return sp.tavernDoor && [sp.tavernDoor[0], sp.tavernDoor[1] + 30];
+      case "o_rescue": return near((S.rescueNpcs || []).filter(r => !r.go).map(r => [r.s.x, r.s.y]).concat((S.runners || []).length && !(S.rescueNpcs || []).some(r => !r.go) ? [sp.well] : []));
+      case "o_chief": return S.chief && !S.chief.dead && [S.chief.s.x, S.chief.s.y];
+      case "o_well": return sp.well;
+      case "o_gate": case "o_gates2": return sp.gate && [sp.gate[0], (S.M.wallH || 192) + 60];
+      default: return null;
+    }
+  }
+  updObj() {
+    const S = this, tg = S.dlg?.vis || S.busy ? null : S.objTarget(), cam = S.cameras.main;
+    if (!tg) { S.objMark?.setVisible(!1); S.objArrow?.setVisible(!1); return }
+    const v = cam.worldView, inV = tg[0] > v.x + 10 && tg[0] < v.right - 10 && tg[1] - 60 > v.y && tg[1] < v.bottom - 10;
+    S.objMark.setVisible(inV && !S.prompt.text).setPosition(tg[0], tg[1] - 78 + Math.sin(S.time.now / 220) * 3);
+    if (inV) { S.objArrow.setVisible(!1); return }
+    const cx = v.centerX, cy = v.centerY, a = Math.atan2(tg[1] - cy, tg[0] - cx), mx = S.LW / 2 - 18, my = S.LH / 2 - 24, k = Math.min(mx / Math.max(.001, Math.abs(Math.cos(a))), my / Math.max(.001, Math.abs(Math.sin(a))));
+    S.objArrow.setVisible(!0).setPosition(S.LW / 2 + Math.cos(a) * k, S.LH / 2 + Math.sin(a) * k).setRotation(a);
+  }
+  /* aparelho usado agora (teclado, controle ou toque): botões de toque só aparecem no toque; textos de botão seguem o aparelho */
+  dev() { return this.__dev || (this.sys.game.device.input.touch && !this.game.device?.os?.desktop ? "touch" : "keyboard") }
+  btn(kind) { const d = this.dev(); return d === "gamepad" ? { use: "(A)", atk: "(X)", jump: "(B)" }[kind] : d === "touch" ? { use: "!", atk: "⚔", jump: "⤴" }[kind] : { use: "[E]", atk: "[J]", jump: "[Espaço]" }[kind] }
+  keysHint() { const d = this.dev(), L3 = (a, b, c) => { try { return __L3(a, b, c) } catch (e) { return a } }, K = this.isKing;
+    return d === "gamepad" ? L3(`Mover: analógico · ${K ? "Defender" : "Pular"}: B · Atacar: X · Falar: A · Correr: RB`, `Move: stick · ${K ? "Guard" : "Jump"}: B · Attack: X · Talk: A · Run: RB`, `Mover: stick · ${K ? "Defender" : "Saltar"}: B · Atacar: X · Hablar: A · Correr: RB`)
+      : d === "touch" ? L3("Mover: arraste à esquerda · botões à direita", "Move: drag on the left · buttons on the right", "Mover: arrastra a la izquierda · botones a la derecha") : __vT(__VL.ui[K ? "keysK" : "keys"]) }
   // ── moradores (variações dos NPCs do jogo): andam, conversam e comentam a festa ───────────────────
   spawnVillagers() {
-    const S = this, VM = S.cache.json.get("vk-vill") || {}, keys = Object.keys(VM).filter(k => !VM[k].special && !k.startsWith("peasant-2") && !k.startsWith("peasant-4")), R = Math.random;  // gente da taberna (garçonete e taberneiro de avental) e o Bram não entram na multidão
+    const S = this, VM = S.cache.json.get("vk-vill") || {}, keys = Object.keys(VM).filter(k => /^(camp-|menino-)/.test(k)), R = Math.random;  // p216.143: só os camponeses (e as crianças) andam pela vila — ninguém do pacote da taberna na rua
     if (!keys.length) return; S.vill = [];
     const farmers = keys.filter(k => VM[k].farm), walkers = keys.filter(k => VM[k].walk && !VM[k].kid && !VM[k].farm), standers = (a => a.length ? a : keys.filter(k => !VM[k].kid && !VM[k].farm))(keys.filter(k => !VM[k].walk && !VM[k].kid)), kids = keys.filter(k => VM[k].kid);
     const pick = a => a[Math.floor(R() * a.length)];
@@ -227,7 +296,7 @@ class __ValdrakAntiga extends j.Scene {
       [1430, 1185, 30, 1, "s"], [1785, 1180, 30, 1, "s"], [1410, 800, 30, 1, "s"], [1800, 800, 40, 2, "s"],
       [600, 1120, 90, 3, "s"], [700, 1090, 140, 2, "w"], [1100, 900, 220, 3, "w"], [2150, 920, 220, 3, "w"],
       [1600, 450, 160, 3, "w"], [1600, 330, 60, 2, "s"], [1580, 1400, 260, 3, "w"], [380, 1950, 160, 3, "f"],
-      [870, 2000, 140, 2, "f"], [300, 1560, 120, 1, "f"], [1060, 1720, 90, 1, "f"], [1600, 700, 120, 3, "w"], [2450, 940, 90, 2, "w"],
+      [870, 2000, 140, 2, "f"], [240, 1520, 80, 1, "f"], [1060, 1720, 90, 1, "f"], [1600, 700, 120, 3, "w"], [2450, 940, 90, 2, "w"],
       [900, 1300, 160, 2, "w"], [2200, 1350, 160, 2, "w"], [900, 1820, 60, 1, "s"], [1130, 1950, 120, 2, "k"], [2860, 980, 60, 1, "s"],
       [2300, 1200, 160, 2, "w"], [1250, 640, 140, 2, "w"], [1950, 640, 140, 2, "w"], [1330, 1600, 130, 2, "w"]];
     for (const [gx, gy, rad, n, type] of GROUPS) for (let i = 0; i < n; i++) {
@@ -252,11 +321,11 @@ class __ValdrakAntiga extends j.Scene {
         s.setFlipX(H.x < s.x);
       }
       if (!v.mob) continue;
-      if (!v.tgt) { v.wait -= dtMs; if (v.wait > 0) continue; for (let t = 0; t < 6; t++) { const a = Math.random() * 6.28, d = Math.random() * v.rad, x = v.home[0] + Math.cos(a) * d, y = v.home[1] + Math.sin(a) * d * .7; if (S.free(x, y) && S.free(x, y - 10)) { v.tgt = [x, y]; break } } if (v.tgt) s.play("vkv-m-" + v.k, !0); else v.wait = 800; continue }
+      if (!v.tgt) { v.wait -= dtMs; if (v.wait > 0) continue; for (let t = 0; t < 6; t++) { const a = Math.random() * 6.28, d = Math.random() * v.rad, x = v.home[0] + Math.cos(a) * d, y = v.home[1] + Math.sin(a) * d * .7; if (S.free(x, y) && S.free(x, y - 10)) { v.tgt = [x, y]; break } } if (v.tgt) { s.play("vkv-m-" + v.k, !0); s.anims.timeScale = v.type === "k" ? 1.75 : 1.05 } else v.wait = 800; continue }
       const dx = v.tgt[0] - s.x, dy = v.tgt[1] - s.y, d = Math.hypot(dx, dy), sp = (v.type === "k" ? 95 : 48) * dt;
-      if (d < 4) { v.tgt = null; v.wait = 1200 + Math.random() * 4500; s.play("vkv-i-" + v.k, !0); continue }
+      if (d < 4) { v.tgt = null; v.wait = 1200 + Math.random() * 4500; (s.play("vkv-i-" + v.k, !0), s.anims.timeScale = 1); continue }
       const ox = s.x, oy = s.y; S.move(s, dx / d * sp, dy / d * sp, !1); s.setFlipX(dx < 0);
-      if (Math.abs(s.x - ox) + Math.abs(s.y - oy) < sp * .2) { v.tgt = null; v.wait = 500; s.play("vkv-i-" + v.k, !0) }
+      if (Math.abs(s.x - ox) + Math.abs(s.y - oy) < sp * .2) { v.tgt = null; v.wait = 500; (s.play("vkv-i-" + v.k, !0), s.anims.timeScale = 1) }
     }
   }
   hideVillagers() { for (const v of S_VILL(this)) { v.s.setVisible(!1); v.bub?.destroy(); v.bub = null } }
@@ -315,6 +384,15 @@ class __ValdrakAntiga extends j.Scene {
     }
   }
   // ── mundo ──────────────────────────────────────────────────────────────────────────────────────
+  block(x0, y0, x1, y1) { const G = this.G; for (let r = Math.max(0, Math.floor(y0 / G)); r <= Math.floor(y1 / G); r++) { const R = this.coll[r]; if (!R) continue; for (let c = Math.max(0, Math.floor(x0 / G)); c <= Math.floor(x1 / G); c++) if (c < R.length && R[c] !== "2") R[c] = "1" } }
+  /* o herói não atravessa gente: moradores, personagens e quem está sendo resgatado (elipse nos pés) */
+  bodyHit(x, y) {
+    const S = this, hit = s => s && s.visible && s.active && s !== S.hero && Math.abs(s.x - x) < 13 && Math.abs(s.y - y) < 7;
+    for (const id in S.npcs || {}) if (hit(S.npcs[id])) return !0;
+    for (const v of S.vill || []) if (hit(v.s)) return !0;
+    for (const r of S.rescueNpcs || []) if (!r.go && hit(r.s)) return !0;
+    return !1;
+  }
   cell(x, y) { const r = this.coll[Math.floor(y / this.G)]; return r ? r[Math.floor(x / this.G)] ?? "1" : "1" }
   free(x, y, air) { const c = this.cell(x, y); return c === "0" || c === "3" || (air && c === "2") }
   jump() { const S = this; if (S.isKing) { if (S.busy || S.dead || S.guardT > 0) return; S.guardT = 600; S.inv = Math.max(S.inv, 600); S.hero.play(S.AP + "jump", !0); return }
@@ -344,12 +422,20 @@ class __ValdrakAntiga extends j.Scene {
     chief && s.setTint(0xc8a0a0); s.play(chief ? "vk-c-walk" : "vk-r-walk");
     const e = { s, hp: chief ? 9 : 3, chief, cd: 800 + Math.random() * 600, kx: 0, stun: 0 }; S.enemies.push(e); return e;
   }
-  move(o, dx, dy, air) { const S = this; let nx = o.x + dx, ny = o.y + dy; if (S.free(nx, o.y, air) && S.free(nx, o.y - 8, air)) o.x = nx; if (S.free(o.x, ny, air) && S.free(o.x, ny - 8, air)) o.y = ny }
+  move(o, dx, dy, air) { const S = this, me = o === S.hero && !air && !S.auto; let nx = o.x + dx, ny = o.y + dy;
+    if (S.free(nx, o.y, air) && S.free(nx, o.y - 8, air) && !(me && S.bodyHit(nx, o.y) && !S.bodyHit(o.x, o.y))) o.x = nx;
+    if (S.free(o.x, ny, air) && S.free(o.x, ny - 8, air) && !(me && S.bodyHit(o.x, ny) && !S.bodyHit(o.x, o.y))) o.y = ny }
   update(t, dtMs) {
     if (this.mode === "dream" || this.mode === "final") { const D = this.dlg; if (!D) return; if (this.k && (Phaser_JD(this.k.use) || Phaser_JD(this.k.u3) || Phaser_JD(this.k.jump))) this.dlgNext(); const P = this.padState(); if (P && P.a && !this.prevPad.a) this.dlgNext(); this.prevPad = P || {}; if (D.vis && D.shown < D.full.length) { D.shown = window.__dubType ? window.__dubType(D.full, D.shown, 1) : D.shown + 1; D.tx.setText(D.full.slice(0, D.shown)) } return }
     const S = this, dt = Math.min(dtMs, 50) / 1000, H = S.hero, k = S.k, pad = S.padState();
     // botões do controle (borda de subida)
-    if (pad) { const P = S.prevPad; if (pad.a && !P.a) S.dlg.vis ? S.dlgNext() : (S.near ? S.use() : 0); if (pad.x2 && !P.x2) S.attack(); if (pad.b && !P.b) S.jump(); S.prevPad = pad }
+    if (pad) { const P = S.prevPad; if (pad.a && !P.a) S.dlg.vis ? S.dlgNext() : (S.near ? S.use() : 0); if (pad.x2 && !P.x2) S.attack(); if (pad.b && !P.b) S.jump(); S.prevPad = pad;
+      (pad.a || pad.b || pad.x2 || pad.run || Math.abs(pad.x) > .3 || Math.abs(pad.y) > .3) && (S.__dev = "gamepad") }
+    // p216.143: botões de toque só com toque; marcador do objetivo; destrava se ficar "ocupado" sem fala por muito tempo
+    if (S.tBtns) { const on = S.dev() === "touch"; if (on !== S.__tOn) { S.__tOn = on; S.tBtns.forEach(o => o.setVisible(on)); S.joy.base.setVisible(on); S.joy.knob.setVisible(on) } }
+    S.updObj();
+    if (S.__devShown !== S.dev() && S.hint.text && S.hint.text === S.__hintTxt) S.hint.setText(S.keysHint()); S.__devShown = S.dev(); S.__hintTxt = S.hint.text;
+    if (S.busy && !S.dlg.vis && !S.__cine) { S.__busyT = (S.__busyT || 0) + dtMs; if (S.__busyT > 30000) { S.__busyT = 0; S.busy = !1; console.warn("[valdrak] destravado: ocupado sem fala por 30 s") } } else S.__busyT = 0;
     if (Phaser_JD(k.use) || Phaser_JD(k.u3)) S.dlg.vis ? S.dlgNext() : S.use();
     if (Phaser_JD(k.atk) || Phaser_JD(k.a2)) S.attack();
     if (Phaser_JD(k.jump) || Phaser_JD(k.j2)) S.dlg.vis ? S.dlgNext() : S.jump();
@@ -388,7 +474,8 @@ class __ValdrakAntiga extends j.Scene {
     S.hpT.setText((S.state.a2 && !S.state.a3) || S.state.fight ? "♥".repeat(Math.max(0, S.hp)) + "♡".repeat(Math.max(0, S.maxHp - S.hp)) : "");
     for (const id in S.npcs) { const n = S.npcs[id]; n.setDepth(n.y) }
     // seguidores (Ato III)
-    let prev = H; for (const f of S.followers) { const dx = prev.x - f.x, dy = prev.y - f.y, d = Math.hypot(dx, dy); if (d > 46) { f.x += dx / d * (d - 46) * Math.min(1, dt * 6); f.y += dy / d * (d - 46) * Math.min(1, dt * 6) } f.setFlipX(dx < 0); f.setDepth(f.y); prev = f }
+    let prev = H; for (const f of S.followers) { const dx = prev.x - f.x, dy = prev.y - f.y, d = Math.hypot(dx, dy), mv = d > 46; if (mv) { f.x += dx / d * (d - 46) * Math.min(1, dt * 6); f.y += dy / d * (d - 46) * Math.min(1, dt * 6) }
+      const want = mv && d > 50 ? f.wkA : f.idA; want && f.anims.currentAnim?.key !== want && S.anims.exists(want) && f.play(want, !0); Math.abs(dx) > 2 && f.setFlipX(dx < 0); f.setDepth(f.y); prev = f }
     S.mode === "mem3" && S.updQueen(dtMs); S.updEnemies(dtMs, dt); S.updRunners(dt); S.updVillagers(dtMs, dt); S.updWeather(dtMs); S.triggers();
   }
   updEnemies(dtMs, dt) {
@@ -406,28 +493,28 @@ class __ValdrakAntiga extends j.Scene {
   }
   updRunners(dt) {
     const S = this; if (!S.runners) return;
-    for (const r of S.runners) { if (r.safe) continue; const [tx, ty] = S.M.spots.well, dx = tx - r.s.x, dy = ty - r.s.y, d = Math.hypot(dx, dy); if (d < 30) { r.safe = !0; S.tweens.add({ targets: r.s, alpha: 0, scale: r.s.scale * .6, duration: 500 }); S.saved++; S.setObj("o_rescue", ` (${S.saved}/4)`); S.checkRescue(); continue } r.s.x += dx / d * 170 * dt; r.s.y += dy / d * 170 * dt; r.s.setFlipX(dx < 0); r.s.setDepth(r.s.y) }
+    for (const r of S.runners) { if (r.safe) continue; const [tx, ty] = S.M.spots.well, dx = tx - r.s.x, dy = ty - r.s.y, d = Math.hypot(dx, dy); if (d < 30) { r.safe = !0; S.tweens.add({ targets: r.s, alpha: 0, scale: r.s.scale * .6, duration: 500 }); S.saved++; S.setObj("o_rescue", ` (${S.saved}/4)`); S.checkRescue(); continue } r.s.x += dx / d * 105 * dt; r.s.y += dy / d * 105 * dt; r.s.setFlipX(dx < 0); r.s.setDepth(r.s.y) }
   }
   near2(x, y, r = 60) { return Math.hypot(this.hero.x - x, this.hero.y - y) < r }
-  offer(x, y, label, fn) { this.near = { fn }; this.prompt.setText("[E] " + label).setPosition(x, y - 90) }
+  offer(x, y, label, fn) { this.near = { fn }; this.prompt.setText(this.btn("use") + " " + label).setPosition(x, y - 90) }
   triggers() {
     const S = this, sp = S.M.spots, st = S.state, N = S.npcs, ui = __VL.ui;
     S.near = null; if (S.busy) { S.prompt.setText(""); return }
     if (S.isKing) { S.memTriggers(); S.near || S.prompt.setText(""); return }
     // Ato I
-    if (st.a1 === 1 && S.near2(sp.millLever[0], sp.millLever[1], 70)) S.offer(sp.millLever[0], sp.millLever[1], __vT(ui.pull), () => { S.busy = !0; S.cameras.main.shake(200, .003); S.game.audioEngine?.sfx?.("sfx-door"); S.time.delayedCall(600, () => { S.busy = !1; S.say("a1_mill", () => { st.a1 = 2; st.tasks = st.tasks || {}; S.setObj("o_square"); S.tweens.add({ targets: N.mira, x: sp.festival[0] - 60, y: sp.festival[1] + 40, duration: 9000 }) }) }) });
+    if (st.a1 === 1 && S.near2(sp.millLever[0], sp.millLever[1], 70)) S.offer(sp.millLever[0], sp.millLever[1], __vT(ui.pull), () => { S.busy = !0; S.cameras.main.shake(200, .003); S.game.audioEngine?.sfx?.("sfx-door"); S.time.delayedCall(600, () => { S.busy = !1; S.say("a1_mill", () => { st.a1 = 2; st.tasks = st.tasks || {}; S.setObj("o_square"); S.walkTo(N.mira, sp.festival[0] - 60, sp.festival[1] + 40, 9000, "vk-mira-walk", "vk-mira-idle") }) }) });
     if (st.a1 === 2) {
       st.tasks = st.tasks || {};
       if (!st.tasks.baker && S.near2(N.baker.x, N.baker.y)) S.offer(N.baker.x, N.baker.y, __vT(ui.talk), () => S.say("a1_baker", () => { st.tasks.baker = 1 }));
       if (!st.tasks.smithTalk && S.near2(sp.bridgeW[0], sp.bridgeW[1], 120)) { st.tasks.smithTalk = 1; S.say("a1_smith", () => S.setObj("o_bridge")) }
       if (st.tasks.smithTalk && !st.tasks.bridge && S.near2(N.smith.x, N.smith.y, 80)) S.offer(N.smith.x, N.smith.y, __vT(ui.talk), () => S.say("a1_smith_done", () => { st.tasks.bridge = 1; S.nextTask() }));
       if (!st.tasks.mom && S.near2(N.mom.x, N.mom.y)) S.offer(N.mom.x, N.mom.y, __vT(ui.talk), () => S.say("a1_mom", () => { st.tasks.mom = 1; S.setObj("o_tico") }));
-      if (st.tasks.mom && !st.tasks.tico && S.near2(N.tico.x, N.tico.y)) S.offer(N.tico.x, N.tico.y, __vT(ui.talk), () => S.say("a1_tico", () => { st.tasks.tico = 1; S.tweens.add({ targets: N.tico, x: N.mom.x + 30, y: N.mom.y + 6, duration: 2600 }); S.time.delayedCall(2700, () => S.say("a1_mom_done", () => { st.tasks.ticoDone = 1; S.nextTask() })) }));
+      if (st.tasks.mom && !st.tasks.tico && S.near2(N.tico.x, N.tico.y)) S.offer(N.tico.x, N.tico.y, __vT(ui.talk), () => S.say("a1_tico", () => { st.tasks.tico = 1; S.walkTo(N.tico, N.mom.x + 30, N.mom.y + 6, 2600, "vk-tico-walk", "vk-tico-idle"); S.time.delayedCall(2700, () => S.say("a1_mom_done", () => { st.tasks.ticoDone = 1; S.nextTask() })) }));
     }
     if (st.a1 === 3 && S.near2(sp.tavernDoor[0], sp.tavernDoor[1] + 40, 130)) S.offer(sp.tavernDoor[0], sp.tavernDoor[1], __vT(ui.talk), () => S.say("a1_tavern", () => S.toAct2()));
     // Ato II
     if (st.a2 === 2 && S.near2(sp.well[0], sp.well[1], 90)) S.offer(sp.well[0], sp.well[1], __vT(ui.talk), () => S.say("a2_well", () => S.toAct3()));
-    if (st.a2 === 1 && S.rescueNpcs) for (const r of S.rescueNpcs) if (!r.go && S.near2(r.s.x, r.s.y, 70)) S.offer(r.s.x, r.s.y, __vT(ui.help), () => { const first = !S.saidRescue; S.saidRescue = !0; const go = () => { r.go = !0; S.runners.push(r) }; first ? S.say("a2_rescue", go) : go() });
+    if (st.a2 === 1 && S.rescueNpcs) for (const r of S.rescueNpcs) if (!r.go && S.near2(r.s.x, r.s.y, 70)) S.offer(r.s.x, r.s.y, __vT(ui.help), () => { const first = !S.saidRescue && r.i === 0; first && (S.saidRescue = !0); const go = () => { r.go = !0; S.runners.push(r); S.anims.exists(r.walk) && r.s.play(r.walk, !0); r.s.anims.timeScale = 1.35 }; first ? S.say("a2_rescue", go) : go() });
     // Ato III
     if (st.a3 === 1 && S.hero.y < S.M.wallH + 260 && Math.abs(S.hero.x - sp.gate[0]) < 200) { st.a3 = 2; S.gateScene() }
     S.near || S.prompt.setText("");
@@ -436,7 +523,7 @@ class __ValdrakAntiga extends j.Scene {
   // final no Refúgio (depois de libertar o Rei): contar a verdade ou guardar o segredo
   finale() {
     const S = this, cam = S.cameras.main, W = cam.width, H = cam.height; S.mkAnims(); cam.setBackgroundColor(0x07060c); cam.fadeIn(1200);
-    S.ui = S.add.container(0, 0).setScrollFactor(0).setDepth(2e4); S.uz = 1; S.uox = 0; S.uoy = 0;
+    S.ui = S.add.container(0, 0).setScrollFactor(0).setDepth(2e4); S.uiScale();
     S.setupInput(); S.dlgBox(); S.busy = !0; S.state = {};
     const glow = S.add.image(W / 2, H * .55, "light").setBlendMode(j.BlendModes.ADD).setTint(0xffd27a).setScale(2.2).setAlpha(.25);
     S.tweens.add({ targets: glow, alpha: { from: .18, to: .32 }, duration: 1600, yoyo: !0, repeat: -1 });
@@ -470,16 +557,16 @@ class __ValdrakAntiga extends j.Scene {
   startMemory() {
     const S = this, M = S.M, U = __VL.ui, m = S.mode, t = { mem1: ["mem1", "memsub1"], mem2: ["mem2", "memsub2"], mem3: ["mem3", "memsub3"] }[m];
     S.state = { mem: 1 }; S.busy = !0;
-    S.hint.setText(__vT(U.keysK)); S.time.delayedCall(9000, () => S.hint.setText(""));
+    S.hint.setText(S.keysHint()); S.time.delayedCall(9000, () => S.hint.setText(""));
     const go = () => S.titleCard(__vT(U[t[0]]), __vT(U[t[1]]), () => S["begin_" + m]());
     S.time.delayedCall(400, go);
   }
   queen(x, y) { const S = this; const q = S.add.sprite(x, y, "vk-elyndra-queen-idle", 0).setOrigin(.5, .99).setScale(__vScale(S, "vk-aelric-king-idle", "king") * .96); q.play("vk-q-idle"); q.setDepth(y); return q }
   walkTo(spr, x, y, ms, animW, animI, cb) { const S = this; spr.setFlipX(x < spr.x); animW && spr.play(animW, !0); S.tweens.add({ targets: spr, x, y, duration: ms, onUpdate: () => spr.setDepth(spr.y), onComplete: () => { animI && spr.play(animI, !0); cb?.() } }) }
   crowd(n, cx, cy, rx, ry, opt = {}) {
-    const S = this, VM = S.cache.json.get("vk-vill") || {}, keys = Object.keys(VM).filter(k => !VM[k].special && !k.startsWith("peasant-2") && !k.startsWith("peasant-4")), R = Math.random, out = [];
+    const S = this, VM = S.cache.json.get("vk-vill") || {}, keys = Object.keys(VM).filter(k => /^(camp-|menino-)/.test(k)), R = Math.random, out = [];
     for (let i = 0; i < n; i++) {
-      const k = keys[Math.floor(R() * keys.length)], f = VM[k], x = cx + (R() - .5) * 2 * rx, y = cy + (R() - .5) * 2 * ry;
+      const KK = opt.keys || keys, k = KK[Math.floor(R() * KK.length)], f = VM[k], x = cx + (R() - .5) * 2 * rx, y = cy + (R() - .5) * 2 * ry;
       const s = S.add.sprite(x, y, "vkv-" + k, 0).setOrigin(.5, .99).setScale(__vScale(S, "vkv-" + k, f.kid ? "kid" : "adult") * (.95 + R() * .1)).setFlipX(R() < .5).setDepth(y);
       s.play({ key: "vkv-i-" + k, startFrame: Math.floor(R() * Math.max(1, f.idle - 1)) }); s.vk = k; s.vf = f;
       if (opt.weak && R() < .35) { s.setAngle(R() < .5 ? 88 : -88).setOrigin(.5, .7); s.anims.stop() }    // caídos pela névoa
@@ -491,9 +578,9 @@ class __ValdrakAntiga extends j.Scene {
   begin_mem1() {
     const S = this, sp = S.M.spots; S.hero.setPosition(1600, 1500); S.busy = !1;
     S.crowd(34, 1600, 330, 260, 70, { weak: !0, tint: 0xb8bcc4 });
-    S.farmer = S.crowd(1, 1560, 1180, 1, 1, { tint: 0xc8ccd4 })[0];
+    S.farmer = S.crowd(1, 1560, 1180, 1, 1, { tint: 0xc8ccd4, keys: ["camp-lavrador-0"] })[0];
     S.council = S.add.sprite(1500, 250, "vkv-camp-lavrador-2", 0).setOrigin(.5, .99).setScale(__vScale(S, "vkv-camp-lavrador-2")).setTint(0xd0c8ff).setDepth(250);
-    S.textures.exists("vkv-elf-2-0") && (S.council = S.add.sprite(1500, 250, "vkv-elf-2-0", 0).setOrigin(.5, .99).setScale(__vScale(S, "vkv-elf-2-0")).setDepth(250), S.council.play("vkv-i-elf-2-0"));
+    S.council.play("vkv-i-camp-lavrador-2");
     S.qn = S.queen(1700, 252); S.qn.setFlipX(!0);
     S.say("m1_start", () => { S.state.m = 1; S.setObj("o_gates2") });
   }
@@ -600,8 +687,8 @@ class __ValdrakAntiga extends j.Scene {
   startRaid() {
     const S = this, sp = S.M.spots; S.state.a2 = 1; S.hp = S.maxHp; S.saved = 0; S.runners = []; S.saidRescue = S.saidRescue || !1;
     S.npcs.mira.setVisible(!1); S.npcs.bram.setVisible(!1);
-    const tex = [["vkv-elf-2-1", "vkv-i-elf-2-1"], ["vkv-camp-rapaz-1", "vkv-i-camp-rapaz-1"], ["peasant-3", "vk-p3-idle"], ["menino", "vk-tico-idle"]];
-    S.rescueNpcs = sp.rescue.slice(0, 4).map(([x, y], i) => { const s = S.add.sprite(x, y, tex[i][0], 0).setOrigin(.5, .99).setScale(__vScale(S, tex[i][0], i === 3 ? "kid" : "adult")); s.play(tex[i][1]); return { s } });
+    const tex = [["vkv-camp-lavrador-1", "vkv-i-camp-lavrador-1", "vkv-m-camp-lavrador-1"], ["vkv-camp-moca-0", "vkv-i-camp-moca-0", "vkv-m-camp-moca-0"], ["vkv-camp-rapaz-1", "vkv-i-camp-rapaz-1", "vkv-m-camp-rapaz-1"], ["menino", "vk-tico-idle", "vk-tico-walk"]];
+    S.rescueNpcs = sp.rescue.slice(0, 4).map(([x, y], i) => { const s = S.add.sprite(x, y, tex[i][0], 0).setOrigin(.5, .99).setScale(__vScale(S, tex[i][0], i === 3 ? "kid" : "adult")); s.play(tex[i][1]); return { s, i, walk: tex[i][2] } });
     S.setObj("o_rescue", " (0/4)");
     const waves = () => { if (S.state.a2 !== 1) return; const alive = S.enemies.filter(e => !e.dead).length; if (alive < 5) { const [rx, ry] = sp.raidFrom; S.spawnRaider(rx + (Math.random() - .5) * 500, ry - 300 + Math.random() * 200) } S.time.delayedCall(4200, waves) };
     for (let i = 0; i < 3; i++) S.spawnRaider(sp.raidFrom[0] - 300 + i * 220, sp.raidFrom[1] - 420); waves();
@@ -618,8 +705,8 @@ class __ValdrakAntiga extends j.Scene {
   toAct3() {
     const S = this, sp = S.M.spots; S.state.a2 = 3; S.busy = !0;
     S.cameras.main.fadeOut(700); S.time.delayedCall(720, () => {
-      const g = [["elf-1", "vk-mira-idle", .68], ["vkv-peasant-3-2", "vkv-i-peasant-3-2", .66], ["vkv-elf-2-1", "vkv-i-elf-2-1", .64]];
-      S.followers = g.map(([t, a, sc], i) => { const s = S.add.sprite(S.hero.x - 40 * (i + 1), S.hero.y + 10, t, 0).setOrigin(.5, .99).setScale(__vScale(S, t)); s.play(a); return s });
+      const g = [["elf-1", "vk-mira-idle", "vk-mira-walk"], ["vkv-camp-rapaz-1", "vkv-i-camp-rapaz-1", "vkv-m-camp-rapaz-1"], ["vkv-camp-moca-3", "vkv-i-camp-moca-3", "vkv-m-camp-moca-3"]];
+      S.followers = g.map(([t, a, w], i) => { const s = S.add.sprite(S.hero.x - 40 * (i + 1), S.hero.y + 10, t, 0).setOrigin(.5, .99).setScale(__vScale(S, t)); s.play(a); s.idA = a; s.wkA = w; return s });
       S.cameras.main.fadeIn(600); S.busy = !1; S.titleCard(__vT(__VL.ui.act3), "", () => { S.state.a3 = 1; S.setObj("o_gate") });
       S.spawnRaider(sp.raidFrom[0] - 900, sp.raidFrom[1] - 900);
     });

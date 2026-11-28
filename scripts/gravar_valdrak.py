@@ -39,7 +39,7 @@ VOZES = {  # vozes brasileiras da biblioteca do ElevenLabs (o mesmo timbre lê o
     "menino_v": "4dlXQwYXFHlCAUmQAu9j",      # Zozo um pouco mais agudo: o menino da "Criança Perdida" no Refúgio
     "alline": "MPDBOuBk4rkLBByX9RF4",        # Keren — moça brasileira de voz doce e natural (a dona dos gatos)         # Michelle — jovem de uns 20 anos, doce e animada        # Graziella (voz brasileira infantil), afinada mais aguda: menina
 }
-PITCH = {"olivia": 1.16, "menino_v": 1.1}   # sobe o tom sem mudar a duração (ffmpeg asetrate + atempo)
+PITCH = {"olivia": 1.16, "menino_v": 1.1, "tico": 1.14}   # sobe o tom sem mudar a duração (ffmpeg asetrate + atempo)
 CLASSES = ["WARRIOR", "BERSERKER", "ARCHER", "HUNTER", "DRUID", "NECROMANCER", "MAGE", "ROGUE", "SHAMAN"]
 
 def H(t):

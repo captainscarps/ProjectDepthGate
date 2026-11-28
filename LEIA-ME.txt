@@ -1,4 +1,19 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.142 · cache ded-web-v6.22.3-auditoria)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.143 · cache ded-web-v6.22.4-valdrak-refino)
+
+P216.143 — REFINO DE VALDRAK (FASE DO REI) + CLONE DO ARQUEIRO
+- Clone/fantasma da esquiva do arqueiro (e o chamariz): agora copia o sprite atual do herói (mk2, mesmo quadro e direção),
+  nunca mais a textura antiga "player-<classe>". Regra: só sprites atuais.
+- Colisão: casas, taberna, moinho, poço e tendas bloqueiam pela base inteira (não dá mais para atravessar portas/paredes);
+  o herói não atravessa NPCs.
+- Placas e enfeites pendurados soltos no ar removidos; cerca solta ao lado da casa removida; pedaços estranhos grudados nas
+  pás do moinho, na taberna e em barris limpos do atlas (props.png / props-snow.png).
+- NPCs de taverna/doca fora da rua: padeira e mãe do Tico agora são moradoras do acampamento; atendente removida.
+- NPCs andando com animação de caminhada (resgatados, seguidores, Mira, Tico, moradores) — sem "flutuar" parados.
+- Interface no padrão do jogo: mesma escala do Refúgio, janela de fala ui2-win com retrato, nome dourado e ▼.
+- Objetivo claro: placa centralizada no alto, lista do que falta na festa (✓), "!" sobre o alvo e seta na borda da tela.
+- Controles: botões de toque só aparecem quando se joga por toque; dicas e "[E]/(A)" seguem teclado ou controle.
+- Destrava automática se a fase ficar "ocupada" sem fala por 30 s (evita travamento).
+- Voz do Tico mais infantil (mesma voz, tom +14%, PT e EN).
 
 P216.142 — AUDITORIA DE SPRITES E ÍCONES
 · Conferidas todas as folhas dos 9 heróis, das 5 camadas de armadura, da cabeça descoberta, das armaduras únicas, das
