@@ -1,4 +1,21 @@
-DEPTHGATE WEB — PROJETO COMPLETO (versão p216.141 · cache ded-web-v6.22.2-barco16-todos)
+DEPTHGATE WEB — PROJETO COMPLETO (versão p216.142 · cache ded-web-v6.22.3-auditoria)
+
+P216.142 — AUDITORIA DE SPRITES E ÍCONES
+· Conferidas todas as folhas dos 9 heróis, das 5 camadas de armadura, da cabeça descoberta, das armaduras únicas, das
+  formas do Druida e da pesca: perfil (todos os quadros do mapa), golpes/habilidades (todas as linhas) e pesca completos,
+  sem quadros vazios nem animações paradas.
+· Faltava a CORRIDA nas 4 direções (frente, costas, diagonais) em 12 variantes — correndo para cima/baixo elas usavam o
+  andar acelerado. Feita a cabeça descoberta do Guerreiro (lendárias/forja do Guerreiro): scripts/gerar_corrida_direcoes.py
+  (transfer-outfit-v2 sobre a corrida do herói) + scripts/build_corrida_direcoes.py (acrescenta as linhas 4–7 na folha
+  -dirs, mesma escala e lugar do andar). PENDENTE (os créditos do PixelLab acabaram): cabeça descoberta de Arqueiro
+  (2 de 4 direções já geradas), Maga, Necromante, Druida, Ladina, Samurai e Caçador; Caçador de Dragão, Saqueador,
+  Vendaval e Ossário. Rodar de novo os dois scripts quando houver créditos (pulam o que já existe).
+· Ícones: todos os itens (armas, armaduras, acessórios, elmos, botas, escudos) já tinham ícone próprio. 25 habilidades
+  ainda mostravam o desenho provisório de 20 px (Redemoinho, Pele de Ferro, Onda Repulsora, Explosão Arcana, Passo
+  Sombrio, Bomba de Fumaça, as sagradas, as da Xamã…) → ícones novos no estilo dos outros. Nas árvores do Infinito,
+  80 nós de habilidade/melhoria também usavam o provisório → agora mostram o ícone da habilidade (4 ícones novos:
+  Cometa de Gelo, Cometa Estilhaçante, Esqueletos Escudeiros, Fogueira Ancestral). scripts/gerar_habilidades_icones.py;
+  código scripts/source/habilidades-icones.js.
 
 P216.141 — BARCO EM 16 DIREÇÕES PARA TODAS AS CLASSES
 · Arqueiro, Maga, Necromante, Druida, Xamã, Ladina, Samurai e Caçador ganharam a folha barco16-<classe>.png (mesmo
